@@ -1,10 +1,10 @@
 
-'use client';
+"use client";
 
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { useEffect, useRef } from 'react';
 import L from 'leaflet';
-import repeaters from '@/repeaters.json';
+import type { Repeater } from "@/app/columns";
 
 // Fix for default icon issue with webpack
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -14,7 +14,9 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
 });
 
-const MapView = () => {
+type Props = { repeaters: Repeater[] };
+
+const MapView = ({ repeaters }: Props) => {
   const mapRef = useRef<L.Map | null>(null);
 
   // Ensure Leaflet recalculates size after mount and on window resize.
@@ -34,9 +36,9 @@ const MapView = () => {
   return (
     <div>
     <MapContainer
-      center={[40.4168, -3.7038]}
+      center={[39.694444, -8.130556]}
       zoom={6}
-      style={{ height: '100vh', width: '100%' }}
+      style={{ height: '500px', width: '100%' }}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

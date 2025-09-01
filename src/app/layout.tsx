@@ -25,10 +25,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <div className="min-h-screen flex flex-col">
+          <div className="flex-1">
+            {children}
+          </div>
+          <footer className="border-t py-4 text-center text-sm text-muted-foreground">
+            <a
+              href="https://github.com/jcalado/repetidores"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground"
+            >
+              View this project on GitHub
+            </a>
+          </footer>
+        </div>
       </body>
     </html>
   );
