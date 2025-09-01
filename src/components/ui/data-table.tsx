@@ -43,6 +43,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"
 import { Combobox } from "@/components/ui/combobox"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -110,7 +111,12 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="flex items-center gap-4 py-4 flex-wrap">
+      <Card className="mb-4">
+        <CardHeader>
+          <CardTitle>Filters</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-4 flex-wrap">
         <Input
           placeholder="Filtrar por indicativo..."
           value={(table.getColumn("callsign")?.getFilterValue() as string) ?? ""}
@@ -212,13 +218,117 @@ export function DataTable<TData, TValue>({
           type="button"
           className="h-9 rounded-md border bg-background px-3 text-sm"
           onClick={() => {
+            const rows = table.getFilteredRowModel().rows.map((r) => r.original as any)
+            // Build CHIRP CSV
+            const header = [
+              "Location",
+              "Name",
+              "Frequency",
+              "Duplex",
+              "Offset",
+              "Tone",
+              "rToneFreq",
+              "cToneFreq",
+              "DtcsCode",
+              "DtcsPolarity",
+              "Mode",
+              "TStep",
+              "Skip",
+              "Comment",
+              "URCALL",
+              "RPT1CALL",
+              "RPT2CALL",
+            ]
+
+            const csvEscape = (val: string) => {
+              if (val == null) return ""
+              const s = String(val)
+              if (s.includes(",") || s.includes("\"") || s.includes("\n")) {
+                return '"' + s.replace(/"/g, '""') + '"'
+              }
+              return s
+            }
+
+            const fmtFreq = (n: number | undefined) =>
+              typeof n === "number" && Number.isFinite(n) ? n.toFixed(6) : ""
+
+            const fmtOffset = (rx: number | undefined, tx: number | undefined) => {
+              if (typeof rx !== "number" || typeof tx !== "number") return ""
+              return Math.abs(tx - rx).toFixed(6)
+            }
+
+            const getDuplex = (rx: number | undefined, tx: number | undefined) => {
+              if (typeof rx !== "number" || typeof tx !== "number") return ""
+              if (tx > rx) return "+"
+              if (tx < rx) return "-"
+              return ""
+            }
+
+            const fmtToneFreq = (n: number | undefined) =>
+              typeof n === "number" && n > 0 ? Number(n.toFixed(1)).toString() : ""
+
+            const fmtMode = (m: string | undefined) => {
+              if (!m) return "FM"
+              const up = m.toUpperCase()
+              if (["FM", "NFM", "AM"].includes(up)) return up
+              return "FM"
+            }
+
+            const lines = [header.join(",")]
+            rows.forEach((row, idx) => {
+              const rx = row?.outputFrequency as number | undefined
+              const tx = row?.inputFrequency as number | undefined
+              const tone = row?.tone as number | undefined
+              const name = row?.callsign ?? ""
+              const comment = row?.qth_locator || row?.owner || ""
+              const fields = [
+                String(idx + 1),
+                name,
+                fmtFreq(rx),
+                getDuplex(rx, tx),
+                fmtOffset(rx, tx),
+                tone && tone > 0 ? "Tone" : "",
+                "", // rToneFreq (only for TSQL)
+                fmtToneFreq(tone), // cToneFreq
+                "023",
+                "NN",
+                fmtMode(row?.modulation),
+                "", // TStep
+                "", // Skip
+                comment,
+                "", // URCALL
+                "", // RPT1CALL
+                "", // RPT2CALL
+              ].map(csvEscape)
+              lines.push(fields.join(","))
+            })
+
+            const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement("a")
+            a.href = url
+            a.download = "repeaters-chirp.csv"
+            document.body.appendChild(a)
+            a.click()
+            document.body.removeChild(a)
+            URL.revokeObjectURL(url)
+          }}
+        >
+          Export to CHIRP
+        </button>
+        <button
+          type="button"
+          className="h-9 rounded-md border bg-background px-3 text-sm"
+          onClick={() => {
             table.resetColumnFilters()
             table.setPageIndex(0)
           }}
         >
           Clear Filters
         </button>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
