@@ -43,17 +43,17 @@ export default function RootLayout({
                   </div>
                   <div>
                     <h1 className="text-xl font-bold text-white tracking-tight">Repetidores</h1>
-                    <p className="text-xs text-blue-100 hidden sm:block">Explorador de Rádio</p>
+                    <p className="text-xs text-blue-100 hidden sm:block">Estações repetidoras de Amador</p>
                   </div>
                 </Link>
               </div>
 
               <nav className="hidden md:flex items-center space-x-8">
+                <a href="#tabela" className="text-white/90 hover:text-white transition-colors duration-200 font-medium">
+                  Tabela
+                </a>
                 <a href="#mapa" className="text-white/90 hover:text-white transition-colors duration-200 font-medium">
                   Mapa
-                </a>
-                <a href="#lista" className="text-white/90 hover:text-white transition-colors duration-200 font-medium">
-                  Lista
                 </a>
                 <a href="#sobre" className="text-white/90 hover:text-white transition-colors duration-200 font-medium">
                   Sobre

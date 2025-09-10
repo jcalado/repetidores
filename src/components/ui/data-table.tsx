@@ -268,8 +268,8 @@ export function DataTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="pb-2">
-                      <div className="space-y-2">
+                    <TableHead key={header.id} className="py-2 px-2">
+                      <div className="space-y-3">
                         {/* Column Title */}
                         <div className="font-medium text-sm">
                           {header.isPlaceholder

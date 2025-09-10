@@ -84,10 +84,6 @@ export default function RepeaterBrowser({ data }: Props) {
   return (
     <>
     <Card className="w-full max-w-7xl">
-      <CardHeader>
-        <CardTitle>Repetidores</CardTitle>
-        <CardDescription>Lista de repetidores de rádio amador em Portugal.</CardDescription>
-      </CardHeader>
       <CardContent>
         <Tabs defaultValue="table">
           <TabsList>
