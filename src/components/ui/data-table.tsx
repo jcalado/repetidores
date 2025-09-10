@@ -115,7 +115,7 @@ export function DataTable<TData, TValue>({
   return (
     <div>
       {/* Action Buttons */}
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center justify-end gap-4 mb-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm">
