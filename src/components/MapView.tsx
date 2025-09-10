@@ -34,11 +34,11 @@ const MapView = ({ repeaters }: Props) => {
   }, []);
 
   return (
-    <div>
+    <div style={{ position: 'relative', zIndex: 0 }}>
     <MapContainer
       center={[39.694444, -8.130556]}
       zoom={6}
-      style={{ height: '500px', width: '100%' }}
+      style={{ height: '500px', width: '100%', zIndex: 0 }}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

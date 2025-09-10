@@ -13,6 +13,9 @@ import MapClient from "@/components/MapClient"
 import { columns, type Repeater, getOwnerShort } from "@/app/columns"
 import type { ColumnFiltersState } from "@tanstack/react-table"
 import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
+import { FunnelX } from "lucide-react"
 
 type Props = {
   data: Repeater[]
@@ -130,51 +133,55 @@ export default function RepeaterBrowser({ data, activeTab = "table", onTabChange
                 className="max-w-sm"
               />
               <div className="flex items-center gap-2">
-                <label htmlFor="band-map" className="text-sm text-muted-foreground">
+                <Label htmlFor="band-map" className="text-sm text-muted-foreground">
                   Banda
-                </label>
-                <select
-                  id="band-map"
-                  className="h-9 rounded-md border bg-background px-2 text-sm"
-                  value={(columnFilters.find((f) => f.id === "band")?.value as string) ?? ""}
-                  onChange={(e) => {
-                    const v = e.target.value
+                </Label>
+                <Select
+                  value={(columnFilters.find((f) => f.id === "band")?.value as string) ?? "all"}
+                  onValueChange={(value) => {
                     setColumnFilters((prev) => {
                       const next = prev.filter((f) => f.id !== "band")
-                      if (v) next.push({ id: "band", value: v })
+                      if (value && value !== "all") next.push({ id: "band", value })
                       return next
                     })
                   }}
                 >
-                  <option value="">Todas</option>
-                  <option value="2m">2m</option>
-                  <option value="70cm">70cm</option>
-                </select>
+                  <SelectTrigger className="w-[100px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas</SelectItem>
+                    <SelectItem value="2m">2m</SelectItem>
+                    <SelectItem value="70cm">70cm</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="flex items-center gap-2">
-                <label htmlFor="mod-map" className="text-sm text-muted-foreground">
+                <Label htmlFor="mod-map" className="text-sm text-muted-foreground">
                   Modulation
-                </label>
-                <select
-                  id="mod-map"
-                  className="h-9 rounded-md border bg-background px-2 text-sm"
-                  value={(columnFilters.find((f) => f.id === "modulation")?.value as string) ?? ""}
-                  onChange={(e) => {
-                    const v = e.target.value
+                </Label>
+                <Select
+                  value={(columnFilters.find((f) => f.id === "modulation")?.value as string) ?? "all"}
+                  onValueChange={(value) => {
                     setColumnFilters((prev) => {
                       const next = prev.filter((f) => f.id !== "modulation")
-                      if (v) next.push({ id: "modulation", value: v })
+                      if (value && value !== "all") next.push({ id: "modulation", value })
                       return next
                     })
                   }}
                 >
-                  <option value="">All</option>
-                  {modulationOptions.map((m) => (
-                    <option key={m} value={m}>
-                      {m}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger className="w-[120px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    {modulationOptions.map((m) => (
+                      <SelectItem key={m} value={m}>
+                        {m}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <Input
                 placeholder="Filtrar por QTH..."
@@ -194,7 +201,7 @@ export default function RepeaterBrowser({ data, activeTab = "table", onTabChange
                 className="h-9 rounded-md border bg-background px-3 text-sm"
                 onClick={() => setColumnFilters([])}
               >
-                Clear Filters
+                <FunnelX className="h-4 w-4 text-gray-400" />
               </button>
             </div>
             <div className="h-[500px]">
