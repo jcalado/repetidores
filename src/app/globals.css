@@ -76,6 +76,8 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --muted: var(--color-ship-cove-100);
+  --ring: var(--color-ship-cove-500);
 }
 
 .dark {
@@ -119,4 +121,18 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@theme {
+--color-ship-cove-50: #f2f7fb;
+--color-ship-cove-100: #e7f0f8;
+--color-ship-cove-200: #d3e2f2;
+--color-ship-cove-300: #b8cfe9;
+--color-ship-cove-400: #9bb6de;
+--color-ship-cove-500: #839bd1;
+--color-ship-cove-600: #6f83c4;
+--color-ship-cove-700: #5869aa;
+--color-ship-cove-800: #4a5989;
+--color-ship-cove-900: #404c6f;
+--color-ship-cove-950: #262d40;
 }
