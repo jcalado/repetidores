@@ -43,9 +43,15 @@
         "title": "Repetidores",
         "description": "Explorar repetidores de rádio com mapa e filtros"
     },
+    "home": {
+        "important": {
+            "title": "Importante",
+            "description": "O acesso de transmissão aos repetidores de radioamador é restrito a operadores devidamente licenciados. Transmitir sem a licença apropriada, mesmo que não seja para um repetidor, é proibido e viola regulamentos nacionais. Identifique-se sempre corretamente e siga as diretrizes do proprietário do repetidor e os planos de banda."
+        }
+    },
     "about": {
         "title": "Sobre o repetidores.pt",
-        "subtitle": "Explorando repetidores de rádio amador em Portugal com uma interface moderna e intuitiva",
+        "subtitle": "Explorando repetidores de radioamador em Portugal com uma interface moderna e intuitiva",
         "project": {
             "title": "O que é este projeto?",
             "description": "Este projeto é uma evolução do antigo repetidores.pt, desenvolvido pelos radioamadores CT2ILS (Rui Shantilal) e CT1FIN (João Rodrigues). Embora partilhe o anterior endereço, em nada se relaciona com a antiga equipa, a quem desde já agradecemos!"
@@ -59,8 +65,8 @@
             "filters": "Filtros por indicativo, proprietário, banda e modulação"
         },
         "hamRadio": {
-            "title": "Sobre Rádio Amador",
-            "description": "O rádio amador, também conhecido como radioamadorismo ou amateur radio, é uma atividade técnica e recreativa que utiliza ondas de rádio para comunicação. Os repetidores são estações que recebem um sinal em uma frequência e o retransmitem em outra frequência, ampliando assim o alcance das comunicações.",
+            "title": "Sobre ser Radioamador",
+            "description": "O radioamador, também conhecido como radioamadorismo, é uma atividade técnica e recreativa que utiliza ondas de rádio para comunicação. Os repetidores são estações que recebem um sinal numa frequência e retransmitem em outra frequência, ampliando assim o alcance das comunicações.",
             "objective": "Objetivo: Facilitar a comunicação e promover o conhecimento técnico através da experimentação com equipamentos de rádio."
         },
         "contact": {
@@ -68,8 +74,8 @@
             "description": "Este projeto é mantido por CR7BLE, Joel Calado. Para sugestões, correções ou colaborações, visite o repositório no GitHub."
         },
         "radioSchool": {
-            "title": "Interessado em ser Rádio Amador?",
-            "description": "Aprenda os fundamentos do rádio amador com a melhor escola online de Portugal. Cursos completos, material didático e um grupo no Telegram para apoio na comunicação por rádio.",
+            "title": "Interessado em ser Radioamador?",
+            "description": "Aprenda os fundamentos do radioamadorismo com a melhor escola online de Portugal. Cursos completos, material didático e um grupo no Telegram para apoio na comunicação por rádio.",
             "visit": "Visitar Radioescola.pt"
         }
     }

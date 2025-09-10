@@ -1,7 +1,7 @@
 {
   "name": "Repetidores - Estações Repetidoras de Amador",
   "short_name": "Repetidores",
-  "description": "Explorar repetidores de rádio amador com mapa interativo e filtros avançados",
+  "description": "Explorar repetidores de radioamador com mapa interativo e filtros avançados",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1e293b",
@@ -9,7 +9,11 @@
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "pt-BR",
-  "categories": ["utilities", "productivity", "navigation"],
+  "categories": [
+    "utilities",
+    "productivity",
+    "navigation"
+  ],
   "icons": [
     {
       "src": "/favicon.ico",
