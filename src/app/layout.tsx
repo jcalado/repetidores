@@ -1,3 +1,4 @@
+import MobileMenu from "@/components/MobileMenu";
 import Navigation from "@/components/Navigation";
 import PWAInstall from "@/components/PWAInstall";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -104,6 +105,7 @@ export default function RootLayout({
                   GitHub
                 </a>
                 <ThemeToggle />
+                <MobileMenu />
               </div>
             </div>
 
