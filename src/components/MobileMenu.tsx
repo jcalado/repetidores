@@ -9,9 +9,11 @@ import {
     DrawerTrigger
 } from "@/components/ui/drawer"
 import { Menu } from "lucide-react"
+import { useTranslations } from 'next-intl'
 import * as React from "react"
 
 export default function MobileMenu() {
+    const t = useTranslations()
     const [activeHash, setActiveHash] = React.useState("")
     const [currentPath, setCurrentPath] = React.useState("")
     const [isOpen, setIsOpen] = React.useState(false)
@@ -56,7 +58,7 @@ export default function MobileMenu() {
                 </DrawerTrigger>
                 <DrawerContent>
                     <DrawerHeader>
-                        <DrawerTitle>Menu</DrawerTitle>
+                        <DrawerTitle>{t('nav.menu')}</DrawerTitle>
                     </DrawerHeader>
                     <div className="flex flex-col space-y-4 p-4">
                         <DrawerClose asChild>
@@ -64,11 +66,11 @@ export default function MobileMenu() {
                                 href={getHref("#tabela")}
                                 onClick={handleLinkClick}
                                 className={`transition-colors duration-200 font-medium py-2 px-4 rounded ${activeHash === '#tabela' && currentPath !== '/about'
-                                        ? 'bg-white/20 text-white'
-                                        : 'text-gray-700 hover:bg-gray-100'
+                                    ? 'bg-white/20 text-white'
+                                    : 'text-gray-700 hover:bg-gray-100'
                                     }`}
                             >
-                                Tabela
+                                {t('nav.table')}
                             </a>
                         </DrawerClose>
                         <DrawerClose asChild>
@@ -76,11 +78,11 @@ export default function MobileMenu() {
                                 href={getHref("#mapa")}
                                 onClick={handleLinkClick}
                                 className={`transition-colors duration-200 font-medium py-2 px-4 rounded ${activeHash === '#mapa' && currentPath !== '/about'
-                                        ? 'bg-white/20 text-white'
-                                        : 'text-gray-700 hover:bg-gray-100'
+                                    ? 'bg-white/20 text-white'
+                                    : 'text-gray-700 hover:bg-gray-100'
                                     }`}
                             >
-                                Mapa
+                                {t('nav.map')}
                             </a>
                         </DrawerClose>
                         <DrawerClose asChild>
@@ -88,11 +90,11 @@ export default function MobileMenu() {
                                 href="/about"
                                 onClick={handleLinkClick}
                                 className={`transition-colors duration-200 font-medium py-2 px-4 rounded ${currentPath === '/about'
-                                        ? 'bg-white/20 text-white'
-                                        : 'text-gray-700 hover:bg-gray-100'
+                                    ? 'bg-white/20 text-white'
+                                    : 'text-gray-700 hover:bg-gray-100'
                                     }`}
                             >
-                                Sobre
+                                {t('nav.about')}
                             </a>
                         </DrawerClose>
                     </div>

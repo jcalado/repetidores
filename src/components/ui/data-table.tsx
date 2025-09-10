@@ -1,30 +1,23 @@
 
 "use client"
 
-import * as React from "react"
 import {
   ColumnDef,
   ColumnFiltersState,
-  VisibilityState,
   PaginationState,
   SortingState,
+  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getSortedRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
+import * as React from "react"
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Combobox } from "@/components/ui/combobox"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -33,6 +26,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Input } from "@/components/ui/input"
 import {
   Pagination,
   PaginationContent,
@@ -42,9 +36,16 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
-import { Combobox } from "@/components/ui/combobox"
-import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { useTranslations } from "next-intl"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -76,6 +77,8 @@ export function DataTable<TData, TValue>({
     pageIndex: 0,
     pageSize: 10,
   })
+
+  const t = useTranslations()
 
   const table = useReactTable({
     data,
@@ -117,35 +120,7 @@ export function DataTable<TData, TValue>({
     <div>
       {/* Action Buttons */}
       <div className="flex items-center justify-end gap-4 mb-4">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              Colunas
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuLabel>Colunas visíveis</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {table.getAllLeafColumns().map((column) => {
-              if (!column.getCanHide()) return null
-              const label =
-                typeof column.columnDef.header === "string"
-                  ? column.columnDef.header
-                  : column.id
-              return (
-                <DropdownMenuCheckboxItem
-                  key={column.id}
-                  checked={column.getIsVisible()}
-                  onCheckedChange={(value) =>
-                    column.toggleVisibility(!!value)
-                  }
-                >
-                  {label}
-                </DropdownMenuCheckboxItem>
-              )
-            })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+
 
         <Button
           variant="outline"
@@ -248,8 +223,38 @@ export function DataTable<TData, TValue>({
             URL.revokeObjectURL(url)
           }}
         >
-          Export to CHIRP
+          {t("filters.export")}
         </Button>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm">
+              Colunas
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuLabel>Colunas visíveis</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {table.getAllLeafColumns().map((column) => {
+              if (!column.getCanHide()) return null
+              const label =
+                typeof column.columnDef.header === "string"
+                  ? column.columnDef.header
+                  : column.id
+              return (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  checked={column.getIsVisible()}
+                  onCheckedChange={(value) =>
+                    column.toggleVisibility(!!value)
+                  }
+                >
+                  {label}
+                </DropdownMenuCheckboxItem>
+              )
+            })}
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <Button
           variant="outline"
@@ -259,7 +264,7 @@ export function DataTable<TData, TValue>({
             table.setPageIndex(0)
           }}
         >
-          Limpar Filtros
+          {t("filters.clear")}
         </Button>
       </div>
 

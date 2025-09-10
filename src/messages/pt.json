@@ -1,0 +1,58 @@
+{
+    "nav": {
+        "table": "Tabela",
+        "map": "Mapa",
+        "about": "Sobre",
+        "menu": "Menu"
+    },
+    "filters": {
+        "callsign": "Filtrar por indicativo...",
+        "owner": "Filtrar por proprietário...",
+        "band": "Banda",
+        "all": "Todas",
+        "2m": "2m",
+        "70cm": "70cm",
+        "modulation": "Modulação",
+        "qth": "Filtrar por QTH...",
+        "clear": "Limpar filtros",
+        "export": "Exportar CHIRP"
+    },
+    "repeater": {
+        "details": "Repeater Details",
+        "close": "Close"
+    },
+    "metadata": {
+        "title": "Repetidores",
+        "description": "Explorar repetidores de rádio com mapa e filtros"
+    },
+    "about": {
+        "title": "Sobre o repetidores.pt",
+        "subtitle": "Explorando repetidores de rádio amador em Portugal com uma interface moderna e intuitiva",
+        "project": {
+            "title": "O que é este projeto?",
+            "description": "Este projeto é uma evolução do antigo repetidores.pt, desenvolvido pelos radioamadores CT2ILS (Rui Shantilal) e CT1FIN (João Rodrigues). Embora partilhe o anterior endereço, em nada se relaciona com a antiga equipa, a quem desde já agradecemos!"
+        },
+        "github": "Ver Código no GitHub",
+        "features": {
+            "title": "Funcionalidades",
+            "table": "Visualização de repetidores em tabela com filtros avançados",
+            "map": "Mapa interativo com localização geográfica",
+            "responsive": "Interface responsiva otimizada para desktop e mobile",
+            "filters": "Filtros por indicativo, proprietário, banda e modulação"
+        },
+        "hamRadio": {
+            "title": "Sobre Rádio Amador",
+            "description": "O rádio amador, também conhecido como radioamadorismo ou amateur radio, é uma atividade técnica e recreativa que utiliza ondas de rádio para comunicação. Os repetidores são estações que recebem um sinal em uma frequência e o retransmitem em outra frequência, ampliando assim o alcance das comunicações.",
+            "objective": "Objetivo: Facilitar a comunicação e promover o conhecimento técnico através da experimentação com equipamentos de rádio."
+        },
+        "contact": {
+            "title": "Contato",
+            "description": "Este projeto é mantido por CR7BLE, Joel Calado. Para sugestões, correções ou colaborações, visite o repositório no GitHub."
+        },
+        "radioSchool": {
+            "title": "Interessado em ser Rádio Amador?",
+            "description": "Aprenda os fundamentos do rádio amador com a melhor escola online de Portugal. Cursos completos, material didático e um grupo no Telegram para apoio na comunicação por rádio.",
+            "visit": "Visitar Radioescola.pt"
+        }
+    }
+}
