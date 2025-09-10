@@ -1,8 +1,9 @@
 
 "use client"
 
-import { ColumnDef } from "@tanstack/react-table"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { ColumnDef } from "@tanstack/react-table"
+import { useTranslations } from "next-intl"
 
 export type Repeater = {
   callsign: string
@@ -23,132 +24,139 @@ function getBandFromFrequency(mhz: number): string {
   return "Other"
 }
 
-export const columns: ColumnDef<Repeater>[] = [
-  {
-    accessorKey: "callsign",
-    header: "Callsign",
-  },
-  {
-    id: "band",
-    header: "Band",
-    accessorFn: (row) => getBandFromFrequency(row.outputFrequency),
-    // Simple equality filter for exact band match
-    filterFn: (row, id, value) => {
-      if (!value) return true
-      return row.getValue<string>(id) === value
+export function useColumns(): ColumnDef<Repeater>[] {
+  const t = useTranslations('table.columns')
+
+  return [
+    {
+      accessorKey: "callsign",
+      header: t("callsign"),
     },
-    enableSorting: false,
-  },
-  {
-    accessorKey: "outputFrequency",
-    header: "Output Freq.",
-    cell: ({ getValue }) => {
-      const value = getValue() as number
-      return value?.toFixed(3) ?? ""
+    {
+      id: "band",
+      header: t("band"),
+      accessorFn: (row) => getBandFromFrequency(row.outputFrequency),
+      // Simple equality filter for exact band match
+      filterFn: (row, id, value) => {
+        if (!value) return true
+        return row.getValue<string>(id) === value
+      },
+      enableSorting: false,
     },
-    filterFn: (row, id, value) => {
-      if (!value) return true
-      const numValue = row.getValue<number>(id)
-      if (numValue == null) return false
-      const formattedValue = numValue.toFixed(3)
-      const rawValue = numValue.toString()
-      return formattedValue.includes(value) || rawValue.includes(value)
+    {
+      accessorKey: "outputFrequency",
+      header: t("outputFrequency"),
+      cell: ({ getValue }) => {
+        const value = getValue() as number
+        return value?.toFixed(3) ?? ""
+      },
+      filterFn: (row, id, value) => {
+        if (!value) return true
+        const numValue = row.getValue<number>(id)
+        if (numValue == null) return false
+        const formattedValue = numValue.toFixed(3)
+        const rawValue = numValue.toString()
+        return formattedValue.includes(value) || rawValue.includes(value)
+      },
     },
-  },
-  {
-    accessorKey: "inputFrequency",
-    header: "Input Freq.",
-    cell: ({ getValue }) => {
-      const value = getValue() as number
-      return value?.toFixed(3) ?? ""
+    {
+      accessorKey: "inputFrequency",
+      header: t("inputFrequency"),
+      cell: ({ getValue }) => {
+        const value = getValue() as number
+        return value?.toFixed(3) ?? ""
+      },
+      filterFn: (row, id, value) => {
+        if (!value) return true
+        const numValue = row.getValue<number>(id)
+        if (numValue == null) return false
+        const formattedValue = numValue.toFixed(3)
+        const rawValue = numValue.toString()
+        return formattedValue.includes(value) || rawValue.includes(value)
+      },
     },
-    filterFn: (row, id, value) => {
-      if (!value) return true
-      const numValue = row.getValue<number>(id)
-      if (numValue == null) return false
-      const formattedValue = numValue.toFixed(3)
-      const rawValue = numValue.toString()
-      return formattedValue.includes(value) || rawValue.includes(value)
+    {
+      accessorKey: "tone",
+      header: t("tone"),
+      cell: ({ getValue }) => {
+        const value = getValue() as number
+        return value?.toFixed(3) ?? ""
+      },
+      filterFn: (row, id, value) => {
+        if (!value) return true
+        const numValue = row.getValue<number>(id)
+        if (numValue == null) return false
+        const formattedValue = numValue.toFixed(3)
+        const rawValue = numValue.toString()
+        return formattedValue.includes(value) || rawValue.includes(value)
+      },
     },
-  },
-  {
-    accessorKey: "tone",
-    header: "Tone",
-    cell: ({ getValue }) => {
-      const value = getValue() as number
-      return value?.toFixed(3) ?? ""
+    {
+      accessorKey: "modulation",
+      header: t("modulation"),
+      // Exact match filter when a value is provided (case-insensitive)
+      filterFn: (row, id, value) => {
+        if (!value) return true
+        const v = String(value).toLowerCase()
+        const cell = String(row.getValue<string>(id) ?? "").toLowerCase()
+        return cell === v
+      },
     },
-    filterFn: (row, id, value) => {
-      if (!value) return true
-      const numValue = row.getValue<number>(id)
-      if (numValue == null) return false
-      const formattedValue = numValue.toFixed(3)
-      const rawValue = numValue.toString()
-      return formattedValue.includes(value) || rawValue.includes(value)
+    {
+      accessorKey: "latitude",
+      header: t("latitude"),
     },
-  },
-  {
-    accessorKey: "modulation",
-    header: "Modulation",
-    // Exact match filter when a value is provided (case-insensitive)
-    filterFn: (row, id, value) => {
-      if (!value) return true
-      const v = String(value).toLowerCase()
-      const cell = String(row.getValue<string>(id) ?? "").toLowerCase()
-      return cell === v
+    {
+      accessorKey: "longitude",
+      header: t("longitude"),
     },
-  },
-  {
-    accessorKey: "latitude",
-    header: "Latitude",
-  },
-  {
-    accessorKey: "longitude",
-    header: "Longitude",
-  },
-  {
-    accessorKey: "qth_locator",
-    header: "QTH Locator",
-    // Substring match, case-insensitive
-    filterFn: (row, id, value) => {
-      if (!value) return true
-      const q = String(value).toLowerCase()
-      return String(row.getValue<string>(id) ?? "").toLowerCase().includes(q)
+    {
+      accessorKey: "qth_locator",
+      header: t("qthLocator"),
+      // Substring match, case-insensitive
+      filterFn: (row, id, value) => {
+        if (!value) return true
+        const q = String(value).toLowerCase()
+        return String(row.getValue<string>(id) ?? "").toLowerCase().includes(q)
+      },
     },
-  },
-  {
-    accessorKey: "owner",
-    header: "Owner",
-    cell: ({ getValue }) => {
-      const full = String(getValue() ?? "")
-      const short = getOwnerShort(full)
-      if (!full) return null
-      if (short === full) return <span>{full}</span>
-      return (
-        <HoverCard>
-          <HoverCardTrigger asChild>
-            <span className="cursor-help underline decoration-dotted">
-              {short}
-            </span>
-          </HoverCardTrigger>
-          <HoverCardContent>
-            <div className="text-sm">{full}</div>
-          </HoverCardContent>
-        </HoverCard>
-      )
+    {
+      accessorKey: "owner",
+      header: t("owner"),
+      cell: ({ getValue }) => {
+        const full = String(getValue() ?? "")
+        const short = getOwnerShort(full)
+        if (!full) return null
+        if (short === full) return <span>{full}</span>
+        return (
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <span className="cursor-help underline decoration-dotted">
+                {short}
+              </span>
+            </HoverCardTrigger>
+            <HoverCardContent>
+              <div className="text-sm">{full}</div>
+            </HoverCardContent>
+          </HoverCard>
+        )
+      },
+      // Match on full name or short name
+      filterFn: (row, id, value) => {
+        if (!value) return true
+        const q = String(value).toLowerCase()
+        const full = String(row.getValue<string>(id) ?? "")
+        const short = getOwnerShort(full)
+        return (
+          full.toLowerCase().includes(q) || short.toLowerCase().includes(q)
+        )
+      },
     },
-    // Match on full name or short name
-    filterFn: (row, id, value) => {
-      if (!value) return true
-      const q = String(value).toLowerCase()
-      const full = String(row.getValue<string>(id) ?? "")
-      const short = getOwnerShort(full)
-      return (
-        full.toLowerCase().includes(q) || short.toLowerCase().includes(q)
-      )
-    },
-  },
-]
+  ]
+}
+
+// Keep the old export for backward compatibility, but it will be replaced
+export const columns: ColumnDef<Repeater>[] = []
 
 // Known owner name shorteners
 const OWNER_SHORTNAMES: Record<string, string> = {

@@ -17,6 +17,24 @@
         "clear": "Limpar filtros",
         "export": "Exportar CHIRP"
     },
+    "table": {
+        "visibleColumns": "Colunas visíveis",
+        "rowsPerPage": "Resultados por página:",
+        "pageOf": "Página {current} de {total}",
+        "noResults": "Nenhum resultado encontrado.",
+        "columns": {
+            "callsign": "Indicativo",
+            "band": "Banda",
+            "outputFrequency": "Freq. Saída",
+            "inputFrequency": "Freq. Entrada",
+            "tone": "Tom",
+            "modulation": "Modulação",
+            "latitude": "Latitude",
+            "longitude": "Longitude",
+            "qthLocator": "Localizador QTH",
+            "owner": "Proprietário"
+        }
+    },
     "repeater": {
         "details": "Repeater Details",
         "close": "Close"

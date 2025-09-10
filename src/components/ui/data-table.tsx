@@ -229,11 +229,11 @@ export function DataTable<TData, TValue>({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm">
-              Colunas
+              {t("table.visibleColumns")}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuLabel>Colunas visíveis</DropdownMenuLabel>
+            <DropdownMenuLabel>{t("table.visibleColumns")}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {table.getAllLeafColumns().map((column) => {
               if (!column.getCanHide()) return null
@@ -332,9 +332,9 @@ export function DataTable<TData, TValue>({
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="all">Todas</SelectItem>
-                                <SelectItem value="2m">2m</SelectItem>
-                                <SelectItem value="70cm">70cm</SelectItem>
+                                <SelectItem value="all">{t("filters.all")}</SelectItem>
+                                <SelectItem value="2m">{t("filters.2m")}</SelectItem>
+                                <SelectItem value="70cm">{t("filters.70cm")}</SelectItem>
                               </SelectContent>
                             </Select>
                           )}
@@ -381,7 +381,7 @@ export function DataTable<TData, TValue>({
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="all">Todas</SelectItem>
+                                <SelectItem value="all">{t("filters.all")}</SelectItem>
                                 {modulationOptions.map((m) => (
                                   <SelectItem key={m} value={m}>
                                     {m}
@@ -417,7 +417,7 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                  {t("table.noResults")}
                 </TableCell>
               </TableRow>
             )}
@@ -426,7 +426,7 @@ export function DataTable<TData, TValue>({
       </div>
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Rows per page:</span>
+          <span className="text-sm text-muted-foreground">{t("table.rowsPerPage")}</span>
           <Combobox
             ariaLabel="Rows per page"
             value={table.getState().pagination.pageSize}
@@ -445,7 +445,10 @@ export function DataTable<TData, TValue>({
           />
         </div>
         <div className="text-sm text-muted-foreground">
-          Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+          {t("table.pageOf", {
+            current: table.getState().pagination.pageIndex + 1,
+            total: table.getPageCount()
+          })}
         </div>
         <Pagination>
           <PaginationContent>

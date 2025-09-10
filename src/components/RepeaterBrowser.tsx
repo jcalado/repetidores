@@ -1,6 +1,6 @@
 "use client"
 
-import { columns, getOwnerShort, type Repeater } from "@/app/columns"
+import { getOwnerShort, useColumns, type Repeater } from "@/app/columns"
 import MapClient from "@/components/MapClient"
 import RepeaterDetails from "@/components/RepeaterDetails"
 import {
@@ -33,6 +33,7 @@ function getBandFromFrequency(mhz: number): string {
 
 export default function RepeaterBrowser({ data, activeTab = "table", onTabChange }: Props) {
   const t = useTranslations()
+  const columns = useColumns()
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [open, setOpen] = React.useState(false)
   const [selected, setSelected] = React.useState<Repeater | null>(null)
