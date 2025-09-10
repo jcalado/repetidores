@@ -43,7 +43,8 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"
 import { Combobox } from "@/components/ui/combobox"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -97,10 +98,10 @@ export function DataTable<TData, TValue>({
 
   const modulationOptions = React.useMemo(() => {
     const set = new Set<string>()
-    ;(data as any[]).forEach((d) => {
-      const v = d?.modulation
-      if (v && typeof v === "string") set.add(v)
-    })
+      ; (data as any[]).forEach((d) => {
+        const v = d?.modulation
+        if (v && typeof v === "string") set.add(v)
+      })
     return Array.from(set).sort()
   }, [data])
 
@@ -113,88 +114,16 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <Card className="mb-4">
-        <CardHeader>
-          <CardTitle>Filters</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-4 flex-wrap">
-        <Input
-          placeholder="Filtrar por indicativo..."
-          value={(table.getColumn("callsign")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("callsign")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-        <Input
-          placeholder="Filtrar por proprietário..."
-          value={(table.getColumn("owner")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("owner")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-        <div className="flex items-center gap-2">
-          <label htmlFor="band" className="text-sm text-muted-foreground">
-            Banda
-          </label>
-          <select
-            id="band"
-            className="h-9 rounded-md border bg-background px-2 text-sm"
-            value={(table.getColumn("band")?.getFilterValue() as string) ?? ""}
-            onChange={(e) =>
-              table
-                .getColumn("band")
-                ?.setFilterValue(e.target.value || undefined)
-            }
-          >
-            <option value="">Todas</option>
-            <option value="2m">2m</option>
-            <option value="70cm">70cm</option>
-          </select>
-        </div>
-        <div className="flex items-center gap-2">
-          <label htmlFor="modulation" className="text-sm text-muted-foreground">
-            Modulation
-          </label>
-          <select
-            id="modulation"
-            className="h-9 rounded-md border bg-background px-2 text-sm"
-            value={(table.getColumn("modulation")?.getFilterValue() as string) ?? ""}
-            onChange={(e) =>
-              table
-                .getColumn("modulation")
-                ?.setFilterValue(e.target.value || undefined)
-            }
-          >
-            <option value="">All</option>
-            {modulationOptions.map((m) => (
-              <option key={m} value={m}>
-                {m}
-              </option>
-            ))}
-          </select>
-        </div>
-        <Input
-          placeholder="Filtrar por QTH..."
-          value={(table.getColumn("qth_locator")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("qth_locator")?.setFilterValue(event.target.value)
-          }
-          className="max-w-[10rem]"
-        />
+      {/* Action Buttons */}
+      <div className="flex items-center gap-2 mb-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button
-              type="button"
-              className="h-9 rounded-md border bg-background px-3 text-sm"
-            >
+            <Button variant="outline" size="sm">
               Colunas
-            </button>
+            </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Escolha colunas</DropdownMenuLabel>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuLabel>Colunas visíveis</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {table.getAllLeafColumns().map((column) => {
               if (!column.getCanHide()) return null
@@ -216,9 +145,10 @@ export function DataTable<TData, TValue>({
             })}
           </DropdownMenuContent>
         </DropdownMenu>
-        <button
-          type="button"
-          className="h-9 rounded-md border bg-background px-3 text-sm"
+
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => {
             const rows = table.getFilteredRowModel().rows.map((r) => r.original as any)
             // Build CHIRP CSV
@@ -317,20 +247,20 @@ export function DataTable<TData, TValue>({
           }}
         >
           Export to CHIRP
-        </button>
-        <button
-          type="button"
-          className="h-9 rounded-md border bg-background px-3 text-sm"
+        </Button>
+
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => {
             table.resetColumnFilters()
             table.setPageIndex(0)
           }}
         >
-          Clear Filters
-        </button>
-          </div>
-        </CardContent>
-      </Card>
+          Limpar Filtros
+        </Button>
+      </div>
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -338,13 +268,123 @@ export function DataTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
+                    <TableHead key={header.id} className="pb-2">
+                      <div className="space-y-2">
+                        {/* Column Title */}
+                        <div className="font-medium text-sm">
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                        </div>
+
+                        {/* Column Filter */}
+                        <div className="min-w-0">
+                          {header.column.id === "callsign" && (
+                            <Input
+                              placeholder=""
+                              value={(table.getColumn("callsign")?.getFilterValue() as string) ?? ""}
+                              onChange={(event) =>
+                                table.getColumn("callsign")?.setFilterValue(event.target.value)
+                              }
+                              className="h-7 text-xs w-full"
+                            />
                           )}
+                          {header.column.id === "owner" && (
+                            <Input
+                              placeholder=""
+                              value={(table.getColumn("owner")?.getFilterValue() as string) ?? ""}
+                              onChange={(event) =>
+                                table.getColumn("owner")?.setFilterValue(event.target.value)
+                              }
+                              className="h-7 text-xs w-full"
+                            />
+                          )}
+                          {header.column.id === "qth_locator" && (
+                            <Input
+                              placeholder=""
+                              value={(table.getColumn("qth_locator")?.getFilterValue() as string) ?? ""}
+                              onChange={(event) =>
+                                table.getColumn("qth_locator")?.setFilterValue(event.target.value)
+                              }
+                              className="h-7 text-xs w-full"
+                            />
+                          )}
+                          {header.column.id === "band" && (
+                            <Select
+                              value={(table.getColumn("band")?.getFilterValue() as string) ?? "all"}
+                              onValueChange={(value) =>
+                                table
+                                  .getColumn("band")
+                                  ?.setFilterValue(value === "all" ? undefined : value)
+                              }
+                            >
+                              <SelectTrigger className="h-7 text-xs w-full">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="all">Todas</SelectItem>
+                                <SelectItem value="2m">2m</SelectItem>
+                                <SelectItem value="70cm">70cm</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          )}
+                          {header.column.id === "outputFrequency" && (
+                            <Input
+                              placeholder=""
+                              value={(table.getColumn("outputFrequency")?.getFilterValue() as string) ?? ""}
+                              onChange={(event) =>
+                                table.getColumn("outputFrequency")?.setFilterValue(event.target.value)
+                              }
+                              className="h-7 text-xs w-full"
+                            />
+                          )}
+                          {header.column.id === "inputFrequency" && (
+                            <Input
+                              placeholder=""
+                              value={(table.getColumn("inputFrequency")?.getFilterValue() as string) ?? ""}
+                              onChange={(event) =>
+                                table.getColumn("inputFrequency")?.setFilterValue(event.target.value)
+                              }
+                              className="h-7 text-xs w-full"
+                            />
+                          )}
+                          {header.column.id === "tone" && (
+                            <Input
+                              placeholder=""
+                              value={(table.getColumn("tone")?.getFilterValue() as string) ?? ""}
+                              onChange={(event) =>
+                                table.getColumn("tone")?.setFilterValue(event.target.value)
+                              }
+                              className="h-7 text-xs w-full"
+                            />
+                          )}
+                          {header.column.id === "modulation" && (
+                            <Select
+                              value={(table.getColumn("modulation")?.getFilterValue() as string) ?? "all"}
+                              onValueChange={(value) =>
+                                table
+                                  .getColumn("modulation")
+                                  ?.setFilterValue(value === "all" ? undefined : value)
+                              }
+                            >
+                              <SelectTrigger className="h-7 text-xs w-full">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="all">Todas</SelectItem>
+                                {modulationOptions.map((m) => (
+                                  <SelectItem key={m} value={m}>
+                                    {m}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )}
+                        </div>
+                      </div>
                     </TableHead>
                   )
                 })}
