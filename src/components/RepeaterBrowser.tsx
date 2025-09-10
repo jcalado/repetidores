@@ -4,9 +4,6 @@ import * as React from "react"
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DataTable } from "@/components/ui/data-table"
@@ -19,6 +16,8 @@ import { Input } from "@/components/ui/input"
 
 type Props = {
   data: Repeater[]
+  activeTab?: string
+  onTabChange?: (tab: string) => void
 }
 
 function getBandFromFrequency(mhz: number): string {
@@ -28,7 +27,7 @@ function getBandFromFrequency(mhz: number): string {
   return "Other"
 }
 
-export default function RepeaterBrowser({ data }: Props) {
+export default function RepeaterBrowser({ data, activeTab = "table", onTabChange }: Props) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [open, setOpen] = React.useState(false)
   const [selected, setSelected] = React.useState<Repeater | null>(null)
@@ -85,7 +84,7 @@ export default function RepeaterBrowser({ data }: Props) {
     <>
     <Card className="w-full max-w-7xl">
       <CardContent>
-        <Tabs defaultValue="table">
+        <Tabs value={activeTab} onValueChange={onTabChange}>
           <TabsList>
             <TabsTrigger value="table">Tabela</TabsTrigger>
             <TabsTrigger value="map">Mapa</TabsTrigger>

@@ -4,6 +4,7 @@ import "./globals.css";
 import "leaflet/dist/leaflet.css";
 import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
+import Navigation from "@/components/Navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -48,17 +49,7 @@ export default function RootLayout({
                 </Link>
               </div>
 
-              <nav className="hidden md:flex items-center space-x-8">
-                <a href="#tabela" className="text-white/90 hover:text-white transition-colors duration-200 font-medium">
-                  Tabela
-                </a>
-                <a href="#mapa" className="text-white/90 hover:text-white transition-colors duration-200 font-medium">
-                  Mapa
-                </a>
-                <a href="#sobre" className="text-white/90 hover:text-white transition-colors duration-200 font-medium">
-                  Sobre
-                </a>
-              </nav>
+              <Navigation />
 
               <div className="flex items-center gap-3">
                 <a
