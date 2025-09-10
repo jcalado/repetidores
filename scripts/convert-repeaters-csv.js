@@ -7,8 +7,9 @@
   - Pretty CLI with colors and prompts (no external deps)
 */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { createInterface } from 'readline';
 
 // --- Simple color helpers (no deps) ---
 const colors = {
@@ -68,10 +69,6 @@ function parseCSV(text) {
 // --- Helpers for Portuguese numeric formats and DMS coordinates ---
 function cleanStr(s) {
   return (s ?? '').toString().trim().replace(/\s+/g, ' ');
-}
-
-function stripUnits(s) {
-  return s.replace(/[A-Za-zº°'"\s]/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
 function parsePtFloat(s) {
@@ -301,7 +298,7 @@ async function main() {
 
   // Prompt for confirmation
   await new Promise((resolve) => setTimeout(resolve, 50));
-  const rl = require('readline').createInterface({ input: process.stdin, output: process.stdout });
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
   rl.question(colors.bold(`\nReplace ${outPath} with ${mapped.length} entries? (y/N) `), (answer) => {
     const a = (answer || '').trim().toLowerCase();
     if (a !== 'y' && a !== 'yes') {

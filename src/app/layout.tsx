@@ -5,6 +5,7 @@ import "leaflet/dist/leaflet.css";
 import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
 import Navigation from "@/components/Navigation";
+import PWAInstall from "@/components/PWAInstall";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,6 +20,31 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Repetidores",
   description: "Explorar repetidores de rádio com mapa e filtros",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Repetidores",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "default",
+    "apple-mobile-web-app-title": "Repetidores",
+    "msapplication-TileColor": "#1e293b",
+    "msapplication-config": "/browserconfig.xml",
+  },
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#1e293b",
 };
 
 export default function RootLayout({
@@ -27,8 +53,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/icon-192.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <meta name="theme-color" content="#1e293b" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Repetidores" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="msapplication-TileColor" content="#1e293b" />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <PWAInstall />
         <div className="min-h-screen flex flex-col">
           <header className="relative overflow-hidden bg-ship-cove-900">
             {/* Background overlay */}

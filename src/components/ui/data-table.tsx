@@ -98,8 +98,9 @@ export function DataTable<TData, TValue>({
 
   const modulationOptions = React.useMemo(() => {
     const set = new Set<string>()
-      ; (data as any[]).forEach((d) => {
-        const v = d?.modulation
+      ; (data as unknown[]).forEach((d) => {
+        const item = d as Record<string, unknown>
+        const v = item?.modulation
         if (v && typeof v === "string") set.add(v)
       })
     return Array.from(set).sort()
@@ -150,7 +151,7 @@ export function DataTable<TData, TValue>({
           variant="outline"
           size="sm"
           onClick={() => {
-            const rows = table.getFilteredRowModel().rows.map((r) => r.original as any)
+            const rows = table.getFilteredRowModel().rows.map((r) => r.original as TData)
             // Build CHIRP CSV
             const header = [
               "Location",
@@ -208,11 +209,12 @@ export function DataTable<TData, TValue>({
 
             const lines = [header.join(",")]
             rows.forEach((row, idx) => {
-              const rx = row?.outputFrequency as number | undefined
-              const tx = row?.inputFrequency as number | undefined
-              const tone = row?.tone as number | undefined
-              const name = row?.callsign ?? ""
-              const comment = row?.qth_locator || row?.owner || ""
+              const item = row as Record<string, unknown>
+              const rx = item?.outputFrequency as number | undefined
+              const tx = item?.inputFrequency as number | undefined
+              const tone = item?.tone as number | undefined
+              const name = item?.callsign as string ?? ""
+              const comment = (item?.qth_locator as string) || (item?.owner as string) || ""
               const fields = [
                 String(idx + 1),
                 name,
@@ -224,7 +226,7 @@ export function DataTable<TData, TValue>({
                 fmtToneFreq(tone), // cToneFreq
                 "023",
                 "NN",
-                fmtMode(row?.modulation),
+                fmtMode(item?.modulation as string),
                 "", // TStep
                 "", // Skip
                 comment,
