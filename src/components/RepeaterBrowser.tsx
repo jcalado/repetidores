@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DataTable } from "@/components/ui/data-table"
+import { Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerTitle } from "@/components/ui/drawer"
+import RepeaterDetails from "@/components/RepeaterDetails"
 import MapClient from "@/components/MapClient"
 import { columns, type Repeater, getOwnerShort } from "@/app/columns"
 import type { ColumnFiltersState } from "@tanstack/react-table"
@@ -28,6 +30,8 @@ function getBandFromFrequency(mhz: number): string {
 
 export default function RepeaterBrowser({ data }: Props) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [open, setOpen] = React.useState(false)
+  const [selected, setSelected] = React.useState<Repeater | null>(null)
   const modulationOptions = React.useMemo(() => {
     const set = new Set<string>()
     data.forEach((d) => d.modulation && set.add(d.modulation))
@@ -78,6 +82,7 @@ export default function RepeaterBrowser({ data }: Props) {
   }, [data, columnFilters])
 
   return (
+    <>
     <Card className="w-full max-w-7xl">
       <CardHeader>
         <CardTitle>Repetidores</CardTitle>
@@ -95,6 +100,10 @@ export default function RepeaterBrowser({ data }: Props) {
               data={data}
               columnFilters={columnFilters}
               onColumnFiltersChange={setColumnFilters}
+              onRowClick={(row) => {
+                setSelected(row as Repeater)
+                setOpen(true)
+              }}
             />
           </TabsContent>
           <TabsContent value="map" className="h-[500px]">
@@ -200,5 +209,30 @@ export default function RepeaterBrowser({ data }: Props) {
         </Tabs>
       </CardContent>
     </Card>
+    <Drawer open={open} onOpenChange={setOpen}>
+      {open && (
+        <>
+          <DrawerOverlay onClick={() => setOpen(false)} />
+          <DrawerContent open={open} side="right">
+            <DrawerHeader>
+              <DrawerTitle>Repeater Details</DrawerTitle>
+            </DrawerHeader>
+            <DrawerBody>
+              {selected && <RepeaterDetails r={selected} />}
+            </DrawerBody>
+            <DrawerFooter>
+              <button
+                type="button"
+                className="inline-flex h-9 items-center justify-center rounded-md border bg-background px-3 text-sm shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+                onClick={() => setOpen(false)}
+              >
+                Close
+              </button>
+            </DrawerFooter>
+          </DrawerContent>
+        </>
+      )}
+    </Drawer>
+    </>
   )
 }

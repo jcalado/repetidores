@@ -51,6 +51,7 @@ interface DataTableProps<TData, TValue> {
   onFilteredDataChange?: (rows: TData[]) => void
   columnFilters?: ColumnFiltersState
   onColumnFiltersChange?: React.Dispatch<React.SetStateAction<ColumnFiltersState>>
+  onRowClick?: (row: TData) => void
 }
 
 export function DataTable<TData, TValue>({
@@ -59,6 +60,7 @@ export function DataTable<TData, TValue>({
   onFilteredDataChange,
   columnFilters: columnFiltersProp,
   onColumnFiltersChange,
+  onRowClick,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [internalColumnFilters, setInternalColumnFilters] =
@@ -355,6 +357,8 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className={onRowClick ? "cursor-pointer hover:bg-accent/40" : undefined}
+                  onClick={() => onRowClick?.(row.original as TData)}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
