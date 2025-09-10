@@ -2,6 +2,7 @@ import MobileMenu from "@/components/MobileMenu";
 import Navigation from "@/components/Navigation";
 import PWAInstall from "@/components/PWAInstall";
 import ThemeToggle from "@/components/ThemeToggle";
+import Footer from "@/components/Footer";
 import "leaflet/dist/leaflet.css";
 import { RadioTowerIcon } from "lucide-react";
 import type { Metadata } from "next";
@@ -79,6 +80,7 @@ export default async function RootLayout({
               </div>
             </header>
             <main>{children}</main>
+            <Footer />
             <PWAInstall />
           </div>
         </NextIntlClientProvider>

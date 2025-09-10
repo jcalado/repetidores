@@ -78,5 +78,10 @@
             "description": "Aprenda os fundamentos do radioamadorismo com a melhor escola online de Portugal. Cursos completos, material didático e um grupo no Telegram para apoio na comunicação por rádio.",
             "visit": "Visitar Radioescola.pt"
         }
+    },
+    "footer": {
+        "copyright": "Repetidores.pt - Todos os direitos reservados",
+        "about": "Sobre",
+        "github": "GitHub"
     }
 }
