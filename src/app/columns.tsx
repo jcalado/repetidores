@@ -80,13 +80,13 @@ export function useColumns(): ColumnDef<Repeater>[] {
       header: t("tone"),
       cell: ({ getValue }) => {
         const value = getValue() as number
-        return value?.toFixed(3) ?? ""
+        return value?.toFixed(1) ?? ""
       },
       filterFn: (row, id, value) => {
         if (!value) return true
         const numValue = row.getValue<number>(id)
         if (numValue == null) return false
-        const formattedValue = numValue.toFixed(3)
+        const formattedValue = numValue.toFixed(1)
         const rawValue = numValue.toString()
         return formattedValue.includes(value) || rawValue.includes(value)
       },
