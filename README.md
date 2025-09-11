@@ -1,4 +1,4 @@
-# Repetidores
+# Repetidores 🇵🇹
 
 Bem-vindo ao Repetidores! Este projeto oferece uma forma simples de navegar e explorar informações sobre repetidores de rádio. Quer seja um entusiasta de rádio ou apenas curioso, encontrará detalhes úteis e uma interface intuitiva para descobrir repetidores na sua área.
 
@@ -20,7 +20,7 @@ Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar
 Este projeto é open source e está disponível nos termos da sua licença.
 
 ---
-# Repetidores (EN)
+# Repetidores 🇬🇧
 
 Welcome to Repetidores! This project provides an easy way to browse and explore information about radio repeaters. Whether you're a radio enthusiast or just curious, you'll find useful details and a user-friendly interface to help you discover repeaters in your area.
 
