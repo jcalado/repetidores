@@ -1,6 +1,6 @@
+import { RadioTowerIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { RadioTowerIcon } from 'lucide-react';
 
 export default function Footer() {
   const t = useTranslations('footer');

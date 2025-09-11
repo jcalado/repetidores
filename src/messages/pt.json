@@ -18,7 +18,7 @@
         "export": "Exportar CHIRP"
     },
     "table": {
-        "visibleColumns": "Colunas visíveis",
+        "visibleColumns": "Colunas",
         "rowsPerPage": "Resultados por página:",
         "pageOf": "Página {current} de {total}",
         "noResults": "Nenhum resultado encontrado.",
@@ -50,11 +50,11 @@
         }
     },
     "about": {
-        "title": "Sobre o repetidores.pt",
+        "title": "Sobre o repetidores",
         "subtitle": "Explorando repetidores de radioamador em Portugal com uma interface moderna e intuitiva",
         "project": {
             "title": "O que é este projeto?",
-            "description": "Este projeto é uma evolução do antigo repetidores.pt, desenvolvido pelos radioamadores CT2ILS (Rui Shantilal) e CT1FIN (João Rodrigues). Embora partilhe o anterior endereço, em nada se relaciona com a antiga equipa, a quem desde já agradecemos!"
+            "description": "Este projeto é uma ferramenta para explorar repetidores de radioamador em Portugal. Os dados são públicos, recolhidos da ANACOM e apresentados de forma interativa, permitindo aos utilizadores filtrar e localizar repetidores com facilidade."
         },
         "github": "Ver Código no GitHub",
         "features": {
@@ -80,7 +80,7 @@
         }
     },
     "footer": {
-        "copyright": "Repetidores.pt - Todos os direitos reservados",
+        "copyright": "Repetidores - Um projeto de CR7BLE",
         "about": "Sobre",
         "github": "GitHub"
     }
