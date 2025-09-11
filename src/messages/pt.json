@@ -83,5 +83,11 @@
         "copyright": "Repetidores - Um projeto de CR7BLE",
         "about": "Sobre",
         "github": "GitHub"
+    },
+    "export": {
+        "modalTitle": "Exportar para CHIRP",
+        "modalDescription": "Está prestes a exportar {count} repetidores para um arquivo CSV compatível com CHIRP.",
+        "confirmButton": "Descarregar",
+        "cancelButton": "Cancelar"
     }
 }

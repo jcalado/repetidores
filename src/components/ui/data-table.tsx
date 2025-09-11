@@ -16,6 +16,16 @@ import {
 } from "@tanstack/react-table"
 import * as React from "react"
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Combobox } from "@/components/ui/combobox"
 import {
@@ -78,6 +88,8 @@ export function DataTable<TData, TValue>({
     pageSize: 10,
   })
 
+  const [showExportModal, setShowExportModal] = React.useState(false)
+
   const t = useTranslations()
 
   const table = useReactTable({
@@ -108,6 +120,13 @@ export function DataTable<TData, TValue>({
       })
     return Array.from(set).sort()
   }, [data])
+
+  /**
+   * Shows the export confirmation modal
+   */
+  const handleExportClick = () => {
+    setShowExportModal(true)
+  }
 
   /**
    * Exports the filtered rows from the data table to a CHIRP-compatible CSV file.
@@ -216,6 +235,9 @@ export function DataTable<TData, TValue>({
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
+
+    // Close the modal after export
+    setShowExportModal(false)
   }
 
   React.useEffect(() => {
@@ -234,9 +256,7 @@ export function DataTable<TData, TValue>({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => {
-            handleChirpExport()
-          }}
+          onClick={handleExportClick}
         >
           {t("filters.export")}
         </Button>
@@ -526,6 +546,26 @@ export function DataTable<TData, TValue>({
           </PaginationContent>
         </Pagination>
       </div>
+
+      {/* Export Confirmation Modal */}
+      <AlertDialog open={showExportModal} onOpenChange={setShowExportModal}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("export.modalTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("export.modalDescription", {
+                count: table.getFilteredRowModel().rows.length
+              })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("export.cancelButton")}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleChirpExport}>
+              {t("export.confirmButton")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
