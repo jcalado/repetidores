@@ -8,7 +8,7 @@ import {
   CardContent,
 } from "@/components/ui/card"
 import { DataTable } from "@/components/ui/data-table"
-import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerTitle } from "@/components/ui/drawer"
+import { Drawer, DrawerContent, DrawerFooter, DrawerOverlay } from "@/components/ui/drawer"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -219,9 +219,6 @@ export default function RepeaterBrowser({ data, activeTab = "table", onTabChange
           <>
             <DrawerOverlay onClick={() => setOpen(false)} />
             <DrawerContent>
-              <DrawerHeader>
-                <DrawerTitle>{t('repeater.details')}</DrawerTitle>
-              </DrawerHeader>
               <div className="p-4">
                 {selected && <RepeaterDetails r={selected} />}
               </div>

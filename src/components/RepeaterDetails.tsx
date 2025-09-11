@@ -1,8 +1,10 @@
 "use client";
 
-import * as React from "react";
 import { Repeater } from "@/app/columns";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
+import * as React from "react";
 
 function getBandFromFrequency(mhz: number): string {
   if (mhz >= 430 && mhz <= 450) return "70cm";
@@ -27,7 +29,7 @@ export default function RepeaterDetails({ r }: { r: Repeater }) {
   const { sign, offset } = duplex(r.outputFrequency, r.inputFrequency);
 
   const mapsUrl = `https://www.google.com/maps?q=${encodeURIComponent(r.latitude + "," + r.longitude)}`;
-
+  const t = useTranslations("repeater");
   return (
     <div className="space-y-4">
       <div className="flex items-start justify-between gap-3">
@@ -47,23 +49,20 @@ export default function RepeaterDetails({ r }: { r: Repeater }) {
             )}
           </div>
         </div>
-        <a
-          href={mapsUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex h-9 items-center justify-center rounded-md border bg-background px-3 text-sm shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-        >
-          Open in Maps
-        </a>
+        <Button asChild>
+          <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
+            {t("maps")}
+          </a>
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <InfoCard label="Output" value={fmtFreq(r.outputFrequency)} />
-        <InfoCard label="Input" value={fmtFreq(r.inputFrequency)} />
-        <InfoCard label="Offset" value={`${sign}${sign ? " " : ""}${offset}`} />
-        <InfoCard label="Tone" value={r.tone ? `${Number(r.tone.toFixed(1))} Hz` : "None"} />
-        <InfoCard label="Owner" value={r.owner || "–"} className="sm:col-span-2" />
-        <InfoCard label="Coordinates" value={`${r.latitude?.toFixed(5)}, ${r.longitude?.toFixed(5)}`} className="sm:col-span-2" />
+        <InfoCard label={t("output")} value={fmtFreq(r.outputFrequency)} />
+        <InfoCard label={t("input")} value={fmtFreq(r.inputFrequency)} />
+        <InfoCard label={t("offset")} value={`${sign}${sign ? " " : ""}${offset}`} />
+        <InfoCard label={t("tone")} value={r.tone ? `${Number(r.tone.toFixed(1))} Hz` : "None"} />
+        <InfoCard label={t("owner")} value={r.owner || "–"} className="sm:col-span-2" />
+        <InfoCard label={t("coordinates")} value={`${r.latitude?.toFixed(5)}, ${r.longitude?.toFixed(5)}`} className="sm:col-span-2" />
       </div>
     </div>
   );

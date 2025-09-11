@@ -36,8 +36,15 @@
         }
     },
     "repeater": {
-        "details": "Repeater Details",
-        "close": "Close"
+        "details": "Detalhes do Repetidor",
+        "close": "Fechar",
+        "maps": "Abrir no Maps",
+        "output": "Freq. Saída",
+        "input": "Freq. Entrada",
+        "offset": "Offset",
+        "tone": "Tom",
+        "owner": "Proprietário",
+        "coordinates": "Coordenadas"
     },
     "metadata": {
         "title": "Repetidores",
