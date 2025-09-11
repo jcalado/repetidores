@@ -7,7 +7,6 @@ const nextConfig = {
   trailingSlash: true,
   images: { unoptimized: true },
   basePath: '/repetidores',
-  outputFileTracingRoot: __dirname,
   /* config options here */
 };
 
