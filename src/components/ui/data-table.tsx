@@ -109,6 +109,115 @@ export function DataTable<TData, TValue>({
     return Array.from(set).sort()
   }, [data])
 
+  /**
+   * Exports the filtered rows from the data table to a CHIRP-compatible CSV file.
+   * 
+   * This function retrieves the filtered rows from the table, formats them according to
+   * the CHIRP CSV specification with predefined headers (Location, Name, Frequency, etc.),
+   * and generates a downloadable CSV file named "repeaters-chirp.csv". It handles data
+   * formatting for frequencies, duplex, offsets, tones, and modes, escaping CSV values
+   * as needed. The file is created as a Blob and downloaded via a temporary anchor element.
+   * 
+   * @returns {void} This function does not return a value; it triggers a file download.
+   */
+  const handleChirpExport = () => {
+    const rows = table.getFilteredRowModel().rows.map((r) => r.original as TData)
+    // Build CHIRP CSV
+    const header = [
+      "Location",
+      "Name",
+      "Frequency",
+      "Duplex",
+      "Offset",
+      "Tone",
+      "rToneFreq",
+      "cToneFreq",
+      "DtcsCode",
+      "DtcsPolarity",
+      "Mode",
+      "TStep",
+      "Skip",
+      "Comment",
+      "URCALL",
+      "RPT1CALL",
+      "RPT2CALL",
+    ]
+
+    const csvEscape = (val: string) => {
+      if (val == null) return ""
+      const s = String(val)
+      if (s.includes(",") || s.includes("\"") || s.includes("\n")) {
+        return '"' + s.replace(/"/g, '""') + '"'
+      }
+      return s
+    }
+
+    const fmtFreq = (n: number | undefined) =>
+      typeof n === "number" && Number.isFinite(n) ? n.toFixed(6) : ""
+
+    const fmtOffset = (rx: number | undefined, tx: number | undefined) => {
+      if (typeof rx !== "number" || typeof tx !== "number") return ""
+      return Math.abs(tx - rx).toFixed(6)
+    }
+
+    const getDuplex = (rx: number | undefined, tx: number | undefined) => {
+      if (typeof rx !== "number" || typeof tx !== "number") return ""
+      if (tx > rx) return "+"
+      if (tx < rx) return "-"
+      return ""
+    }
+
+    const fmtToneFreq = (n: number | undefined) =>
+      typeof n === "number" && n > 0 ? Number(n.toFixed(1)).toString() : ""
+
+    const fmtMode = (m: string | undefined) => {
+      if (!m) return "FM"
+      const up = m.toUpperCase()
+      if (["FM", "NFM", "AM"].includes(up)) return up
+      return "FM"
+    }
+
+    const lines = [header.join(",")]
+    rows.forEach((row, idx) => {
+      const item = row as Record<string, unknown>
+      const rx = item?.outputFrequency as number | undefined
+      const tx = item?.inputFrequency as number | undefined
+      const tone = item?.tone as number | undefined
+      const name = item?.callsign as string ?? ""
+      const comment = (item?.qth_locator as string) || (item?.owner as string) || ""
+      const fields = [
+        String(idx + 1),
+        name,
+        fmtFreq(rx),
+        getDuplex(rx, tx),
+        fmtOffset(rx, tx),
+        tone && tone > 0 ? "Tone" : "",
+        "", // rToneFreq (only for TSQL)
+        fmtToneFreq(tone), // cToneFreq
+        "023",
+        "NN",
+        fmtMode(item?.modulation as string),
+        "", // TStep
+        "", // Skip
+        comment,
+        "", // URCALL
+        "", // RPT1CALL
+        "", // RPT2CALL
+      ].map(csvEscape)
+      lines.push(fields.join(","))
+    })
+
+    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = "repetidores.csv"
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
   React.useEffect(() => {
     if (!onFilteredDataChange) return
     const rows = table.getFilteredRowModel().rows.map((r) => r.original as TData)
@@ -126,101 +235,7 @@ export function DataTable<TData, TValue>({
           variant="outline"
           size="sm"
           onClick={() => {
-            const rows = table.getFilteredRowModel().rows.map((r) => r.original as TData)
-            // Build CHIRP CSV
-            const header = [
-              "Location",
-              "Name",
-              "Frequency",
-              "Duplex",
-              "Offset",
-              "Tone",
-              "rToneFreq",
-              "cToneFreq",
-              "DtcsCode",
-              "DtcsPolarity",
-              "Mode",
-              "TStep",
-              "Skip",
-              "Comment",
-              "URCALL",
-              "RPT1CALL",
-              "RPT2CALL",
-            ]
-
-            const csvEscape = (val: string) => {
-              if (val == null) return ""
-              const s = String(val)
-              if (s.includes(",") || s.includes("\"") || s.includes("\n")) {
-                return '"' + s.replace(/"/g, '""') + '"'
-              }
-              return s
-            }
-
-            const fmtFreq = (n: number | undefined) =>
-              typeof n === "number" && Number.isFinite(n) ? n.toFixed(6) : ""
-
-            const fmtOffset = (rx: number | undefined, tx: number | undefined) => {
-              if (typeof rx !== "number" || typeof tx !== "number") return ""
-              return Math.abs(tx - rx).toFixed(6)
-            }
-
-            const getDuplex = (rx: number | undefined, tx: number | undefined) => {
-              if (typeof rx !== "number" || typeof tx !== "number") return ""
-              if (tx > rx) return "+"
-              if (tx < rx) return "-"
-              return ""
-            }
-
-            const fmtToneFreq = (n: number | undefined) =>
-              typeof n === "number" && n > 0 ? Number(n.toFixed(1)).toString() : ""
-
-            const fmtMode = (m: string | undefined) => {
-              if (!m) return "FM"
-              const up = m.toUpperCase()
-              if (["FM", "NFM", "AM"].includes(up)) return up
-              return "FM"
-            }
-
-            const lines = [header.join(",")]
-            rows.forEach((row, idx) => {
-              const item = row as Record<string, unknown>
-              const rx = item?.outputFrequency as number | undefined
-              const tx = item?.inputFrequency as number | undefined
-              const tone = item?.tone as number | undefined
-              const name = item?.callsign as string ?? ""
-              const comment = (item?.qth_locator as string) || (item?.owner as string) || ""
-              const fields = [
-                String(idx + 1),
-                name,
-                fmtFreq(rx),
-                getDuplex(rx, tx),
-                fmtOffset(rx, tx),
-                tone && tone > 0 ? "Tone" : "",
-                "", // rToneFreq (only for TSQL)
-                fmtToneFreq(tone), // cToneFreq
-                "023",
-                "NN",
-                fmtMode(item?.modulation as string),
-                "", // TStep
-                "", // Skip
-                comment,
-                "", // URCALL
-                "", // RPT1CALL
-                "", // RPT2CALL
-              ].map(csvEscape)
-              lines.push(fields.join(","))
-            })
-
-            const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" })
-            const url = URL.createObjectURL(blob)
-            const a = document.createElement("a")
-            a.href = url
-            a.download = "repeaters-chirp.csv"
-            document.body.appendChild(a)
-            a.click()
-            document.body.removeChild(a)
-            URL.revokeObjectURL(url)
+            handleChirpExport()
           }}
         >
           {t("filters.export")}
