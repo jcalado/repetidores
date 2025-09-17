@@ -6,7 +6,7 @@ const nextConfig = {
   output: 'export',
   trailingSlash: true,
   images: { unoptimized: true },
-  /* config options here */
+  basePath: '/repetidores'
 };
 
 export default withNextIntl(nextConfig);
