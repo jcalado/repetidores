@@ -1,0 +1,553 @@
+Entidade Titular,Área Geográfica,Tipo de Estação,Indicativo de Chamada,Faixas de Frequência,Frequência de Emissão,Frequência de Receção,Canal,Tom de proteção,Local da Estação,Latitude,Longitude
+ARSUL - Associação de Radioamadores do Sul,Portugal Continental,Estação repetidora de modulação analógica,CQ0UBLA,"430 - 440 MHz
+","439,1250 MHz
+","431,5250 MHz
+",RU730,"131,8 Hz",IM57RE,"37º 10' 20"" ,600 N","08º 33' 41"" ,920 W"
+ARSUL - Associação de Radioamadores do Sul,Portugal Continental,Estação repetidora de modulação analógica,CQ0UMAR,"430 - 440 MHz
+","438,8250 MHz
+","431,2250 MHz
+",RU706,"131,8 Hz",IM57QH,"37º 18' 54"" ,700 N","08º 35' 20"" ,100 W"
+Associação Amigos da Rádio do Norte,Portugal Continental,Estação repetidora de modulação analógica,CQ0VAL,"144 - 146 MHz
+","145,7375 MHz
+","145,1375 MHz
+",RV59,67 Hz,IN51VT,"41º 48' 47"" ,280 N","08º 11' 39"" ,290 W"
+Associação Amigos da Rádio do Norte,Portugal Continental,Estação repetidora de modulação analógica,CQ0VAN,"144 - 146 MHz
+","145,7125 MHz
+","145,1125 MHz
+",RV57,123 Hz,IN61NR,"41º 42' 56"" ,000 N","06º 51' 24"" ,000 W"
+Associação de Radioamadores Marienses,R.A. Açores,Estação repetidora de modulação analógica,CQ1VPA,"144 - 146 MHz
+","145,6000 MHz
+","145,0000 MHz
+",RV48,"88,5 Hz",HM76KX,"36º 58' 58"" ,312 N","25º 05' 26"" ,677 W"
+Associação de Radioamadores Marienses,R.A. Açores,Estação repetidora de modulação analógica,CQ1UPA,"430 - 440 MHz
+","438,6500 MHz
+","431,0500 MHz
+",RU692,"88,5 Hz",HM76KX,"36º 58' 58"" ,312 N","25º 05' 26"" ,677 W"
+Associação de Radioamadores da Beira Alta,Portugal Continental,Estação repetidora de modulação analógica,CQ0UES,"430 - 440 MHz
+","439,0500 MHz
+","431,4500 MHz
+",RU724,"114,8 Hz",IN60EH,"40º 19' 17"" ,300 N","07º 36' 51"" ,830 W"
+Associação de Radioamadores da Beira Alta,Portugal Continental,Estação repetidora de modulação analógica,CQ0VBA,"144 - 146 MHz
+","145,7625 MHz
+","145,1625 MHz
+",RV61,"131,8 Hz",IN51TE,"41º 12' 00"" ,600 N","08º 23' 25"" ,400 W"
+Associação de Radioamadores da Beira Alta,Portugal Continental,Estação repetidora de modulação analógica,CQ0VMA,"144 - 146 MHz
+","145,6500 MHz
+","145,0500 MHz
+",RV52,123 Hz,IN61BF,"41º 14' 53"" ,560 N","07º 53' 11"" ,360 W"
+Associação de Radioamadores da Beira Alta,Portugal Continental,Estação repetidora de modulação analógica,CQ0UBA,"430 - 440 MHz
+","439,2750 MHz
+","431,6750 MHz
+",RU742,123 Hz,IN51TE,"41º 12' 00"" ,600 N","08º 23' 25"" ,400 W"
+Associação de Radioamadores da Beira Alta,Portugal Continental,Estação repetidora de modulação analógica,CQ0USJ,"430 - 440 MHz
+","439,1250 MHz
+","431,5250 MHz
+",RU730,123 Hz,IN51se,"41º 10' 33"" ,200 N","08º 29' 46"" ,900 W"
+Associação de Radioamadores da Beira Alta,Portugal Continental,Estação repetidora de modulação analógica,CQ0USE,"430 - 440 MHz
+","438,8250 MHz
+","431,2250 MHz
+",RU706,"114,8 Hz",IN60EH,"40º 19' 17"" ,300 N","07º 36' 51"" ,830 W"
+Associação de Radioamadores da Beira Alta,Portugal Continental,Estação repetidora de modulação analógica,CQ0USDV,"430 - 440 MHz
+","438,9000 MHz
+","431,3000 MHz
+",RU712,"74,4 Hz",IM59IB,"39º 03' 45"" ,000 N","09º 15' 58"" ,000 W"
+Associação de Radioamadores da Beira Alta,Portugal Continental,Estação repetidora de modulação analógica,CQ0UMU,"430 - 440 MHz
+","438,9750 MHz
+","431,3750 MHz
+",RU718,"114,8 Hz",IN60AQ,"40º 41' 54"" ,400 N","07º 55' 16"" ,000 W"
+Associação de Radioamadores da Beira Alta,Portugal Continental,Estação repetidora de modulação analógica,CQ0VAR,"144 - 146 MHz
+","145,7250 MHz
+","145,1250 MHz
+",RV58,"114,8 Hz",IN50TS,"40º 46' 55"" ,550 N","08º 21' 24"" ,900 W"
+Associação de Radioamadores da Beira Alta,Portugal Continental,Estação repetidora de modulação analógica,CQ0VSE,"144 - 146 MHz
+","145,6000 MHz
+","145,0000 MHz
+",RV48,"114,8 Hz",IN60EH,"40º 19' 17"" ,300 N","07º 36' 51"" ,830 W"
+Associação de Radioamadores da Beira Alta,Portugal Continental,Estação repetidora de modulação analógica,CQ0VCO,"144 - 146 MHz
+","145,6875 MHz
+","145,0875 MHz
+",RV55,123 Hz,IN60BT,"40º 48' 35"" ,550 N","07º 50' 23"" ,350 W"
+Associação de Radioamadores da Beira Baixa,Portugal Continental,Estação repetidora de modulação analógica,CQ0UG,"430 - 440 MHz
+","439,1000 MHz
+","431,5000 MHz
+",RU728,"82,5 Hz",IN60FB,"40º 04' 49"" ,580 N","07º 31' 31"" ,900 W"
+Associação de Radioamadores da Beira Baixa,Portugal Continental,Estação repetidora de modulação analógica,CQ0VG,"144 - 146 MHz
+","145,6375 MHz
+","145,0375 MHz
+",RV51,"114,8 Hz",IN60FB,"40º 04' 49"" ,580 N","07º 31' 31"" ,900 W"
+Associação de Radioamadores da Beira Litoral,Portugal Continental,Estação repetidora de modulação analógica,CQ0URBL,"430 - 440 MHz
+","438,8750 MHz
+","431,2750 MHz
+",RU710,123 Hz,IN50ST,"40º 48' 20"" ,400 N","08º 27' 48"" ,100 W"
+Associação de Radioamadores da Beira Litoral,Portugal Continental,Estação repetidora de modulação analógica,CQ0UOAZ,"430 - 440 MHz
+","439,4000 MHz
+","431,8000 MHz
+",RU752,123 Hz,IN50ST,"40º 48' 20"" ,400 N","08º 27' 48"" ,100 W"
+Associação de Radioamadores da Costa de Prata,Portugal Continental,Estação repetidora de modulação analógica,CQ0VCP,"144 - 146 MHz
+","145,6625 MHz
+","145,0625 MHz
+",RV53,"82,5 Hz",IN50NE,"40º 11' 31"" ,330 N","08º 50' 27"" ,600 W"
+Associação de Radioamadores da Costa de Prata,Portugal Continental,Estação repetidora de modulação analógica,CQ0UCA,"430 - 440 MHz
+","438,7000 MHz
+","431,1000 MHz
+",RU696,"131,8 Hz",IN50TI,"40º 22' 11"" ,046 N","08º 21' 46"" ,839 W"
+Associação de Radioamadores da Costa de Prata,Portugal Continental,Estação repetidora de modulação analógica,CQ0UCP,"430 - 440 MHz
+","438,9000 MHz
+","431,3000 MHz
+",RU712,"82,5 Hz",IN50NE,"40º 11' 31"" ,330 N","08º 50' 27"" ,600 W"
+Associação de Radioamadores da Linha de Cascais,Portugal Continental,Estação repetidora de modulação analógica,CQ0UCSC,"430 - 440 MHz
+","438,7250 MHz
+","431,1250 MHz
+",RU698,"74,4 Hz",IF51HG,"38º 43' 49"" ,140 N","09º 24' 34"" ,720 W"
+Associação de Radioamadores da Linha de Cascais,Portugal Continental,Estação repetidora de modulação analógica,CQ0UCAS,"430 - 440 MHz
+","439,2750 MHz
+","431,6750 MHz
+",RU742,"74,4 Hz",IM58GS,"38º 46' 06"" ,590 N","09º 27' 38"" ,020 W"
+Associação de Radioamadores da Região de Lisboa,Portugal Continental,Estação repetidora de modulação analógica,CQ0VDLX,"144 - 146 MHz
+","145,7750 MHz
+","145,1750 MHz
+",RV62,"74,4 Hz",IM58JS,"38º 46' 37"" ,390 N","09º 14' 40"" ,290 W"
+Associação de Radioamadores da Região de Lisboa,Portugal Continental,Estação repetidora de modulação analógica,CQ0UDA,"430 - 440 MHz
+","438,9000 MHz
+","431,3000 MHz
+",RU712,"114,8 Hz",IM68AN,"38º 34' 51"" ,450 N","07º 56' 17"" ,980 W"
+Associação de Radioamadores da Região de Lisboa,Portugal Continental,Estação repetidora de modulação analógica,CQ0UDE,"430 - 440 MHz
+","439,2000 MHz
+","431,6000 MHz
+",RU736,"114,8 Hz",IN60FH,"40º 18' 46"" ,890 N","07º 32' 58"" ,760 W"
+Associação de Radioamadores da Região de Lisboa,Portugal Continental,Estação repetidora de modulação analógica,CQ0UFLX,"430 - 440 MHz
+","439,1000 MHz
+","431,5000 MHz
+",RU728,"74,4 Hz",IM58JP,"38º 37' 54"" ,670 N","09º 11' 53"" ,310 W"
+Associação de Radioamadores da Vila de Moscavide,Portugal Continental,Estação repetidora de modulação analógica,CQ0URVM,"430 - 440 MHz
+","439,3250 MHz
+","431,7250 MHz
+",RU746,"74,4 Hz",IM58KV,"38º 53' 35"" ,550 N","09º 06' 39"" ,050 W"
+Associação de Radioamadores de Coimbra,Portugal Continental,Estação repetidora de modulação analógica,CQ0UCOI,"430 - 440 MHz
+","439,1500 MHz
+","431,5500 MHz
+",RU732,"131,8 Hz",IN50SE,"40º 12' 01"" ,850 N","08º 26' 43"" ,870 W"
+Associação de Radioamadores de Coimbra,Portugal Continental,Estação repetidora de modulação analógica,CQ0UARC,"430 - 440 MHz
+","438,7750 MHz
+","431,1750 MHz
+",RU702,"131,8 Hz",IN50SE,"40º 12' 00"" ,200 N","08º 26' 43"" ,600 W"
+Associação de Radioamadores do Alto Minho,Portugal Continental,Estação repetidora de modulação analógica,CQ0VSA,"144 - 146 MHz
+","145,6250 MHz
+","145,0250 MHz
+",RV50,123 Hz,IN51PT,"41º 48' 18"" ,600 N","08º 41' 51"" ,000 W"
+Associação de Radioamadores do Alto Minho,Portugal Continental,Estação repetidora de modulação analógica,CQ0UFV,"430 - 440 MHz
+","439,4000 MHz
+","431,8000 MHz
+",RU752,"114,8 Hz",IN52qa,"42º 01' 19"" ,300 N","08º 35' 35"" ,600 W"
+Associação de Radioamadores do Alto Minho,Portugal Continental,Estação repetidora de modulação analógica,CQ0USA,"430 - 440 MHz
+","438,6500 MHz
+","431,0500 MHz
+",RU692,67 Hz,IN51PT,"41º 48' 18"" ,600 N","08º 41' 51"" ,000 W"
+Associação de Radioamadores do Alto Minho,Portugal Continental,Estação repetidora de modulação analógica,CQ0UAV,"430 - 440 MHz
+","439,3250 MHz
+","431,7250 MHz
+",RU746,67 Hz,IN51UW,"41º 58' 40"" ,000 N","08º 25' 15"" ,000 W"
+Associação de Radioamadores do Alto Tâmega,Portugal Continental,Estação repetidora de modulação analógica,CQ0UAT,"430 - 440 MHz
+","438,6750 MHz
+","431,0750 MHz
+",RU694,67 Hz,IN61HU,"41º 50' 38"" ,660 N","07º 20' 07"" ,580 W"
+Associação de Radioamadores do Alto Tâmega,Portugal Continental,Estação repetidora de modulação analógica,CQ0UMR,"430 - 440 MHz
+","439,1500 MHz
+","431,5500 MHz
+",RU732,123 Hz,IN61BF,"41º 14' 53"" ,160 N","07º 53' 09"" ,450 W"
+Associação de Radioamadores do Alto Tâmega,Portugal Continental,Estação repetidora de modulação analógica,CQ0VMI,"144 - 146 MHz
+","145,7750 MHz
+","145,1750 MHz
+",RV62,123 Hz,IN61DN,"41º 32' 57"" ,400 N","07º 41' 18"" ,700 W"
+Associação de Radioamadores do Alto Tâmega,Portugal Continental,Estação repetidora de modulação analógica,CQ0VPD,"144 - 146 MHz
+","145,6750 MHz
+","145,0750 MHz
+",RV54,123 Hz,IN61FN,"41º 33' 41"" ,060 N","07º 31' 01"" ,050 W"
+Associação de Radioamadores do Distrito de Leiria,Portugal Continental,Estação repetidora de modulação analógica,CQ0UPM,"430 - 440 MHz
+","439,0250 MHz
+","431,4250 MHz
+",RU722,"131,8 Hz",IM59NN,"39º 32' 57"" ,700 N","08º 52' 00"" ,000 W"
+Associação de Radioamadores do Distrito de Leiria,Portugal Continental,Estação repetidora de modulação analógica,CQ0VCD,"144 - 146 MHz
+","145,6125 MHz
+","145,0125 MHz
+",RV49,"74,4 Hz",IM59NN,"39º 32' 57"" ,810 N","08º 52' 02"" ,320 W"
+Associação de Radioamadores do Distrito de Leiria,Portugal Continental,Estação repetidora de modulação analógica,CQ0UMT,"430 - 440 MHz
+","438,6500 MHz
+","431,0500 MHz
+",RU692,"114,8 Hz",IM67BL,"37º 29' 35"" ,450 N","07º 53' 58"" ,730 W"
+Associação de Radioamadores do Distrito de Leiria,Portugal Continental,Estação repetidora de modulação analógica,CQ0UCD,"430 - 440 MHz
+","438,7250 MHz
+","431,1250 MHz
+",RU698,"131,8 Hz",IM59NN,"39º 32' 57"" ,810 N","08º 52' 02"" ,320 W"
+Associação de Radioamadores do Distrito de Leiria,Portugal Continental,Estação repetidora de modulação analógica,CQ0ULR,"430 - 440 MHz
+","439,2500 MHz
+","431,6500 MHz
+",RU740,"131,8 Hz",IM59NN,"39º 32' 57"" ,610 N","08º 52' 00"" ,100 W"
+Associação de Radioamadores do Distrito de Leiria,Portugal Continental,Estação repetidora de modulação analógica,CQ0UAB,"430 - 440 MHz
+","438,8000 MHz
+","431,2000 MHz
+",RU704,"131,8 Hz",IM59RP,"39º 38' 39"" ,350 N","08º 31' 20"" ,150 W"
+Associação de Radioamadores do Distrito de Leiria,Portugal Continental,Estação repetidora de modulação analógica,CQ0UTRZ,"430 - 440 MHz
+","439,1750 MHz
+","431,5750 MHz
+",RU734,123 Hz,IN50TT,"40º 48' 08"" ,930 N","08º 22' 10"" ,098 W"
+Associação de Radioamadores do Litoral Alentejano,Portugal Continental,Estação repetidora de modulação analógica,CQ0VARB,"144 - 146 MHz
+","145,7375 MHz
+","145,1375 MHz
+",RV59,"74,4 Hz",IM58ML,"38º 29' 33"" ,410 N","08º 57' 43"" ,390 W"
+Associação de Radioamadores do Litoral Alentejano,Portugal Continental,Estação repetidora de modulação analógica,CQ0VSTC,"144 - 146 MHz
+","145,7000 MHz
+","145,1000 MHz
+",RV56,"74,4 Hz",IM57PX,"37º 59' 19"" ,630 N","08º 41' 31"" ,890 W"
+Associação de Radioamadores do Litoral Alentejano,Portugal Continental,Estação repetidora de modulação analógica,CQ0UARB,"430 - 440 MHz
+","439,4000 MHz
+","431,8000 MHz
+",RU752,"74,4 Hz",IM58ML,"38º 29' 33"" ,410 N","08º 57' 43"" ,390 W"
+Associação de Radioamadores do Litoral Alentejano,Portugal Continental,Estação repetidora de modulação analógica,CQ0USTC,"430 - 440 MHz
+","438,9250 MHz
+","431,3250 MHz
+",RU714,"82,5 Hz",IM57PX,"37º 59' 19"" ,630 N","08º 41' 31"" ,890 W"
+Associação de Radioamadores do Minho,Portugal Continental,Estação repetidora de modulação analógica,CQ0UGMR,"430 - 440 MHz
+","439,1000 MHz
+","431,5000 MHz
+",RU728,67 Hz,IN51UK,"41º 25' 43"" ,000 N","08º 16' 08"" ,000 W"
+Associação de Radioamadores do Minho,Portugal Continental,Estação repetidora de modulação analógica,CQ0UBRG,"430 - 440 MHz
+","438,8000 MHz
+","431,2000 MHz
+",RU704,67 Hz,IN51TM,"41º 30' 52"" ,700 N","08º 23' 42"" ,040 W"
+Associação de Radioamadores do Minho,Portugal Continental,Estação repetidora de modulação analógica,CQ0UAST,"430 - 440 MHz
+","439,2000 MHz
+","431,6000 MHz
+",RU736,123 Hz,IN51SH,"41º 19' 31"" ,150 N","08º 26' 51"" ,630 W"
+Associação de Radioamadores do Minho,Portugal Continental,Estação repetidora de modulação analógica,CQ0VBRG,"144 - 146 MHz
+","145,7000 MHz
+","145,1000 MHz
+",RV56,123 Hz,IN51TM,"41º 30' 52"" ,700 N","08º 23' 42"" ,040 W"
+Associação de Radioamadores do Minho,Portugal Continental,Estação repetidora de modulação analógica,CQ0UPRT,"430 - 440 MHz
+","439,4250 MHz
+","431,8250 MHz
+",RU754,123 Hz,IN51QC,"41º 06' 32"" ,200 N","08º 35' 25"" ,000 W"
+Associação de Radioamadores do Minho,Portugal Continental,Estação repetidora de modulação analógica,CQ0UCVM,"430 - 440 MHz
+","439,0250 MHz
+","431,4250 MHz
+",RU722,67 Hz,IN51XP,"41º 38' 20"" ,200 N","08º 02' 37"" ,100 W"
+Associação de Radioamadores do Oeste,Portugal Continental,Estação repetidora de modulação analógica,CQ0VVAR,"144 - 146 MHz
+","145,6375 MHz
+","145,0375 MHz
+",RV51,"74,4 Hz",IM59IC,"39º 05' 10"" ,450 N","09º 16' 34"" ,360 W"
+Associação de Radioamadores do Oeste,Portugal Continental,Estação repetidora de modulação analógica,CQ0UVAR,"430 - 440 MHz
+","438,7500 MHz
+","431,1500 MHz
+",RU700,"74,4 Hz",IM59IC,"39º 05' 10"" ,450 N","09º 16' 34"" ,360 W"
+Associação de Radioamadores do Ribatejo,Portugal Continental,Estação repetidora de modulação analógica,CQ0UMO,"430 - 440 MHz
+","438,9750 MHz
+","431,3750 MHz
+",RU718,"74,4 Hz",IM59LE,"39º 10' 29"" ,420 N","09º 03' 36"" ,620 W"
+Associação de Radioamadores do Ribatejo,Portugal Continental,Estação repetidora de modulação analógica,CQ0USO,"430 - 440 MHz
+","438,9500 MHz
+","431,3500 MHz
+",RU716,67 Hz,IM68ER,"38º 44' 20"" ,750 N","07º 35' 01"" ,310 W"
+Associação de Radioamadores do Ribatejo,Portugal Continental,Estação repetidora de modulação analógica,CQ0USR,"430 - 440 MHz
+","439,0750 MHz
+","431,4750 MHz
+",RU726,"74,4 Hz",IM59PF,"39º 14' 11"" ,320 N","08º 40' 49"" ,710 W"
+Associação de Radioamadores do Ribatejo,Portugal Continental,Estação repetidora de modulação analógica,CQ0VMO,"144 - 146 MHz
+","145,7500 MHz
+","145,1500 MHz
+",RV60,"74,4 Hz",IM59LE,"39º 10' 29"" ,420 N","09º 03' 36"" ,620 W"
+Associação de Radioamadores do Ribatejo,Portugal Continental,Estação repetidora de modulação analógica,CQ0UTR,"430 - 440 MHz
+","439,1750 MHz
+","431,5750 MHz
+",RU734,"131,8 Hz",IM59UO,"39º 36' 38"" ,810 N","08º 18' 47"" ,210 W"
+Associação de Radioamadores dos Açores,R.A. Açores,Estação repetidora de modulação analógica,CQ1VB,"144 - 146 MHz
+","145,6250 MHz
+","145,0250 MHz
+",RV50,"88,5 Hz",HM77GS,"37º 45' 41"" ,891 N","25º 29' 35"" ,476 W"
+Associação de Radioamadores dos Açores,R.A. Açores,Estação repetidora de modulação analógica,CQ1USC,"430 - 440 MHz
+","438,7750 MHz
+","431,1750 MHz
+",RU702,"88,5 Hz",HM77CT,"37º 49' 09"" ,060 N","25º 45' 05"" ,430 W"
+Associação de Radioamadores dos Açores,R.A. Açores,Estação repetidora de modulação analógica,CQ1VSC,"144 - 146 MHz
+","145,7750 MHz
+","145,1750 MHz
+",RV62,"88,5 Hz",HM77CT,"37º 49' 09"" ,060 N","25º 45' 05"" ,430 W"
+Associação de Radioamadores dos Açores,R.A. Açores,Estação repetidora de modulação analógica,CQ1UPB,"430 - 440 MHz
+","438,7500 MHz
+","431,1500 MHz
+",RU700,"88,5 Hz",HM77JS,"37º 46' 42"" ,142 N","25º 10' 35"" ,476 W"
+Associação de Radioamadores dos Açores,R.A. Açores,Estação repetidora de modulação analógica,CQ1VPB,"144 - 146 MHz
+","145,7500 MHz
+","145,1500 MHz
+",RV60,"88,5 Hz",HM77JS,"37º 46' 42"" ,142 N","25º 10' 35"" ,476 W"
+Associação de Radioamadores dos Açores,R.A. Açores,Estação repetidora de modulação analógica,CQ1UPDL,"430 - 440 MHz
+","438,9000 MHz
+","431,3000 MHz
+",RU712,"88,5 Hz",HM77ER,"37º 44' 33"" ,323 N","25º 39' 16"" ,436 W"
+Associação de Radioamadores dos Açores,R.A. Açores,Estação repetidora de modulação analógica,CQ1UB,"430 - 440 MHz
+","438,8250 MHz
+","431,2250 MHz
+",RU706,"88,5 Hz",HM77GS,"37º 45' 41"" ,891 N","25º 29' 35"" ,476 W"
+Associação de Radioamadores entre Tâmega e Douro,Portugal Continental,Estação repetidora de modulação analógica,CQ0URTD,"430 - 440 MHz
+","438,7000 MHz
+","431,1000 MHz
+",RU696,123 Hz,IN51XF,"41º 13' 23"" ,260 N","08º 01' 32"" ,260 W"
+Associação dos Radioamadores da Praia da Vitória,R.A. Açores,Estação repetidora de modulação analógica,CQ1VSS,"144 - 146 MHz
+","145,6625 MHz
+","145,0625 MHz
+",RV53,"82,5 Hz",HM68LR,"38º 44' 01"" ,510 N","27º 03' 14"" ,240 W"
+Azores DX Group,R.A. Açores,Estação repetidora de modulação analógica,CQ1UDX,"430 - 440 MHz
+","438,6750 MHz
+","431,0750 MHz
+",RU694,67 Hz,HM68IR,"38º 43' 47"" ,720 N","27º 19' 05"" ,100 W"
+Azores DX Group,R.A. Açores,Estação repetidora de modulação analógica,CQ1VDX,"144 - 146 MHz
+","145,7375 MHz
+","145,1375 MHz
+",RV59,"114,8 Hz",HM68IR,"38º 43' 47"" ,720 N","27º 19' 05"" ,100 W"
+Azores DX Team,R.A. Açores,Estação repetidora de modulação analógica,CQ1UF,"430 - 440 MHz
+","438,8000 MHz
+","431,2000 MHz
+",RU704,123 Hz,HM58PN,"38º 34' 32"" ,000 N","28º 42' 46"" ,000 W"
+Clube de Radioamadores do Entroncamento,Portugal Continental,Estação repetidora de modulação analógica,CQ0UAI,"430 - 440 MHz
+","438,8750 MHz
+","431,2750 MHz
+",RU710,"131,8 Hz",IM59QM,"39º 32' 09"" ,340 N","08º 38' 11"" ,080 W"
+Clube de Radioamadores do Entroncamento,Portugal Continental,Estação repetidora de modulação analógica,CQ0VENT,"144 - 146 MHz
+","145,6875 MHz
+","145,0875 MHz
+",RV55,"74,4 Hz",IM59SL,"39º 28' 52"" ,940 N","08º 29' 07"" ,500 W"
+Clube de Radioamadores dos Açores,R.A. Açores,Estação repetidora de modulação analógica,CQ1VPM,"144 - 146 MHz
+","145,6750 MHz
+","145,0750 MHz
+",RV54,"88,5 Hz",HM58VR,"38º 42' 34"" ,000 N","28º 12' 04"" ,000 W"
+Clube de Radioamadores dos Açores,R.A. Açores,Estação repetidora de modulação analógica,CQ1VF,"144 - 146 MHz
+","145,6000 MHz
+","145,0000 MHz
+",RV48,123 Hz,HM58PN,"38º 34' 32"" ,919 N","28º 42' 48"" ,525 W"
+Clube de Radioamadores dos Açores,R.A. Açores,Estação repetidora de modulação analógica,CQ1VPV,"144 - 146 MHz
+","145,7750 MHz
+","145,1750 MHz
+",RV62,123 Hz,HM58OO,"38º 35' 30"" ,000 N","28º 47' 51"" ,000 W"
+Grupo de Radioamadores do Pico,R.A. Açores,Estação repetidora de modulação analógica,CQ1VP,"144 - 146 MHz
+","145,6500 MHz
+","145,0500 MHz
+",RV52,"88,5 Hz",HM58VJ,"38º 24' 04"" ,673 N","28º 14' 03"" ,296 W"
+Liga Amadores Rádio Sintra,Portugal Continental,Estação repetidora de modulação analógica,CQ0VSI,"144 - 146 MHz
+","145,7125 MHz
+","145,1125 MHz
+",RV57,"74,4 Hz",IM58HS,"38º 47' 10"" ,800 N","09º 23' 06"" ,600 W"
+Liga Amadores Rádio Sintra,Portugal Continental,Estação repetidora de modulação analógica,CQ0USI,"430 - 440 MHz
+","439,1250 MHz
+","431,5250 MHz
+",RU730,"74,4 Hz",IM58HS,"38º 47' 10"" ,800 N","09º 23' 06"" ,600 W"
+Liga de Amadores de Rádio Transmissões,Portugal Continental,Estação repetidora de modulação analógica,CQ0UMJ,"430 - 440 MHz
+","439,3500 MHz
+","431,7500 MHz
+",RU748,"74,4 Hz",IM59LE,"39º 10' 25"" ,140 N","09º 03' 03"" ,660 W"
+Liga de Amadores de Rádio Transmissões,Portugal Continental,Estação repetidora de modulação analógica,CQ0UARS,"430 - 440 MHz
+","439,1000 MHz
+","431,5000 MHz
+",RU728,123 Hz,IN50ts,"40º 46' 43"" ,100 N","08º 21' 29"" ,700 W"
+Núcleo de Radioamadores de Coimbra,Portugal Continental,Estação repetidora de modulação analógica,CQ0ULO,"430 - 440 MHz
+","438,8500 MHz
+","431,2500 MHz
+",RU708,"131,8 Hz",IN50VC,"40º 05' 21"" ,710 N","08º 10' 41"" ,930 W"
+Núcleo de Radioamadores de Coimbra,Portugal Continental,Estação repetidora de modulação analógica,CQ0VLO,"144 - 146 MHz
+","145,7000 MHz
+","145,1000 MHz
+",RV56,"82,5 Hz",IN50VC,"40º 05' 21"" ,710 N","08º 10' 41"" ,930 W"
+Radioamador Clube de Loulé,Portugal Continental,Estação repetidora de modulação analógica,CQ0UML,"430 - 440 MHz
+","438,8500 MHz
+","431,2500 MHz
+",RU708,"131,8 Hz",IM67CC,"37º 06' 05"" ,730 N","07º 49' 50"" ,900 W"
+Radioamador Clube de Loulé,Portugal Continental,Estação repetidora de modulação analógica,CQ0VFO,"144 - 146 MHz
+","145,6500 MHz
+","145,0500 MHz
+",RV52,"82,5 Hz",IM57QH,"37º 18' 53"" ,970 N","08º 35' 16"" ,990 W"
+Radioamador Clube de Loulé,Portugal Continental,Estação repetidora de modulação analógica,CQ0UFO,"430 - 440 MHz
+","438,6750 MHz
+","431,0750 MHz
+",RU694,"131,8 Hz",IM57QH,"37º 18' 53"" ,970 N","08º 35' 16"" ,990 W"
+Radioamador Clube de Loulé,Portugal Continental,Estação repetidora de modulação analógica,CQ0USM,"430 - 440 MHz
+","438,7000 MHz
+","431,1000 MHz
+",RU696,"131,8 Hz",IM67CC,"37º 06' 05"" ,710 N","07º 49' 50"" ,300 W"
+Radioamador Clube de Loulé,Portugal Continental,Estação repetidora de modulação analógica,CQ0VFD,"144 - 146 MHz
+","145,7625 MHz
+","145,1625 MHz
+",RV61,"82,5 Hz",IM57QH,"37º 18' 53"" ,970 N","08º 35' 16"" ,990 W"
+Radioamador Clube de Loulé,Portugal Continental,Estação repetidora de modulação analógica,CQ0UFL,"430 - 440 MHz
+","439,2250 MHz
+","431,6250 MHz
+",RU738,"131,8 Hz",IM67CC,"37º 06' 05"" ,070 N","07º 49' 50"" ,030 W"
+Radioamador Clube de Loulé,Portugal Continental,Estação repetidora de modulação analógica,CQ0UIV,"430 - 440 MHz
+","439,2000 MHz
+","431,6000 MHz
+",RU736,"131,8 Hz",IM57xd,"37º 09' 32"" ,210 N","08º 03' 40"" ,240 W"
+Radioamador Clube de Loulé,Portugal Continental,Estação repetidora de modulação analógica,CQ0VSM,"144 - 146 MHz
+","145,7250 MHz
+","145,1250 MHz
+",RV58,"82,5 Hz",IM67CC,"37º 06' 05"" ,710 N","07º 49' 50"" ,300 W"
+Radioamador Clube de Loulé,Portugal Continental,Estação repetidora de modulação analógica,CQ0VTA,"144 - 146 MHz
+","145,6250 MHz
+","145,0250 MHz
+",RV50,"82,5 Hz",IM67DF,"37º 14' 38"" ,290 N","07º 44' 18"" ,190 W"
+Radioamadores Centro Oeste,Portugal Continental,Estação repetidora de modulação analógica,CQ0UAG,"430 - 440 MHz
+","439,2000 MHz
+","431,6000 MHz
+",RU736,"74,4 Hz",IM59KJ,"39º 24' 41"" ,920 N","09º 07' 06"" ,500 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0VMST,"144 - 146 MHz
+","145,6250 MHz
+","145,0250 MHz
+",RV50,"74,4 Hz",IM58JR,"38º 43' 57"" ,780 N","09º 11' 22"" ,180 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0UMST,"430 - 440 MHz
+","438,6500 MHz
+","431,0500 MHz
+",RU692,"74,4 Hz",IM58JR,"38º 43' 57"" ,780 N","09º 11' 22"" ,180 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0USMA,"430 - 440 MHz
+","438,7500 MHz
+","431,1500 MHz
+",RU700,67 Hz,IM69HH,"39º 18' 45"" ,500 N","07º 21' 30"" ,720 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0UHU,"430 - 440 MHz
+","438,9500 MHz
+","431,3500 MHz
+",RU716,"74,4 Hz",IM58JR,"38º 43' 57"" ,780 N","09º 11' 22"" ,180 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0VSF,"144 - 146 MHz
+","145,6125 MHz
+","145,0125 MHz
+",RV49,123 Hz,IN50UU,"40º 50' 41"" ,680 N","08º 16' 45"" ,480 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0UCAN,"430 - 440 MHz
+","438,6500 MHz
+","431,0500 MHz
+",RU692,"131,8 Hz",IM59MK,"39º 26' 03"" ,460 N","08º 55' 19"" ,160 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0USF,"430 - 440 MHz
+","438,7250 MHz
+","431,1250 MHz
+",RU698,123 Hz,IN50uu,"40º 50' 41"" ,680 N","08º 16' 45"" ,480 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0UEC,"430 - 440 MHz
+","438,8750 MHz
+","431,2750 MHz
+",RU710,"74,4 Hz",IM58JT,"38º 48' 45"" ,870 N","09º 11' 53"" ,450 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0VSMA,"144 - 146 MHz
+","145,6625 MHz
+","145,0625 MHz
+",RV53,123 Hz,IM69HH,"39º 18' 45"" ,500 N","07º 21' 30"" ,720 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0UTV,"430 - 440 MHz
+","439,3000 MHz
+","431,7000 MHz
+",RU744,"131,8 Hz",IN50VC,"40º 05' 27"" ,830 N","08º 10' 42"" ,660 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0UCB,"430 - 440 MHz
+","439,2500 MHz
+","431,6500 MHz
+",RU740,"82,5 Hz",IM69GT,"39º 49' 34"" ,160 N","07º 28' 30"" ,390 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0UAE,"430 - 440 MHz
+","438,8000 MHz
+","431,2000 MHz
+",RU704,123 Hz,IN50TT,"40º 48' 08"" ,930 N","08º 22' 11"" ,210 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0VEC,"144 - 146 MHz
+","145,6625 MHz
+","145,0625 MHz
+",RV53,"74,4 Hz",IM58JT,"38º 48' 46"" ,210 N","09º 11' 53"" ,070 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0VCSC,"144 - 146 MHz
+","145,6000 MHz
+","145,0000 MHz
+",RV48,"74,4 Hz",IM58GQ,"38º 42' 23"" ,310 N","09º 25' 59"" ,250 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0VSP,"144 - 146 MHz
+","145,7500 MHz
+","145,1500 MHz
+",RV60,"82,5 Hz",IM67EW,"37º 56' 09"" ,160 N","07º 35' 42"" ,000 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0UREP,"430 - 440 MHz
+","439,0250 MHz
+","431,4250 MHz
+",RU722,"74,4 Hz",IM58JQ,"38º 40' 25"" ,970 N","09º 10' 38"" ,430 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0UPS,"430 - 440 MHz
+","439,0000 MHz
+","431,4000 MHz
+",RU720,"131,8 Hz",IN60AA,"40º 01' 51"" ,020 N","07º 56' 54"" ,850 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0USC,"430 - 440 MHz
+","439,0500 MHz
+","431,4500 MHz
+",RU724,"74,4 Hz",IM58KX,"38º 58' 21"" ,600 N","09º 06' 15"" ,450 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0UMN,"430 - 440 MHz
+","439,3500 MHz
+","431,7500 MHz
+",RU748,,IM58VP,"38º 37' 42"" ,970 N","08º 13' 49"" ,840 W"
+Rede dos Emissores Portugueses,R.A. Madeira,Estação repetidora de modulação analógica,CQ2UMAD,"430 - 440 MHz
+","438,6500 MHz
+","431,0500 MHz
+",RU692,"82,5 Hz",IM12NP,"32º 39' 20"" ,030 N","16º 52' 24"" ,280 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0UMC,"430 - 440 MHz
+","439,1750 MHz
+","431,5750 MHz
+",RU734,"74,4 Hz",IM58JV,"38º 53' 52"" ,320 N","09º 11' 35"" ,060 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0UP,"430 - 440 MHz
+","439,2750 MHz
+","431,6750 MHz
+",RU742,67 Hz,IM69HH,"39º 18' 45"" ,500 N","07º 21' 30"" ,720 W"
+Rede dos Emissores Portugueses,R.A. Madeira,Estação repetidora de modulação analógica,CQ2UFX,"430 - 440 MHz
+","438,7000 MHz
+","431,1000 MHz
+",RU696,67 Hz,IM12NQ,"32º 41' 35"" ,620 N","16º 54' 13"" ,140 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0UMF,"430 - 440 MHz
+","439,4250 MHz
+","431,8250 MHz
+",RU754,"131,8 Hz",IM57QH,"37º 18' 54"" ,000 N","08º 35' 17"" ,320 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0UCL,"430 - 440 MHz
+","439,3250 MHz
+","431,7250 MHz
+",RU746,123 Hz,IN50VN,"40º 33' 09"" ,170 N","08º 10' 48"" ,490 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0VMC,"144 - 146 MHz
+","145,6750 MHz
+","145,0750 MHz
+",RV54,"74,4 Hz",IM58JV,"38º 53' 52"" ,320 N","09º 11' 35"" ,060 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0UM,"430 - 440 MHz
+","438,6750 MHz
+","431,0750 MHz
+",RU694,"74,4 Hz",IM59LE,"39º 10' 25"" ,140 N","09º 03' 03"" ,660 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0UMM,"430 - 440 MHz
+","438,9250 MHz
+","431,3250 MHz
+",RU714,"131,8 Hz",IM67CC,"37º 06' 06"" ,000 N","07º 49' 56"" ,000 W"
+Rede dos Emissores Portugueses,Portugal Continental,Estação repetidora de modulação analógica,CQ0UKE,"430 - 440 MHz
+","438,8250 MHz
+","431,2250 MHz
+",RU706,"74,4 Hz",IM59hc,"39º 06' 50"" ,980 N","09º 22' 31"" ,870 W"
+Tertúlia Radioamadorística Guglielmo Marconi,Portugal Continental,Estação repetidora de modulação analógica,CQ0VTM,"144 - 146 MHz
+","145,7750 MHz
+","145,1750 MHz
+",RV62,"82,5 Hz",IN50TG,"40º 15' 30"" ,100 N","08º 20' 58"" ,420 W"
+União de Radioamadores dos Açores,R.A. Açores,Estação repetidora de modulação analógica,CQ1VFLW,"144 - 146 MHz
+","145,7875 MHz
+","145,1875 MHz
+",RV63,"88,5 Hz",HM49JK,"39º 26' 43"" ,960 N","31º 10' 11"" ,630 W"
+União de Radioamadores dos Açores,R.A. Açores,Estação repetidora de modulação analógica,CQ1UMB,"430 - 440 MHz
+","438,7500 MHz
+","431,1500 MHz
+",RU700,"88,5 Hz",HM68JP,"38º 38' 50"" ,000 N","27º 13' 31"" ,000 W"
+União de Radioamadores dos Açores,R.A. Açores,Estação repetidora de modulação analógica,CQ1VSB,"144 - 146 MHz
+","145,7000 MHz
+","145,1000 MHz
+",RV56,"88,5 Hz",HM68IR,"38º 43' 48"" ,000 N","27º 19' 07"" ,000 W"
+União de Radioamadores dos Açores,R.A. Açores,Estação repetidora de modulação analógica,CQ1UMS,"430 - 440 MHz
+","438,7750 MHz
+","431,1750 MHz
+",RU702,"88,5 Hz",HN66gw,"38º 47' 57"" ,160 N","27º 17' 27"" ,650 W"
+União de Radioamadores dos Açores,R.A. Açores,Estação repetidora de modulação analógica,CQ1VCM,"144 - 146 MHz
+","145,7250 MHz
+","145,1250 MHz
+",RV58,"88,5 Hz",HM68KR,"38º 42' 43"" ,318 N","27º 06' 50"" ,551 W"
+União de Radioamadores dos Açores,R.A. Açores,Estação repetidora de modulação analógica,CQ1VSJ,"144 - 146 MHz
+","145,6375 MHz
+","145,0375 MHz
+",RV51,67 Hz,HM68BN,"38º 32' 46"" ,210 N","27º 50' 39"" ,530 W"
+União de Radioamadores dos Açores,R.A. Açores,Estação repetidora de modulação analógica,CQ1VGR,"144 - 146 MHz
+","145,6125 MHz
+","145,0125 MHz
+",RV49,67 Hz,HM59XA,"39º 02' 08"" ,900 N","28º 01' 44"" ,470 W"
+União de Radioamadores dos Açores,R.A. Açores,Estação repetidora de modulação analógica,CQ1UCM,"430 - 440 MHz
+","438,7250 MHz
+","431,1250 MHz
+",RU698,"88,5 Hz",HM68KR,"38º 42' 43"" ,318 N","27º 06' 50"" ,551 W"
+União de Radioamadores dos Açores,R.A. Açores,Estação repetidora de modulação analógica,CQ1USB,"430 - 440 MHz
+","438,7000 MHz
+","431,1000 MHz
+",RU696,"88,5 Hz",HM68IR,"38º 43' 48"" ,000 N","27º 19' 07"" ,000 W"

@@ -15,6 +15,8 @@ export type Repeater = {
   longitude: number
   qth_locator: string
   owner: string
+  dmr: boolean
+  dstar: boolean
 }
 
 function getBandFromFrequency(mhz: number): string {
@@ -102,6 +104,28 @@ export function useColumns(): ColumnDef<Repeater>[] {
         return cell === v
       },
     },
+    // {
+    //   accessorKey: "dmr",
+    //   header: t("dmr"),
+    //   cell: ({ getValue }) => (Boolean(getValue()) ? "✓" : "—"),
+    //   filterFn: (row, id, value) => {
+    //     if (value === undefined || value === null) return true
+    //     const expected = Boolean(value)
+    //     return Boolean(row.getValue(id)) === expected
+    //   },
+    //   enableSorting: false,
+    // },
+    // {
+    //   accessorKey: "dstar",
+    //   header: t("dstar"),
+    //   cell: ({ getValue }) => (Boolean(getValue()) ? "✓" : "—"),
+    //   filterFn: (row, id, value) => {
+    //     if (value === undefined || value === null) return true
+    //     const expected = Boolean(value)
+    //     return Boolean(row.getValue(id)) === expected
+    //   },
+    //   enableSorting: false,
+    // },
     {
       accessorKey: "latitude",
       header: t("latitude"),

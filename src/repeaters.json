@@ -5,10 +5,12 @@
     "inputFrequency": 431.525,
     "tone": 131.8,
     "modulation": "FM",
-    "latitude": 37.17238888888889,
-    "longitude": -8.561644444444445,
+    "latitude": 37.17222222222222,
+    "longitude": -8.561388888888889,
     "qth_locator": "IM57RE",
-    "owner": "ARSUL - Associação de Radioamadores do Sul"
+    "owner": "ARSUL - Associação de Radioamadores do Sul",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UMAR",
@@ -16,10 +18,12 @@
     "inputFrequency": 431.225,
     "tone": 131.8,
     "modulation": "FM",
-    "latitude": 37.315194444444444,
-    "longitude": -8.588916666666668,
+    "latitude": 37.315,
+    "longitude": -8.58888888888889,
     "qth_locator": "IM57QH",
-    "owner": "ARSUL - Associação de Radioamadores do Sul"
+    "owner": "ARSUL - Associação de Radioamadores do Sul",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VAL",
@@ -27,10 +31,12 @@
     "inputFrequency": 145.1375,
     "tone": 67,
     "modulation": "FM",
-    "latitude": 41.81313333333333,
-    "longitude": -8.194247222222222,
+    "latitude": 41.81305555555555,
+    "longitude": -8.194166666666668,
     "qth_locator": "IN51VT",
-    "owner": "Associação Amigos da Rádio do Norte"
+    "owner": "Associação Amigos da Rádio do Norte",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VAN",
@@ -41,7 +47,9 @@
     "latitude": 41.71555555555556,
     "longitude": -6.8566666666666665,
     "qth_locator": "IN61NR",
-    "owner": "Associação Amigos da Rádio do Norte"
+    "owner": "Associação Amigos da Rádio do Norte",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1VPA",
@@ -49,10 +57,12 @@
     "inputFrequency": 145,
     "tone": 88.5,
     "modulation": "FM",
-    "latitude": 36.982864444444445,
-    "longitude": -25.090743611111108,
+    "latitude": 36.98277777777778,
+    "longitude": -25.090555555555554,
     "qth_locator": "HM76KX",
-    "owner": "Associação de Radioamadores Marienses"
+    "owner": "Associação de Radioamadores Marienses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1UPA",
@@ -60,10 +70,12 @@
     "inputFrequency": 431.05,
     "tone": 88.5,
     "modulation": "FM",
-    "latitude": 36.982864444444445,
-    "longitude": -25.090743611111108,
+    "latitude": 36.98277777777778,
+    "longitude": -25.090555555555554,
     "qth_locator": "HM76KX",
-    "owner": "Associação de Radioamadores Marienses"
+    "owner": "Associação de Radioamadores Marienses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UES",
@@ -71,10 +83,12 @@
     "inputFrequency": 431.45,
     "tone": 114.8,
     "modulation": "FM",
-    "latitude": 40.321472222222226,
-    "longitude": -7.614397222222222,
+    "latitude": 40.32138888888889,
+    "longitude": -7.614166666666667,
     "qth_locator": "IN60EH",
-    "owner": "Associação de Radioamadores da Beira Alta"
+    "owner": "Associação de Radioamadores da Beira Alta",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VBA",
@@ -82,10 +96,12 @@
     "inputFrequency": 145.1625,
     "tone": 131.8,
     "modulation": "FM",
-    "latitude": 41.20016666666667,
-    "longitude": -8.390388888888888,
+    "latitude": 41.2,
+    "longitude": -8.390277777777778,
     "qth_locator": "IN51TE",
-    "owner": "Associação de Radioamadores da Beira Alta"
+    "owner": "Associação de Radioamadores da Beira Alta",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VMA",
@@ -93,10 +109,12 @@
     "inputFrequency": 145.05,
     "tone": 123,
     "modulation": "FM",
-    "latitude": 41.24821111111111,
-    "longitude": -7.886488888888889,
+    "latitude": 41.24805555555556,
+    "longitude": -7.886388888888888,
     "qth_locator": "IN61BF",
-    "owner": "Associação de Radioamadores da Beira Alta"
+    "owner": "Associação de Radioamadores da Beira Alta",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UBA",
@@ -104,10 +122,12 @@
     "inputFrequency": 431.675,
     "tone": 123,
     "modulation": "FM",
-    "latitude": 41.20016666666667,
-    "longitude": -8.390388888888888,
+    "latitude": 41.2,
+    "longitude": -8.390277777777778,
     "qth_locator": "IN51TE",
-    "owner": "Associação de Radioamadores da Beira Alta"
+    "owner": "Associação de Radioamadores da Beira Alta",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0USJ",
@@ -115,10 +135,12 @@
     "inputFrequency": 431.525,
     "tone": 123,
     "modulation": "FM",
-    "latitude": 41.175888888888885,
-    "longitude": -8.49636111111111,
+    "latitude": 41.17583333333333,
+    "longitude": -8.49611111111111,
     "qth_locator": "IN51se",
-    "owner": "Associação de Radioamadores da Beira Alta"
+    "owner": "Associação de Radioamadores da Beira Alta",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0USE",
@@ -126,10 +148,12 @@
     "inputFrequency": 431.225,
     "tone": 114.8,
     "modulation": "FM",
-    "latitude": 40.321472222222226,
-    "longitude": -7.614397222222222,
+    "latitude": 40.32138888888889,
+    "longitude": -7.614166666666667,
     "qth_locator": "IN60EH",
-    "owner": "Associação de Radioamadores da Beira Alta"
+    "owner": "Associação de Radioamadores da Beira Alta",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0USDV",
@@ -140,7 +164,9 @@
     "latitude": 39.0625,
     "longitude": -9.266111111111112,
     "qth_locator": "IM59IB",
-    "owner": "Associação de Radioamadores da Beira Alta"
+    "owner": "Associação de Radioamadores da Beira Alta",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UMU",
@@ -148,10 +174,12 @@
     "inputFrequency": 431.375,
     "tone": 114.8,
     "modulation": "FM",
-    "latitude": 40.69844444444444,
+    "latitude": 40.69833333333333,
     "longitude": -7.921111111111111,
     "qth_locator": "IN60AQ",
-    "owner": "Associação de Radioamadores da Beira Alta"
+    "owner": "Associação de Radioamadores da Beira Alta",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VAR",
@@ -159,10 +187,12 @@
     "inputFrequency": 145.125,
     "tone": 114.8,
     "modulation": "FM",
-    "latitude": 40.78209722222222,
-    "longitude": -8.356916666666667,
+    "latitude": 40.78194444444444,
+    "longitude": -8.356666666666666,
     "qth_locator": "IN50TS",
-    "owner": "Associação de Radioamadores da Beira Alta"
+    "owner": "Associação de Radioamadores da Beira Alta",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VSE",
@@ -170,10 +200,12 @@
     "inputFrequency": 145,
     "tone": 114.8,
     "modulation": "FM",
-    "latitude": 40.321472222222226,
-    "longitude": -7.614397222222222,
+    "latitude": 40.32138888888889,
+    "longitude": -7.614166666666667,
     "qth_locator": "IN60EH",
-    "owner": "Associação de Radioamadores da Beira Alta"
+    "owner": "Associação de Radioamadores da Beira Alta",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VCO",
@@ -181,10 +213,12 @@
     "inputFrequency": 145.0875,
     "tone": 123,
     "modulation": "FM",
-    "latitude": 40.809875,
-    "longitude": -7.839819444444444,
+    "latitude": 40.80972222222222,
+    "longitude": -7.839722222222222,
     "qth_locator": "IN60BT",
-    "owner": "Associação de Radioamadores da Beira Alta"
+    "owner": "Associação de Radioamadores da Beira Alta",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UG",
@@ -192,10 +226,12 @@
     "inputFrequency": 431.5,
     "tone": 82.5,
     "modulation": "FM",
-    "latitude": 40.08043888888889,
-    "longitude": -7.525527777777778,
+    "latitude": 40.08027777777778,
+    "longitude": -7.525277777777777,
     "qth_locator": "IN60FB",
-    "owner": "Associação de Radioamadores da Beira Baixa"
+    "owner": "Associação de Radioamadores da Beira Baixa",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VG",
@@ -203,10 +239,12 @@
     "inputFrequency": 145.0375,
     "tone": 114.8,
     "modulation": "FM",
-    "latitude": 40.08043888888889,
-    "longitude": -7.525527777777778,
+    "latitude": 40.08027777777778,
+    "longitude": -7.525277777777777,
     "qth_locator": "IN60FB",
-    "owner": "Associação de Radioamadores da Beira Baixa"
+    "owner": "Associação de Radioamadores da Beira Baixa",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0URBL",
@@ -214,10 +252,12 @@
     "inputFrequency": 431.275,
     "tone": 123,
     "modulation": "FM",
-    "latitude": 40.80566666666667,
-    "longitude": -8.46336111111111,
+    "latitude": 40.80555555555555,
+    "longitude": -8.463333333333333,
     "qth_locator": "IN50ST",
-    "owner": "Associação de Radioamadores da Beira Litoral"
+    "owner": "Associação de Radioamadores da Beira Litoral",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UOAZ",
@@ -225,10 +265,12 @@
     "inputFrequency": 431.8,
     "tone": 123,
     "modulation": "FM",
-    "latitude": 40.80566666666667,
-    "longitude": -8.46336111111111,
+    "latitude": 40.80555555555555,
+    "longitude": -8.463333333333333,
     "qth_locator": "IN50ST",
-    "owner": "Associação de Radioamadores da Beira Litoral"
+    "owner": "Associação de Radioamadores da Beira Litoral",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VCP",
@@ -236,10 +278,12 @@
     "inputFrequency": 145.0625,
     "tone": 82.5,
     "modulation": "FM",
-    "latitude": 40.19203611111111,
-    "longitude": -8.841000000000001,
+    "latitude": 40.19194444444444,
+    "longitude": -8.840833333333334,
     "qth_locator": "IN50NE",
-    "owner": "Associação de Radioamadores da Costa de Prata"
+    "owner": "Associação de Radioamadores da Costa de Prata",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UCA",
@@ -247,10 +291,12 @@
     "inputFrequency": 431.1,
     "tone": 131.8,
     "modulation": "FM",
-    "latitude": 40.369735,
-    "longitude": -8.363010833333332,
+    "latitude": 40.36972222222222,
+    "longitude": -8.362777777777778,
     "qth_locator": "IN50TI",
-    "owner": "Associação de Radioamadores da Costa de Prata"
+    "owner": "Associação de Radioamadores da Costa de Prata",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UCP",
@@ -258,10 +304,12 @@
     "inputFrequency": 431.3,
     "tone": 82.5,
     "modulation": "FM",
-    "latitude": 40.19203611111111,
-    "longitude": -8.841000000000001,
+    "latitude": 40.19194444444444,
+    "longitude": -8.840833333333334,
     "qth_locator": "IN50NE",
-    "owner": "Associação de Radioamadores da Costa de Prata"
+    "owner": "Associação de Radioamadores da Costa de Prata",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UCSC",
@@ -269,10 +317,12 @@
     "inputFrequency": 431.125,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 38.73031666666667,
-    "longitude": -9.409644444444444,
+    "latitude": 38.73027777777778,
+    "longitude": -9.409444444444444,
     "qth_locator": "IF51HG",
-    "owner": "Associação de Radioamadores da Linha de Cascais"
+    "owner": "Associação de Radioamadores da Linha de Cascais",
+    "dmr": true,
+    "dstar": false
   },
   {
     "callsign": "CQ0UCAS",
@@ -280,10 +330,12 @@
     "inputFrequency": 431.675,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 38.76849722222222,
-    "longitude": -9.46056111111111,
+    "latitude": 38.76833333333333,
+    "longitude": -9.460555555555555,
     "qth_locator": "IM58GS",
-    "owner": "Associação de Radioamadores da Linha de Cascais"
+    "owner": "Associação de Radioamadores da Linha de Cascais",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VDLX",
@@ -291,10 +343,12 @@
     "inputFrequency": 145.175,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 38.777052777777776,
-    "longitude": -9.244525,
+    "latitude": 38.776944444444446,
+    "longitude": -9.244444444444444,
     "qth_locator": "IM58JS",
-    "owner": "Associação de Radioamadores da Região de Lisboa"
+    "owner": "Associação de Radioamadores da Região de Lisboa",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UDA",
@@ -302,10 +356,12 @@
     "inputFrequency": 431.3,
     "tone": 114.8,
     "modulation": "FM",
-    "latitude": 38.580958333333335,
-    "longitude": -7.938327777777778,
+    "latitude": 38.58083333333334,
+    "longitude": -7.938055555555556,
     "qth_locator": "IM68AN",
-    "owner": "Associação de Radioamadores da Região de Lisboa"
+    "owner": "Associação de Radioamadores da Região de Lisboa",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UDE",
@@ -313,10 +369,12 @@
     "inputFrequency": 431.6,
     "tone": 114.8,
     "modulation": "FM",
-    "latitude": 40.313024999999996,
-    "longitude": -7.549655555555556,
+    "latitude": 40.312777777777775,
+    "longitude": -7.549444444444444,
     "qth_locator": "IN60FH",
-    "owner": "Associação de Radioamadores da Região de Lisboa"
+    "owner": "Associação de Radioamadores da Região de Lisboa",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UFLX",
@@ -324,10 +382,12 @@
     "inputFrequency": 431.5,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 38.63185277777778,
-    "longitude": -9.198141666666666,
+    "latitude": 38.63166666666667,
+    "longitude": -9.198055555555555,
     "qth_locator": "IM58JP",
-    "owner": "Associação de Radioamadores da Região de Lisboa"
+    "owner": "Associação de Radioamadores da Região de Lisboa",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0URVM",
@@ -335,10 +395,12 @@
     "inputFrequency": 431.725,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 38.893208333333334,
-    "longitude": -9.110847222222223,
+    "latitude": 38.893055555555556,
+    "longitude": -9.110833333333334,
     "qth_locator": "IM58KV",
-    "owner": "Associação de Radioamadores da Vila de Moscavide"
+    "owner": "Associação de Radioamadores da Vila de Moscavide",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UCOI",
@@ -346,10 +408,12 @@
     "inputFrequency": 431.55,
     "tone": 131.8,
     "modulation": "FM",
-    "latitude": 40.20051388888889,
-    "longitude": -8.445519444444445,
+    "latitude": 40.20027777777778,
+    "longitude": -8.445277777777777,
     "qth_locator": "IN50SE",
-    "owner": "Associação de Radioamadores de Coimbra"
+    "owner": "Associação de Radioamadores de Coimbra",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UARC",
@@ -357,10 +421,12 @@
     "inputFrequency": 431.175,
     "tone": 131.8,
     "modulation": "FM",
-    "latitude": 40.20005555555556,
-    "longitude": -8.445444444444444,
+    "latitude": 40.2,
+    "longitude": -8.445277777777777,
     "qth_locator": "IN50SE",
-    "owner": "Associação de Radioamadores de Coimbra"
+    "owner": "Associação de Radioamadores de Coimbra",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VSA",
@@ -368,10 +434,12 @@
     "inputFrequency": 145.025,
     "tone": 123,
     "modulation": "FM",
-    "latitude": 41.805166666666665,
+    "latitude": 41.805,
     "longitude": -8.6975,
     "qth_locator": "IN51PT",
-    "owner": "Associação de Radioamadores do Alto Minho"
+    "owner": "Associação de Radioamadores do Alto Minho",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UFV",
@@ -379,10 +447,12 @@
     "inputFrequency": 431.8,
     "tone": 114.8,
     "modulation": "FM",
-    "latitude": 42.02202777777778,
-    "longitude": -8.593222222222224,
+    "latitude": 42.02194444444444,
+    "longitude": -8.593055555555557,
     "qth_locator": "IN52qa",
-    "owner": "Associação de Radioamadores do Alto Minho"
+    "owner": "Associação de Radioamadores do Alto Minho",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0USA",
@@ -390,10 +460,12 @@
     "inputFrequency": 431.05,
     "tone": 67,
     "modulation": "FM",
-    "latitude": 41.805166666666665,
+    "latitude": 41.805,
     "longitude": -8.6975,
     "qth_locator": "IN51PT",
-    "owner": "Associação de Radioamadores do Alto Minho"
+    "owner": "Associação de Radioamadores do Alto Minho",
+    "dmr": true,
+    "dstar": false
   },
   {
     "callsign": "CQ0UAV",
@@ -404,7 +476,9 @@
     "latitude": 41.97777777777778,
     "longitude": -8.420833333333333,
     "qth_locator": "IN51UW",
-    "owner": "Associação de Radioamadores do Alto Minho"
+    "owner": "Associação de Radioamadores do Alto Minho",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UAT",
@@ -412,10 +486,12 @@
     "inputFrequency": 431.075,
     "tone": 67,
     "modulation": "FM",
-    "latitude": 41.84407222222222,
-    "longitude": -7.335438888888889,
+    "latitude": 41.84388888888889,
+    "longitude": -7.335277777777778,
     "qth_locator": "IN61HU",
-    "owner": "Associação de Radioamadores do Alto Tâmega"
+    "owner": "Associação de Radioamadores do Alto Tâmega",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UMR",
@@ -423,10 +499,12 @@
     "inputFrequency": 431.55,
     "tone": 123,
     "modulation": "FM",
-    "latitude": 41.2481,
-    "longitude": -7.885958333333333,
+    "latitude": 41.24805555555556,
+    "longitude": -7.885833333333333,
     "qth_locator": "IN61BF",
-    "owner": "Associação de Radioamadores do Alto Tâmega"
+    "owner": "Associação de Radioamadores do Alto Tâmega",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VMI",
@@ -434,10 +512,12 @@
     "inputFrequency": 145.175,
     "tone": 123,
     "modulation": "FM",
-    "latitude": 41.549277777777775,
-    "longitude": -7.688527777777778,
+    "latitude": 41.549166666666665,
+    "longitude": -7.6883333333333335,
     "qth_locator": "IN61DN",
-    "owner": "Associação de Radioamadores do Alto Tâmega"
+    "owner": "Associação de Radioamadores do Alto Tâmega",
+    "dmr": true,
+    "dstar": false
   },
   {
     "callsign": "CQ0VPD",
@@ -445,10 +525,12 @@
     "inputFrequency": 145.075,
     "tone": 123,
     "modulation": "FM",
-    "latitude": 41.56140555555555,
-    "longitude": -7.516958333333333,
+    "latitude": 41.561388888888885,
+    "longitude": -7.516944444444444,
     "qth_locator": "IN61FN",
-    "owner": "Associação de Radioamadores do Alto Tâmega"
+    "owner": "Associação de Radioamadores do Alto Tâmega",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UPM",
@@ -456,10 +538,12 @@
     "inputFrequency": 431.425,
     "tone": 131.8,
     "modulation": "FM",
-    "latitude": 39.54936111111111,
+    "latitude": 39.549166666666665,
     "longitude": -8.866666666666667,
     "qth_locator": "IM59NN",
-    "owner": "Associação de Radioamadores do Distrito de Leiria"
+    "owner": "Associação de Radioamadores do Distrito de Leiria",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VCD",
@@ -467,10 +551,12 @@
     "inputFrequency": 145.0125,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 39.549391666666665,
-    "longitude": -8.867311111111112,
+    "latitude": 39.549166666666665,
+    "longitude": -8.867222222222223,
     "qth_locator": "IM59NN",
-    "owner": "Associação de Radioamadores do Distrito de Leiria"
+    "owner": "Associação de Radioamadores do Distrito de Leiria",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UMT",
@@ -478,10 +564,12 @@
     "inputFrequency": 431.05,
     "tone": 114.8,
     "modulation": "FM",
-    "latitude": 37.493180555555554,
-    "longitude": -7.899647222222222,
+    "latitude": 37.49305555555556,
+    "longitude": -7.899444444444444,
     "qth_locator": "IM67BL",
-    "owner": "Associação de Radioamadores do Distrito de Leiria"
+    "owner": "Associação de Radioamadores do Distrito de Leiria",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UCD",
@@ -489,10 +577,12 @@
     "inputFrequency": 431.125,
     "tone": 131.8,
     "modulation": "FM",
-    "latitude": 39.549391666666665,
-    "longitude": -8.867311111111112,
+    "latitude": 39.549166666666665,
+    "longitude": -8.867222222222223,
     "qth_locator": "IM59NN",
-    "owner": "Associação de Radioamadores do Distrito de Leiria"
+    "owner": "Associação de Radioamadores do Distrito de Leiria",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0ULR",
@@ -500,10 +590,12 @@
     "inputFrequency": 431.65,
     "tone": 131.8,
     "modulation": "FM",
-    "latitude": 39.54933611111111,
-    "longitude": -8.866694444444445,
+    "latitude": 39.549166666666665,
+    "longitude": -8.866666666666667,
     "qth_locator": "IM59NN",
-    "owner": "Associação de Radioamadores do Distrito de Leiria"
+    "owner": "Associação de Radioamadores do Distrito de Leiria",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UAB",
@@ -511,10 +603,12 @@
     "inputFrequency": 431.2,
     "tone": 131.8,
     "modulation": "FM",
-    "latitude": 39.64426388888889,
-    "longitude": -8.52226388888889,
+    "latitude": 39.64416666666666,
+    "longitude": -8.522222222222224,
     "qth_locator": "IM59RP",
-    "owner": "Associação de Radioamadores do Distrito de Leiria"
+    "owner": "Associação de Radioamadores do Distrito de Leiria",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UTRZ",
@@ -522,10 +616,12 @@
     "inputFrequency": 431.575,
     "tone": 123,
     "modulation": "FM",
-    "latitude": 40.802480555555555,
-    "longitude": -8.369471666666668,
+    "latitude": 40.80222222222222,
+    "longitude": -8.369444444444445,
     "qth_locator": "IN50TT",
-    "owner": "Associação de Radioamadores do Distrito de Leiria"
+    "owner": "Associação de Radioamadores do Distrito de Leiria",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VARB",
@@ -533,10 +629,12 @@
     "inputFrequency": 145.1375,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 38.49261388888889,
-    "longitude": -8.962052777777776,
+    "latitude": 38.4925,
+    "longitude": -8.961944444444443,
     "qth_locator": "IM58ML",
-    "owner": "Associação de Radioamadores do Litoral Alentejano"
+    "owner": "Associação de Radioamadores do Litoral Alentejano",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VSTC",
@@ -544,10 +642,12 @@
     "inputFrequency": 145.1,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 37.98878611111111,
-    "longitude": -8.692191666666666,
+    "latitude": 37.98861111111111,
+    "longitude": -8.691944444444445,
     "qth_locator": "IM57PX",
-    "owner": "Associação de Radioamadores do Litoral Alentejano"
+    "owner": "Associação de Radioamadores do Litoral Alentejano",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UARB",
@@ -555,10 +655,12 @@
     "inputFrequency": 431.8,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 38.49261388888889,
-    "longitude": -8.962052777777776,
+    "latitude": 38.4925,
+    "longitude": -8.961944444444443,
     "qth_locator": "IM58ML",
-    "owner": "Associação de Radioamadores do Litoral Alentejano"
+    "owner": "Associação de Radioamadores do Litoral Alentejano",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0USTC",
@@ -566,10 +668,12 @@
     "inputFrequency": 431.325,
     "tone": 82.5,
     "modulation": "FM",
-    "latitude": 37.98878611111111,
-    "longitude": -8.692191666666666,
+    "latitude": 37.98861111111111,
+    "longitude": -8.691944444444445,
     "qth_locator": "IM57PX",
-    "owner": "Associação de Radioamadores do Litoral Alentejano"
+    "owner": "Associação de Radioamadores do Litoral Alentejano",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UGMR",
@@ -580,7 +684,9 @@
     "latitude": 41.42861111111111,
     "longitude": -8.26888888888889,
     "qth_locator": "IN51UK",
-    "owner": "Associação de Radioamadores do Minho"
+    "owner": "Associação de Radioamadores do Minho",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UBRG",
@@ -588,10 +694,12 @@
     "inputFrequency": 431.2,
     "tone": 67,
     "modulation": "FM",
-    "latitude": 41.51463888888889,
-    "longitude": -8.39501111111111,
+    "latitude": 41.51444444444444,
+    "longitude": -8.395,
     "qth_locator": "IN51TM",
-    "owner": "Associação de Radioamadores do Minho"
+    "owner": "Associação de Radioamadores do Minho",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UAST",
@@ -599,10 +707,12 @@
     "inputFrequency": 431.6,
     "tone": 123,
     "modulation": "FM",
-    "latitude": 41.325319444444446,
-    "longitude": -8.447675,
+    "latitude": 41.32527777777778,
+    "longitude": -8.4475,
     "qth_locator": "IN51SH",
-    "owner": "Associação de Radioamadores do Minho"
+    "owner": "Associação de Radioamadores do Minho",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VBRG",
@@ -610,10 +720,12 @@
     "inputFrequency": 145.1,
     "tone": 123,
     "modulation": "FM",
-    "latitude": 41.51463888888889,
-    "longitude": -8.39501111111111,
+    "latitude": 41.51444444444444,
+    "longitude": -8.395,
     "qth_locator": "IN51TM",
-    "owner": "Associação de Radioamadores do Minho"
+    "owner": "Associação de Radioamadores do Minho",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UPRT",
@@ -621,10 +733,12 @@
     "inputFrequency": 431.825,
     "tone": 123,
     "modulation": "FM",
-    "latitude": 41.10894444444445,
+    "latitude": 41.10888888888889,
     "longitude": -8.590277777777779,
     "qth_locator": "IN51QC",
-    "owner": "Associação de Radioamadores do Minho"
+    "owner": "Associação de Radioamadores do Minho",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UCVM",
@@ -632,10 +746,12 @@
     "inputFrequency": 431.425,
     "tone": 67,
     "modulation": "FM",
-    "latitude": 41.63894444444444,
-    "longitude": -8.04363888888889,
+    "latitude": 41.638888888888886,
+    "longitude": -8.043611111111112,
     "qth_locator": "IN51XP",
-    "owner": "Associação de Radioamadores do Minho"
+    "owner": "Associação de Radioamadores do Minho",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VVAR",
@@ -643,10 +759,12 @@
     "inputFrequency": 145.0375,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 39.08623611111111,
-    "longitude": -9.276211111111111,
+    "latitude": 39.086111111111116,
+    "longitude": -9.276111111111112,
     "qth_locator": "IM59IC",
-    "owner": "Associação de Radioamadores do Oeste"
+    "owner": "Associação de Radioamadores do Oeste",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UVAR",
@@ -654,10 +772,12 @@
     "inputFrequency": 431.15,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 39.08623611111111,
-    "longitude": -9.276211111111111,
+    "latitude": 39.086111111111116,
+    "longitude": -9.276111111111112,
     "qth_locator": "IM59IC",
-    "owner": "Associação de Radioamadores do Oeste"
+    "owner": "Associação de Radioamadores do Oeste",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UMO",
@@ -665,10 +785,12 @@
     "inputFrequency": 431.375,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 39.174838888888885,
-    "longitude": -9.060172222222223,
+    "latitude": 39.17472222222222,
+    "longitude": -9.06,
     "qth_locator": "IM59LE",
-    "owner": "Associação de Radioamadores do Ribatejo"
+    "owner": "Associação de Radioamadores do Ribatejo",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0USO",
@@ -676,10 +798,12 @@
     "inputFrequency": 431.35,
     "tone": 67,
     "modulation": "FM",
-    "latitude": 38.73909722222222,
-    "longitude": -7.583697222222222,
+    "latitude": 38.73888888888889,
+    "longitude": -7.583611111111111,
     "qth_locator": "IM68ER",
-    "owner": "Associação de Radioamadores do Ribatejo"
+    "owner": "Associação de Radioamadores do Ribatejo",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0USR",
@@ -687,10 +811,12 @@
     "inputFrequency": 431.475,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 39.23647777777778,
-    "longitude": -8.680475,
+    "latitude": 39.23638888888889,
+    "longitude": -8.680277777777777,
     "qth_locator": "IM59PF",
-    "owner": "Associação de Radioamadores do Ribatejo"
+    "owner": "Associação de Radioamadores do Ribatejo",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VMO",
@@ -698,10 +824,12 @@
     "inputFrequency": 145.15,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 39.174838888888885,
-    "longitude": -9.060172222222223,
+    "latitude": 39.17472222222222,
+    "longitude": -9.06,
     "qth_locator": "IM59LE",
-    "owner": "Associação de Radioamadores do Ribatejo"
+    "owner": "Associação de Radioamadores do Ribatejo",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UTR",
@@ -709,10 +837,12 @@
     "inputFrequency": 431.575,
     "tone": 131.8,
     "modulation": "FM",
-    "latitude": 39.61078055555556,
-    "longitude": -8.31311388888889,
+    "latitude": 39.61055555555556,
+    "longitude": -8.313055555555556,
     "qth_locator": "IM59UO",
-    "owner": "Associação de Radioamadores do Ribatejo"
+    "owner": "Associação de Radioamadores do Ribatejo",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1VB",
@@ -720,10 +850,12 @@
     "inputFrequency": 145.025,
     "tone": 88.5,
     "modulation": "FM",
-    "latitude": 37.76163638888889,
-    "longitude": -25.493187777777777,
+    "latitude": 37.76138888888889,
+    "longitude": -25.493055555555557,
     "qth_locator": "HM77GS",
-    "owner": "Associação de Radioamadores dos Açores"
+    "owner": "Associação de Radioamadores dos Açores",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1USC",
@@ -731,10 +863,12 @@
     "inputFrequency": 431.175,
     "tone": 88.5,
     "modulation": "FM",
-    "latitude": 37.819183333333335,
-    "longitude": -25.751508333333334,
+    "latitude": 37.81916666666667,
+    "longitude": -25.75138888888889,
     "qth_locator": "HM77CT",
-    "owner": "Associação de Radioamadores dos Açores"
+    "owner": "Associação de Radioamadores dos Açores",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1VSC",
@@ -742,10 +876,12 @@
     "inputFrequency": 145.175,
     "tone": 88.5,
     "modulation": "FM",
-    "latitude": 37.819183333333335,
-    "longitude": -25.751508333333334,
+    "latitude": 37.81916666666667,
+    "longitude": -25.75138888888889,
     "qth_locator": "HM77CT",
-    "owner": "Associação de Radioamadores dos Açores"
+    "owner": "Associação de Radioamadores dos Açores",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1UPB",
@@ -753,10 +889,12 @@
     "inputFrequency": 431.15,
     "tone": 88.5,
     "modulation": "FM",
-    "latitude": 37.778372777777776,
-    "longitude": -25.17652111111111,
+    "latitude": 37.77833333333333,
+    "longitude": -25.17638888888889,
     "qth_locator": "HM77JS",
-    "owner": "Associação de Radioamadores dos Açores"
+    "owner": "Associação de Radioamadores dos Açores",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1VPB",
@@ -764,10 +902,12 @@
     "inputFrequency": 145.15,
     "tone": 88.5,
     "modulation": "FM",
-    "latitude": 37.778372777777776,
-    "longitude": -25.17652111111111,
+    "latitude": 37.77833333333333,
+    "longitude": -25.17638888888889,
     "qth_locator": "HM77JS",
-    "owner": "Associação de Radioamadores dos Açores"
+    "owner": "Associação de Radioamadores dos Açores",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1UPDL",
@@ -775,10 +915,12 @@
     "inputFrequency": 431.3,
     "tone": 88.5,
     "modulation": "FM",
-    "latitude": 37.74258972222222,
-    "longitude": -25.654565555555553,
+    "latitude": 37.7425,
+    "longitude": -25.654444444444444,
     "qth_locator": "HM77ER",
-    "owner": "Associação de Radioamadores dos Açores"
+    "owner": "Associação de Radioamadores dos Açores",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1UB",
@@ -786,10 +928,12 @@
     "inputFrequency": 431.225,
     "tone": 88.5,
     "modulation": "FM",
-    "latitude": 37.76163638888889,
-    "longitude": -25.493187777777777,
+    "latitude": 37.76138888888889,
+    "longitude": -25.493055555555557,
     "qth_locator": "HM77GS",
-    "owner": "Associação de Radioamadores dos Açores"
+    "owner": "Associação de Radioamadores dos Açores",
+    "dmr": true,
+    "dstar": false
   },
   {
     "callsign": "CQ0URTD",
@@ -797,10 +941,12 @@
     "inputFrequency": 431.1,
     "tone": 123,
     "modulation": "FM",
-    "latitude": 41.223127777777776,
-    "longitude": -8.025627777777778,
+    "latitude": 41.223055555555554,
+    "longitude": -8.025555555555556,
     "qth_locator": "IN51XF",
-    "owner": "Associação de Radioamadores entre Tâmega e Douro"
+    "owner": "Associação de Radioamadores entre Tâmega e Douro",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1VSS",
@@ -808,10 +954,12 @@
     "inputFrequency": 145.0625,
     "tone": 82.5,
     "modulation": "FM",
-    "latitude": 38.73375277777778,
-    "longitude": -27.053955555555557,
+    "latitude": 38.73361111111111,
+    "longitude": -27.05388888888889,
     "qth_locator": "HM68LR",
-    "owner": "Associação dos Radioamadores da Praia da Vitória"
+    "owner": "Associação dos Radioamadores da Praia da Vitória",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1UDX",
@@ -819,10 +967,12 @@
     "inputFrequency": 431.075,
     "tone": 67,
     "modulation": "FM",
-    "latitude": 38.72992222222222,
-    "longitude": -27.318083333333334,
+    "latitude": 38.72972222222222,
+    "longitude": -27.318055555555556,
     "qth_locator": "HM68IR",
-    "owner": "Azores DX Group"
+    "owner": "Azores DX Group",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1VDX",
@@ -830,10 +980,12 @@
     "inputFrequency": 145.1375,
     "tone": 114.8,
     "modulation": "FM",
-    "latitude": 38.72992222222222,
-    "longitude": -27.318083333333334,
+    "latitude": 38.72972222222222,
+    "longitude": -27.318055555555556,
     "qth_locator": "HM68IR",
-    "owner": "Azores DX Group"
+    "owner": "Azores DX Group",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1UF",
@@ -844,7 +996,9 @@
     "latitude": 38.57555555555556,
     "longitude": -28.712777777777777,
     "qth_locator": "HM58PN",
-    "owner": "Azores DX Team"
+    "owner": "Azores DX Team",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UAI",
@@ -852,10 +1006,12 @@
     "inputFrequency": 431.275,
     "tone": 131.8,
     "modulation": "FM",
-    "latitude": 39.53592777777778,
-    "longitude": -8.63641111111111,
+    "latitude": 39.53583333333333,
+    "longitude": -8.636388888888888,
     "qth_locator": "IM59QM",
-    "owner": "Clube de Radioamadores do Entroncamento"
+    "owner": "Clube de Radioamadores do Entroncamento",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VENT",
@@ -863,10 +1019,12 @@
     "inputFrequency": 145.0875,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 39.48137222222223,
-    "longitude": -8.485416666666666,
+    "latitude": 39.48111111111111,
+    "longitude": -8.485277777777776,
     "qth_locator": "IM59SL",
-    "owner": "Clube de Radioamadores do Entroncamento"
+    "owner": "Clube de Radioamadores do Entroncamento",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1VPM",
@@ -877,7 +1035,9 @@
     "latitude": 38.70944444444445,
     "longitude": -28.20111111111111,
     "qth_locator": "HM58VR",
-    "owner": "Clube de Radioamadores dos Açores"
+    "owner": "Clube de Radioamadores dos Açores",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1VF",
@@ -885,10 +1045,12 @@
     "inputFrequency": 145,
     "tone": 123,
     "modulation": "FM",
-    "latitude": 38.575810833333335,
-    "longitude": -28.713479166666666,
+    "latitude": 38.57555555555556,
+    "longitude": -28.71333333333333,
     "qth_locator": "HM58PN",
-    "owner": "Clube de Radioamadores dos Açores"
+    "owner": "Clube de Radioamadores dos Açores",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1VPV",
@@ -899,7 +1061,9 @@
     "latitude": 38.59166666666667,
     "longitude": -28.797500000000003,
     "qth_locator": "HM58OO",
-    "owner": "Clube de Radioamadores dos Açores"
+    "owner": "Clube de Radioamadores dos Açores",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1VP",
@@ -907,10 +1071,12 @@
     "inputFrequency": 145.05,
     "tone": 88.5,
     "modulation": "FM",
-    "latitude": 38.40129805555556,
-    "longitude": -28.23424888888889,
+    "latitude": 38.401111111111106,
+    "longitude": -28.234166666666667,
     "qth_locator": "HM58VJ",
-    "owner": "Grupo de Radioamadores do Pico"
+    "owner": "Grupo de Radioamadores do Pico",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VSI",
@@ -918,10 +1084,12 @@
     "inputFrequency": 145.1125,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 38.78633333333333,
-    "longitude": -9.385166666666667,
+    "latitude": 38.78611111111111,
+    "longitude": -9.385,
     "qth_locator": "IM58HS",
-    "owner": "Liga Amadores Rádio Sintra"
+    "owner": "Liga Amadores Rádio Sintra",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0USI",
@@ -929,10 +1097,12 @@
     "inputFrequency": 431.525,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 38.78633333333333,
-    "longitude": -9.385166666666667,
+    "latitude": 38.78611111111111,
+    "longitude": -9.385,
     "qth_locator": "IM58HS",
-    "owner": "Liga Amadores Rádio Sintra"
+    "owner": "Liga Amadores Rádio Sintra",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UMJ",
@@ -940,10 +1110,12 @@
     "inputFrequency": 431.75,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 39.173649999999995,
-    "longitude": -9.051016666666667,
+    "latitude": 39.17361111111111,
+    "longitude": -9.050833333333333,
     "qth_locator": "IM59LE",
-    "owner": "Liga de Amadores de Rádio Transmissões"
+    "owner": "Liga de Amadores de Rádio Transmissões",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UARS",
@@ -951,10 +1123,12 @@
     "inputFrequency": 431.5,
     "tone": 123,
     "modulation": "FM",
-    "latitude": 40.778638888888885,
-    "longitude": -8.35825,
+    "latitude": 40.77861111111111,
+    "longitude": -8.358055555555556,
     "qth_locator": "IN50ts",
-    "owner": "Liga de Amadores de Rádio Transmissões"
+    "owner": "Liga de Amadores de Rádio Transmissões",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0ULO",
@@ -962,10 +1136,12 @@
     "inputFrequency": 431.25,
     "tone": 131.8,
     "modulation": "FM",
-    "latitude": 40.08936388888889,
-    "longitude": -8.178313888888889,
+    "latitude": 40.08916666666667,
+    "longitude": -8.178055555555554,
     "qth_locator": "IN50VC",
-    "owner": "Núcleo de Radioamadores de Coimbra"
+    "owner": "Núcleo de Radioamadores de Coimbra",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VLO",
@@ -973,10 +1149,12 @@
     "inputFrequency": 145.1,
     "tone": 82.5,
     "modulation": "FM",
-    "latitude": 40.08936388888889,
-    "longitude": -8.178313888888889,
+    "latitude": 40.08916666666667,
+    "longitude": -8.178055555555554,
     "qth_locator": "IN50VC",
-    "owner": "Núcleo de Radioamadores de Coimbra"
+    "owner": "Núcleo de Radioamadores de Coimbra",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UML",
@@ -984,10 +1162,12 @@
     "inputFrequency": 431.25,
     "tone": 131.8,
     "modulation": "FM",
-    "latitude": 37.10159166666667,
-    "longitude": -7.830805555555555,
+    "latitude": 37.10138888888889,
+    "longitude": -7.830555555555556,
     "qth_locator": "IM67CC",
-    "owner": "Radioamador Clube de Loulé"
+    "owner": "Radioamador Clube de Loulé",
+    "dmr": true,
+    "dstar": false
   },
   {
     "callsign": "CQ0VFO",
@@ -995,10 +1175,12 @@
     "inputFrequency": 145.05,
     "tone": 82.5,
     "modulation": "FM",
-    "latitude": 37.314991666666664,
-    "longitude": -8.588052777777778,
+    "latitude": 37.31472222222222,
+    "longitude": -8.587777777777779,
     "qth_locator": "IM57QH",
-    "owner": "Radioamador Clube de Loulé"
+    "owner": "Radioamador Clube de Loulé",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UFO",
@@ -1006,10 +1188,12 @@
     "inputFrequency": 431.075,
     "tone": 131.8,
     "modulation": "FM",
-    "latitude": 37.314991666666664,
-    "longitude": -8.588052777777778,
+    "latitude": 37.31472222222222,
+    "longitude": -8.587777777777779,
     "qth_locator": "IM57QH",
-    "owner": "Radioamador Clube de Loulé"
+    "owner": "Radioamador Clube de Loulé",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0USM",
@@ -1017,10 +1201,12 @@
     "inputFrequency": 431.1,
     "tone": 131.8,
     "modulation": "FM",
-    "latitude": 37.10158611111111,
-    "longitude": -7.830638888888888,
+    "latitude": 37.10138888888889,
+    "longitude": -7.830555555555556,
     "qth_locator": "IM67CC",
-    "owner": "Radioamador Clube de Loulé"
+    "owner": "Radioamador Clube de Loulé",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VFD",
@@ -1028,10 +1214,12 @@
     "inputFrequency": 145.1625,
     "tone": 82.5,
     "modulation": "FM",
-    "latitude": 37.314991666666664,
-    "longitude": -8.588052777777778,
+    "latitude": 37.31472222222222,
+    "longitude": -8.587777777777779,
     "qth_locator": "IM57QH",
-    "owner": "Radioamador Clube de Loulé"
+    "owner": "Radioamador Clube de Loulé",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UFL",
@@ -1039,10 +1227,12 @@
     "inputFrequency": 431.625,
     "tone": 131.8,
     "modulation": "FM",
-    "latitude": 37.10140833333333,
-    "longitude": -7.830563888888888,
+    "latitude": 37.10138888888889,
+    "longitude": -7.830555555555556,
     "qth_locator": "IM67CC",
-    "owner": "Radioamador Clube de Loulé"
+    "owner": "Radioamador Clube de Loulé",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UIV",
@@ -1050,10 +1240,12 @@
     "inputFrequency": 431.6,
     "tone": 131.8,
     "modulation": "FM",
-    "latitude": 37.158947222222224,
-    "longitude": -8.061177777777779,
+    "latitude": 37.15888888888889,
+    "longitude": -8.061111111111112,
     "qth_locator": "IM57xd",
-    "owner": "Radioamador Clube de Loulé"
+    "owner": "Radioamador Clube de Loulé",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VSM",
@@ -1061,10 +1253,12 @@
     "inputFrequency": 145.125,
     "tone": 82.5,
     "modulation": "FM",
-    "latitude": 37.10158611111111,
-    "longitude": -7.830638888888888,
+    "latitude": 37.10138888888889,
+    "longitude": -7.830555555555556,
     "qth_locator": "IM67CC",
-    "owner": "Radioamador Clube de Loulé"
+    "owner": "Radioamador Clube de Loulé",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VTA",
@@ -1072,10 +1266,12 @@
     "inputFrequency": 145.025,
     "tone": 82.5,
     "modulation": "FM",
-    "latitude": 37.243969444444446,
-    "longitude": -7.738386111111111,
+    "latitude": 37.24388888888889,
+    "longitude": -7.738333333333333,
     "qth_locator": "IM67DF",
-    "owner": "Radioamador Clube de Loulé"
+    "owner": "Radioamador Clube de Loulé",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UAG",
@@ -1083,10 +1279,12 @@
     "inputFrequency": 431.6,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 39.41164444444444,
-    "longitude": -9.118472222222223,
+    "latitude": 39.41138888888889,
+    "longitude": -9.118333333333334,
     "qth_locator": "IM59KJ",
-    "owner": "Radioamadores Centro Oeste"
+    "owner": "Radioamadores Centro Oeste",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VMST",
@@ -1094,10 +1292,12 @@
     "inputFrequency": 145.025,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 38.73271666666667,
-    "longitude": -9.189494444444446,
+    "latitude": 38.7325,
+    "longitude": -9.189444444444444,
     "qth_locator": "IM58JR",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UMST",
@@ -1105,10 +1305,12 @@
     "inputFrequency": 431.05,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 38.73271666666667,
-    "longitude": -9.189494444444446,
+    "latitude": 38.7325,
+    "longitude": -9.189444444444444,
     "qth_locator": "IM58JR",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0USMA",
@@ -1116,10 +1318,12 @@
     "inputFrequency": 431.15,
     "tone": 67,
     "modulation": "FM",
-    "latitude": 39.312638888888884,
-    "longitude": -7.358533333333333,
+    "latitude": 39.3125,
+    "longitude": -7.358333333333333,
     "qth_locator": "IM69HH",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UHU",
@@ -1127,10 +1331,12 @@
     "inputFrequency": 431.35,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 38.73271666666667,
-    "longitude": -9.189494444444446,
+    "latitude": 38.7325,
+    "longitude": -9.189444444444444,
     "qth_locator": "IM58JR",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VSF",
@@ -1138,10 +1344,12 @@
     "inputFrequency": 145.0125,
     "tone": 123,
     "modulation": "FM",
-    "latitude": 40.84491111111112,
-    "longitude": -8.279300000000001,
+    "latitude": 40.844722222222224,
+    "longitude": -8.279166666666667,
     "qth_locator": "IN50UU",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UCAN",
@@ -1149,10 +1357,12 @@
     "inputFrequency": 431.05,
     "tone": 131.8,
     "modulation": "FM",
-    "latitude": 39.43429444444444,
-    "longitude": -8.921988888888889,
+    "latitude": 39.43416666666666,
+    "longitude": -8.921944444444444,
     "qth_locator": "IM59MK",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0USF",
@@ -1160,10 +1370,12 @@
     "inputFrequency": 431.125,
     "tone": 123,
     "modulation": "FM",
-    "latitude": 40.84491111111112,
-    "longitude": -8.279300000000001,
+    "latitude": 40.844722222222224,
+    "longitude": -8.279166666666667,
     "qth_locator": "IN50uu",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UEC",
@@ -1171,10 +1383,12 @@
     "inputFrequency": 431.275,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 38.81274166666666,
-    "longitude": -9.198180555555556,
+    "latitude": 38.8125,
+    "longitude": -9.198055555555555,
     "qth_locator": "IM58JT",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VSMA",
@@ -1182,10 +1396,12 @@
     "inputFrequency": 145.0625,
     "tone": 123,
     "modulation": "FM",
-    "latitude": 39.312638888888884,
-    "longitude": -7.358533333333333,
+    "latitude": 39.3125,
+    "longitude": -7.358333333333333,
     "qth_locator": "IM69HH",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UTV",
@@ -1193,10 +1409,12 @@
     "inputFrequency": 431.7,
     "tone": 131.8,
     "modulation": "FM",
-    "latitude": 40.09106388888889,
-    "longitude": -8.178516666666667,
+    "latitude": 40.090833333333336,
+    "longitude": -8.178333333333333,
     "qth_locator": "IN50VC",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UCB",
@@ -1204,10 +1422,12 @@
     "inputFrequency": 431.65,
     "tone": 82.5,
     "modulation": "FM",
-    "latitude": 39.82615555555556,
-    "longitude": -7.475108333333333,
+    "latitude": 39.82611111111112,
+    "longitude": -7.4750000000000005,
     "qth_locator": "IM69GT",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UAE",
@@ -1215,10 +1435,12 @@
     "inputFrequency": 431.2,
     "tone": 123,
     "modulation": "FM",
-    "latitude": 40.802480555555555,
-    "longitude": -8.369780555555556,
+    "latitude": 40.80222222222222,
+    "longitude": -8.369722222222222,
     "qth_locator": "IN50TT",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VEC",
@@ -1226,10 +1448,12 @@
     "inputFrequency": 145.0625,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 38.81283611111111,
-    "longitude": -9.198075000000001,
+    "latitude": 38.812777777777775,
+    "longitude": -9.198055555555555,
     "qth_locator": "IM58JT",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VCSC",
@@ -1237,10 +1461,12 @@
     "inputFrequency": 145,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 38.706475000000005,
-    "longitude": -9.433124999999999,
+    "latitude": 38.70638888888889,
+    "longitude": -9.433055555555555,
     "qth_locator": "IM58GQ",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VSP",
@@ -1248,10 +1474,12 @@
     "inputFrequency": 145.15,
     "tone": 82.5,
     "modulation": "FM",
-    "latitude": 37.935877777777776,
+    "latitude": 37.93583333333333,
     "longitude": -7.595,
     "qth_locator": "IM67EW",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UREP",
@@ -1259,10 +1487,12 @@
     "inputFrequency": 431.425,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 38.673880555555556,
-    "longitude": -9.177341666666667,
+    "latitude": 38.67361111111111,
+    "longitude": -9.177222222222222,
     "qth_locator": "IM58JQ",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UPS",
@@ -1270,10 +1500,12 @@
     "inputFrequency": 431.4,
     "tone": 131.8,
     "modulation": "FM",
-    "latitude": 40.03083888888889,
-    "longitude": -7.948569444444445,
+    "latitude": 40.030833333333334,
+    "longitude": -7.948333333333333,
     "qth_locator": "IN60AA",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0USC",
@@ -1281,20 +1513,24 @@
     "inputFrequency": 431.45,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 38.97266666666667,
-    "longitude": -9.104291666666667,
+    "latitude": 38.972500000000004,
+    "longitude": -9.104166666666666,
     "qth_locator": "IM58KX",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UMN",
     "outputFrequency": 439.35,
     "inputFrequency": 431.75,
     "modulation": "FM",
-    "latitude": 38.62860277777778,
-    "longitude": -8.230511111111111,
+    "latitude": 38.62833333333333,
+    "longitude": -8.230277777777777,
     "qth_locator": "IM58VP",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ2UMAD",
@@ -1302,10 +1538,12 @@
     "inputFrequency": 431.05,
     "tone": 82.5,
     "modulation": "FM",
-    "latitude": 32.655563888888885,
-    "longitude": -16.87341111111111,
+    "latitude": 32.65555555555555,
+    "longitude": -16.873333333333335,
     "qth_locator": "IM12NP",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UMC",
@@ -1313,10 +1551,12 @@
     "inputFrequency": 431.575,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 38.897866666666665,
-    "longitude": -9.193072222222222,
+    "latitude": 38.897777777777776,
+    "longitude": -9.193055555555556,
     "qth_locator": "IM58JV",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UP",
@@ -1324,10 +1564,12 @@
     "inputFrequency": 431.675,
     "tone": 67,
     "modulation": "FM",
-    "latitude": 39.312638888888884,
-    "longitude": -7.358533333333333,
+    "latitude": 39.3125,
+    "longitude": -7.358333333333333,
     "qth_locator": "IM69HH",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ2UFX",
@@ -1335,10 +1577,12 @@
     "inputFrequency": 431.1,
     "tone": 67,
     "modulation": "FM",
-    "latitude": 32.69322777777777,
-    "longitude": -16.90365,
+    "latitude": 32.69305555555555,
+    "longitude": -16.90361111111111,
     "qth_locator": "IM12NQ",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UMF",
@@ -1347,9 +1591,11 @@
     "tone": 131.8,
     "modulation": "FM",
     "latitude": 37.315,
-    "longitude": -8.588144444444445,
+    "longitude": -8.588055555555556,
     "qth_locator": "IM57QH",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UCL",
@@ -1357,10 +1603,12 @@
     "inputFrequency": 431.725,
     "tone": 123,
     "modulation": "FM",
-    "latitude": 40.552547222222216,
-    "longitude": -8.18013611111111,
+    "latitude": 40.552499999999995,
+    "longitude": -8.18,
     "qth_locator": "IN50VN",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VMC",
@@ -1368,10 +1616,12 @@
     "inputFrequency": 145.075,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 38.897866666666665,
-    "longitude": -9.193072222222222,
+    "latitude": 38.897777777777776,
+    "longitude": -9.193055555555556,
     "qth_locator": "IM58JV",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UM",
@@ -1379,10 +1629,12 @@
     "inputFrequency": 431.075,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 39.173649999999995,
-    "longitude": -9.051016666666667,
+    "latitude": 39.17361111111111,
+    "longitude": -9.050833333333333,
     "qth_locator": "IM59LE",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UMM",
@@ -1393,7 +1645,9 @@
     "latitude": 37.10166666666667,
     "longitude": -7.832222222222222,
     "qth_locator": "IM67CC",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0UKE",
@@ -1401,10 +1655,12 @@
     "inputFrequency": 431.225,
     "tone": 74.4,
     "modulation": "FM",
-    "latitude": 39.114161111111116,
-    "longitude": -9.375519444444445,
+    "latitude": 39.11388888888889,
+    "longitude": -9.375277777777779,
     "qth_locator": "IM59hc",
-    "owner": "Rede dos Emissores Portugueses"
+    "owner": "Rede dos Emissores Portugueses",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ0VTM",
@@ -1412,10 +1668,12 @@
     "inputFrequency": 145.175,
     "tone": 82.5,
     "modulation": "FM",
-    "latitude": 40.258361111111114,
-    "longitude": -8.349561111111111,
+    "latitude": 40.25833333333333,
+    "longitude": -8.349444444444446,
     "qth_locator": "IN50TG",
-    "owner": "Tertúlia Radioamadorística Guglielmo Marconi"
+    "owner": "Tertúlia Radioamadorística Guglielmo Marconi",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1VFLW",
@@ -1423,10 +1681,12 @@
     "inputFrequency": 145.1875,
     "tone": 88.5,
     "modulation": "FM",
-    "latitude": 39.445544444444444,
-    "longitude": -31.16989722222222,
+    "latitude": 39.445277777777775,
+    "longitude": -31.169722222222223,
     "qth_locator": "HM49JK",
-    "owner": "União de Radioamadores dos Açores"
+    "owner": "União de Radioamadores dos Açores",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1UMB",
@@ -1437,7 +1697,9 @@
     "latitude": 38.64722222222222,
     "longitude": -27.225277777777777,
     "qth_locator": "HM68JP",
-    "owner": "União de Radioamadores dos Açores"
+    "owner": "União de Radioamadores dos Açores",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1VSB",
@@ -1448,7 +1710,9 @@
     "latitude": 38.730000000000004,
     "longitude": -27.31861111111111,
     "qth_locator": "HM68IR",
-    "owner": "União de Radioamadores dos Açores"
+    "owner": "União de Radioamadores dos Açores",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1UMS",
@@ -1456,10 +1720,12 @@
     "inputFrequency": 431.175,
     "tone": 88.5,
     "modulation": "FM",
-    "latitude": 38.799211111111106,
-    "longitude": -27.29101388888889,
+    "latitude": 38.799166666666665,
+    "longitude": -27.290833333333335,
     "qth_locator": "HN66gw",
-    "owner": "União de Radioamadores dos Açores"
+    "owner": "União de Radioamadores dos Açores",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1VCM",
@@ -1467,10 +1733,12 @@
     "inputFrequency": 145.125,
     "tone": 88.5,
     "modulation": "FM",
-    "latitude": 38.71203277777778,
-    "longitude": -27.114041944444445,
+    "latitude": 38.71194444444445,
+    "longitude": -27.11388888888889,
     "qth_locator": "HM68KR",
-    "owner": "União de Radioamadores dos Açores"
+    "owner": "União de Radioamadores dos Açores",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1VSJ",
@@ -1478,10 +1746,12 @@
     "inputFrequency": 145.0375,
     "tone": 67,
     "modulation": "FM",
-    "latitude": 38.546169444444445,
-    "longitude": -27.844313888888887,
+    "latitude": 38.54611111111111,
+    "longitude": -27.844166666666666,
     "qth_locator": "HM68BN",
-    "owner": "União de Radioamadores dos Açores"
+    "owner": "União de Radioamadores dos Açores",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1VGR",
@@ -1489,10 +1759,12 @@
     "inputFrequency": 145.0125,
     "tone": 67,
     "modulation": "FM",
-    "latitude": 39.035805555555555,
-    "longitude": -28.029019444444444,
+    "latitude": 39.035555555555554,
+    "longitude": -28.028888888888886,
     "qth_locator": "HM59XA",
-    "owner": "União de Radioamadores dos Açores"
+    "owner": "União de Radioamadores dos Açores",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1UCM",
@@ -1500,10 +1772,12 @@
     "inputFrequency": 431.125,
     "tone": 88.5,
     "modulation": "FM",
-    "latitude": 38.71203277777778,
-    "longitude": -27.114041944444445,
+    "latitude": 38.71194444444445,
+    "longitude": -27.11388888888889,
     "qth_locator": "HM68KR",
-    "owner": "União de Radioamadores dos Açores"
+    "owner": "União de Radioamadores dos Açores",
+    "dmr": false,
+    "dstar": false
   },
   {
     "callsign": "CQ1USB",
@@ -1514,6 +1788,558 @@
     "latitude": 38.730000000000004,
     "longitude": -27.31861111111111,
     "qth_locator": "HM68IR",
-    "owner": "União de Radioamadores dos Açores"
+    "owner": "União de Radioamadores dos Açores",
+    "dmr": false,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DAL",
+    "outputFrequency": 438.2,
+    "inputFrequency": 430.6,
+    "modulation": "DMR",
+    "latitude": 39.67194444444444,
+    "longitude": -8.758055555555556,
+    "owner": "ARAL",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DPF",
+    "outputFrequency": 438.2,
+    "inputFrequency": 430.6,
+    "modulation": "DMR / D-STAR",
+    "latitude": 38.73027777777778,
+    "longitude": -9.130555555555556,
+    "owner": "ARRLx",
+    "dmr": true,
+    "dstar": true
+  },
+  {
+    "callsign": "CQ0DAB",
+    "outputFrequency": 438.2125,
+    "inputFrequency": 430.6125,
+    "modulation": "DMR",
+    "latitude": 40.680277777777775,
+    "longitude": -7.924166666666667,
+    "owner": "REP",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DPG",
+    "outputFrequency": 438.2125,
+    "inputFrequency": 430.6125,
+    "modulation": "DMR",
+    "latitude": 39.312777777777775,
+    "longitude": -7.35861111111111,
+    "owner": "REP",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DAM",
+    "outputFrequency": 438.225,
+    "inputFrequency": 430.625,
+    "modulation": "DMR",
+    "latitude": 41.26888888888889,
+    "longitude": -8.0975,
+    "owner": "ARETD",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DLIZ",
+    "outputFrequency": 438.2375,
+    "inputFrequency": 430.6375,
+    "modulation": "DMR",
+    "latitude": 39.67194444444444,
+    "longitude": -8.758055555555556,
+    "owner": "ARAL",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DUG",
+    "outputFrequency": 438.275,
+    "inputFrequency": 430.675,
+    "modulation": "DMR",
+    "latitude": 40.080555555555556,
+    "longitude": -7.525555555555555,
+    "owner": "ARBB",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DMS",
+    "outputFrequency": 438.275,
+    "inputFrequency": 430.675,
+    "modulation": "DMR",
+    "latitude": 38.893055555555556,
+    "longitude": -9.110833333333334,
+    "owner": "ARVM",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DST",
+    "outputFrequency": 438.2875,
+    "inputFrequency": 430.6875,
+    "modulation": "DMR",
+    "latitude": 38.78638888888889,
+    "longitude": -9.385277777777777,
+    "owner": "LARS",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DRX",
+    "outputFrequency": 438.3,
+    "inputFrequency": 430.7,
+    "modulation": "DMR",
+    "latitude": 40.250277777777775,
+    "longitude": -8.349166666666667,
+    "owner": "ARC",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ1DCG",
+    "outputFrequency": 438.3,
+    "inputFrequency": 430.7,
+    "modulation": "DMR",
+    "latitude": 38.575833333333335,
+    "longitude": -28.71361111111111,
+    "owner": "CRA",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DTRZ",
+    "outputFrequency": 438.3125,
+    "inputFrequency": 430.7125,
+    "modulation": "DMR",
+    "latitude": 40.80222222222222,
+    "longitude": -8.369722222222222,
+    "owner": "ARETD",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ1DUR",
+    "outputFrequency": 438.3375,
+    "inputFrequency": 430.7375,
+    "modulation": "DMR",
+    "latitude": 38.66083333333333,
+    "longitude": -27.225277777777777,
+    "owner": "URA",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DMA",
+    "outputFrequency": 438.35,
+    "inputFrequency": 430.75,
+    "modulation": "DMR",
+    "latitude": 38.4925,
+    "longitude": -8.961944444444443,
+    "owner": "ARLA",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DFF",
+    "outputFrequency": 438.3625,
+    "inputFrequency": 430.7625,
+    "modulation": "DMR",
+    "latitude": 40.19194444444444,
+    "longitude": -8.841111111111111,
+    "owner": "ARCP",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DCM",
+    "outputFrequency": 438.3625,
+    "inputFrequency": 430.7625,
+    "modulation": "DMR",
+    "latitude": 39.3125,
+    "longitude": -7.428888888888889,
+    "owner": "REP",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DCD",
+    "outputFrequency": 438.3875,
+    "inputFrequency": 430.7875,
+    "modulation": "DMR",
+    "latitude": 39.549166666666665,
+    "longitude": -8.866666666666667,
+    "owner": "ARAL",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DBO",
+    "outputFrequency": 438.4,
+    "inputFrequency": 430.8,
+    "modulation": "DMR",
+    "latitude": 41.69777777777777,
+    "longitude": -7.437777777777778,
+    "owner": "ARAT",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DLU",
+    "outputFrequency": 438.4,
+    "inputFrequency": 430.8,
+    "modulation": "DMR",
+    "latitude": 40.809999999999995,
+    "longitude": -7.839722222222222,
+    "owner": "ARBA",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DCO",
+    "outputFrequency": 438.4125,
+    "inputFrequency": 430.8125,
+    "modulation": "DMR",
+    "latitude": 40.2,
+    "longitude": -8.445555555555556,
+    "owner": "ARC",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DMQ",
+    "outputFrequency": 438.425,
+    "inputFrequency": 430.825,
+    "modulation": "DMR",
+    "latitude": 38.897777777777776,
+    "longitude": -9.193055555555556,
+    "owner": "REP",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DPD",
+    "outputFrequency": 438.4375,
+    "inputFrequency": 430.8375,
+    "modulation": "DMR",
+    "latitude": 41.54361111111111,
+    "longitude": -7.581944444444444,
+    "owner": "ARAT",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DMJ",
+    "outputFrequency": 438.4375,
+    "inputFrequency": 430.8375,
+    "modulation": "DMR",
+    "latitude": 39.17472222222222,
+    "longitude": -9.06027777777778,
+    "owner": "LART",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DMV",
+    "outputFrequency": 438.475,
+    "inputFrequency": 430.875,
+    "modulation": "DMR",
+    "latitude": 41.10805555555556,
+    "longitude": -8.587222222222223,
+    "owner": "ARBA",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DCSC",
+    "outputFrequency": 438.475,
+    "inputFrequency": 430.875,
+    "modulation": "DMR",
+    "latitude": 38.75,
+    "longitude": -9.439166666666667,
+    "owner": "ARLC",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DFR",
+    "outputFrequency": 438.5,
+    "inputFrequency": 430.9,
+    "modulation": "DMR",
+    "latitude": 40.845,
+    "longitude": -8.279722222222222,
+    "owner": "ARBA",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DCRE",
+    "outputFrequency": 438.5,
+    "inputFrequency": 430.9,
+    "modulation": "DMR",
+    "latitude": 39.53583333333333,
+    "longitude": -8.636388888888888,
+    "owner": "CRE",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DMTV",
+    "outputFrequency": 438.5125,
+    "inputFrequency": 430.9125,
+    "modulation": "DMR",
+    "latitude": 39.086111111111116,
+    "longitude": -9.276111111111112,
+    "owner": "ARADO",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DSS",
+    "outputFrequency": 438.5375,
+    "inputFrequency": 430.9375,
+    "modulation": "DMR",
+    "latitude": 38.73916666666667,
+    "longitude": -7.583611111111111,
+    "owner": "REP",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DEC",
+    "outputFrequency": 438.575,
+    "inputFrequency": 430.975,
+    "modulation": "DMR",
+    "latitude": 38.73777777777778,
+    "longitude": -9.13861111111111,
+    "owner": "AMRAD",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DLA",
+    "outputFrequency": 438.6,
+    "inputFrequency": 431,
+    "modulation": "DMR",
+    "latitude": 37.98888888888889,
+    "longitude": -8.692222222222222,
+    "owner": "ARLA",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DKE",
+    "outputFrequency": 145.5875,
+    "inputFrequency": 144.9875,
+    "modulation": "DMR",
+    "latitude": 39.11388888888889,
+    "longitude": -9.375555555555556,
+    "owner": "REP",
+    "dmr": true,
+    "dstar": false
+  },
+  {
+    "callsign": "CQ0DTV",
+    "outputFrequency": 438.2,
+    "inputFrequency": 430.6,
+    "modulation": "D-STAR",
+    "latitude": 39.086111111111116,
+    "longitude": -9.276111111111112,
+    "owner": "ARADO",
+    "dmr": false,
+    "dstar": true
+  },
+  {
+    "callsign": "CQ0DSL",
+    "outputFrequency": 438.225,
+    "inputFrequency": 430.625,
+    "modulation": "D-STAR",
+    "latitude": 37.10166666666667,
+    "longitude": -7.830555555555556,
+    "owner": "RCL",
+    "dmr": false,
+    "dstar": true
+  },
+  {
+    "callsign": "CQ0DCS",
+    "outputFrequency": 438.4,
+    "inputFrequency": 430.8,
+    "modulation": "D-STAR",
+    "latitude": 38.73027777777778,
+    "longitude": -9.409444444444444,
+    "owner": "ARLC",
+    "dmr": false,
+    "dstar": true
+  },
+  {
+    "callsign": "CQ0DLR",
+    "outputFrequency": 438.425,
+    "inputFrequency": 430.825,
+    "modulation": "D-STAR",
+    "latitude": 39.54944444444444,
+    "longitude": -8.867222222222223,
+    "owner": "ARAL",
+    "dmr": false,
+    "dstar": true
+  },
+  {
+    "callsign": "CQ0DMC",
+    "outputFrequency": 438.4625,
+    "inputFrequency": 430.8625,
+    "modulation": "D-STAR",
+    "latitude": 38.897777777777776,
+    "longitude": -9.193055555555556,
+    "owner": "REP",
+    "dmr": false,
+    "dstar": true
+  },
+  {
+    "callsign": "CQ0DCH",
+    "outputFrequency": 438.5125,
+    "inputFrequency": 430.9125,
+    "modulation": "D-STAR",
+    "latitude": 41.7325,
+    "longitude": -7.647777777777777,
+    "owner": "ARAT",
+    "dmr": false,
+    "dstar": true
+  },
+  {
+    "callsign": "CQ0DVI",
+    "outputFrequency": 438.5125,
+    "inputFrequency": 430.9125,
+    "modulation": "D-STAR",
+    "latitude": 40.680277777777775,
+    "longitude": -7.924444444444445,
+    "owner": "REP",
+    "dmr": false,
+    "dstar": true
+  },
+  {
+    "callsign": "CQ0DSM",
+    "outputFrequency": 438.5125,
+    "inputFrequency": 430.9125,
+    "modulation": "D-STAR",
+    "latitude": 39.312777777777775,
+    "longitude": -7.35861111111111,
+    "owner": "REP",
+    "dmr": false,
+    "dstar": true
+  },
+  {
+    "callsign": "CQ0DCV",
+    "outputFrequency": 438.525,
+    "inputFrequency": 430.925,
+    "modulation": "D-STAR",
+    "latitude": 37.98888888888889,
+    "longitude": -8.692222222222222,
+    "owner": "ARLA",
+    "dmr": false,
+    "dstar": true
+  },
+  {
+    "callsign": "CQ0DSA",
+    "outputFrequency": 438.6125,
+    "inputFrequency": 431.0125,
+    "modulation": "D-STAR",
+    "latitude": 38.4925,
+    "longitude": -8.961944444444443,
+    "owner": "ARLA",
+    "dmr": false,
+    "dstar": true
+  },
+  {
+    "callsign": "CQ0DSE",
+    "outputFrequency": 145.575,
+    "inputFrequency": 144.975,
+    "modulation": "D-STAR",
+    "latitude": 40.32138888888889,
+    "longitude": -7.614444444444444,
+    "owner": "ARBA",
+    "dmr": false,
+    "dstar": true
+  },
+  {
+    "callsign": "CQ1DAH",
+    "outputFrequency": 145.575,
+    "inputFrequency": 144.975,
+    "modulation": "D-STAR",
+    "latitude": 38.730000000000004,
+    "longitude": -27.31861111111111,
+    "owner": "URA",
+    "dmr": false,
+    "dstar": true
+  },
+  {
+    "callsign": "CS5GVS",
+    "outputFrequency": 144.825,
+    "inputFrequency": 144.825,
+    "modulation": "D-STAR",
+    "latitude": 40.66083333333333,
+    "longitude": -7.9094444444444445,
+    "owner": "REP",
+    "dmr": false,
+    "dstar": true
+  },
+  {
+    "callsign": "CS5GVW",
+    "outputFrequency": 144.8375,
+    "inputFrequency": 144.8375,
+    "modulation": "D-STAR",
+    "latitude": 40.19083333333333,
+    "longitude": -8.437777777777779,
+    "owner": "ARC",
+    "dmr": false,
+    "dstar": true
+  },
+  {
+    "callsign": "CS5GIH",
+    "outputFrequency": 144.8375,
+    "inputFrequency": 144.8375,
+    "modulation": "D-STAR",
+    "latitude": 37.1,
+    "longitude": -7.916666666666667,
+    "owner": "RCL",
+    "dmr": false,
+    "dstar": true
+  },
+  {
+    "callsign": "CS4GDA",
+    "outputFrequency": 144.85,
+    "inputFrequency": 144.85,
+    "modulation": "D-STAR",
+    "latitude": 38.65,
+    "longitude": -27.216666666666665,
+    "owner": "LART",
+    "dmr": false,
+    "dstar": true
+  },
+  {
+    "callsign": "CS5GUH",
+    "outputFrequency": 144.8625,
+    "inputFrequency": 144.8625,
+    "modulation": "D-STAR",
+    "latitude": 40.50833333333333,
+    "longitude": -7.5905555555555555,
+    "owner": "ARBA",
+    "dmr": false,
+    "dstar": true
+  },
+  {
+    "callsign": "CS5GUM",
+    "outputFrequency": 144.85,
+    "inputFrequency": 144.85,
+    "modulation": "D-STAR",
+    "latitude": 38.87111111111111,
+    "longitude": -7.248611111111111,
+    "owner": "ARLA",
+    "dmr": false,
+    "dstar": true
   }
 ]

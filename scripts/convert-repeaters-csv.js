@@ -10,6 +10,7 @@
 import fs from 'fs';
 import path from 'path';
 import { createInterface } from 'readline';
+import { fileURLToPath } from 'url';
 
 // --- Simple color helpers (no deps) ---
 const colors = {
@@ -73,7 +74,19 @@ function cleanStr(s) {
 
 function parsePtFloat(s) {
   if (!s) return undefined;
-  const num = s.toString().replace(/\./g, '').replace(/,/g, '.');
+  const raw = s
+    .toString()
+    .trim()
+    .replace(/\s+/g, '');
+  const hasComma = raw.includes(',');
+  const hasDot = raw.includes('.');
+  let num = raw;
+  if (hasComma && hasDot) {
+    // Assume thousand separators with dot and decimal comma
+    num = raw.replace(/\./g, '').replace(/,/g, '.');
+  } else if (hasComma) {
+    num = raw.replace(/,/g, '.');
+  }
   const m = num.match(/-?\d+(?:\.\d+)?/);
   return m ? parseFloat(m[0]) : undefined;
 }
@@ -88,23 +101,35 @@ function parseToneHz(s) {
   return typeof v === 'number' ? v : undefined;
 }
 
-function parseDMS(str) {
+function parseDMS(str, defaultDir = '') {
   if (!str) return undefined;
-  const raw = str
-    .toString()
-    .replace(/\s+/g, '') // remove spaces
-    .replace(/°/g, 'º');
-  // Example: 37º10'20"",600N or 08º33'41"",920W
-  const re = /^(\d{1,3})[^0-9]*(\d{1,2})[^0-9]*(\d{1,2})(?:[^0-9]+(\d+))?([NSEW])?$/i;
-  const m = raw.match(re);
-  if (!m) return undefined;
-  const deg = parseInt(m[1], 10);
-  const min = parseInt(m[2], 10);
-  const secInt = parseInt(m[3], 10);
-  const secFrac = m[4] ? parseFloat('0.' + m[4]) : 0;
-  const dir = (m[5] || '').toUpperCase();
-  const seconds = secInt + secFrac;
-  let dec = deg + min / 60 + seconds / 3600;
+  let input = str.toString().trim();
+  if (!input) return undefined;
+
+  const dirMatch = input.match(/[NSEW]/i);
+  let dir = dirMatch ? dirMatch[0].toUpperCase() : '';
+  if (!dir && defaultDir) dir = defaultDir.toUpperCase();
+
+  input = input
+    .replace(/[NSEW]/gi, ' ')
+    .replace(/°/g, ' ')
+    .replace(/º/g, ' ')
+    .replace(/["“”″]+/g, '')
+    .replace(/[\'’′]/g, ' ')
+    .replace(/,/g, '.')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const numbers = input.match(/-?\d+(?:\.\d+)?/g);
+  if (!numbers || !numbers.length) return undefined;
+
+  const deg = parseFloat(numbers[0]);
+  const min = numbers.length > 1 ? parseFloat(numbers[1]) : 0;
+  const sec = numbers.length > 2 ? parseFloat(numbers[2]) : 0;
+
+  if ([deg, min, sec].some((n) => Number.isNaN(n))) return undefined;
+
+  let dec = deg + min / 60 + sec / 3600;
   if (dir === 'S' || dir === 'W') dec = -dec;
   return dec;
 }
@@ -127,6 +152,113 @@ function normalizeKey(s) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, ' ')
     .trim();
+}
+
+function normalizeCallsign(s) {
+  return cleanStr(s)
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '');
+}
+
+function extractDefaultDirection(header) {
+  if (!header) return '';
+  const upper = header.toUpperCase();
+  if (upper.includes(' N')) return 'N';
+  if (upper.includes(' S')) return 'S';
+  if (upper.includes(' E')) return 'E';
+  if (upper.includes(' W')) return 'W';
+  return '';
+}
+
+function loadSupplementalRepeaters(csvPath, { modulation, dmr, dstar }) {
+  const set = new Set();
+  const map = new Map();
+  if (!fs.existsSync(csvPath)) {
+    return { set, map };
+  }
+  const text = fs.readFileSync(csvPath, 'utf8');
+  const rows = parseCSV(text).filter((r) => r.length && r.some((c) => c && c.trim() !== ''));
+  if (rows.length < 2) {
+    return { set, map };
+  }
+  const headers = rows[0].map((h) => cleanStr(h));
+  const headersNorm = headers.map((h) => normalizeKey(h));
+  const findIdx = (aliases) => {
+    const list = Array.isArray(aliases) ? aliases : [aliases];
+    for (const alias of list.map(normalizeKey)) {
+      const idx = headersNorm.indexOf(alias);
+      if (idx !== -1) return idx;
+    }
+    return -1;
+  };
+
+  const idxIndicativo = findIdx(['indicativo']);
+  const idxOutput = findIdx(['saida', 'frequencia de saida']);
+  const idxInput = findIdx(['entrada', 'frequencia de entrada']);
+  const idxLat = findIdx(['latitude n', 'latitude']);
+  const idxLon = findIdx(['longitude w', 'longitude']);
+  const idxOwner = findIdx(['titular', 'entidade']);
+  const idxLocation = findIdx(['localizacao', 'localização', 'local']);
+
+  const latHeaderRaw = idxLat >= 0 ? headers[idxLat] : '';
+  const lonHeaderRaw = idxLon >= 0 ? headers[idxLon] : '';
+  const latDefault = extractDefaultDirection(latHeaderRaw);
+  const lonDefault = extractDefaultDirection(lonHeaderRaw);
+
+  if (idxIndicativo === -1 || idxOutput === -1 || idxInput === -1 || idxLat === -1 || idxLon === -1) {
+    return { set, map };
+  }
+
+  for (const row of rows.slice(1)) {
+    const callsignRaw = cleanStr(row[idxIndicativo]);
+    const key = normalizeCallsign(callsignRaw);
+    if (!key) continue;
+    const callsign = key;
+
+    const outputFrequency = parseFrequencyMHz(cleanStr(row[idxOutput]));
+    const inputFrequency = parseFrequencyMHz(cleanStr(row[idxInput]));
+    const latitude = parseDMS(cleanStr(row[idxLat]), latDefault);
+    const longitude = parseDMS(cleanStr(row[idxLon]), lonDefault);
+
+    const ownerRaw = idxOwner >= 0 ? cleanStr(row[idxOwner]) : '';
+    const locationRaw = idxLocation >= 0 ? cleanStr(row[idxLocation]) : '';
+
+    const repeater = {
+      callsign,
+      outputFrequency,
+      inputFrequency,
+      tone: undefined,
+      modulation,
+      latitude,
+      longitude,
+      qth_locator: undefined,
+      owner: ownerRaw || locationRaw || 'Desconhecido',
+      dmr: Boolean(dmr),
+      dstar: Boolean(dstar),
+    };
+
+    set.add(key);
+
+    if (map.has(key)) {
+      const existing = map.get(key);
+      existing.dmr = existing.dmr || repeater.dmr;
+      existing.dstar = existing.dstar || repeater.dstar;
+      const mods = new Set();
+      if (existing.modulation) mods.add(existing.modulation);
+      if (repeater.modulation) mods.add(repeater.modulation);
+      existing.modulation = Array.from(mods).join(' / ') || existing.modulation || repeater.modulation;
+      if (existing.qth_locator == null && repeater.qth_locator) existing.qth_locator = repeater.qth_locator;
+      if (!existing.owner && repeater.owner) existing.owner = repeater.owner;
+      if (typeof existing.outputFrequency !== 'number' && typeof repeater.outputFrequency === 'number') existing.outputFrequency = repeater.outputFrequency;
+      if (typeof existing.inputFrequency !== 'number' && typeof repeater.inputFrequency === 'number') existing.inputFrequency = repeater.inputFrequency;
+      if (typeof existing.latitude !== 'number' && typeof repeater.latitude === 'number') existing.latitude = repeater.latitude;
+      if (typeof existing.longitude !== 'number' && typeof repeater.longitude === 'number') existing.longitude = repeater.longitude;
+    } else {
+      map.set(key, repeater);
+    }
+  }
+
+  return { set, map };
 }
 
 // --- Mapping function ---
@@ -187,6 +319,8 @@ function mapRowToRepeater(headersRaw, row) {
     longitude,
     qth_locator: locator || undefined,
     owner,
+    dmr: false,
+    dstar: false,
   };
 }
 
@@ -268,16 +402,39 @@ async function main() {
   const headers = rows[0].map((h) => cleanStr(h));
   const dataRows = rows.slice(1);
 
+  const dmrPath = path.resolve(process.cwd(), 'data/dmr.csv');
+  const dstarPath = path.resolve(process.cwd(), 'data/dstar.csv');
+  const dmrSupplement = loadSupplementalRepeaters(dmrPath, { modulation: 'DMR', dmr: true, dstar: false });
+  const dstarSupplement = loadSupplementalRepeaters(dstarPath, { modulation: 'D-STAR', dmr: false, dstar: true });
+  const dmrCallsigns = dmrSupplement.set;
+  const dstarCallsigns = dstarSupplement.set;
+  if (dmrCallsigns.size || dstarCallsigns.size) {
+    console.log(
+      colors.gray(
+        `Loaded ${dmrCallsigns.size} DMR callsigns and ${dstarCallsigns.size} D-STAR callsigns for cross-check.`
+      )
+    );
+  } else {
+    console.log(colors.yellow('No DMR/D-STAR callsigns loaded (check data CSV files if expected).'));
+  }
+
   const mapped = [];
   const issues = [];
+  const existingKeys = new Set();
   for (const row of dataRows) {
     const rep = mapRowToRepeater(headers, row);
+    const callsignKey = normalizeCallsign(rep.callsign);
+    if (callsignKey) {
+      rep.dmr = dmrCallsigns.has(callsignKey);
+      rep.dstar = dstarCallsigns.has(callsignKey);
+    }
     const problems = validateRepeater(rep);
     if (problems.length) {
       issues.push({ rep, problems });
       // Keep but mark incomplete? We'll skip invalid rows.
     } else {
       mapped.push(rep);
+      if (callsignKey) existingKeys.add(callsignKey);
     }
   }
 
@@ -292,6 +449,56 @@ async function main() {
 
   console.log(colors.cyan('\nPreview (first 3):'));
   console.log(JSON.stringify(mapped.slice(0, 3), null, 2));
+
+  const supplementalCombined = new Map();
+  for (const [key, rep] of dmrSupplement.map.entries()) {
+    supplementalCombined.set(key, { ...rep });
+  }
+  for (const [key, rep] of dstarSupplement.map.entries()) {
+    if (supplementalCombined.has(key)) {
+      const existing = supplementalCombined.get(key);
+      existing.dstar = existing.dstar || rep.dstar;
+      existing.dmr = existing.dmr || rep.dmr;
+      const mods = new Set();
+      if (existing.modulation) existing.modulation.split('/').map((m) => m.trim()).forEach((m) => mods.add(m));
+      if (rep.modulation) rep.modulation.split('/').map((m) => m.trim()).forEach((m) => mods.add(m));
+      existing.modulation = Array.from(mods).join(' / ') || existing.modulation || rep.modulation;
+      if (!existing.owner && rep.owner) existing.owner = rep.owner;
+      if (!existing.qth_locator && rep.qth_locator) existing.qth_locator = rep.qth_locator;
+      if (typeof existing.outputFrequency !== 'number' && typeof rep.outputFrequency === 'number') existing.outputFrequency = rep.outputFrequency;
+      if (typeof existing.inputFrequency !== 'number' && typeof rep.inputFrequency === 'number') existing.inputFrequency = rep.inputFrequency;
+      if (typeof existing.latitude !== 'number' && typeof rep.latitude === 'number') existing.latitude = rep.latitude;
+      if (typeof existing.longitude !== 'number' && typeof rep.longitude === 'number') existing.longitude = rep.longitude;
+    } else {
+      supplementalCombined.set(key, { ...rep });
+    }
+  }
+
+  const supplementalAdded = [];
+  const supplementalSkipped = [];
+  for (const [key, rep] of supplementalCombined.entries()) {
+    if (existingKeys.has(key)) continue;
+    const problems = validateRepeater(rep);
+    if (problems.length) {
+      supplementalSkipped.push({ rep, problems });
+      continue;
+    }
+    mapped.push(rep);
+    existingKeys.add(key);
+    supplementalAdded.push(rep.callsign);
+  }
+
+  if (supplementalAdded.length) {
+    console.log(colors.green(`Added ${supplementalAdded.length} supplemental repeaters from DMR/D-STAR lists.`));
+    console.log(colors.gray(`  ${supplementalAdded.slice(0, 5).join(', ')}${supplementalAdded.length > 5 ? '…' : ''}`));
+  }
+  if (supplementalSkipped.length) {
+    console.log(colors.yellow('Supplemental entries skipped (missing required data):'));
+    for (const { rep, problems } of supplementalSkipped.slice(0, 3)) {
+      console.log('  -', colors.yellow(problems.join(', ')), colors.gray(JSON.stringify(rep)));
+    }
+    if (supplementalSkipped.length > 3) console.log(colors.gray(`  ... and ${supplementalSkipped.length - 3} more`));
+  }
 
   const outPath = path.resolve(process.cwd(), 'src/repeaters.json');
   const backupPath = outPath.replace(/\.json$/, `.backup.${Date.now()}.json`);
@@ -322,7 +529,17 @@ async function main() {
   });
 }
 
-if (require.main === module) {
+const isDirectExecution = () => {
+  try {
+    const thisFile = fileURLToPath(import.meta.url);
+    const invoked = process.argv[1] ? path.resolve(process.argv[1]) : '';
+    return thisFile === invoked;
+  } catch {
+    return false;
+  }
+};
+
+if (isDirectExecution()) {
   main().catch((err) => {
     console.error(colors.red('Unexpected error:'), err);
     process.exit(1);

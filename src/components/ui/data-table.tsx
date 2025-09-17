@@ -74,7 +74,9 @@ export function DataTable<TData, TValue>({
   onColumnFiltersChange,
   onRowClick,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>([
+    { id: 'outputFrequency', desc: false },
+  ])
   const [internalColumnFilters, setInternalColumnFilters] =
     React.useState<ColumnFiltersState>([])
   const columnFilters = columnFiltersProp ?? internalColumnFilters
@@ -313,13 +315,21 @@ export function DataTable<TData, TValue>({
                     <TableHead key={header.id} className="py-2 px-2">
                       <div className="space-y-3">
                         {/* Column Title */}
-                        <div className="font-medium text-sm">
+                        <div
+                          className={`font-medium text-sm ${header.column.getCanSort() ? 'cursor-pointer select-none' : ''}`}
+                          onClick={() => {
+                            if (!header.column.getCanSort()) return
+                            header.column.toggleSorting()
+                          }}
+                        >
                           {header.isPlaceholder
                             ? null
                             : flexRender(
                               header.column.columnDef.header,
                               header.getContext()
                             )}
+                          {header.column.getIsSorted() === 'asc' && ' ↑'}
+                          {header.column.getIsSorted() === 'desc' && ' ↓'}
                         </div>
 
                         {/* Column Filter */}
@@ -422,6 +432,52 @@ export function DataTable<TData, TValue>({
                                     {m}
                                   </SelectItem>
                                 ))}
+                              </SelectContent>
+                            </Select>
+                          )}
+                          {header.column.id === "dmr" && (
+                            <Select
+                              value={(() => {
+                                const current = table.getColumn("dmr")?.getFilterValue() as boolean | undefined
+                                if (current === undefined || current === null) return "all"
+                                return current ? "yes" : "no"
+                              })()}
+                              onValueChange={(value) =>
+                                table
+                                  .getColumn("dmr")
+                                  ?.setFilterValue(value === "all" ? undefined : value === "yes")
+                              }
+                            >
+                              <SelectTrigger className="h-7 text-xs w-full">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="all">{t("filters.all")}</SelectItem>
+                                <SelectItem value="yes">{t("filters.yes")}</SelectItem>
+                                <SelectItem value="no">{t("filters.no")}</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          )}
+                          {header.column.id === "dstar" && (
+                            <Select
+                              value={(() => {
+                                const current = table.getColumn("dstar")?.getFilterValue() as boolean | undefined
+                                if (current === undefined || current === null) return "all"
+                                return current ? "yes" : "no"
+                              })()}
+                              onValueChange={(value) =>
+                                table
+                                  .getColumn("dstar")
+                                  ?.setFilterValue(value === "all" ? undefined : value === "yes")
+                              }
+                            >
+                              <SelectTrigger className="h-7 text-xs w-full">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="all">{t("filters.all")}</SelectItem>
+                                <SelectItem value="yes">{t("filters.yes")}</SelectItem>
+                                <SelectItem value="no">{t("filters.no")}</SelectItem>
                               </SelectContent>
                             </Select>
                           )}
