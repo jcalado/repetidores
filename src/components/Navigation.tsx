@@ -55,6 +55,15 @@ export default function Navigation() {
         {t('nav.map')}
       </a>
       <a
+        href="/bands"
+        className={`transition-colors duration-200 font-medium ${currentPath === '/bands'
+          ? 'text-white'
+          : 'text-white/90 hover:text-white'
+          }`}
+      >
+        {t('nav.bands')}
+      </a>
+      <a
         href="/about"
         className={`transition-colors duration-200 font-medium ${currentPath === '/about'
           ? 'text-white'
