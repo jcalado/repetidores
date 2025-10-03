@@ -384,7 +384,7 @@ export default function QNAFPortugalHamBands() {
                             </Card>
                         );
                     })}
-                    {filteredSpectrum.length === 0 && <p className="text-sm text-muted-foreground">Sem resultados para "{query}".</p>}
+                    {filteredSpectrum.length === 0 && <p className="text-sm text-muted-foreground">Sem resultados para &quot;{query}&quot;.</p>}
                 </TabsContent>
 
                 <TabsContent value="named">
@@ -412,7 +412,7 @@ export default function QNAFPortugalHamBands() {
                                         ))}
                                         {filteredNamed.length === 0 && (
                                             <TableRow>
-                                                <TableCell colSpan={3} className="text-sm text-muted-foreground">Sem resultados para "{query}".</TableCell>
+                                                <TableCell colSpan={3} className="text-sm text-muted-foreground">Sem resultados para &quot;{query}&quot;.</TableCell>
                                             </TableRow>
                                         )}
                                     </TableBody>
@@ -479,7 +479,7 @@ export default function QNAFPortugalHamBands() {
                             </Card>
                         );
                     })}
-                    {filteredIARU.length === 0 && <p className="text-sm text-muted-foreground">Sem resultados para "{query}".</p>}
+                    {filteredIARU.length === 0 && <p className="text-sm text-muted-foreground">Sem resultados para &quot;{query}&quot;.</p>}
                 </TabsContent>
 
                 <TabsContent value="power">
@@ -513,7 +513,7 @@ export default function QNAFPortugalHamBands() {
                                                 ))}
                                                 {filteredPower1.length === 0 && (
                                                     <TableRow>
-                                                        <TableCell colSpan={2} className="text-sm text-muted-foreground">Sem resultados para "{query}".</TableCell>
+                                                        <TableCell colSpan={2} className="text-sm text-muted-foreground">Sem resultados para &quot;{query}&quot;.</TableCell>
                                                     </TableRow>
                                                 )}
                                             </TableBody>
@@ -539,7 +539,7 @@ export default function QNAFPortugalHamBands() {
                                                 ))}
                                                 {filteredPower2.length === 0 && (
                                                     <TableRow>
-                                                        <TableCell colSpan={2} className="text-sm text-muted-foreground">Sem resultados para "{query}".</TableCell>
+                                                        <TableCell colSpan={2} className="text-sm text-muted-foreground">Sem resultados para &quot;{query}&quot;.</TableCell>
                                                     </TableRow>
                                                 )}
                                             </TableBody>
