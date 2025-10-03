@@ -85,7 +85,7 @@
         },
         "contact": {
             "title": "Contato",
-            "description": "Este projeto é mantido por CR7BLE, Joel Calado. Para sugestões, correções ou colaborações, visite o repositório no GitHub."
+            "description": "Este projeto é mantido por CS7BLE, Joel Calado. Para sugestões, correções ou colaborações, visite o repositório no GitHub."
         },
         "radioSchool": {
             "title": "Interessado em ser Radioamador?",
@@ -94,7 +94,7 @@
         }
     },
     "footer": {
-        "copyright": "Repetidores - Um projeto de CR7BLE",
+        "copyright": "Repetidores - Um projeto de CS7BLE",
         "about": "Sobre",
         "github": "GitHub"
     },
