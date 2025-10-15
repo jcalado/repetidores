@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { getVoteStats, postVote, type VoteStats } from "@/lib/votes";
-import { Check, Copy, MessageSquare, ThumbsDown, ThumbsUp } from "lucide-react";
+import { Check, Copy, MapPin, MessageSquare, ThumbsDown, ThumbsUp } from "lucide-react";
 import { useTranslations } from "next-intl";
 import * as React from "react";
 
@@ -74,13 +74,6 @@ export default function RepeaterDetails({ r }: { r: Repeater }) {
               {t("maps")}
             </a>
           </Button>
-          {osmUrl && (
-            <Button variant="outline" asChild>
-              <a href={osmUrl} target="_blank" rel="noopener noreferrer">
-                OpenStreetMap
-              </a>
-            </Button>
-          )}
         </div>
       </div>
 
@@ -90,7 +83,20 @@ export default function RepeaterDetails({ r }: { r: Repeater }) {
         <InfoCard label={t("offset")} value={`${sign}${sign ? " " : ""}${offsetDisplay}`} copyValue={`${sign}${offsetCopy}`} />
         <InfoCard label={t("tone")} value={r.tone ? `${Number(r.tone.toFixed(1))} Hz` : "None"} copyValue={r.tone ? `${Number(r.tone.toFixed(1))} Hz` : undefined} />
         <InfoCard label={t("owner")} value={r.owner || "–"} className="sm:col-span-2" />
-        <InfoCard label={t("coordinates")} value={`${r.latitude?.toFixed(5)}, ${r.longitude?.toFixed(5)}`} className="sm:col-span-2" />
+        <InfoCard
+          label={t("coordinates")}
+          value={`${r.latitude?.toFixed(5)}, ${r.longitude?.toFixed(5)}`}
+          className="sm:col-span-2"
+          right={
+            osmUrl ? (
+              <Button variant="ghost" size="icon" asChild aria-label="Open in OpenStreetMap">
+                <a href={osmUrl} target="_blank" rel="noopener noreferrer">
+                  <MapPin className="h-4 w-4" />
+                </a>
+              </Button>
+            ) : null
+          }
+        />
       </div>
 
       <VoteSection repeaterId={r.callsign} />
@@ -98,7 +104,7 @@ export default function RepeaterDetails({ r }: { r: Repeater }) {
   );
 }
 
-function InfoCard({ label, value, className, copyValue }: { label: string; value: React.ReactNode; className?: string; copyValue?: string }) {
+function InfoCard({ label, value, className, copyValue, right }: { label: string; value: React.ReactNode; className?: string; copyValue?: string; right?: React.ReactNode }) {
   const [copied, setCopied] = React.useState(false);
   const isCopyable = typeof copyValue === "string" && copyValue.length > 0;
 
@@ -119,11 +125,14 @@ function InfoCard({ label, value, className, copyValue }: { label: string; value
       <div className="text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
       <div className="mt-1 text-sm flex items-center justify-between gap-2">
         <span className="truncate">{value}</span>
-        {isCopyable && (
-          <Button variant="ghost" size="icon" onClick={handleCopy} aria-label="Copy value">
-            {copied ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
-          </Button>
-        )}
+        <div className="flex items-center gap-1">
+          {right}
+          {isCopyable && (
+            <Button variant="ghost" size="icon" onClick={handleCopy} aria-label="Copy value">
+              {copied ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
