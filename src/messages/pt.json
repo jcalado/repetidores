@@ -29,6 +29,7 @@
         "pageOf": "Página {current} de {total}",
         "noResults": "Nenhum resultado encontrado.",
         "columns": {
+            "status": "Estado",
             "callsign": "Indicativo",
             "band": "Banda",
             "outputFrequency": "Freq. Saída",
@@ -41,6 +42,12 @@
             "longitude": "Longitude",
             "qthLocator": "Localizador QTH",
             "owner": "Proprietário"
+        },
+        "status": {
+            "ok": "A funcionar",
+            "prob-bad": "Provavelmente com problemas",
+            "bad": "Não funciona",
+            "unknown": "Desconhecido"
         }
     },
     "repeater": {

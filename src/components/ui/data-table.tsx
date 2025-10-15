@@ -344,6 +344,27 @@ export function DataTable<TData, TValue>({
                               className="h-7 text-xs w-full"
                             />
                           )}
+                          {header.column.id === "status" && (
+                            <Select
+                              value={(table.getColumn("status")?.getFilterValue() as string) ?? "all"}
+                              onValueChange={(value) =>
+                                table
+                                  .getColumn("status")
+                                  ?.setFilterValue(value === "all" ? undefined : value)
+                              }
+                            >
+                              <SelectTrigger className="h-7 text-xs w-full">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="all">{t("filters.all")}</SelectItem>
+                                <SelectItem value="ok">{t("table.status.ok")}</SelectItem>
+                                <SelectItem value="prob-bad">{t("table.status.prob-bad")}</SelectItem>
+                                <SelectItem value="bad">{t("table.status.bad")}</SelectItem>
+                                <SelectItem value="unknown">{t("table.status.unknown")}</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          )}
                           {header.column.id === "owner" && (
                             <Input
                               placeholder=""

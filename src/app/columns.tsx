@@ -2,8 +2,12 @@
 "use client"
 
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { ColumnDef } from "@tanstack/react-table"
 import { useTranslations } from "next-intl"
+import * as React from "react"
+import { getVoteStats, type VoteStats } from "@/lib/votes"
+import { cn } from "@/lib/utils"
 
 export type Repeater = {
   callsign: string
@@ -30,6 +34,27 @@ export function useColumns(): ColumnDef<Repeater>[] {
   const t = useTranslations('table.columns')
 
   return [
+    {
+      id: "status",
+      header: t("status"),
+      cell: ({ row }) => {
+        const r = row.original as Repeater
+        return <StatusCell repeaterId={r.callsign} />
+      },
+      enableSorting: false,
+      enableColumnFilter: true,
+      // Filter by community status category
+      filterFn: (row, _id, value) => {
+        if (!value) return true
+        const r = row.original as Repeater
+        const s = voteCache.get(r.callsign)
+        const cat = s?.category ?? "unknown"
+        return cat === value
+      },
+      size: 36,
+      minSize: 32,
+      maxSize: 48,
+    },
     {
       accessorKey: "callsign",
       header: t("callsign"),
@@ -214,4 +239,85 @@ function normalizeOwner(name: string) {
 export function getOwnerShort(name: string): string {
   const key = normalizeOwner(name)
   return OWNER_SHORTNAMES[key] ?? name
+}
+
+// ---- Status Icon (community votes) ----
+const voteCache = new Map<string, VoteStats>()
+const inFlight = new Map<string, Promise<VoteStats>>()
+
+function useVoteStats(repeaterId: string) {
+  const [stats, setStats] = React.useState<VoteStats | undefined>(() => voteCache.get(repeaterId))
+
+  React.useEffect(() => {
+    let alive = true
+    if (!repeaterId) return
+    const cached = voteCache.get(repeaterId)
+    if (cached) {
+      setStats(cached)
+      return
+    }
+    let p = inFlight.get(repeaterId)
+    if (!p) {
+      p = getVoteStats(repeaterId)
+      inFlight.set(repeaterId, p)
+    }
+    p
+      .then((s) => {
+        voteCache.set(repeaterId, s)
+        if (alive) setStats(s)
+      })
+      .finally(() => {
+        inFlight.delete(repeaterId)
+      })
+    return () => {
+      alive = false
+    }
+  }, [repeaterId])
+
+  return stats
+}
+
+function StatusCell({ repeaterId }: { repeaterId: string }) {
+  const stats = useVoteStats(repeaterId)
+  const t = useTranslations('table')
+  const category = stats?.category ?? 'unknown'
+  const cfg = statusStyle(category)
+  const label = t(`status.${category}` as const)
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span
+          aria-label={label}
+          title={label}
+          className={cn(
+            "inline-block h-2.5 w-2.5 rounded-full",
+            cfg.dotClass
+          )}
+        />
+      </TooltipTrigger>
+      <TooltipContent>
+        <div className="flex items-center gap-2">
+          <span className={cn("inline-block h-2.5 w-2.5 rounded-full", cfg.dotClass)} />
+          <span>{label}</span>
+        </div>
+        {stats && (
+          <div className="mt-1 text-xs opacity-80">Up {stats.up} · Down {stats.down}</div>
+        )}
+      </TooltipContent>
+    </Tooltip>
+  )
+}
+
+function statusStyle(category: VoteStats["category"]) {
+  switch (category) {
+    case "ok":
+      return { dotClass: "bg-emerald-500" }
+    case "prob-bad":
+      return { dotClass: "bg-amber-500" }
+    case "bad":
+      return { dotClass: "bg-red-500" }
+    default:
+      return { dotClass: "bg-gray-400 dark:bg-gray-500" }
+  }
 }
