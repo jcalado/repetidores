@@ -3,11 +3,11 @@
 
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { cn } from "@/lib/utils"
+import { getVoteStats, type VoteStats } from "@/lib/votes"
 import { ColumnDef } from "@tanstack/react-table"
 import { useTranslations } from "next-intl"
 import * as React from "react"
-import { getVoteStats, type VoteStats } from "@/lib/votes"
-import { cn } from "@/lib/utils"
 
 export type Repeater = {
   callsign: string
