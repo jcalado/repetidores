@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { getVoteStats, postVote, type VoteStats } from "@/lib/votes";
-import { MessageSquare, ThumbsDown, ThumbsUp } from "lucide-react";
+import { Check, Copy, MessageSquare, ThumbsDown, ThumbsUp } from "lucide-react";
 import { useTranslations } from "next-intl";
 import * as React from "react";
 
@@ -25,22 +25,29 @@ function getBandFromFrequency(mhz: number): string {
   return "Other";
 }
 
-function fmtFreq(n?: number) {
-  return typeof n === "number" && Number.isFinite(n) ? `${n.toFixed(6)} MHz` : "–";
+function fmtMHzDisplay(n?: number) {
+  return typeof n === "number" && Number.isFinite(n) ? `${n.toFixed(4)} MHz` : "–";
+}
+function fmtMHzCopy(n?: number) {
+  return typeof n === "number" && Number.isFinite(n) ? n.toFixed(4) : "";
 }
 
 function duplex(rx?: number, tx?: number) {
-  if (typeof rx !== "number" || typeof tx !== "number") return { sign: "", offset: "–" };
+  if (typeof rx !== "number" || typeof tx !== "number") return { sign: "", offsetDisplay: "–", offsetCopy: "" };
   const sign = tx > rx ? "+" : tx < rx ? "-" : "";
-  const off = Math.abs(tx - rx).toFixed(6) + " MHz";
-  return { sign, offset: off };
+  const diff = Math.abs(tx - rx);
+  return { sign, offsetDisplay: `${diff.toFixed(4)} MHz`, offsetCopy: diff.toFixed(4) };
 }
 
 export default function RepeaterDetails({ r }: { r: Repeater }) {
   const band = getBandFromFrequency(r.outputFrequency);
-  const { sign, offset } = duplex(r.outputFrequency, r.inputFrequency);
+  const { sign, offsetDisplay, offsetCopy } = duplex(r.outputFrequency, r.inputFrequency);
 
   const mapsUrl = `https://www.google.com/maps?q=${encodeURIComponent(r.latitude + "," + r.longitude)}`;
+  const osmUrl =
+    typeof r.latitude === "number" && typeof r.longitude === "number"
+      ? `https://www.openstreetmap.org/?mlat=${r.latitude}&mlon=${r.longitude}&zoom=14`
+      : undefined;
   const t = useTranslations("repeater");
   return (
     <div className="space-y-4">
@@ -61,18 +68,27 @@ export default function RepeaterDetails({ r }: { r: Repeater }) {
             )}
           </div>
         </div>
-        <Button asChild>
-          <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
-            {t("maps")}
-          </a>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button asChild>
+            <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
+              {t("maps")}
+            </a>
+          </Button>
+          {osmUrl && (
+            <Button variant="outline" asChild>
+              <a href={osmUrl} target="_blank" rel="noopener noreferrer">
+                OpenStreetMap
+              </a>
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <InfoCard label={t("output")} value={fmtFreq(r.outputFrequency)} />
-        <InfoCard label={t("input")} value={fmtFreq(r.inputFrequency)} />
-        <InfoCard label={t("offset")} value={`${sign}${sign ? " " : ""}${offset}`} />
-        <InfoCard label={t("tone")} value={r.tone ? `${Number(r.tone.toFixed(1))} Hz` : "None"} />
+        <InfoCard label={t("output")} value={fmtMHzDisplay(r.outputFrequency)} copyValue={fmtMHzCopy(r.outputFrequency)} />
+        <InfoCard label={t("input")} value={fmtMHzDisplay(r.inputFrequency)} copyValue={fmtMHzCopy(r.inputFrequency)} />
+        <InfoCard label={t("offset")} value={`${sign}${sign ? " " : ""}${offsetDisplay}`} copyValue={`${sign}${offsetCopy}`} />
+        <InfoCard label={t("tone")} value={r.tone ? `${Number(r.tone.toFixed(1))} Hz` : "None"} copyValue={r.tone ? `${Number(r.tone.toFixed(1))} Hz` : undefined} />
         <InfoCard label={t("owner")} value={r.owner || "–"} className="sm:col-span-2" />
         <InfoCard label={t("coordinates")} value={`${r.latitude?.toFixed(5)}, ${r.longitude?.toFixed(5)}`} className="sm:col-span-2" />
       </div>
@@ -82,11 +98,33 @@ export default function RepeaterDetails({ r }: { r: Repeater }) {
   );
 }
 
-function InfoCard({ label, value, className }: { label: string; value: React.ReactNode; className?: string }) {
+function InfoCard({ label, value, className, copyValue }: { label: string; value: React.ReactNode; className?: string; copyValue?: string }) {
+  const [copied, setCopied] = React.useState(false);
+  const isCopyable = typeof copyValue === "string" && copyValue.length > 0;
+
+  async function handleCopy(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (!isCopyable || typeof navigator === "undefined" || !navigator.clipboard) return;
+    try {
+      await navigator.clipboard.writeText(copyValue!);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1200);
+    } catch {
+      // noop
+    }
+  }
+
   return (
     <div className={cn("rounded-lg border p-3", className)}>
       <div className="text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
-      <div className="mt-1 text-sm">{value}</div>
+      <div className="mt-1 text-sm flex items-center justify-between gap-2">
+        <span className="truncate">{value}</span>
+        {isCopyable && (
+          <Button variant="ghost" size="icon" onClick={handleCopy} aria-label="Copy value">
+            {copied ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
+          </Button>
+        )}
+      </div>
     </div>
   );
 }
