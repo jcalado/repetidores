@@ -87,6 +87,30 @@ export default function MobileMenu() {
                         </DrawerClose>
                         <DrawerClose asChild>
                             <a
+                                href="/bands"
+                                onClick={handleLinkClick}
+                                className={`transition-colors duration-200 font-medium py-2 px-4 rounded ${currentPath === '/bands'
+                                    ? 'bg-white/20 text-white'
+                                    : 'text-gray-700 hover:bg-gray-100'
+                                    }`}
+                            >
+                                {t('nav.bands')}
+                            </a>
+                        </DrawerClose>
+                        <DrawerClose asChild>
+                            <a
+                                href="/events"
+                                onClick={handleLinkClick}
+                                className={`transition-colors duration-200 font-medium py-2 px-4 rounded ${currentPath === '/events'
+                                    ? 'bg-white/20 text-white'
+                                    : 'text-gray-700 hover:bg-gray-100'
+                                    }`}
+                            >
+                                {t('nav.events')}
+                            </a>
+                        </DrawerClose>
+                        <DrawerClose asChild>
+                            <a
                                 href="/about"
                                 onClick={handleLinkClick}
                                 className={`transition-colors duration-200 font-medium py-2 px-4 rounded ${currentPath === '/about'
