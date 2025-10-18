@@ -7,7 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "deploy": "gh-pages -d out --dotfiles --repo git@github.com:jcalado/repetidores.git --force",
+    "deploy": "gh-pages -d out --dotfiles --repo git@github.com:jcalado/repetidores.git -f",
     "lint": "eslint",
     "test": "jest",
     "test:watch": "jest --watch",
