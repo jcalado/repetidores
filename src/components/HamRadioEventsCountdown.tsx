@@ -60,7 +60,7 @@ export type EventsAPIResponse = {
 };
 
 // ---- Utilities ----
-const tagIconMap: Record<string, React.ComponentType<any>> = {
+const tagIconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Net: Radio,
   Contest: Activity,
   Meetup: Mic2,
@@ -101,9 +101,6 @@ function formatDateTime(iso: string) {
   });
 }
 
-function isSameLocalDay(a: Date, b: Date) {
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
-}
 function dateKeyLocal(d: Date) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
@@ -129,7 +126,7 @@ function useTick(intervalMs = 1000) {
   const [, setTick] = useState(0);
   useEffect(() => {
     let raf: number | undefined;
-    let id: any;
+    let id: ReturnType<typeof setInterval> | undefined;
     let last = typeof performance !== "undefined" ? performance.now() : Date.now();
 
     const loop = (now: number) => {
@@ -448,7 +445,7 @@ function CalendarView({ events }: { events: EventItem[] }) {
     return events.filter((e) => eventOccursOnDay(e, date));
   }, [events, date]);
 
-  const CustomDay = ({ day, ...props }: any) => {
+  const CustomDay = ({ day, ...props }: { day: { date: Date }; className?: string; children?: React.ReactNode } & React.TdHTMLAttributes<HTMLTableCellElement>) => {
     const count = countsByDay.get(dateKeyLocal(day.date)) ?? 0;
     return (
       <td {...props} className={`${props.className} relative`}>
@@ -596,24 +593,26 @@ export default function HamRadioEventsCountdown() {
   }, [events]);
 
   // Helper function to apply tag and search filters
-  const applyFilters = (list: EventItem[]) => {
-    const q = search.trim().toLowerCase();
-    let filtered = [...list];
+  const applyFilters = useMemo(() => {
+    return (list: EventItem[]) => {
+      const q = search.trim().toLowerCase();
+      let filtered = [...list];
 
-    if (filterTag !== "all") {
-      filtered = filtered.filter((e) => (e.tag ?? "").toLowerCase() === filterTag.toLowerCase());
-    }
+      if (filterTag !== "all") {
+        filtered = filtered.filter((e) => (e.tag ?? "").toLowerCase() === filterTag.toLowerCase());
+      }
 
-    if (q) {
-      filtered = filtered.filter((e) => [e.title, e.location, e.tag].filter(Boolean).join(" ").toLowerCase().includes(q));
-    }
+      if (q) {
+        filtered = filtered.filter((e) => [e.title, e.location, e.tag].filter(Boolean).join(" ").toLowerCase().includes(q));
+      }
 
-    // de-duplicate by id
-    const seen = new Set<string>();
-    filtered = filtered.filter((e) => (seen.has(e.id) ? false : (seen.add(e.id), true)));
+      // de-duplicate by id
+      const seen = new Set<string>();
+      filtered = filtered.filter((e) => (seen.has(e.id) ? false : (seen.add(e.id), true)));
 
-    return filtered;
-  };
+      return filtered;
+    };
+  }, [search, filterTag]);
 
   // Filter events for cards/table view (future/current events only)
   const filtered = useMemo(() => {
@@ -636,12 +635,12 @@ export default function HamRadioEventsCountdown() {
     });
 
     return list;
-  }, [events, search, filterTag, sortBy]);
+  }, [events, sortBy, applyFilters]);
 
   // Filtered events for calendar view (includes past events but applies filters)
   const filteredForCalendar = useMemo(() => {
     return applyFilters(events);
-  }, [events, search, filterTag]);
+  }, [events, applyFilters]);
 
   // Don't render time-sensitive content until client is mounted
   if (!mounted) {

@@ -101,7 +101,7 @@ export async function getVoteStats(repeaterId: string): Promise<VoteStats> {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     return normalizeVoteStats(data);
-  } catch (e) {
+  } catch {
     // Fallback to local in case of network errors
     return statsFromLocal(repeaterId);
   }
@@ -124,7 +124,7 @@ export async function postVote(input: VoteInput): Promise<VoteStats> {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     return normalizeVoteStats(data);
-  } catch (e) {
+  } catch {
     // Don't lose the user's action: save locally as a fallback
     writeLocalVote(input);
     return statsFromLocal(input.repeaterId);

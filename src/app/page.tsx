@@ -80,7 +80,7 @@ async function fetchRepeaters(): Promise<Repeater[]> {
     });
 
     const response = await fetch(`${baseUrl}/api/repeaters?${params.toString()}`, {
-      cache: "no-store",
+      cache: "force-cache",
     });
 
     if (!response.ok) {
