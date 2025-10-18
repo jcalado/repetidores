@@ -29,23 +29,34 @@ import {
 import React, { useEffect, useMemo, useState } from "react";
 
 /**
- * Ham Radio Events Countdown & Mini-Calendar (with ICS support)
+ * Ham Radio Events Countdown & Mini-Calendar (with Payload CMS API)
  * - Next-up countdown + Cards + Table + Calendar tabs
- * - Pulls contests from contestcalendar.com (5-week ICS)
- * - Optional proxy toggle to avoid CORS
+ * - Fetches events from Payload CMS API
+ * - Supports filtering, sorting, and searching
  * - Badges on calendar days with counts
- * - Defensive runtime checks and self-tests (non-throwing)
  */
 
 // ---- Types ----
+export type EventTag = 'Net' | 'Contest' | 'Meetup' | 'Satellite' | 'DX';
+
 export type EventItem = {
   id: string;
   title: string;
-  start: string; // ISO
+  start: string; // ISO 8601 datetime
   end?: string;
   location?: string;
   url?: string;
-  tag?: string; // "Contest", "Net", etc.
+  tag?: EventTag;
+};
+
+export type EventsAPIResponse = {
+  docs: EventItem[];
+  totalDocs: number;
+  limit: number;
+  page: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
 };
 
 // ---- Utilities ----
@@ -99,6 +110,19 @@ function dateKeyLocal(d: Date) {
   const day = String(d.getDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
 }
+function eventOccursOnDay(event: EventItem, day: Date): boolean {
+  const startDate = new Date(event.start);
+  const endDate = event.end ? new Date(event.end) : startDate;
+
+  // Normalize dates to midnight local time for comparison
+  const dayStart = new Date(day.getFullYear(), day.getMonth(), day.getDate());
+  const dayEnd = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 23, 59, 59, 999);
+  const eventStart = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+  const eventEnd = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59, 999);
+
+  // Check if the day falls within the event's date range
+  return dayStart <= eventEnd && dayEnd >= eventStart;
+}
 
 // Simple, drift-resistant interval
 function useTick(intervalMs = 1000) {
@@ -126,154 +150,6 @@ function useTick(intervalMs = 1000) {
       return () => clearInterval(id);
     }
   }, [intervalMs]);
-}
-
-// Local storage hook (defines useLocalStorage to fix ReferenceError)
-function useLocalStorage<T>(key: string, initial: T) {
-  const [value, setValue] = useState<T>(() => {
-    if (typeof window === "undefined") return initial;
-    try {
-      const raw = window.localStorage.getItem(key);
-      return raw ? (JSON.parse(raw) as T) : initial;
-    } catch {
-      return initial;
-    }
-  });
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(key, JSON.stringify(value));
-    } catch { }
-  }, [key, value]);
-  return [value, setValue] as const;
-}
-
-// ---- Recurrence helpers ----
-// weekday: 0=Sun ... 6=Sat
-function nextWeeklyLocal(weekday: number, hour: number, minute: number) {
-  const now = new Date();
-  const candidate = new Date(now);
-  candidate.setHours(0, 0, 0, 0);
-  const today = candidate.getDay();
-  let diff = (weekday - today + 7) % 7;
-  candidate.setDate(candidate.getDate() + diff);
-  candidate.setHours(hour, minute, 0, 0);
-  if (candidate.getTime() <= now.getTime()) candidate.setDate(candidate.getDate() + 7);
-  return candidate.toISOString();
-}
-
-function nextWeeklyUTC(weekday: number, hour: number, minute: number) {
-  const now = new Date();
-  const todayUTC = now.getUTCDay();
-  let diff = (weekday - todayUTC + 7) % 7;
-  let candidate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), hour, minute, 0, 0));
-  if (diff > 0) candidate = new Date(candidate.getTime() + diff * 86400000);
-  if (candidate.getTime() <= now.getTime()) candidate = new Date(candidate.getTime() + 7 * 86400000);
-  return candidate.toISOString();
-}
-
-// ---- Seed Events ----
-const seedEvents: EventItem[] = [
-  {
-    id: "netct-weekly",
-    title: "netct",
-    start: nextWeeklyLocal(3, 22, 0), // Wednesdays 22:00 Lisbon local
-    location: "Weekly • Wednesdays 22:00 (Portugal local) • TalkGroup 268 • BrandMeister",
-    tag: "Net",
-  },
-  {
-    id: "ww-checkin-tg91",
-    title: "World Wide Check-In",
-    start: nextWeeklyUTC(6, 16, 0), // Saturdays 16:00 UTC
-    location: "Saturday 16:00 UTC • TalkGroup 91 • BrandMeister",
-    tag: "Net",
-  },
-];
-
-// ---- ICS (Contest Calendar) integration ----
-const CONTEST_ICS_URL = "https://www.contestcalendar.com/fivewkcal.ics";
-
-type IcsEvent = {
-  uid: string;
-  start: string;
-  end?: string;
-  summary: string;
-  url?: string;
-  location?: string;
-};
-
-function parseICSDate(v?: string): string | undefined {
-  if (!v) return undefined;
-  // 20250102T180000Z or 20250102T180000
-  const m = v.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z)?$/);
-  if (!m) return undefined;
-  const [_, y, mo, d, h, mi, s, z] = m;
-  if (z === "Z") {
-    const dt = new Date(Date.UTC(+y, +mo - 1, +d, +h, +mi, +s));
-    return dt.toISOString();
-  } else {
-    const dt = new Date(+y, +mo - 1, +d, +h, +mi, +s);
-    return dt.toISOString();
-  }
-}
-
-function parseICS(icsText: string): IcsEvent[] {
-  const lines = icsText.replace(/\r\n?/g, "\n").split("\n");
-  const events: IcsEvent[] = [];
-  let cur: any = null;
-
-  // Unfold lines (RFC5545)
-  const unfolded: string[] = [];
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    if (i > 0 && (line.startsWith(" ") || line.startsWith("\t"))) {
-      unfolded[unfolded.length - 1] += line.slice(1);
-    } else {
-      unfolded.push(line);
-    }
-  }
-
-  for (const raw of unfolded) {
-    const line = raw.trim();
-    if (line === "BEGIN:VEVENT") cur = {};
-    else if (line === "END:VEVENT") {
-      if (cur && cur.DTSTART && cur.SUMMARY) {
-        const start = parseICSDate(cur.DTSTART);
-        const end = parseICSDate(cur.DTEND);
-        events.push({
-          uid: cur.UID || `${cur.SUMMARY}-${cur.DTSTART}`,
-          start: start!,
-          end: end,
-          summary: cur.SUMMARY,
-          url: cur.URL,
-          location: cur.LOCATION,
-        });
-      }
-      cur = null;
-    } else if (cur) {
-      const idx = line.indexOf(":");
-      if (idx > -1) {
-        const keyPart = line.slice(0, idx);
-        const value = line.slice(idx + 1);
-        const key = keyPart.split(";")[0];
-        cur[key] = value;
-      }
-    }
-  }
-  return events;
-}
-
-function icsToEventItems(list: IcsEvent[]): EventItem[] {
-  return list
-    .filter((e) => !!e.start && !!e.summary)
-    .map((e) => ({
-      id: `contest:${e.uid}`,
-      title: e.summary,
-      start: e.start,
-      end: e.end,
-      location: e.location,
-      url: e.url,
-      tag: "Contest",
-    }));
 }
 
 // ---- Components ----
@@ -370,12 +246,94 @@ function EventCard({ evt }: { evt: EventItem }) {
   );
 }
 
+function CurrentEvents({ events }: { events: EventItem[] }) {
+  useTick(1000);
+  const currentEvents = useMemo(() => {
+    const now = Date.now();
+    return events.filter((e) => {
+      const start = new Date(e.start).getTime();
+      const end = e.end ? new Date(e.end).getTime() : start + 3600000; // Default 1 hour if no end time
+      return now >= start && now <= end;
+    }).sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+  }, [events]);
+
+  if (currentEvents.length === 0) return null;
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+      <Card className="rounded-2xl shadow-md border-green-500/40 bg-gradient-to-br from-green-500/10 to-transparent">
+        <CardHeader>
+          <div className="flex items-center gap-3 text-green-600 dark:text-green-400">
+            <Activity className="w-5 h-5 animate-pulse" />
+            <CardTitle className="text-xl">Happening Now</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {currentEvents.map((event) => {
+            const timeUntilEnd = event.end ? msUntil(event.end) : 0;
+            return (
+              <div key={event.id} className="p-4 rounded-lg bg-background/50 border border-green-500/20">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 text-lg font-bold">
+                      <TagIcon tag={event.tag} />
+                      <span>{event.title}</span>
+                    </div>
+                    <div className="text-sm text-muted-foreground flex flex-wrap items-center gap-3 mt-1">
+                      <span className="inline-flex items-center">
+                        <Clock className="w-4 h-4 mr-1" /> Started {formatDateTime(event.start)}
+                      </span>
+                      {event.location && (
+                        <span className="inline-flex items-center">
+                          <MapPin className="w-4 h-4 mr-1" /> {event.location}
+                        </span>
+                      )}
+                    </div>
+                    {event.end && timeUntilEnd > 0 && (
+                      <div className="mt-2 text-sm">
+                        <span className="text-muted-foreground">Ends in: </span>
+                        <CountdownText ms={timeUntilEnd} />
+                      </div>
+                    )}
+                    {event.tag && (
+                      <Badge variant="outline" className="mt-2">
+                        {event.tag}
+                      </Badge>
+                    )}
+                  </div>
+                  {event.url && (
+                    <a
+                      href={event.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline flex items-center gap-1 text-sm shrink-0"
+                    >
+                      Details <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+}
+
 function NextUp({ events }: { events: EventItem[] }) {
   useTick(1000);
   const next = useMemo(() => {
-    const future = events.filter((e) => msUntil(e.start) > 0);
+    const now = Date.now();
+    const future = events.filter((e) => {
+      const start = new Date(e.start).getTime();
+      const end = e.end ? new Date(e.end).getTime() : start;
+      // Only show events that haven't started or ended yet
+      return start > now || (end > now && start <= now);
+    });
     future.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
-    return future[0];
+    // Find the first event that hasn't started yet
+    return future.find(e => new Date(e.start).getTime() > now);
   }, [events]);
 
   if (!next) return null;
@@ -466,54 +424,59 @@ function CalendarView({ events }: { events: EventItem[] }) {
 
   const countsByDay = useMemo(() => {
     const map = new Map<string, number>();
+
+    // For each event, add it to all days it spans
     for (const e of events) {
-      const k = dateKeyLocal(new Date(e.start));
-      map.set(k, (map.get(k) ?? 0) + 1);
+      const startDate = new Date(e.start);
+      const endDate = e.end ? new Date(e.end) : startDate;
+
+      // Iterate through each day from start to end
+      const currentDay = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+      const lastDay = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+
+      while (currentDay <= lastDay) {
+        const k = dateKeyLocal(currentDay);
+        map.set(k, (map.get(k) ?? 0) + 1);
+        currentDay.setDate(currentDay.getDate() + 1);
+      }
     }
     return map;
   }, [events]);
 
   const selectedEvents = useMemo(() => {
     if (!date) return [] as EventItem[];
-    return events.filter((e) => isSameLocalDay(new Date(e.start), date));
+    return events.filter((e) => eventOccursOnDay(e, date));
   }, [events, date]);
 
-  const DayContent = (props: any) => {
-    const d: Date = props.date;
-    const count = countsByDay.get(dateKeyLocal(d)) ?? 0;
+  const CustomDay = ({ day, ...props }: any) => {
+    const count = countsByDay.get(dateKeyLocal(day.date)) ?? 0;
     return (
-      <div className="relative flex items-center justify-center w-full h-full">
-        <span>{d.getDate()}</span>
+      <td {...props} className={`${props.className} relative`}>
+        {props.children}
         {count > 0 && (
-          <span className="absolute bottom-1 right-1 text-[10px] leading-none px-1.5 py-0.5 rounded-full bg-primary text-primary-foreground">
+          <span className="absolute top-1 right-1 text-[8px] leading-none bg-red-900 text-primary-foreground font-bold w-3 h-3 rounded-full flex items-center justify-center pointer-events-none">
             {count}
           </span>
         )}
-      </div>
+      </td>
     );
   };
 
   return (
     <div className="grid md:grid-cols-3 gap-6">
       <div className="md:col-span-1">
-        <Card className="rounded-2xl">
-          <CardHeader>
-            <CardTitle className="text-lg inline-flex items-center gap-2">
-              <CalendarIcon className="w-4 h-4" /> Calendar
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              className="rounded-md border"
-              // @ts-ignore react-day-picker custom components
-              components={{ DayContent }}
-            />
-            <div className="mt-2 text-xs text-muted-foreground">Badges show how many events occur on each day.</div>
-          </CardContent>
-        </Card>
+        <Calendar
+          mode="single"
+          selected={date}
+          onSelect={setDate}
+          className="rounded-md border"
+          classNames={{
+            root: "w-full",
+          }}
+          components={{
+            Day: CustomDay
+          }}
+        />
       </div>
 
       <div className="md:col-span-2">
@@ -535,62 +498,14 @@ function CalendarView({ events }: { events: EventItem[] }) {
   );
 }
 
-// ---- Lightweight self-tests (dev only, non-throwing) ----
-function runSelfTests() {
-  try {
-    // Calendar presence
-    // @ts-ignore
-    if (typeof Calendar === "undefined") {
-      console.error("[SelfTest] Calendar undefined; ensure '@/components/ui/calendar' exports { Calendar }.");
-    }
-    // Recurrence returns ISO
-    const iso1 = nextWeeklyLocal(3, 22, 0);
-    const iso2 = nextWeeklyUTC(6, 16, 0);
-    if (!/\d{4}-\d{2}-\d{2}T/.test(iso1) || !/\d{4}-\d{2}-\d{2}T/.test(iso2)) {
-      console.error("[SelfTest] Recurrence helpers did not return ISO strings.");
-    }
-    // ICS parser sanity
-    const sample = [
-      "BEGIN:VEVENT",
-      "SUMMARY:Test Contest",
-      "DTSTART:20250102T180000Z",
-      "DTEND:20250102T220000Z",
-      "UID:abc123",
-      "END:VEVENT",
-    ].join("\n");
-    const out = parseICS(sample);
-    if (!(out.length === 1 && out[0].summary === "Test Contest")) {
-      console.error("[SelfTest] ICS parser sanity failed.");
-    }
-    // Safe merge test
-    const safeMerge = (...arrs: any[][]) => ([] as any[]).concat(...arrs.filter(Array.isArray));
-    const merged = safeMerge(undefined as any, [], [{ id: "x" } as any]);
-    if (!Array.isArray(merged) || merged.length !== 1) {
-      console.error("[SelfTest] Safe merge failed.");
-    }
-    // NEW: Ensure contestEvents fallback logic works with null/undefined
-    const ce: any = null;
-    const safeCE = (ce ?? []) as any[];
-    if (!Array.isArray(safeCE) || safeCE.length !== 0) {
-      console.error("[SelfTest] contestEvents nullish coalesce fallback failed.");
-    }
-  } catch (e) {
-    console.error("[SelfTest] Unexpected error:", e);
-  }
-}
-
 export default function HamRadioEventsCountdown() {
   // Prevent hydration mismatch
   const [mounted, setMounted] = useState(false);
 
   // State
-  const [stored, setStored] = useLocalStorage<EventItem[]>("ham-events", seedEvents);
-  const [events, setEvents] = useState<EventItem[]>(Array.isArray(stored) ? stored : []);
-  // IMPORTANT: default to [] so it's always an array
-  const [contestEvents, setContestEvents] = useState<EventItem[]>([]);
-  const [includeContests, setIncludeContests] = useState<boolean>(false);
-  const [useProxy, setUseProxy] = useState<boolean>(false);
-  const [contestStatus, setContestStatus] = useState<string>("");
+  const [events, setEvents] = useState<EventItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [search, setSearch] = useState("");
   const [filterTag, setFilterTag] = useState<string>("all");
@@ -602,86 +517,116 @@ export default function HamRadioEventsCountdown() {
     setMounted(true);
   }, []);
 
-  // Persist manual events
-  useEffect(() => setStored(events), [events, setStored]);
-
-  // Dev self-tests
+  // Fetch events from Payload CMS API directly
   useEffect(() => {
-    if (typeof window !== "undefined") runSelfTests();
-  }, []);
+    const controller = new AbortController();
 
-  // Fetch contests (with abort + optional proxy)
-  useEffect(() => {
-    const aborted = { current: false };
+    async function fetchEvents() {
+      try {
+        setLoading(true);
 
-    if (!includeContests) {
-      setContestEvents([]);
-      return;
+        // Get API base URL from environment variables
+        const apiBaseUrl = (
+          process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL ||
+          process.env.NEXT_PUBLIC_CMS_BASE_URL ||
+          'http://localhost:3000'
+        ).replace(/\/$/, '');
+
+        // Build query parameters for Payload CMS
+        // Fetch events from 30 days ago to show historical events in calendar
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+        const params = new URLSearchParams({
+          limit: '200',
+          sort: 'start',
+          'where[start][greater_than_equal]': thirtyDaysAgo.toISOString(),
+        });
+
+        // Fetch directly from Payload CMS API
+        const url = `${apiBaseUrl}/api/events?${params.toString()}`;
+        console.log('[HamRadioEvents] Fetching events from:', url);
+
+        const response = await fetch(url, {
+          signal: controller.signal,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        console.log('[HamRadioEvents] Response status:', response.status);
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+          console.error('[HamRadioEvents] Error response:', errorData);
+          throw new Error(errorData.message || `Failed to fetch events: ${response.status}`);
+        }
+
+        const data: EventsAPIResponse = await response.json();
+        console.log('[HamRadioEvents] Received', data.docs?.length || 0, 'events');
+
+        setEvents(data.docs || []);
+        setError(null);
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') {
+          console.log('[HamRadioEvents] Request was cancelled');
+          return; // Request was cancelled
+        }
+        console.error('[HamRadioEvents] Error fetching events:', err);
+        setError(err instanceof Error ? err.message : 'Unknown error');
+        setEvents([]);
+      } finally {
+        setLoading(false);
+      }
     }
 
-    const controller = typeof AbortController !== "undefined" ? new AbortController() : undefined;
-
-    const fetchContests = async () => {
-      try {
-        setContestStatus("Loading contests…");
-        let url = CONTEST_ICS_URL;
-        if (useProxy && process.env.NEXT_PUBLIC_ICS_PROXY_BASE_URL) {
-          url = `${process.env.NEXT_PUBLIC_ICS_PROXY_BASE_URL}?url=${encodeURIComponent(CONTEST_ICS_URL)}`;
-        }
-        const res = await fetch(url, { cache: "no-store", signal: controller?.signal });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const text = await res.text();
-        if (aborted.current) return;
-        const parsed = parseICS(text);
-        const items = icsToEventItems(parsed);
-        setContestEvents(Array.isArray(items) ? items : []);
-        setContestStatus(items.length ? `Loaded ${items.length} contests` : "No contests found in ICS");
-      } catch (err) {
-        console.error("[ICS] Failed to load contests:", err);
-        setContestStatus("Could not load contest calendar (possible CORS). Contests are hidden.");
-        setIncludeContests(false);
-        // Ensure contestEvents remains an array on failure
-        setContestEvents([]);
-      }
-    };
-
-    fetchContests();
+    fetchEvents();
 
     return () => {
-      aborted.current = true;
-      try {
-        controller?.abort();
-      } catch { }
+      controller.abort();
     };
-  }, [includeContests, useProxy]);
-
-  // Safe helpers to avoid undefined spreads (use nullish coalescing instead of Array.isArray checks)
-  const safeContestEvents = (contestEvents ?? []) as EventItem[];
-  const safeEvents = (events ?? []) as EventItem[];
+  }, []);
 
   const tags = useMemo(() => {
     const s = new Set<string>();
-    [...safeEvents, ...safeContestEvents].forEach((e) => {
-      if (e && typeof e === "object" && "tag" in e && (e as any).tag) s.add(String((e as any).tag));
+    events.forEach((e) => {
+      if (e?.tag) s.add(e.tag);
     });
     return Array.from(s);
-  }, [safeEvents, safeContestEvents]);
+  }, [events]);
 
-  const filtered = useMemo(() => {
+  // Helper function to apply tag and search filters
+  const applyFilters = (list: EventItem[]) => {
     const q = search.trim().toLowerCase();
-    let list = [...safeEvents, ...(includeContests ? safeContestEvents : [])];
+    let filtered = [...list];
 
     if (filterTag !== "all") {
-      list = list.filter((e) => (e.tag ?? "").toLowerCase() === filterTag.toLowerCase());
+      filtered = filtered.filter((e) => (e.tag ?? "").toLowerCase() === filterTag.toLowerCase());
     }
 
     if (q) {
-      list = list.filter((e) => [e.title, e.location, e.tag].filter(Boolean).join(" ").toLowerCase().includes(q));
+      filtered = filtered.filter((e) => [e.title, e.location, e.tag].filter(Boolean).join(" ").toLowerCase().includes(q));
     }
 
     // de-duplicate by id
     const seen = new Set<string>();
-    list = list.filter((e) => (seen.has(e.id) ? false : (seen.add(e.id), true)));
+    filtered = filtered.filter((e) => (seen.has(e.id) ? false : (seen.add(e.id), true)));
+
+    return filtered;
+  };
+
+  // Filter events for cards/table view (future/current events only)
+  const filtered = useMemo(() => {
+    const now = Date.now();
+
+    // Only show events that haven't ended yet
+    let list = events.filter((e) => {
+      const endTime = e.end ? new Date(e.end).getTime() : new Date(e.start).getTime();
+      return endTime >= now;
+    });
+
+    // Apply tag and search filters
+    list = applyFilters(list);
 
     list.sort((a, b) => {
       if (sortBy === "title") return a.title.localeCompare(b.title);
@@ -691,7 +636,12 @@ export default function HamRadioEventsCountdown() {
     });
 
     return list;
-  }, [safeEvents, safeContestEvents, includeContests, search, filterTag, sortBy]);
+  }, [events, search, filterTag, sortBy]);
+
+  // Filtered events for calendar view (includes past events but applies filters)
+  const filteredForCalendar = useMemo(() => {
+    return applyFilters(events);
+  }, [events, search, filterTag]);
 
   // Don't render time-sensitive content until client is mounted
   if (!mounted) {
@@ -704,43 +654,74 @@ export default function HamRadioEventsCountdown() {
     );
   }
 
+  if (loading) {
+    return (
+      <div className="p-4 md:p-8 max-w-6xl mx-auto">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-muted-foreground">Loading events...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 md:p-8 max-w-6xl mx-auto">
+        <Card className="rounded-2xl border-destructive">
+          <CardHeader>
+            <CardTitle className="text-destructive">Error Loading Events</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">{error}</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 md:p-8 max-w-6xl mx-auto">
-      <div className="flex flex-col md:flex-row md:items-end gap-4 md:gap-6">
-        <div className="flex flex-col md:flex-row gap-2 md:items-center">
-          <div className="flex items-center gap-2">
-            <SlidersHorizontal className="w-4 h-4 text-muted-foreground" />
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-[160px]">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="startAsc">Soonest first</SelectItem>
-                <SelectItem value="startDesc">Latest first</SelectItem>
-                <SelectItem value="title">Title (A–Z)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+      <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
+        <div className="flex items-center gap-2 text-muted-foreground shrink-0">
+          <SlidersHorizontal className="w-4 h-4" />
+          <span className="text-sm font-medium">Filter:</span>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-2 flex-1">
           <Input
-            placeholder="Search (e.g., 'Contest', 'VHF', 'Exam')"
+            placeholder="Search events..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="md:w-72"
+            className="flex-1 min-w-0 h-9"
           />
-          <div className="flex items-center gap-2 text-sm">
-            <input id="toggle-contests" type="checkbox" className="h-4 w-4" checked={includeContests} onChange={(e) => setIncludeContests(e.target.checked)} />
-            <label htmlFor="toggle-contests">Include contestcalendar.com (ICS)</label>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <input id="toggle-proxy" type="checkbox" className="h-4 w-4" checked={useProxy} onChange={(e) => setUseProxy(e.target.checked)} />
-            <label htmlFor="toggle-proxy">Use proxy to avoid CORS</label>
-          </div>
+          {tags.length > 0 && (
+            <Select value={filterTag} onValueChange={setFilterTag}>
+              <SelectTrigger className="w-full sm:w-[130px] h-9">
+                <SelectValue placeholder="All tags" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All tags</SelectItem>
+                {tags.map((tag) => (
+                  <SelectItem key={tag} value={tag}>
+                    {tag}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-full sm:w-[140px] h-9">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="startAsc">Soonest first</SelectItem>
+              <SelectItem value="startDesc">Latest first</SelectItem>
+              <SelectItem value="title">Title (A–Z)</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
-      {contestStatus && <div className="mt-2 text-xs text-muted-foreground">{contestStatus}</div>}
-
-      <Separator className="my-6" />
+      <Separator className="my-4" />
 
       <Tabs value={tab} onValueChange={setTab} className="w-full">
         <TabsList className="grid grid-cols-3 w-full max-w-md">
@@ -756,6 +737,7 @@ export default function HamRadioEventsCountdown() {
         </TabsList>
 
         <TabsContent value="cards" className="mt-6">
+          <CurrentEvents events={filtered} />
           <NextUp events={filtered} />
           <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             <AnimatePresence>
@@ -774,11 +756,13 @@ export default function HamRadioEventsCountdown() {
         </TabsContent>
 
         <TabsContent value="calendar" className="mt-6">
-          <CalendarView events={filtered} />
+          <CalendarView events={filteredForCalendar} />
         </TabsContent>
       </Tabs>
 
-      <footer className="mt-10 text-xs text-muted-foreground text-center">Tip: Times use your local timezone. Use the search, filters, and tabs to view as cards or a table.</footer>
+      <footer className="mt-10 text-xs text-muted-foreground text-center">
+        Tip: Times are displayed in your local timezone. Use search, filters, and tabs to view events.
+      </footer>
     </div>
   );
 }

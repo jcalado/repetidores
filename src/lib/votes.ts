@@ -1,13 +1,9 @@
-// Client-side vote helpers with a simple feature flag.
-// Mode is controlled by NEXT_PUBLIC_VOTES_MODE: 'local' | 'live'
-
 export type VoteKind = "up" | "down";
 
 export type VoteInput = {
   repeaterId: string;
   vote: VoteKind;
   feedback?: string;
-  captchaToken?: string;
 };
 
 export type VoteStats = {
@@ -20,12 +16,14 @@ export type VoteStats = {
   category: "ok" | "prob-bad" | "bad" | "unknown";
 };
 
-const MODE = (process.env.NEXT_PUBLIC_VOTES_MODE || "local").toLowerCase();
-const CMS_BASE_URL = process.env.NEXT_PUBLIC_CMS_BASE_URL || "";
-
-export function isLiveVotes() {
-  return MODE === "live" && !!CMS_BASE_URL;
-}
+const API_BASE_URL = (() => {
+  const source =
+    process.env.NEXT_PUBLIC_VOTES_API_BASE_URL ||
+    process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL ||
+    process.env.PAYLOAD_API_BASE_URL ||
+    "http://localhost:3000";
+  return source.replace(/\/$/, "");
+})();
 
 function localKey(repeaterId: string) {
   return `repeater-vote:${repeaterId}`;
@@ -63,28 +61,46 @@ function statsFromLocal(repeaterId: string): VoteStats {
   return { up, down, total, net, ratio, category, windowDays: 60 };
 }
 
-export async function getVoteStats(repeaterId: string): Promise<VoteStats> {
-  if (!isLiveVotes()) {
-    return statsFromLocal(repeaterId);
+function toNumber(value: unknown): number {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string") {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return parsed;
   }
+  return 0;
+}
+
+function toCategory(value: unknown): VoteStats["category"] {
+  if (value === "ok" || value === "prob-bad" || value === "bad" || value === "unknown") {
+    return value;
+  }
+  return "unknown";
+}
+
+function normalizeVoteStats(data: unknown): VoteStats {
+  const payload = (data ?? {}) as Record<string, unknown>;
+  const up = toNumber(payload.up ?? payload.votesUp);
+  const down = toNumber(payload.down ?? payload.votesDown);
+  const totalRaw = toNumber(payload.total);
+  const total = totalRaw > 0 ? totalRaw : up + down;
+  const netRaw = toNumber(payload.net);
+  const net = netRaw !== 0 ? netRaw : up - down;
+  const ratioRaw = toNumber(payload.ratio);
+  const ratio = ratioRaw > 0 ? ratioRaw : total > 0 ? up / total : 0;
+  const windowDays = toNumber(payload.windowDays) || 60;
+  const category = toCategory(payload.category);
+  return { up, down, total, net, ratio, windowDays, category };
+}
+
+export async function getVoteStats(repeaterId: string): Promise<VoteStats> {
   try {
     const res = await fetch(
-      `${CMS_BASE_URL}/api/repeaters/${encodeURIComponent(repeaterId)}/votes/stats`,
-      { method: "GET", headers: { "Accept": "application/json" }, mode: "cors", cache: "no-store" }
+      `${API_BASE_URL}/api/repeaters/stats/${encodeURIComponent(repeaterId)}`,
+      { method: "GET", headers: { Accept: "application/json" }, cache: "no-store" }
     );
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    // Expect the CMS to return the VoteStats shape. Fallback minimal mapping if needed.
-    const stats: VoteStats = {
-      up: Number(data?.up ?? 0),
-      down: Number(data?.down ?? 0),
-      total: Number(data?.total ?? (Number(data?.up ?? 0) + Number(data?.down ?? 0))),
-      net: Number(data?.net ?? ((Number(data?.up ?? 0)) - (Number(data?.down ?? 0)))),
-      ratio: Number(data?.ratio ?? 0),
-      windowDays: Number(data?.windowDays ?? 60),
-      category: (data?.category as VoteStats["category"]) ?? "unknown",
-    };
-    return stats;
+    return normalizeVoteStats(data);
   } catch (e) {
     // Fallback to local in case of network errors
     return statsFromLocal(repeaterId);
@@ -92,32 +108,22 @@ export async function getVoteStats(repeaterId: string): Promise<VoteStats> {
 }
 
 export async function postVote(input: VoteInput): Promise<VoteStats> {
-  if (!isLiveVotes()) {
-    writeLocalVote(input);
-    return statsFromLocal(input.repeaterId);
-  }
   try {
     const res = await fetch(
-      `${CMS_BASE_URL}/api/repeaters/${encodeURIComponent(input.repeaterId)}/votes`,
+      `${API_BASE_URL}/api/repeaters/vote`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        mode: "cors",
-        body: JSON.stringify({ vote: input.vote, feedback: input.feedback, captchaToken: input.captchaToken }),
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          repeaterId: input.repeaterId,
+          vote: input.vote,
+          feedback: input.feedback,
+        }),
       }
     );
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    // Assume API returns updated stats
-    return {
-      up: Number(data?.up ?? 0),
-      down: Number(data?.down ?? 0),
-      total: Number(data?.total ?? (Number(data?.up ?? 0) + Number(data?.down ?? 0))),
-      net: Number(data?.net ?? ((Number(data?.up ?? 0)) - (Number(data?.down ?? 0)))),
-      ratio: Number(data?.ratio ?? 0),
-      windowDays: Number(data?.windowDays ?? 60),
-      category: (data?.category as VoteStats["category"]) ?? "unknown",
-    };
+    return normalizeVoteStats(data);
   } catch (e) {
     // Don't lose the user's action: save locally as a fallback
     writeLocalVote(input);

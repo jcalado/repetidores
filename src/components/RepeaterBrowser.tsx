@@ -22,6 +22,7 @@ type Props = {
   data: Repeater[]
   activeTab?: string
   onTabChange?: (tab: string) => void
+  isLoading?: boolean
 }
 
 function getBandFromFrequency(mhz: number): string {
@@ -31,7 +32,12 @@ function getBandFromFrequency(mhz: number): string {
   return "Other"
 }
 
-export default function RepeaterBrowser({ data, activeTab = "table", onTabChange }: Props) {
+export default function RepeaterBrowser({
+  data,
+  activeTab = "table",
+  onTabChange,
+  isLoading = false,
+}: Props) {
   const t = useTranslations()
   const columns = useColumns()
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -122,6 +128,7 @@ export default function RepeaterBrowser({ data, activeTab = "table", onTabChange
                   setSelected(row as Repeater)
                   setOpen(true)
                 }}
+                isLoading={isLoading}
               />
             </TabsContent>
             <TabsContent value="map" className="h-[500px]">

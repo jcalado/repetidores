@@ -27,6 +27,7 @@
         "visibleColumns": "Colunas",
         "rowsPerPage": "Resultados por página:",
         "pageOf": "Página {current} de {total}",
+        "loading": "A carregar repetidores...",
         "noResults": "Nenhum resultado encontrado.",
         "columns": {
             "status": "Estado",

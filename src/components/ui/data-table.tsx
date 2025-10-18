@@ -15,6 +15,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import * as React from "react"
+import { Loader2 } from "lucide-react"
 
 import {
   AlertDialog,
@@ -64,6 +65,7 @@ interface DataTableProps<TData, TValue> {
   columnFilters?: ColumnFiltersState
   onColumnFiltersChange?: React.Dispatch<React.SetStateAction<ColumnFiltersState>>
   onRowClick?: (row: TData) => void
+  isLoading?: boolean
 }
 
 export function DataTable<TData, TValue>({
@@ -73,6 +75,7 @@ export function DataTable<TData, TValue>({
   columnFilters: columnFiltersProp,
   onColumnFiltersChange,
   onRowClick,
+  isLoading = false,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([
     { id: 'outputFrequency', desc: false },
@@ -305,7 +308,7 @@ export function DataTable<TData, TValue>({
         </Button>
       </div>
 
-      <div className="rounded-md border">
+      <div className="rounded-md border" aria-busy={isLoading}>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -511,7 +514,21 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-40">
+                  <div className="flex h-full w-full flex-col items-center justify-center gap-3">
+                    <Loader2
+                      className="h-6 w-6 animate-spin text-muted-foreground"
+                      aria-hidden="true"
+                    />
+                    <span className="text-sm text-muted-foreground">
+                      {t("table.loading")}
+                    </span>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -536,7 +553,10 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+      <div
+        className={`mt-4 flex flex-wrap items-center justify-between gap-3${isLoading ? " pointer-events-none opacity-50" : ""}`}
+        aria-hidden={isLoading}
+      >
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">{t("table.rowsPerPage")}</span>
           <Combobox
