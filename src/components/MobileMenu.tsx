@@ -112,6 +112,18 @@ export default function MobileMenu() {
                         </DrawerClose>
                         <DrawerClose asChild>
                             <a
+                                href="/iss"
+                                onClick={handleLinkClick}
+                                className={`transition-colors duration-200 font-medium py-2 px-4 rounded ${currentPath === '/iss'
+                                    ? 'bg-white/20 text-white'
+                                    : 'text-gray-700 hover:bg-gray-100'
+                                    }`}
+                            >
+                                {t('nav.iss')}
+                            </a>
+                        </DrawerClose>
+                        <DrawerClose asChild>
+                            <a
                                 href="/about"
                                 onClick={handleLinkClick}
                                 className={`transition-colors duration-200 font-medium py-2 px-4 rounded ${currentPath === '/about'

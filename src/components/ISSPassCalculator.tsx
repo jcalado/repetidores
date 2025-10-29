@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -20,7 +20,7 @@ import { RealTimeTracker } from '@/components/iss/RealTimeTracker';
 export function ISSPassCalculator() {
   const [location, setLocation] = useState<ObserverLocation | null>(null);
   const [tle, setTle] = useState<TLEData | null>(null);
-  const [passes, setPasses] = useState<ISSPass[]>([]);
+  const [allPasses, setAllPasses] = useState<ISSPass[]>([]); // Unfiltered passes
   const [filters, setFilters] = useState<PassFiltersType>({
     minElevation: 10,
     visibleOnly: false,
@@ -63,12 +63,27 @@ export function ISSPassCalculator() {
     return path;
   }, [tle, currentTime]);
 
+  // Apply filters client-side (cheap operation)
+  const filteredPasses = useMemo(() => {
+    let result = allPasses;
+
+    if (filters.minElevation > 0) {
+      result = result.filter(pass => pass.maxElevation >= filters.minElevation);
+    }
+
+    if (filters.visibleOnly) {
+      result = filterVisiblePasses(result);
+    }
+
+    return result;
+  }, [allPasses, filters]);
+
   // Calculate next pass time
   const nextPassTime = useMemo(() => {
-    if (!tle || !location || passes.length === 0) return null;
-    const nextPass = passes.find(pass => pass.startTime > currentTime);
+    if (!tle || !location || filteredPasses.length === 0) return null;
+    const nextPass = filteredPasses.find(pass => pass.startTime > currentTime);
     return nextPass ? nextPass.startTime : null;
-  }, [tle, location, passes, currentTime]);
+  }, [tle, location, filteredPasses, currentTime]);
 
   // Load TLE data on mount
   useEffect(() => {
@@ -80,12 +95,35 @@ export function ISSPassCalculator() {
     return () => clearInterval(interval);
   }, []);
 
-  // Calculate passes when location or TLE changes
+  // Calculate passes when location or TLE changes (expensive operation)
+  const calculatePasses = useCallback(() => {
+    if (!location || !tle) return;
+
+    setIsLoading(true);
+
+    try {
+      // Predict ALL passes for next 7 days (no filtering here)
+      let passes = predictPasses(tle, location, new Date(), 7);
+
+      // Enrich with visibility information
+      passes = enrichPassesWithVisibility(tle, location, passes);
+
+      // Store unfiltered passes
+      setAllPasses(passes);
+    } catch (err) {
+      console.error('Error calculating passes:', err);
+      setError('Erro ao calcular passagens');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [location, tle]);
+
+  // Only recalculate when location or TLE changes (not when filters change!)
   useEffect(() => {
     if (location && tle) {
       calculatePasses();
     }
-  }, [location, tle, filters]);
+  }, [location, tle, calculatePasses]);
 
   const loadTLE = async (forceRefresh = false) => {
     setIsLoading(true);
@@ -103,40 +141,6 @@ export function ISSPassCalculator() {
     }
 
     setIsLoading(false);
-  };
-
-  const calculatePasses = () => {
-    if (!location || !tle) return;
-
-    setIsLoading(true);
-
-    try {
-      // Predict passes for next 7 days
-      let allPasses = predictPasses(tle, location, new Date(), 7);
-
-      // Enrich with visibility information
-      allPasses = enrichPassesWithVisibility(tle, location, allPasses);
-
-      // Apply filters
-      let filteredPasses = allPasses;
-
-      if (filters.minElevation > 0) {
-        filteredPasses = filteredPasses.filter(
-          pass => pass.maxElevation >= filters.minElevation
-        );
-      }
-
-      if (filters.visibleOnly) {
-        filteredPasses = filterVisiblePasses(filteredPasses);
-      }
-
-      setPasses(filteredPasses);
-    } catch (err) {
-      console.error('Error calculating passes:', err);
-      setError('Erro ao calcular passagens');
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   const handleRefreshTLE = () => {
@@ -223,11 +227,11 @@ export function ISSPassCalculator() {
             </TabsList>
 
             <TabsContent value="list" className="mt-6">
-              <PassList passes={passes} currentTime={currentTime} />
+              <PassList passes={filteredPasses} currentTime={currentTime} />
             </TabsContent>
 
             <TabsContent value="sky" className="mt-6">
-              <SkyChart passes={passes} currentPosition={currentLookAngles} />
+              <SkyChart passes={filteredPasses} currentPosition={currentLookAngles} />
             </TabsContent>
 
             <TabsContent value="map" className="mt-6">

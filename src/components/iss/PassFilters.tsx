@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
@@ -12,7 +13,21 @@ interface PassFiltersProps {
 }
 
 export function PassFilters({ filters, onFiltersChange }: PassFiltersProps) {
+  // Local state for immediate visual feedback
+  const [localMinElevation, setLocalMinElevation] = useState(filters.minElevation);
+
+  // Sync local state when filters prop changes externally
+  useEffect(() => {
+    setLocalMinElevation(filters.minElevation);
+  }, [filters.minElevation]);
+
+  // Update local state immediately for smooth slider interaction
   const handleMinElevationChange = (values: number[]) => {
+    setLocalMinElevation(values[0]);
+  };
+
+  // Only trigger parent update when user releases the slider (commit)
+  const handleMinElevationCommit = (values: number[]) => {
     onFiltersChange({
       ...filters,
       minElevation: values[0],
@@ -37,20 +52,21 @@ export function PassFilters({ filters, onFiltersChange }: PassFiltersProps) {
             </Label>
           </div>
           <span className="text-sm font-mono text-slate-700 dark:text-slate-300">
-            {filters.minElevation}°
+            {localMinElevation}°
           </span>
         </div>
         <Slider
           id="min-elevation"
-          value={[filters.minElevation]}
+          value={[localMinElevation]}
           onValueChange={handleMinElevationChange}
+          onValueCommit={handleMinElevationCommit}
           min={0}
           max={90}
           step={5}
           className="w-full"
         />
         <p className="text-xs text-slate-600 dark:text-slate-400">
-          Filtra passagens com elevação máxima abaixo de {filters.minElevation}°
+          Filtra passagens com elevação máxima abaixo de {localMinElevation}°
         </p>
       </div>
 

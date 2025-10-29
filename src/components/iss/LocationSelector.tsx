@@ -44,7 +44,14 @@ export function LocationSelector({ location, onLocationChange }: LocationSelecto
         setIsDetecting(false);
       },
       (err) => {
-        setError(`Erro ao obter localização: ${err.message}`);
+        // Handle rate limiting specifically
+        let errorMessage = `Erro ao obter localização: ${err.message}`;
+
+        if (err.message.includes('429') || err.message.includes('rate limit') || err.message.includes('Network location provider')) {
+          errorMessage = 'Limite de requisições atingido. Por favor, use "QTH Locator" ou "Coordenadas" em vez disso, ou tente novamente mais tarde.';
+        }
+
+        setError(errorMessage);
         setIsDetecting(false);
       },
       {
@@ -147,7 +154,7 @@ export function LocationSelector({ location, onLocationChange }: LocationSelecto
             {isDetecting ? 'Detectando...' : 'Detectar Localização Automática'}
           </Button>
           <p className="text-xs text-slate-600 dark:text-slate-400">
-            Usa GPS do dispositivo ou rede Wi-Fi. Requer permissão do navegador.
+            Usa GPS do dispositivo. Se não funcionar (limite de requisições), use as outras opções.
           </p>
         </TabsContent>
 
@@ -211,6 +218,9 @@ export function LocationSelector({ location, onLocationChange }: LocationSelecto
               <Globe className="h-4 w-4 mr-2" />
               Usar Coordenadas
             </Button>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-2">
+              💡 Encontre suas coordenadas em <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-900 dark:hover:text-slate-200">Google Maps</a> (clique direito → copiar coordenadas)
+            </p>
           </form>
         </TabsContent>
       </Tabs>

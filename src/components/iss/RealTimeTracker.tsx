@@ -19,8 +19,6 @@ interface RealTimeTrackerProps {
 
 export function RealTimeTracker({
   tle,
-  observer,
-  currentTime,
   currentPosition,
   currentLookAngles,
   nextPassTime,

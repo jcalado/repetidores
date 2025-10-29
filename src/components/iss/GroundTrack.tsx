@@ -40,7 +40,7 @@ export function GroundTrack({ currentPosition, observer, orbitPath = [] }: Groun
       map.remove();
       mapInstanceRef.current = null;
     };
-  }, []);
+  }, [currentPosition?.latitude, currentPosition?.longitude]);
 
   // Update ISS marker
   useEffect(() => {

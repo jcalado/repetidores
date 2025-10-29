@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ISSPass, LookAngles } from '@/lib/iss/types';
 import { Badge } from '@/components/ui/badge';
@@ -18,7 +18,7 @@ export function SkyChart({ passes, currentPosition, width = 600, height = 600 }:
   const radius = Math.min(width, height) / 2 - 40;
 
   // Convert elevation/azimuth to polar coordinates (SVG)
-  const polarToCartesian = (elevation: number, azimuth: number): { x: number; y: number } => {
+  const polarToCartesian = React.useCallback((elevation: number, azimuth: number): { x: number; y: number } => {
     // Elevation: 90° (zenith) = center, 0° (horizon) = outer edge
     const r = radius * (1 - elevation / 90);
 
@@ -30,7 +30,7 @@ export function SkyChart({ passes, currentPosition, width = 600, height = 600 }:
       x: centerX + r * Math.cos(angle),
       y: centerY + r * Math.sin(angle),
     };
-  };
+  }, [centerX, centerY, radius]);
 
   // Generate pass paths
   const passPaths = useMemo(() => {
@@ -66,7 +66,7 @@ export function SkyChart({ passes, currentPosition, width = 600, height = 600 }:
         index,
       };
     });
-  }, [passes, centerX, centerY, radius]);
+  }, [passes, polarToCartesian]);
 
   // Elevation circles (horizon rings)
   const elevationCircles = [0, 30, 60, 90];
