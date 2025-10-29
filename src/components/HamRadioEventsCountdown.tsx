@@ -495,13 +495,17 @@ function CalendarView({ events }: { events: EventItem[] }) {
   );
 }
 
-export default function HamRadioEventsCountdown() {
+interface HamRadioEventsCountdownProps {
+  initialEvents?: EventItem[];
+}
+
+export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadioEventsCountdownProps) {
   // Prevent hydration mismatch
   const [mounted, setMounted] = useState(false);
 
   // State
-  const [events, setEvents] = useState<EventItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [events, setEvents] = useState<EventItem[]>(initialEvents);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [search, setSearch] = useState("");
@@ -512,76 +516,6 @@ export default function HamRadioEventsCountdown() {
   // Set mounted on client
   useEffect(() => {
     setMounted(true);
-  }, []);
-
-  // Fetch events from Payload CMS API directly
-  useEffect(() => {
-    const controller = new AbortController();
-
-    async function fetchEvents() {
-      try {
-        setLoading(true);
-
-        // Get API base URL from environment variables
-        const apiBaseUrl = (
-          process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL ||
-          process.env.NEXT_PUBLIC_CMS_BASE_URL ||
-          'http://localhost:3000'
-        ).replace(/\/$/, '');
-
-        // Build query parameters for Payload CMS
-        // Fetch events from 30 days ago to show historical events in calendar
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-        const params = new URLSearchParams({
-          limit: '200',
-          sort: 'start',
-          'where[start][greater_than_equal]': thirtyDaysAgo.toISOString(),
-        });
-
-        // Fetch directly from Payload CMS API
-        const url = `${apiBaseUrl}/api/events?${params.toString()}`;
-        console.log('[HamRadioEvents] Fetching events from:', url);
-
-        const response = await fetch(url, {
-          signal: controller.signal,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        console.log('[HamRadioEvents] Response status:', response.status);
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-          console.error('[HamRadioEvents] Error response:', errorData);
-          throw new Error(errorData.message || `Failed to fetch events: ${response.status}`);
-        }
-
-        const data: EventsAPIResponse = await response.json();
-        console.log('[HamRadioEvents] Received', data.docs?.length || 0, 'events');
-
-        setEvents(data.docs || []);
-        setError(null);
-      } catch (err) {
-        if (err instanceof Error && err.name === 'AbortError') {
-          console.log('[HamRadioEvents] Request was cancelled');
-          return; // Request was cancelled
-        }
-        console.error('[HamRadioEvents] Error fetching events:', err);
-        setError(err instanceof Error ? err.message : 'Unknown error');
-        setEvents([]);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchEvents();
-
-    return () => {
-      controller.abort();
-    };
   }, []);
 
   const tags = useMemo(() => {
