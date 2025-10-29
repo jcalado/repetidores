@@ -8,7 +8,7 @@ import {
     DrawerTitle,
     DrawerTrigger
 } from "@/components/ui/drawer"
-import { Menu } from "lucide-react"
+import { Menu, Table, Map, Radio, Calendar, Satellite, Info, X } from "lucide-react"
 import { useTranslations } from 'next-intl'
 import * as React from "react"
 
@@ -49,91 +49,70 @@ export default function MobileMenu() {
         setIsOpen(false)
     }
 
+    const menuItems = [
+        { href: getHref("#tabela"), label: t('nav.table'), icon: Table, isHash: true, hash: '#tabela' },
+        { href: getHref("#mapa"), label: t('nav.map'), icon: Map, isHash: true, hash: '#mapa' },
+        { href: "/bands", label: t('nav.bands'), icon: Radio, isHash: false },
+        { href: "/events", label: t('nav.events'), icon: Calendar, isHash: false },
+        { href: "/iss", label: t('nav.iss'), icon: Satellite, isHash: false },
+        { href: "/about", label: t('nav.about'), icon: Info, isHash: false },
+    ]
+
+    const isActive = (item: typeof menuItems[0]) => {
+        if (item.isHash) {
+            return activeHash === item.hash && currentPath === '/'
+        }
+        return currentPath === item.href
+    }
+
     return (
         <div className="md:hidden">
             <Drawer open={isOpen} onOpenChange={setIsOpen} direction="right">
                 <DrawerTrigger asChild>
-                    <button className="text-white/90 hover:text-white transition-colors duration-200">
+                    <button
+                        className="text-white/90 hover:text-white transition-colors duration-200 p-2 hover:bg-white/10 rounded-lg"
+                        aria-label="Open menu"
+                    >
                         <Menu size={24} />
                     </button>
                 </DrawerTrigger>
-                <DrawerContent>
-                    <DrawerHeader>
-                        <DrawerTitle>{t('nav.menu')}</DrawerTitle>
+                <DrawerContent className="h-full">
+                    <DrawerHeader className="border-b border-slate-200 dark:border-slate-700 flex flex-row items-center justify-between pr-4">
+                        <DrawerTitle className="text-xl">{t('nav.menu')}</DrawerTitle>
+                        <DrawerClose asChild>
+                            <button
+                                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                                aria-label="Close menu"
+                            >
+                                <X size={20} />
+                            </button>
+                        </DrawerClose>
                     </DrawerHeader>
-                    <div className="flex flex-col space-y-4 p-4">
-                        <DrawerClose asChild>
-                            <a
-                                href={getHref("#tabela")}
-                                onClick={handleLinkClick}
-                                className={`transition-colors duration-200 font-medium py-2 px-4 rounded ${activeHash === '#tabela' && currentPath === '/'
-                                    ? 'bg-white/20 text-white'
-                                    : 'text-gray-700 hover:bg-gray-100'
-                                    }`}
-                            >
-                                {t('nav.table')}
-                            </a>
-                        </DrawerClose>
-                        <DrawerClose asChild>
-                            <a
-                                href={getHref("#mapa")}
-                                onClick={handleLinkClick}
-                                className={`transition-colors duration-200 font-medium py-2 px-4 rounded ${activeHash === '#mapa' && currentPath === '/'
-                                    ? 'bg-white/20 text-white'
-                                    : 'text-gray-700 hover:bg-gray-100'
-                                    }`}
-                            >
-                                {t('nav.map')}
-                            </a>
-                        </DrawerClose>
-                        <DrawerClose asChild>
-                            <a
-                                href="/bands"
-                                onClick={handleLinkClick}
-                                className={`transition-colors duration-200 font-medium py-2 px-4 rounded ${currentPath === '/bands'
-                                    ? 'bg-white/20 text-white'
-                                    : 'text-gray-700 hover:bg-gray-100'
-                                    }`}
-                            >
-                                {t('nav.bands')}
-                            </a>
-                        </DrawerClose>
-                        <DrawerClose asChild>
-                            <a
-                                href="/events"
-                                onClick={handleLinkClick}
-                                className={`transition-colors duration-200 font-medium py-2 px-4 rounded ${currentPath === '/events'
-                                    ? 'bg-white/20 text-white'
-                                    : 'text-gray-700 hover:bg-gray-100'
-                                    }`}
-                            >
-                                {t('nav.events')}
-                            </a>
-                        </DrawerClose>
-                        <DrawerClose asChild>
-                            <a
-                                href="/iss"
-                                onClick={handleLinkClick}
-                                className={`transition-colors duration-200 font-medium py-2 px-4 rounded ${currentPath === '/iss'
-                                    ? 'bg-white/20 text-white'
-                                    : 'text-gray-700 hover:bg-gray-100'
-                                    }`}
-                            >
-                                {t('nav.iss')}
-                            </a>
-                        </DrawerClose>
-                        <DrawerClose asChild>
-                            <a
-                                href="/about"
-                                onClick={handleLinkClick}
-                                className={`transition-colors duration-200 font-medium py-2 px-4 rounded ${currentPath === '/about'
-                                    ? 'bg-white/20 text-white'
-                                    : 'text-gray-700 hover:bg-gray-100'
-                                    }`}
-                            >
-                                {t('nav.about')}
-                            </a>
-                        </DrawerClose>
+                    <div className="flex flex-col space-y-1 p-4 overflow-y-auto">
+                        {menuItems.map((item) => {
+                            const Icon = item.icon
+                            const active = isActive(item)
+
+                            return (
+                                <DrawerClose key={item.href} asChild>
+                                    <a
+                                        href={item.href}
+                                        onClick={handleLinkClick}
+                                        className={`
+                                            flex items-center gap-3 px-4 py-3 rounded-lg
+                                            transition-all duration-200 font-medium
+                                            ${active
+                                                ? 'bg-ship-cove-600 dark:bg-ship-cove-700 text-white shadow-md'
+                                                : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                                            }
+                                        `}
+                                    >
+                                        <Icon size={20} className={active ? 'text-white' : 'text-slate-500 dark:text-slate-400'} />
+                                        <span>{item.label}</span>
+                                    </a>
+                                </DrawerClose>
+                            )
+                        })}
                     </div>
                 </DrawerContent>
             </Drawer>
