@@ -504,9 +504,7 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
   const [mounted, setMounted] = useState(false);
 
   // State
-  const [events, setEvents] = useState<EventItem[]>(initialEvents);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [events] = useState<EventItem[]>(initialEvents);
 
   const [search, setSearch] = useState("");
   const [filterTag, setFilterTag] = useState<string>("all");
@@ -583,31 +581,6 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-muted-foreground">Loading events...</div>
         </div>
-      </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="p-4 md:p-8 max-w-6xl mx-auto">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-muted-foreground">Loading events...</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="p-4 md:p-8 max-w-6xl mx-auto">
-        <Card className="rounded-2xl border-destructive">
-          <CardHeader>
-            <CardTitle className="text-destructive">Error Loading Events</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">{error}</p>
-          </CardContent>
-        </Card>
       </div>
     );
   }

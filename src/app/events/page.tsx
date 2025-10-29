@@ -8,17 +8,13 @@ async function getEvents(): Promise<EventItem[]> {
     'http://localhost:3000'
   ).replace(/\/$/, '');
 
-  // Fetch events from 30 days ago to show historical events in calendar
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
+  // Use the custom /api/events/list endpoint which expands recurring events
   const params = new URLSearchParams({
-    limit: '200',
-    sort: 'start',
-    'where[start][greater_than_equal]': thirtyDaysAgo.toISOString(),
+    limit: '500', // Higher limit to account for expanded recurring events
+    sort: 'startAsc',
   });
 
-  const url = `${apiBaseUrl}/api/events?${params.toString()}`;
+  const url = `${apiBaseUrl}/api/events/list?${params.toString()}`;
   console.log('[EventsPage] Fetching events at build time from:', url);
 
   try {

@@ -71,6 +71,8 @@ async function fetchRepeaters(): Promise<Repeater[]> {
   const baseUrl = resolveApiBaseUrl();
   const repeaters: Repeater[] = [];
 
+  console.log('[RepeatersPage] Starting fetch from baseUrl:', baseUrl);
+
   let page = 1;
 
   while (true) {
@@ -79,23 +81,31 @@ async function fetchRepeaters(): Promise<Repeater[]> {
       page: page.toString(),
     });
 
-    const response = await fetch(`${baseUrl}/api/repeaters?${params.toString()}`, {
-      cache: "force-cache",
-    });
+    const url = `${baseUrl}/api/repeaters?${params.toString()}`;
+    console.log(`[RepeatersPage] Fetching page ${page} from:`, url);
+
+    const response = await fetch(url);
+
+    console.log(`[RepeatersPage] Response status:`, response.status);
 
     if (!response.ok) {
+      console.error(`[RepeatersPage] Failed to fetch: ${response.status} ${response.statusText}`);
       throw new Error(`Failed to fetch repeaters: ${response.status} ${response.statusText}`);
     }
 
     const payload = (await response.json()) as PayloadRepeatersResponse;
+    console.log(`[RepeatersPage] Payload keys:`, Object.keys(payload), 'docs is array:', Array.isArray(payload.docs), 'docs length:', payload.docs?.length);
     const docs = Array.isArray(payload.docs) ? payload.docs : [];
     repeaters.push(...docs.map(normalizeRepeater));
+
+    console.log(`[RepeatersPage] Fetched ${docs.length} repeaters from page ${page}, total so far: ${repeaters.length}`);
 
     const totalPages = typeof payload.totalPages === "number" ? payload.totalPages : undefined;
     const hasNext = Boolean(payload.hasNextPage);
     const reachedEnd = docs.length === 0 || (!hasNext && (!totalPages || page >= totalPages));
 
     if (reachedEnd) {
+      console.log(`[RepeatersPage] Reached end. Total repeaters fetched: ${repeaters.length}`);
       break;
     }
 

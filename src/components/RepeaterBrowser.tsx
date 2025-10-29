@@ -8,11 +8,12 @@ import {
   CardContent,
 } from "@/components/ui/card"
 import { DataTable } from "@/components/ui/data-table"
-import { Drawer, DrawerContent, DrawerFooter, DrawerOverlay } from "@/components/ui/drawer"
+import { Drawer, DrawerContent, DrawerFooter, DrawerOverlay, DrawerTitle } from "@/components/ui/drawer"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { VisuallyHidden } from "@/components/ui/visually-hidden"
 import type { ColumnFiltersState } from "@tanstack/react-table"
 import { FunnelX } from "lucide-react"
 import { useTranslations } from 'next-intl'
@@ -293,6 +294,11 @@ export default function RepeaterBrowser({
           <>
             <DrawerOverlay onClick={() => setOpen(false)} />
             <DrawerContent>
+              <VisuallyHidden>
+                <DrawerTitle>
+                  {selected ? `${t('repeater.details')} - ${selected.callsign}` : t('repeater.details')}
+                </DrawerTitle>
+              </VisuallyHidden>
               <div className="p-4">
                 {selected && <RepeaterDetails r={selected} />}
               </div>
