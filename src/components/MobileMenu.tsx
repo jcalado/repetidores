@@ -39,9 +39,10 @@ export default function MobileMenu() {
         }
     }, [])
 
-    // Handle navigation from about page
+    // Handle navigation to home page tabs from any other page
     const getHref = (hash: string) => {
-        return currentPath === '/about' ? `/${hash}` : hash
+        // If we're not on the home page, navigate to home with hash
+        return currentPath !== '/' ? `/${hash}` : hash
     }
 
     const handleLinkClick = () => {
@@ -65,7 +66,7 @@ export default function MobileMenu() {
                             <a
                                 href={getHref("#tabela")}
                                 onClick={handleLinkClick}
-                                className={`transition-colors duration-200 font-medium py-2 px-4 rounded ${activeHash === '#tabela' && currentPath !== '/about'
+                                className={`transition-colors duration-200 font-medium py-2 px-4 rounded ${activeHash === '#tabela' && currentPath === '/'
                                     ? 'bg-white/20 text-white'
                                     : 'text-gray-700 hover:bg-gray-100'
                                     }`}
@@ -77,7 +78,7 @@ export default function MobileMenu() {
                             <a
                                 href={getHref("#mapa")}
                                 onClick={handleLinkClick}
-                                className={`transition-colors duration-200 font-medium py-2 px-4 rounded ${activeHash === '#mapa' && currentPath !== '/about'
+                                className={`transition-colors duration-200 font-medium py-2 px-4 rounded ${activeHash === '#mapa' && currentPath === '/'
                                     ? 'bg-white/20 text-white'
                                     : 'text-gray-700 hover:bg-gray-100'
                                     }`}

@@ -29,16 +29,17 @@ export default function Navigation() {
     }
   }, [])
 
-  // Handle navigation from about page
+  // Handle navigation to home page tabs from any other page
   const getHref = (hash: string) => {
-    return currentPath === '/about' ? `/${hash}` : hash
+    // If we're not on the home page, navigate to home with hash
+    return currentPath !== '/' ? `/${hash}` : hash
   }
 
   return (
     <nav className="hidden md:flex items-center space-x-8">
       <a
         href={getHref("#tabela")}
-        className={`transition-colors duration-200 font-medium ${activeHash === '#tabela' && currentPath !== '/about'
+        className={`transition-colors duration-200 font-medium ${activeHash === '#tabela' && currentPath === '/'
           ? 'text-white'
           : 'text-white/90 hover:text-white'
           }`}
@@ -47,7 +48,7 @@ export default function Navigation() {
       </a>
       <a
         href={getHref("#mapa")}
-        className={`transition-colors duration-200 font-medium ${activeHash === '#mapa' && currentPath !== '/about'
+        className={`transition-colors duration-200 font-medium ${activeHash === '#mapa' && currentPath === '/'
           ? 'text-white'
           : 'text-white/90 hover:text-white'
           }`}
