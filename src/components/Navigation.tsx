@@ -74,6 +74,15 @@ export default function Navigation() {
         {t('nav.events')}
       </a>
       <a
+        href="/iss"
+        className={`transition-colors duration-200 font-medium ${currentPath === '/iss'
+          ? 'text-white'
+          : 'text-white/90 hover:text-white'
+          }`}
+      >
+        {t('nav.iss')}
+      </a>
+      <a
         href="/about"
         className={`transition-colors duration-200 font-medium ${currentPath === '/about'
           ? 'text-white'

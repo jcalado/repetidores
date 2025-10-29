@@ -4,8 +4,113 @@
         "table": "Tabela",
         "map": "Mapa",
         "events": "Eventos",
+        "iss": "ISS",
         "about": "Sobre",
         "menu": "Menu"
+    },
+    "iss": {
+        "title": "Passagens da ISS",
+        "subtitle": "Previsões de passagens da Estação Espacial Internacional",
+        "location": {
+            "detect": "Detectar Localização",
+            "detecting": "Detectando...",
+            "qthPlaceholder": "Localizador QTH (ex: IM58kr)",
+            "useQth": "Usar QTH",
+            "current": "Localização Atual",
+            "errorNotSupported": "Geolocalização não suportada neste navegador",
+            "errorFailed": "Erro ao obter localização",
+            "invalidQth": "Localizador QTH inválido. Use formato AA00 ou AA00aa (ex: IM58kr)",
+            "conversionError": "Não foi possível converter o localizador QTH"
+        },
+        "filters": {
+            "minElevation": "Elevação Mínima",
+            "visibleOnly": "Apenas Passagens Visíveis",
+            "visibleDescription": "ISS iluminado pelo sol + céu escuro",
+            "elevationDescription": "Filtra passagens com elevação máxima abaixo de {degrees}°"
+        },
+        "tabs": {
+            "list": "Lista",
+            "skyChart": "Carta Celeste",
+            "groundTrack": "Rastro no Solo",
+            "live": "Tempo Real"
+        },
+        "passes": {
+            "next": "Próxima Passagem",
+            "all": "Todas as Passagens",
+            "none": "Nenhuma Passagem Encontrada",
+            "noneDescription": "Não foram encontradas passagens da ISS para os próximos 7 dias com os filtros atuais.",
+            "start": "Início",
+            "duration": "Duração",
+            "maxElevation": "Elevação Máx.",
+            "direction": "Direção",
+            "quality": "Qualidade",
+            "visibility": "Visibilidade",
+            "visible": "Visível",
+            "notVisible": "Não Visível",
+            "visibleNow": "VISÍVEL AGORA",
+            "excellent": "Excelente",
+            "good": "Boa",
+            "fair": "Razoável",
+            "poor": "Fraca",
+            "next7days": "Próximos 7 dias"
+        },
+        "skyChart": {
+            "title": "Carta Celeste",
+            "description": "Trajetória da ISS no céu (visão do observador)",
+            "zenith": "Zénite",
+            "horizon": "Horizonte",
+            "legend": {
+                "visible": "Visível",
+                "notVisible": "Não Visível",
+                "start": "Início da Passagem",
+                "maxElevation": "Elevação Máxima",
+                "now": "AGORA"
+            },
+            "description2": "Mostra até 10 próximas passagens. O centro representa o zénite (diretamente acima), e o círculo externo representa o horizonte."
+        },
+        "groundTrack": {
+            "title": "Rastro no Solo",
+            "description": "Posição atual da ISS e trajetória orbital",
+            "issMarker": "ISS",
+            "yourLocation": "Sua Localização",
+            "orbit": "Órbita"
+        },
+        "realTime": {
+            "title": "Rastreamento em Tempo Real",
+            "currentState": "Estado Atual",
+            "visibleNow": "VISÍVEL AGORA",
+            "belowHorizon": "Abaixo do Horizonte",
+            "elevation": "Elevação",
+            "azimuth": "Azimute",
+            "distance": "Distância",
+            "altitude": "Altitude",
+            "position": "Posição da ISS",
+            "positionDescription": "Localização geográfica atual",
+            "latitude": "Latitude",
+            "longitude": "Longitude",
+            "velocity": "Velocidade",
+            "north": "Norte",
+            "south": "Sul",
+            "east": "Este",
+            "west": "Oeste",
+            "nextPass": "Próxima Passagem",
+            "tip": "Dica: Configure um alarme para não perder a próxima passagem visível!",
+            "loading": "Carregando dados da ISS..."
+        },
+        "tle": {
+            "title": "Dados Orbitais",
+            "lastUpdate": "Última atualização",
+            "recommendUpdate": "(recomendamos atualizar)",
+            "refresh": "Atualizar TLE",
+            "age": "Dados orbitais de {date}",
+            "oldData": "(atualize os dados para maior precisão)"
+        },
+        "alerts": {
+            "error": "Erro",
+            "setupRequired": "Configuração Necessária",
+            "setLocation": "Por favor, defina sua localização para calcular as passagens da ISS.",
+            "loadingTle": "Carregando dados orbitais..."
+        }
     },
     "filters": {
         "callsign": "Filtrar por indicativo...",
