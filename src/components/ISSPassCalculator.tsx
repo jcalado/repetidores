@@ -10,6 +10,7 @@ import { fetchISSTLE, getCacheAge, formatCacheAge } from '@/lib/iss/tle-fetcher'
 import { predictPasses } from '@/lib/iss/pass-predictor';
 import { enrichPassesWithVisibility, filterVisiblePasses } from '@/lib/iss/visibility-calculator';
 import { calculateSatellitePosition, calculateLookAngles } from '@/lib/iss/satellite-calculations';
+import { fetchWeatherWithCache, getWeatherAtTime, isGoodWeatherConditions } from '@/lib/iss/weather-service';
 import { LocationSelector } from '@/components/iss/LocationSelector';
 import { PassFilters } from '@/components/iss/PassFilters';
 import { PassList } from '@/components/iss/PassList';
@@ -24,6 +25,7 @@ export function ISSPassCalculator() {
   const [filters, setFilters] = useState<PassFiltersType>({
     minElevation: 10,
     visibleOnly: false,
+    goodWeatherOnly: false,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -75,6 +77,10 @@ export function ISSPassCalculator() {
       result = filterVisiblePasses(result);
     }
 
+    if (filters.goodWeatherOnly) {
+      result = result.filter(pass => isGoodWeatherConditions(pass.weather));
+    }
+
     return result;
   }, [allPasses, filters]);
 
@@ -96,7 +102,7 @@ export function ISSPassCalculator() {
   }, []);
 
   // Calculate passes when location or TLE changes (expensive operation)
-  const calculatePasses = useCallback(() => {
+  const calculatePasses = useCallback(async () => {
     if (!location || !tle) return;
 
     setIsLoading(true);
@@ -107,6 +113,17 @@ export function ISSPassCalculator() {
 
       // Enrich with visibility information
       passes = enrichPassesWithVisibility(tle, location, passes);
+
+      // Fetch weather forecast for the location
+      const weatherForecast = await fetchWeatherWithCache(location);
+
+      // Enrich passes with weather data
+      if (weatherForecast) {
+        passes = passes.map(pass => ({
+          ...pass,
+          weather: getWeatherAtTime(weatherForecast, pass.maxElevationTime) || undefined,
+        }));
+      }
 
       // Store unfiltered passes
       setAllPasses(passes);

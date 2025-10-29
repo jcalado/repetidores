@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ISSPass } from '@/lib/iss/types';
 import { azimuthToCardinal } from '@/lib/iss/satellite-calculations';
 import { formatPassDuration, getPassQuality } from '@/lib/iss/pass-predictor';
-import { Eye, EyeOff, Clock, Compass, TrendingUp } from 'lucide-react';
+import { Eye, EyeOff, Clock, Compass, TrendingUp, Cloud, CloudOff } from 'lucide-react';
 
 interface PassListProps {
   passes: ISSPass[];
@@ -66,7 +66,7 @@ export function PassList({ passes, currentTime }: PassListProps) {
                 <div className="font-medium">{azimuthToCardinal(nextPass.maxAzimuth)}</div>
               </div>
             </div>
-            <div className="flex gap-2 pt-2">
+            <div className="flex flex-wrap gap-2 pt-2">
               {nextPass.isVisible ? (
                 <Badge variant="default" className="bg-green-600 hover:bg-green-700">
                   <Eye className="h-3 w-3 mr-1" />
@@ -81,6 +81,19 @@ export function PassList({ passes, currentTime }: PassListProps) {
               <Badge variant="outline">
                 {getPassQualityLabel(getPassQuality(nextPass.maxElevation))}
               </Badge>
+              {nextPass.weather && (
+                nextPass.weather.isGoodWeather ? (
+                  <Badge variant="default" className="bg-blue-600 hover:bg-blue-700">
+                    <CloudOff className="h-3 w-3 mr-1" />
+                    Bom Tempo
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="text-orange-600 dark:text-orange-400">
+                    <Cloud className="h-3 w-3 mr-1" />
+                    Nuvens: {nextPass.weather.cloudCover.toFixed(0)}%
+                  </Badge>
+                )
+              )}
             </div>
           </CardContent>
         </Card>
@@ -114,6 +127,12 @@ export function PassList({ passes, currentTime }: PassListProps) {
                   </TableHead>
                   <TableHead>Qualidade</TableHead>
                   <TableHead>Visibilidade</TableHead>
+                  <TableHead className="text-center">
+                    <div className="flex items-center justify-center gap-1">
+                      <Cloud className="h-4 w-4" />
+                      Tempo
+                    </div>
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -163,6 +182,25 @@ export function PassList({ passes, currentTime }: PassListProps) {
                           <Badge variant="secondary">
                             <EyeOff className="h-3 w-3 mr-1" />
                             Não
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {pass.weather ? (
+                          pass.weather.isGoodWeather ? (
+                            <Badge variant="default" className="bg-blue-600 hover:bg-blue-700">
+                              <CloudOff className="h-3 w-3 mr-1" />
+                              Bom
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-orange-600 dark:text-orange-400">
+                              <Cloud className="h-3 w-3 mr-1" />
+                              {pass.weather.cloudCover.toFixed(0)}%
+                            </Badge>
+                          )
+                        ) : (
+                          <Badge variant="secondary" className="text-xs">
+                            N/D
                           </Badge>
                         )}
                       </TableCell>

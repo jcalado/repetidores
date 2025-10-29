@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { PassFilters as PassFiltersType } from '@/lib/iss/types';
-import { Eye, Mountain } from 'lucide-react';
+import { Eye, Mountain, CloudSun } from 'lucide-react';
 
 interface PassFiltersProps {
   filters: PassFiltersType;
@@ -38,6 +38,13 @@ export function PassFilters({ filters, onFiltersChange }: PassFiltersProps) {
     onFiltersChange({
       ...filters,
       visibleOnly: checked,
+    });
+  };
+
+  const handleGoodWeatherOnlyChange = (checked: boolean) => {
+    onFiltersChange({
+      ...filters,
+      goodWeatherOnly: checked,
     });
   };
 
@@ -86,6 +93,25 @@ export function PassFilters({ filters, onFiltersChange }: PassFiltersProps) {
           id="visible-only"
           checked={filters.visibleOnly}
           onCheckedChange={handleVisibleOnlyChange}
+        />
+      </div>
+
+      <div className="flex items-center justify-between space-x-3 pt-3 border-t border-slate-200 dark:border-slate-800">
+        <div className="flex items-center gap-2 flex-1">
+          <CloudSun className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+          <div className="flex flex-col">
+            <Label htmlFor="good-weather-only" className="text-sm font-medium">
+              Apenas Bom Tempo
+            </Label>
+            <span className="text-xs text-slate-600 dark:text-slate-400">
+              Céu limpo (&lt; 30% nuvens) sem precipitação
+            </span>
+          </div>
+        </div>
+        <Switch
+          id="good-weather-only"
+          checked={filters.goodWeatherOnly}
+          onCheckedChange={handleGoodWeatherOnlyChange}
         />
       </div>
     </div>

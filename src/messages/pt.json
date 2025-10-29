@@ -26,6 +26,8 @@
             "minElevation": "Elevação Mínima",
             "visibleOnly": "Apenas Passagens Visíveis",
             "visibleDescription": "ISS iluminado pelo sol + céu escuro",
+            "goodWeatherOnly": "Apenas Bom Tempo",
+            "goodWeatherDescription": "Céu limpo (< 30% nuvens) sem precipitação",
             "elevationDescription": "Filtra passagens com elevação máxima abaixo de {degrees}°"
         },
         "tabs": {
@@ -52,7 +54,13 @@
             "good": "Boa",
             "fair": "Razoável",
             "poor": "Fraca",
-            "next7days": "Próximos 7 dias"
+            "next7days": "Próximos 7 dias",
+            "weather": "Tempo",
+            "cloudCover": "Nuvens",
+            "precipitation": "Precipitação",
+            "goodWeather": "Bom Tempo",
+            "badWeather": "Tempo Incerto",
+            "weatherUnavailable": "Previsão Indisponível"
         },
         "skyChart": {
             "title": "Carta Celeste",

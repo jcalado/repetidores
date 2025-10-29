@@ -33,6 +33,13 @@ export interface PassMoment {
   lookAngles: LookAngles;
 }
 
+export interface WeatherConditions {
+  cloudCover: number; // 0-100%
+  precipitation: number; // mm
+  visibility: number; // meters
+  isGoodWeather: boolean; // derived: cloud cover < 30% && no precipitation
+}
+
 export interface ISSPass {
   startTime: Date; // AOS (Acquisition of Signal)
   endTime: Date; // LOS (Loss of Signal)
@@ -44,11 +51,13 @@ export interface ISSPass {
   duration: number; // seconds
   isVisible: boolean; // optical visibility (sunlit satellite + dark sky)
   trajectory: PassMoment[]; // position samples throughout pass
+  weather?: WeatherConditions; // weather forecast at max elevation time
 }
 
 export interface PassFilters {
   minElevation: number; // minimum elevation in degrees
   visibleOnly: boolean; // filter for optically visible passes
+  goodWeatherOnly: boolean; // filter for passes with good weather conditions
   maxResults?: number; // limit number of results
 }
 
