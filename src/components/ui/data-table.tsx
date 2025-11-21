@@ -94,6 +94,7 @@ export function DataTable<TData, TValue>({
   })
 
   const [showExportModal, setShowExportModal] = React.useState(false)
+  const [exportFormat, setExportFormat] = React.useState<"chirp" | "anytone">("chirp")
 
   const t = useTranslations()
 
@@ -231,11 +232,194 @@ export function DataTable<TData, TValue>({
       lines.push(fields.join(","))
     })
 
-    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" })
+    const blob = new Blob([lines.join("\r\n")], { type: "text/csv;charset=utf-8;" })
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
     a.download = "repetidores.csv"
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+
+    // Close the modal after export
+    setShowExportModal(false)
+  }
+
+  /**
+   * Exports the filtered rows from the data table to an Anytone-compatible CSV file.
+   *
+   * This function retrieves the filtered rows from the table, formats them according to
+   * the Anytone CSV specification with 60 columns, and generates a downloadable CSV file
+   * named "repetidores-anytone.csv". It handles both analog (FM) and digital (DMR) repeaters
+   * with appropriate field values for each type. All values are quoted as per Anytone format.
+   *
+   * @returns {void} This function does not return a value; it triggers a file download.
+   */
+  const handleAnytoneExport = () => {
+    const rows = table.getFilteredRowModel().rows.map((r) => r.original as TData)
+
+    // Build Anytone CSV header (60 columns)
+    const header = [
+      "No.",
+      "Channel Name",
+      "Receive Frequency",
+      "Transmit Frequency",
+      "Channel Type",
+      "Transmit Power",
+      "Band Width",
+      "CTCSS/DCS Decode",
+      "CTCSS/DCS Encode",
+      "Contact",
+      "Contact Call Type",
+      "Radio ID",
+      "Busy Lock/TX Permit",
+      "Squelch Mode",
+      "Optional Signal",
+      "DTMF ID",
+      "2Tone ID",
+      "5Tone ID",
+      "PTT ID",
+      "RX Color Code",
+      "Slot",
+      "Scan List",
+      "Receive Group List",
+      "PTT Prohibit",
+      "Reverse",
+      "Idle TX",
+      "Slot Suit",
+      "AES Digital Encryption",
+      "Digital Encryption",
+      "Call Confirmation",
+      "Talk Around(Simplex)",
+      "Work Alone",
+      "Custom CTCSS",
+      "2TONE Decode",
+      "Ranging",
+      "Through Mode",
+      "APRS RX",
+      "Analog APRS PTT Mode",
+      "Digital APRS PTT Mode",
+      "APRS Report Type",
+      "Digital APRS Report Channel",
+      "Correct Frequency[Hz]",
+      "SMS Confirmation",
+      "Exclude channel from roaming",
+      "DMR MODE",
+      "DataACK Disable",
+      "R5ToneBot",
+      "R5ToneEot",
+      "Auto Scan",
+      "Ana Aprs Mute",
+      "Send Talker Aias",
+      "AnaAprsTxPath",
+      "ARC4",
+      "ex_emg_kind",
+      "idle_tx",
+      "Compand",
+      "DisturEn",
+      "DisturFreq",
+      "Rpga_Mdc",
+      "dmr_crc_ignore",
+      "TxCc"
+    ]
+
+    const quoteValue = (val: string | number) => {
+      return '"' + String(val).replace(/"/g, '""') + '"'
+    }
+
+    const fmtFreqAnytone = (n: number | undefined) =>
+      typeof n === "number" && Number.isFinite(n) ? n.toFixed(5) : "0.00000"
+
+    const fmtToneAnytone = (n: number | undefined) =>
+      typeof n === "number" && n > 0 ? n.toFixed(1) : "Off"
+
+    const lines = [header.map(quoteValue).join(",")]
+
+    rows.forEach((row, idx) => {
+      const item = row as Record<string, unknown>
+      const rx = item?.outputFrequency as number | undefined
+      const tx = item?.inputFrequency as number | undefined
+      const tone = item?.tone as number | undefined
+      const name = item?.callsign as string ?? ""
+      const isDMR = item?.dmr === true
+      const modulation = item?.modulation as string | undefined
+
+      // Determine if this is a digital channel
+      const isDigital = isDMR || (modulation && modulation.toUpperCase().includes("DMR"))
+
+      const fields = [
+        String(idx + 1),                              // No.
+        name,                                         // Channel Name
+        fmtFreqAnytone(rx),                          // Receive Frequency
+        fmtFreqAnytone(tx),                          // Transmit Frequency
+        isDigital ? "D-Digital" : "A-Analog",        // Channel Type
+        "High",                                       // Transmit Power (High for both analog and digital)
+        "25K",                                        // Band Width
+        "Off",                                        // CTCSS/DCS Decode
+        isDigital ? "Off" : fmtToneAnytone(tone),    // CTCSS/DCS Encode
+        "WW",                                         // Contact
+        "Group Call",                                 // Contact Call Type
+        "My Radio",                                   // Radio ID
+        isDigital ? "Always" : "Off",                // Busy Lock/TX Permit
+        "Carrier",                                    // Squelch Mode
+        "Off",                                        // Optional Signal
+        "1",                                          // DTMF ID
+        "1",                                          // 2Tone ID
+        "1",                                          // 5Tone ID
+        "Off",                                        // PTT ID
+        "1",                                          // RX Color Code
+        "1",                                          // Slot
+        isDigital ? "Scan List 1" : "None",          // Scan List
+        isDigital ? "Group List 1" : "None",         // Receive Group List
+        "Off",                                        // PTT Prohibit
+        "Off",                                        // Reverse
+        "Off",                                        // Idle TX
+        "Off",                                        // Slot Suit
+        "Normal Encryption",                          // AES Digital Encryption
+        "Off",                                        // Digital Encryption
+        "Off",                                        // Call Confirmation
+        "Off",                                        // Talk Around(Simplex)
+        "Off",                                        // Work Alone
+        "251.1",                                      // Custom CTCSS
+        isDigital ? "1" : "0",                       // 2TONE Decode
+        "Off",                                        // Ranging
+        "Off",                                        // Through Mode
+        "Off",                                        // APRS RX
+        "Off",                                        // Analog APRS PTT Mode
+        "Off",                                        // Digital APRS PTT Mode
+        "Off",                                        // APRS Report Type
+        "1",                                          // Digital APRS Report Channel
+        "0",                                          // Correct Frequency[Hz]
+        "Off",                                        // SMS Confirmation
+        "0",                                          // Exclude channel from roaming
+        "1",                                          // DMR MODE
+        "0",                                          // DataACK Disable
+        "0",                                          // R5ToneBot
+        "0",                                          // R5ToneEot
+        "0",                                          // Auto Scan
+        "0",                                          // Ana Aprs Mute
+        "0",                                          // Send Talker Aias
+        "0",                                          // AnaAprsTxPath
+        "0",                                          // ARC4
+        "0",                                          // ex_emg_kind
+        "0",                                          // idle_tx
+        "0",                                          // Compand
+        "0",                                          // DisturEn
+        isDigital ? "13" : "0",                      // DisturFreq
+        "0",                                          // Rpga_Mdc
+        "0",                                          // dmr_crc_ignore
+        "1"                                           // TxCc
+      ].map(quoteValue)
+
+      lines.push(fields.join(","))
+    })
+
+    const blob = new Blob([lines.join("\r\n")], { type: "text/csv;charset=utf-8;" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = "repetidores-anytone.csv"
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -655,9 +839,33 @@ export function DataTable<TData, TValue>({
               })}
             </AlertDialogDescription>
           </AlertDialogHeader>
+          <div className="py-4">
+            <label className="text-sm font-medium mb-2 block">
+              {t("export.formatLabel")}
+            </label>
+            <Select value={exportFormat} onValueChange={(value: "chirp" | "anytone") => setExportFormat(value)}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="chirp">
+                  {t("export.formatChirp")}
+                </SelectItem>
+                <SelectItem value="anytone">
+                  {t("export.formatAnytone")}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <AlertDialogFooter>
             <AlertDialogCancel>{t("export.cancelButton")}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleChirpExport}>
+            <AlertDialogAction onClick={() => {
+              if (exportFormat === "anytone") {
+                handleAnytoneExport()
+              } else {
+                handleChirpExport()
+              }
+            }}>
               {t("export.confirmButton")}
             </AlertDialogAction>
           </AlertDialogFooter>

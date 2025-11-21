@@ -134,7 +134,7 @@
         "no": "Não",
         "qth": "Filtrar por QTH...",
         "clear": "Limpar filtros",
-        "export": "Exportar CHIRP"
+        "export": "Exportar CSV"
     },
     "table": {
         "visibleColumns": "Colunas",
@@ -221,8 +221,11 @@
         "github": "GitHub"
     },
     "export": {
-        "modalTitle": "Exportar para CHIRP",
-        "modalDescription": "Está prestes a exportar {count} repetidores para um arquivo CSV compatível com CHIRP.",
+        "modalTitle": "Exportar Repetidores",
+        "modalDescription": "Está prestes a exportar {count} repetidores para um arquivo CSV.",
+        "formatLabel": "Formato de exportação",
+        "formatChirp": "CHIRP",
+        "formatAnytone": "Anytone",
         "confirmButton": "Descarregar",
         "cancelButton": "Cancelar"
     }
