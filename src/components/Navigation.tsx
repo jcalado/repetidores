@@ -2,6 +2,13 @@
 
 import { useTranslations } from 'next-intl'
 import * as React from "react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { ChevronDown } from "lucide-react"
 
 export default function Navigation() {
   const t = useTranslations()
@@ -35,26 +42,46 @@ export default function Navigation() {
     return currentPath !== '/' ? `/${hash}` : hash
   }
 
+  const isRepeatersActive = (activeHash === '#tabela' || activeHash === '#mapa') && currentPath === '/'
+
   return (
     <nav className="hidden md:flex items-center space-x-8">
-      <a
-        href={getHref("#tabela")}
-        className={`transition-colors duration-200 font-medium ${activeHash === '#tabela' && currentPath === '/'
-          ? 'text-white'
-          : 'text-white/90 hover:text-white'
-          }`}
-      >
-        {t('nav.table')}
-      </a>
-      <a
-        href={getHref("#mapa")}
-        className={`transition-colors duration-200 font-medium ${activeHash === '#mapa' && currentPath === '/'
-          ? 'text-white'
-          : 'text-white/90 hover:text-white'
-          }`}
-      >
-        {t('nav.map')}
-      </a>
+      <DropdownMenu>
+        <DropdownMenuTrigger className={`flex items-center gap-1 transition-colors duration-200 font-medium ${
+          isRepeatersActive
+            ? 'text-white'
+            : 'text-white/90 hover:text-white'
+        }`}>
+          {t('nav.repeaters')}
+          <ChevronDown size={16} />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+          <DropdownMenuItem asChild>
+            <a
+              href={getHref("#tabela")}
+              className={`cursor-pointer ${
+                activeHash === '#tabela' && currentPath === '/'
+                  ? 'bg-ship-cove-100 dark:bg-ship-cove-900 text-ship-cove-900 dark:text-ship-cove-100'
+                  : ''
+              }`}
+            >
+              {t('nav.table')}
+            </a>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <a
+              href={getHref("#mapa")}
+              className={`cursor-pointer ${
+                activeHash === '#mapa' && currentPath === '/'
+                  ? 'bg-ship-cove-100 dark:bg-ship-cove-900 text-ship-cove-900 dark:text-ship-cove-100'
+                  : ''
+              }`}
+            >
+              {t('nav.map')}
+            </a>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
       <a
         href="/bands"
         className={`transition-colors duration-200 font-medium ${currentPath === '/bands'

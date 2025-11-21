@@ -8,7 +8,7 @@ import {
     DrawerTitle,
     DrawerTrigger
 } from "@/components/ui/drawer"
-import { Menu, Table, Map, Radio, Calendar, Satellite, Info, X } from "lucide-react"
+import { Menu, Table, Map, Radio, Calendar, Satellite, Info, X, ChevronDown, ChevronRight } from "lucide-react"
 import { useTranslations } from 'next-intl'
 import * as React from "react"
 
@@ -17,6 +17,7 @@ export default function MobileMenu() {
     const [activeHash, setActiveHash] = React.useState("")
     const [currentPath, setCurrentPath] = React.useState("")
     const [isOpen, setIsOpen] = React.useState(false)
+    const [repeatersExpanded, setRepeatersExpanded] = React.useState(false)
 
     React.useEffect(() => {
         const handleHashChange = () => {
@@ -30,6 +31,11 @@ export default function MobileMenu() {
         // Set initial values
         handleHashChange()
         handlePathChange()
+
+        // Auto-expand Repetidores section if on home page
+        if (window.location.pathname === '/' && (window.location.hash === '#tabela' || window.location.hash === '#mapa')) {
+            setRepeatersExpanded(true)
+        }
 
         window.addEventListener("hashchange", handleHashChange)
         window.addEventListener("popstate", handlePathChange)
@@ -49,9 +55,12 @@ export default function MobileMenu() {
         setIsOpen(false)
     }
 
-    const menuItems = [
+    const repeatersItems = [
         { href: getHref("#tabela"), label: t('nav.table'), icon: Table, isHash: true, hash: '#tabela' },
         { href: getHref("#mapa"), label: t('nav.map'), icon: Map, isHash: true, hash: '#mapa' },
+    ]
+
+    const menuItems = [
         { href: "/bands", label: t('nav.bands'), icon: Radio, isHash: false },
         { href: "/events", label: t('nav.events'), icon: Calendar, isHash: false },
         { href: "/iss", label: t('nav.iss'), icon: Satellite, isHash: false },
@@ -64,6 +73,8 @@ export default function MobileMenu() {
         }
         return currentPath === item.href
     }
+
+    const isRepeatersActive = (activeHash === '#tabela' || activeHash === '#mapa') && currentPath === '/'
 
     return (
         <div className="md:hidden">
@@ -89,6 +100,61 @@ export default function MobileMenu() {
                         </DrawerClose>
                     </DrawerHeader>
                     <div className="flex flex-col space-y-1 p-4 overflow-y-auto">
+                        {/* Repetidores collapsible section */}
+                        <div>
+                            <button
+                                onClick={() => setRepeatersExpanded(!repeatersExpanded)}
+                                className={`
+                                    flex items-center justify-between w-full px-4 py-3 rounded-lg
+                                    transition-all duration-200 font-medium
+                                    ${isRepeatersActive
+                                        ? 'bg-ship-cove-600 dark:bg-ship-cove-700 text-white shadow-md'
+                                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                                    }
+                                `}
+                            >
+                                <span className="flex items-center gap-3">
+                                    <Radio size={20} className={isRepeatersActive ? 'text-white' : 'text-slate-500 dark:text-slate-400'} />
+                                    <span>{t('nav.repeaters')}</span>
+                                </span>
+                                {repeatersExpanded ? (
+                                    <ChevronDown size={20} className={isRepeatersActive ? 'text-white' : 'text-slate-500 dark:text-slate-400'} />
+                                ) : (
+                                    <ChevronRight size={20} className={isRepeatersActive ? 'text-white' : 'text-slate-500 dark:text-slate-400'} />
+                                )}
+                            </button>
+
+                            {repeatersExpanded && (
+                                <div className="ml-6 mt-1 space-y-1">
+                                    {repeatersItems.map((item) => {
+                                        const Icon = item.icon
+                                        const active = isActive(item)
+
+                                        return (
+                                            <DrawerClose key={item.href} asChild>
+                                                <a
+                                                    href={item.href}
+                                                    onClick={handleLinkClick}
+                                                    className={`
+                                                        flex items-center gap-3 px-4 py-2 rounded-lg
+                                                        transition-all duration-200 font-medium
+                                                        ${active
+                                                            ? 'bg-ship-cove-600 dark:bg-ship-cove-700 text-white shadow-md'
+                                                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                                                        }
+                                                    `}
+                                                >
+                                                    <Icon size={18} className={active ? 'text-white' : 'text-slate-500 dark:text-slate-400'} />
+                                                    <span>{item.label}</span>
+                                                </a>
+                                            </DrawerClose>
+                                        )
+                                    })}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Other menu items */}
                         {menuItems.map((item) => {
                             const Icon = item.icon
                             const active = isActive(item)
