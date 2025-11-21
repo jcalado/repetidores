@@ -622,26 +622,44 @@ export function DataTable<TData, TValue>({
                             />
                           )}
                           {header.column.id === "modulation" && (
-                            <Select
-                              value={(table.getColumn("modulation")?.getFilterValue() as string) ?? "all"}
-                              onValueChange={(value) =>
-                                table
-                                  .getColumn("modulation")
-                                  ?.setFilterValue(value === "all" ? undefined : value)
-                              }
-                            >
-                              <SelectTrigger className="h-7 text-xs w-full">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="all">{t("filters.all")}</SelectItem>
-                                {modulationOptions.map((m) => (
-                                  <SelectItem key={m} value={m}>
-                                    {m}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <button className="flex h-7 w-full items-center justify-between rounded-md border border-input bg-background px-2 text-xs ring-offset-background hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                                  <span className="truncate">
+                                    {(() => {
+                                      const selected = table.getColumn("modulation")?.getFilterValue() as string[] | undefined
+                                      if (!selected || selected.length === 0) return t("filters.all")
+                                      return selected.join(', ')
+                                    })()}
+                                  </span>
+                                  <span className="ml-1">▼</span>
+                                </button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent className="w-[140px]" align="start">
+                                <DropdownMenuLabel className="text-xs">{t("filters.modulation")}</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                {modulationOptions.map((m) => {
+                                  const selected = (table.getColumn("modulation")?.getFilterValue() as string[] | undefined) || []
+                                  return (
+                                    <DropdownMenuCheckboxItem
+                                      key={m}
+                                      checked={selected.includes(m)}
+                                      onCheckedChange={(checked) => {
+                                        const column = table.getColumn("modulation")
+                                        const current = (column?.getFilterValue() as string[] | undefined) || []
+                                        const updated = checked
+                                          ? [...current, m]
+                                          : current.filter((v) => v !== m)
+                                        column?.setFilterValue(updated.length > 0 ? updated : undefined)
+                                      }}
+                                      className="text-xs"
+                                    >
+                                      {m}
+                                    </DropdownMenuCheckboxItem>
+                                  )
+                                })}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           )}
                           {header.column.id === "dmr" && (
                             <Select

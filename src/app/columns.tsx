@@ -121,11 +121,16 @@ export function useColumns(): ColumnDef<Repeater>[] {
     {
       accessorKey: "modulation",
       header: t("modulation"),
-      // Exact match filter when a value is provided (case-insensitive)
+      // Supports both single value and array of values (case-insensitive)
       filterFn: (row, id, value) => {
         if (!value) return true
-        const v = String(value).toLowerCase()
         const cell = String(row.getValue<string>(id) ?? "").toLowerCase()
+        // Handle array of values (multi-select)
+        if (Array.isArray(value)) {
+          return value.some(v => String(v).toLowerCase() === cell)
+        }
+        // Handle single value (backward compatibility)
+        const v = String(value).toLowerCase()
         return cell === v
       },
     },

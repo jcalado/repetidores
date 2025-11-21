@@ -67,8 +67,10 @@ export default function MobileMenu() {
         { href: "/about", label: t('nav.about'), icon: Info, isHash: false },
     ]
 
-    const isActive = (item: typeof menuItems[0]) => {
-        if (item.isHash) {
+    type MenuItem = typeof repeatersItems[0] | typeof menuItems[0]
+
+    const isActive = (item: MenuItem) => {
+        if (item.isHash && 'hash' in item) {
             return activeHash === item.hash && currentPath === '/'
         }
         return currentPath === item.href

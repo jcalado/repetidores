@@ -155,7 +155,7 @@
             "dstar": "D-STAR",
             "latitude": "Latitude",
             "longitude": "Longitude",
-            "qthLocator": "Localizador QTH",
+            "qthLocator": "QTH",
             "owner": "Proprietário"
         },
         "status": {

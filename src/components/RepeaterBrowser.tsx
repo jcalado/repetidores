@@ -9,13 +9,21 @@ import {
 } from "@/components/ui/card"
 import { DataTable } from "@/components/ui/data-table"
 import { Drawer, DrawerContent, DrawerFooter, DrawerOverlay, DrawerTitle } from "@/components/ui/drawer"
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { VisuallyHidden } from "@/components/ui/visually-hidden"
 import type { ColumnFiltersState } from "@tanstack/react-table"
-import { FunnelX } from "lucide-react"
+import { ChevronDown, FunnelX } from "lucide-react"
 import { useTranslations } from 'next-intl'
 import * as React from "react"
 
@@ -62,7 +70,7 @@ export default function RepeaterBrowser({
       | string
       | undefined
     const modulation = columnFilters.find((f) => f.id === "modulation")?.value as
-      | string
+      | string[]
       | undefined
     const qth = columnFilters.find((f) => f.id === "qth_locator")?.value as
       | string
@@ -88,9 +96,10 @@ export default function RepeaterBrowser({
         r.owner.toLowerCase().includes(q) || getOwnerShort(r.owner).toLowerCase().includes(q)
       )
     }
-    if (modulation) {
-      const q = modulation.toLowerCase()
-      result = result.filter((r) => r.modulation?.toLowerCase() === q)
+    if (modulation && modulation.length > 0) {
+      result = result.filter((r) =>
+        r.modulation && modulation.some(m => m.toLowerCase() === r.modulation?.toLowerCase())
+      )
     }
     if (qth && qth.trim()) {
       const q = qth.trim().toLowerCase()
@@ -188,28 +197,48 @@ export default function RepeaterBrowser({
                   <Label htmlFor="mod-map" className="text-sm text-muted-foreground">
                     {t('filters.modulation')}
                   </Label>
-                  <Select
-                    value={(columnFilters.find((f) => f.id === "modulation")?.value as string) ?? "all"}
-                    onValueChange={(value) => {
-                      setColumnFilters((prev) => {
-                        const next = prev.filter((f) => f.id !== "modulation")
-                        if (value && value !== "all") next.push({ id: "modulation", value })
-                        return next
-                      })
-                    }}
-                  >
-                    <SelectTrigger className="w-[120px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">{t('filters.all')}</SelectItem>
-                      {modulationOptions.map((m) => (
-                        <SelectItem key={m} value={m}>
-                          {m}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="flex h-9 w-[180px] items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                        <span className="truncate">
+                          {(() => {
+                            const selected = columnFilters.find((f) => f.id === "modulation")?.value as string[] | undefined
+                            if (!selected || selected.length === 0) return t('filters.all')
+                            return selected.join(', ')
+                          })()}
+                        </span>
+                        <ChevronDown className="h-4 w-4 opacity-50" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-[180px]">
+                      <DropdownMenuLabel>{t('filters.modulation')}</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {modulationOptions.map((m) => {
+                        const selected = (columnFilters.find((f) => f.id === "modulation")?.value as string[] | undefined) || []
+                        return (
+                          <DropdownMenuCheckboxItem
+                            key={m}
+                            checked={selected.includes(m)}
+                            onCheckedChange={(checked) => {
+                              setColumnFilters((prev) => {
+                                const next = prev.filter((f) => f.id !== "modulation")
+                                const current = (prev.find((f) => f.id === "modulation")?.value as string[] | undefined) || []
+                                const updated = checked
+                                  ? [...current, m]
+                                  : current.filter((v) => v !== m)
+                                if (updated.length > 0) {
+                                  next.push({ id: "modulation", value: updated })
+                                }
+                                return next
+                              })
+                            }}
+                          >
+                            {m}
+                          </DropdownMenuCheckboxItem>
+                        )
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
                 <div className="flex items-center gap-2">
                   <Label htmlFor="dmr-map" className="text-sm text-muted-foreground">
