@@ -3,6 +3,7 @@
 import { getOwnerShort, useColumns, type Repeater } from "@/app/columns"
 import MapClient from "@/components/MapClient"
 import RepeaterDetails from "@/components/RepeaterDetails"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -199,7 +200,7 @@ export default function RepeaterBrowser({
                   </Label>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="flex h-9 w-[180px] items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                      <Button variant="outline" className="w-[180px] justify-between font-normal">
                         <span className="truncate">
                           {(() => {
                             const selected = columnFilters.find((f) => f.id === "modulation")?.value as string[] | undefined
@@ -208,7 +209,7 @@ export default function RepeaterBrowser({
                           })()}
                         </span>
                         <ChevronDown className="h-4 w-4 opacity-50" />
-                      </button>
+                      </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-[180px]">
                       <DropdownMenuLabel>{t('filters.modulation')}</DropdownMenuLabel>

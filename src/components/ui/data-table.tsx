@@ -14,8 +14,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
+import { ChevronDown, Loader2 } from "lucide-react"
 import * as React from "react"
-import { Loader2 } from "lucide-react"
 
 import {
   AlertDialog,
@@ -624,7 +624,7 @@ export function DataTable<TData, TValue>({
                           {header.column.id === "modulation" && (
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <button className="flex h-7 w-full items-center justify-between rounded-md border border-input bg-background px-2 text-xs ring-offset-background hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                                <Button variant="outline" className="h-7 w-full justify-between px-2 text-xs font-normal">
                                   <span className="truncate">
                                     {(() => {
                                       const selected = table.getColumn("modulation")?.getFilterValue() as string[] | undefined
@@ -632,8 +632,8 @@ export function DataTable<TData, TValue>({
                                       return selected.join(', ')
                                     })()}
                                   </span>
-                                  <span className="ml-1">▼</span>
-                                </button>
+                                  <ChevronDown className="ml-1 h-3 w-3 opacity-50" />
+                                </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent className="w-[140px]" align="start">
                                 <DropdownMenuLabel className="text-xs">{t("filters.modulation")}</DropdownMenuLabel>
