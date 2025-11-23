@@ -8,6 +8,7 @@ import {
     GlobeAmericasIcon,
     InformationCircleIcon,
     MapIcon,
+    MapPinIcon,
     RadioIcon,
     TableCellsIcon,
     XMarkIcon,
@@ -60,6 +61,7 @@ export default function Header() {
         { name: t('nav.bands'), href: '/bands', icon: RadioIcon },
         { name: t('nav.events'), href: '/events', icon: CalendarIcon },
         { name: t('nav.iss'), href: '/iss', icon: GlobeAmericasIcon },
+        { name: t('nav.qth'), href: '/qth', icon: MapPinIcon },
         { name: t('nav.about'), href: '/about', icon: InformationCircleIcon },
     ]
 

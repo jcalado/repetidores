@@ -6,8 +6,52 @@
         "map": "Mapa",
         "events": "Eventos",
         "iss": "ISS",
+        "qth": "QTH Locator",
         "about": "Sobre",
         "menu": "Menu"
+    },
+    "qth": {
+        "title": "Localizador QTH",
+        "subtitle": "Calcule o seu localizador Maidenhead a partir de coordenadas",
+        "tabs": {
+            "manual": "Manual",
+            "geolocation": "Geolocalização",
+            "map": "Mapa"
+        },
+        "manual": {
+            "title": "Inserir Coordenadas",
+            "description": "Digite manualmente as coordenadas de latitude e longitude",
+            "latitude": "Latitude",
+            "latitudePlaceholder": "Ex: 38.7223",
+            "longitude": "Longitude",
+            "longitudePlaceholder": "Ex: -9.1393",
+            "calculate": "Calcular QTH",
+            "invalidLat": "Latitude inválida (deve estar entre -90 e 90)",
+            "invalidLon": "Longitude inválida (deve estar entre -180 e 180)"
+        },
+        "geolocation": {
+            "title": "Usar Geolocalização",
+            "description": "Detecte automaticamente a sua localização atual usando o navegador",
+            "button": "Detectar Localização",
+            "detecting": "Detectando localização...",
+            "error": "Erro ao detectar localização",
+            "notSupported": "Geolocalização não suportada neste navegador",
+            "denied": "Permissão de localização negada"
+        },
+        "mapClick": {
+            "title": "Clique no Mapa",
+            "description": "Clique em qualquer ponto do mapa para selecionar uma localização",
+            "instruction": "Clique no mapa para selecionar uma localização"
+        },
+        "result": {
+            "title": "Resultado",
+            "coordinates": "Coordenadas",
+            "qth4char": "QTH (4 caracteres)",
+            "qth6char": "QTH (6 caracteres)",
+            "copy": "Copiar",
+            "copied": "Copiado!",
+            "noLocation": "Nenhuma localização selecionada"
+        }
     },
     "iss": {
         "title": "Passagens da ISS",
