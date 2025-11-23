@@ -125,12 +125,22 @@ export function useColumns(): ColumnDef<Repeater>[] {
       filterFn: (row, id, value) => {
         if (!value) return true
         const cell = String(row.getValue<string>(id) ?? "").toLowerCase()
+        const r = row.original as Repeater
+        
         // Handle array of values (multi-select)
         if (Array.isArray(value)) {
-          return value.some(v => String(v).toLowerCase() === cell)
+          return value.some(v => {
+            const filterVal = String(v).toLowerCase()
+            if (filterVal === 'dmr' && r.dmr) return true
+            if (filterVal === 'd-star' && r.dstar) return true
+            return filterVal === cell
+          })
         }
+        
         // Handle single value (backward compatibility)
         const v = String(value).toLowerCase()
+        if (v === 'dmr' && r.dmr) return true
+        if (v === 'd-star' && r.dstar) return true
         return cell === v
       },
     },

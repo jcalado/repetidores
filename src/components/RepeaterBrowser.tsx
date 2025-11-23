@@ -76,12 +76,7 @@ export default function RepeaterBrowser({
     const qth = columnFilters.find((f) => f.id === "qth_locator")?.value as
       | string
       | undefined
-    const dmrFilter = columnFilters.find((f) => f.id === "dmr")?.value as
-      | boolean
-      | undefined
-    const dstarFilter = columnFilters.find((f) => f.id === "dstar")?.value as
-      | boolean
-      | undefined
+
     if (callsign && callsign.trim()) {
       const q = callsign.trim().toLowerCase()
       result = result.filter((r) => r.callsign.toLowerCase().includes(q))
@@ -99,26 +94,19 @@ export default function RepeaterBrowser({
     }
     if (modulation && modulation.length > 0) {
       result = result.filter((r) =>
-        r.modulation && modulation.some(m => m.toLowerCase() === r.modulation?.toLowerCase())
+        modulation.some(m => {
+          if (m === 'DMR' && r.dmr) return true
+          if (m === 'D-STAR' && r.dstar) return true
+          return r.modulation && m.toLowerCase() === r.modulation.toLowerCase()
+        })
       )
     }
     if (qth && qth.trim()) {
       const q = qth.trim().toLowerCase()
       result = result.filter((r) => r.qth_locator?.toLowerCase().includes(q))
     }
-    if (typeof dmrFilter === "boolean") {
-      result = result.filter((r) => Boolean(r.dmr) === dmrFilter)
-    }
-    if (typeof dstarFilter === "boolean") {
-      result = result.filter((r) => Boolean(r.dstar) === dstarFilter)
-    }
     return result
   }, [data, columnFilters])
-
-  const dmrSelected = columnFilters.find((f) => f.id === "dmr")?.value as boolean | undefined
-  const dstarSelected = columnFilters.find((f) => f.id === "dstar")?.value as boolean | undefined
-  const dmrSelectValue = dmrSelected === undefined ? "all" : dmrSelected ? "yes" : "no"
-  const dstarSelectValue = dstarSelected === undefined ? "all" : dstarSelected ? "yes" : "no"
 
   return (
     <>
@@ -259,52 +247,6 @@ export default function RepeaterBrowser({
                         })}
                       </DropdownMenuContent>
                     </DropdownMenu>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>{t('filters.dmr')}</Label>
-                    <Select
-                      value={dmrSelectValue}
-                      onValueChange={(value) => {
-                        setColumnFilters((prev) => {
-                          const next = prev.filter((f) => f.id !== "dmr")
-                          if (value === "yes") next.push({ id: "dmr", value: true })
-                          if (value === "no") next.push({ id: "dmr", value: false })
-                          return next
-                        })
-                      }}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">{t('filters.all')}</SelectItem>
-                        <SelectItem value="yes">{t('filters.yes')}</SelectItem>
-                        <SelectItem value="no">{t('filters.no')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>{t('filters.dstar')}</Label>
-                    <Select
-                      value={dstarSelectValue}
-                      onValueChange={(value) => {
-                        setColumnFilters((prev) => {
-                          const next = prev.filter((f) => f.id !== "dstar")
-                          if (value === "yes") next.push({ id: "dstar", value: true })
-                          if (value === "no") next.push({ id: "dstar", value: false })
-                          return next
-                        })
-                      }}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">{t('filters.all')}</SelectItem>
-                        <SelectItem value="yes">{t('filters.yes')}</SelectItem>
-                        <SelectItem value="no">{t('filters.no')}</SelectItem>
-                      </SelectContent>
-                    </Select>
                   </div>
                   <div className="flex items-end">
                     <Button
