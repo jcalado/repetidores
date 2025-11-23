@@ -143,174 +143,180 @@ export default function RepeaterBrowser({
               />
             </TabsContent>
             <TabsContent value="map" className="h-[500px]">
-              <div className="mb-3 flex items-center gap-4">
-                <Input
-                  placeholder={t('filters.callsign')}
-                  value={(columnFilters.find((f) => f.id === "callsign")?.value as string) ?? ""}
-                  onChange={(event) => {
-                    const v = event.target.value
-                    setColumnFilters((prev) => {
-                      const next = prev.filter((f) => f.id !== "callsign")
-                      if (v) next.push({ id: "callsign", value: v })
-                      return next
-                    })
-                  }}
-                  className="max-w-sm"
-                />
-                <Input
-                  placeholder={t('filters.owner')}
-                  value={(columnFilters.find((f) => f.id === "owner")?.value as string) ?? ""}
-                  onChange={(event) => {
-                    const v = event.target.value
-                    setColumnFilters((prev) => {
-                      const next = prev.filter((f) => f.id !== "owner")
-                      if (v) next.push({ id: "owner", value: v })
-                      return next
-                    })
-                  }}
-                  className="max-w-sm"
-                />
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="band-map" className="text-sm text-muted-foreground">
-                    {t('filters.band')}
-                  </Label>
-                  <Select
-                    value={(columnFilters.find((f) => f.id === "band")?.value as string) ?? "all"}
-                    onValueChange={(value) => {
-                      setColumnFilters((prev) => {
-                        const next = prev.filter((f) => f.id !== "band")
-                        if (value && value !== "all") next.push({ id: "band", value })
-                        return next
-                      })
-                    }}
-                  >
-                    <SelectTrigger className="w-[100px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">{t('filters.all')}</SelectItem>
-                      <SelectItem value="2m">{t('filters.2m')}</SelectItem>
-                      <SelectItem value="70cm">{t('filters.70cm')}</SelectItem>
-                    </SelectContent>
-                  </Select>
+              <div className="mb-6 space-y-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="space-y-2">
+                    <Label>{t('filters.callsign')}</Label>
+                    <Input
+                      placeholder={t('filters.callsign')}
+                      value={(columnFilters.find((f) => f.id === "callsign")?.value as string) ?? ""}
+                      onChange={(event) => {
+                        const v = event.target.value
+                        setColumnFilters((prev) => {
+                          const next = prev.filter((f) => f.id !== "callsign")
+                          if (v) next.push({ id: "callsign", value: v })
+                          return next
+                        })
+                      }}
+                      className="w-full"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{t('filters.owner')}</Label>
+                    <Input
+                      placeholder={t('filters.owner')}
+                      value={(columnFilters.find((f) => f.id === "owner")?.value as string) ?? ""}
+                      onChange={(event) => {
+                        const v = event.target.value
+                        setColumnFilters((prev) => {
+                          const next = prev.filter((f) => f.id !== "owner")
+                          if (v) next.push({ id: "owner", value: v })
+                          return next
+                        })
+                      }}
+                      className="w-full"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{t('filters.qth')}</Label>
+                    <Input
+                      placeholder={t('filters.qth')}
+                      value={(columnFilters.find((f) => f.id === "qth_locator")?.value as string) ?? ""}
+                      onChange={(event) => {
+                        const v = event.target.value
+                        setColumnFilters((prev) => {
+                          const next = prev.filter((f) => f.id !== "qth_locator")
+                          if (v) next.push({ id: "qth_locator", value: v })
+                          return next
+                        })
+                      }}
+                      className="w-full"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{t('filters.band')}</Label>
+                    <Select
+                      value={(columnFilters.find((f) => f.id === "band")?.value as string) ?? "all"}
+                      onValueChange={(value) => {
+                        setColumnFilters((prev) => {
+                          const next = prev.filter((f) => f.id !== "band")
+                          if (value && value !== "all") next.push({ id: "band", value })
+                          return next
+                        })
+                      }}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">{t('filters.all')}</SelectItem>
+                        <SelectItem value="2m">{t('filters.2m')}</SelectItem>
+                        <SelectItem value="70cm">{t('filters.70cm')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{t('filters.modulation')}</Label>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="w-full justify-between font-normal">
+                          <span className="truncate">
+                            {(() => {
+                              const selected = columnFilters.find((f) => f.id === "modulation")?.value as string[] | undefined
+                              if (!selected || selected.length === 0) return t('filters.all')
+                              return selected.join(', ')
+                            })()}
+                          </span>
+                          <ChevronDown className="h-4 w-4 opacity-50" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="w-[200px]">
+                        <DropdownMenuLabel>{t('filters.modulation')}</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        {modulationOptions.map((m) => {
+                          const selected = (columnFilters.find((f) => f.id === "modulation")?.value as string[] | undefined) || []
+                          return (
+                            <DropdownMenuCheckboxItem
+                              key={m}
+                              checked={selected.includes(m)}
+                              onCheckedChange={(checked) => {
+                                setColumnFilters((prev) => {
+                                  const next = prev.filter((f) => f.id !== "modulation")
+                                  const current = (prev.find((f) => f.id === "modulation")?.value as string[] | undefined) || []
+                                  const updated = checked
+                                    ? [...current, m]
+                                    : current.filter((v) => v !== m)
+                                  if (updated.length > 0) {
+                                    next.push({ id: "modulation", value: updated })
+                                  }
+                                  return next
+                                })
+                              }}
+                            >
+                              {m}
+                            </DropdownMenuCheckboxItem>
+                          )
+                        })}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{t('filters.dmr')}</Label>
+                    <Select
+                      value={dmrSelectValue}
+                      onValueChange={(value) => {
+                        setColumnFilters((prev) => {
+                          const next = prev.filter((f) => f.id !== "dmr")
+                          if (value === "yes") next.push({ id: "dmr", value: true })
+                          if (value === "no") next.push({ id: "dmr", value: false })
+                          return next
+                        })
+                      }}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">{t('filters.all')}</SelectItem>
+                        <SelectItem value="yes">{t('filters.yes')}</SelectItem>
+                        <SelectItem value="no">{t('filters.no')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>{t('filters.dstar')}</Label>
+                    <Select
+                      value={dstarSelectValue}
+                      onValueChange={(value) => {
+                        setColumnFilters((prev) => {
+                          const next = prev.filter((f) => f.id !== "dstar")
+                          if (value === "yes") next.push({ id: "dstar", value: true })
+                          if (value === "no") next.push({ id: "dstar", value: false })
+                          return next
+                        })
+                      }}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">{t('filters.all')}</SelectItem>
+                        <SelectItem value="yes">{t('filters.yes')}</SelectItem>
+                        <SelectItem value="no">{t('filters.no')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex items-end">
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => setColumnFilters([])}
+                    >
+                      <FunnelX className="mr-2 h-4 w-4" />
+                      {t('filters.clear')}
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="mod-map" className="text-sm text-muted-foreground">
-                    {t('filters.modulation')}
-                  </Label>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" className="w-[180px] justify-between font-normal">
-                        <span className="truncate">
-                          {(() => {
-                            const selected = columnFilters.find((f) => f.id === "modulation")?.value as string[] | undefined
-                            if (!selected || selected.length === 0) return t('filters.all')
-                            return selected.join(', ')
-                          })()}
-                        </span>
-                        <ChevronDown className="h-4 w-4 opacity-50" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-[180px]">
-                      <DropdownMenuLabel>{t('filters.modulation')}</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      {modulationOptions.map((m) => {
-                        const selected = (columnFilters.find((f) => f.id === "modulation")?.value as string[] | undefined) || []
-                        return (
-                          <DropdownMenuCheckboxItem
-                            key={m}
-                            checked={selected.includes(m)}
-                            onCheckedChange={(checked) => {
-                              setColumnFilters((prev) => {
-                                const next = prev.filter((f) => f.id !== "modulation")
-                                const current = (prev.find((f) => f.id === "modulation")?.value as string[] | undefined) || []
-                                const updated = checked
-                                  ? [...current, m]
-                                  : current.filter((v) => v !== m)
-                                if (updated.length > 0) {
-                                  next.push({ id: "modulation", value: updated })
-                                }
-                                return next
-                              })
-                            }}
-                          >
-                            {m}
-                          </DropdownMenuCheckboxItem>
-                        )
-                      })}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="dmr-map" className="text-sm text-muted-foreground">
-                    {t('filters.dmr')}
-                  </Label>
-                  <Select
-                    value={dmrSelectValue}
-                    onValueChange={(value) => {
-                      setColumnFilters((prev) => {
-                        const next = prev.filter((f) => f.id !== "dmr")
-                        if (value === "yes") next.push({ id: "dmr", value: true })
-                        if (value === "no") next.push({ id: "dmr", value: false })
-                        return next
-                      })
-                    }}
-                  >
-                    <SelectTrigger className="w-[120px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">{t('filters.all')}</SelectItem>
-                      <SelectItem value="yes">{t('filters.yes')}</SelectItem>
-                      <SelectItem value="no">{t('filters.no')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="dstar-map" className="text-sm text-muted-foreground">
-                    {t('filters.dstar')}
-                  </Label>
-                  <Select
-                    value={dstarSelectValue}
-                    onValueChange={(value) => {
-                      setColumnFilters((prev) => {
-                        const next = prev.filter((f) => f.id !== "dstar")
-                        if (value === "yes") next.push({ id: "dstar", value: true })
-                        if (value === "no") next.push({ id: "dstar", value: false })
-                        return next
-                      })
-                    }}
-                  >
-                    <SelectTrigger className="w-[120px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">{t('filters.all')}</SelectItem>
-                      <SelectItem value="yes">{t('filters.yes')}</SelectItem>
-                      <SelectItem value="no">{t('filters.no')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Input
-                  placeholder={t('filters.qth')}
-                  value={(columnFilters.find((f) => f.id === "qth_locator")?.value as string) ?? ""}
-                  onChange={(event) => {
-                    const v = event.target.value
-                    setColumnFilters((prev) => {
-                      const next = prev.filter((f) => f.id !== "qth_locator")
-                      if (v) next.push({ id: "qth_locator", value: v })
-                      return next
-                    })
-                  }}
-                  className="max-w-[10rem]"
-                />
-                <button
-                  type="button"
-                  className="h-9 rounded-md border bg-background px-3 text-sm"
-                  onClick={() => setColumnFilters([])}
-                >
-                  <FunnelX className="h-4 w-4 text-gray-400" />
-                </button>
               </div>
               <div className="h-[500px]">
                 <MapClient repeaters={filtered} />
