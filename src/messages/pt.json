@@ -5,8 +5,11 @@
         "table": "Tabela",
         "map": "Mapa",
         "events": "Eventos",
+        "tools": "Ferramentas",
         "iss": "ISS",
+        "issDescription": "Passagens da Estação Espacial",
         "qth": "QTH Locator",
+        "qthDescription": "Calculadora de localizador Maidenhead",
         "about": "Sobre",
         "menu": "Menu"
     },

@@ -57,12 +57,9 @@ export default function Header() {
         { name: t('nav.map'), description: 'Mapa de repetidores', href: '/#mapa', icon: MapIcon },
     ]
 
-    const navigation = [
-        { name: t('nav.bands'), href: '/bands', icon: RadioIcon },
-        { name: t('nav.events'), href: '/events', icon: CalendarIcon },
-        { name: t('nav.iss'), href: '/iss', icon: GlobeAmericasIcon },
-        { name: t('nav.qth'), href: '/qth', icon: MapPinIcon },
-        { name: t('nav.about'), href: '/about', icon: InformationCircleIcon },
+    const tools = [
+        { name: t('nav.iss'), description: t('nav.issDescription'), href: '/iss', icon: GlobeAmericasIcon },
+        { name: t('nav.qth'), description: t('nav.qthDescription'), href: '/qth', icon: MapPinIcon },
     ]
 
     return (
@@ -125,18 +122,70 @@ export default function Header() {
                         </PopoverPanel>
                     </Popover>
 
-                    {navigation.map((item) => (
-                        <Link
-                            key={item.name}
-                            href={item.href}
-                            className={`text-sm/6 font-semibold transition-colors ${isCurrent(item.href)
-                                    ? 'text-ship-cove-600 dark:text-ship-cove-400'
-                                    : 'text-slate-700 hover:text-ship-cove-600 dark:text-slate-200 dark:hover:text-ship-cove-400'
-                                }`}
+                    <Link
+                        href="/bands"
+                        className={`text-sm/6 font-semibold transition-colors ${isCurrent('/bands')
+                            ? 'text-ship-cove-600 dark:text-ship-cove-400'
+                            : 'text-slate-700 hover:text-ship-cove-600 dark:text-slate-200 dark:hover:text-ship-cove-400'
+                            }`}
+                    >
+                        {t('nav.bands')}
+                    </Link>
+
+                    <Link
+                        href="/events"
+                        className={`text-sm/6 font-semibold transition-colors ${isCurrent('/events')
+                            ? 'text-ship-cove-600 dark:text-ship-cove-400'
+                            : 'text-slate-700 hover:text-ship-cove-600 dark:text-slate-200 dark:hover:text-ship-cove-400'
+                            }`}
+                    >
+                        {t('nav.events')}
+                    </Link>
+
+                    <Popover className="relative">
+                        <PopoverButton className="group flex items-center gap-x-1 text-sm/6 font-semibold text-slate-700 hover:text-ship-cove-600 focus:outline-none dark:text-slate-200 dark:hover:text-ship-cove-400 transition-colors">
+                            {t('nav.tools')}
+                            <ChevronDownIcon aria-hidden="true" className="size-5 flex-none text-gray-400 transition-transform group-data-[open]:rotate-180 group-hover:text-ship-cove-600 dark:text-slate-500 dark:group-hover:text-ship-cove-400" />
+                        </PopoverButton>
+
+                        <PopoverPanel
+                            transition
+                            className="absolute left-1/2 z-10 mt-3 w-screen max-w-md -translate-x-1/2 overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-gray-900/5 transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[enter]:ease-out data-[leave]:duration-150 data-[leave]:ease-in dark:bg-slate-900 dark:ring-white/10"
                         >
-                            {item.name}
-                        </Link>
-                    ))}
+                            <div className="p-4">
+                                {tools.map((item) => (
+                                    <div
+                                        key={item.name}
+                                        className="group relative flex items-center gap-x-6 rounded-xl p-4 text-sm/6 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors"
+                                    >
+                                        <div className="flex size-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white dark:bg-slate-800 dark:group-hover:bg-slate-700 transition-colors shadow-sm">
+                                            <item.icon
+                                                aria-hidden="true"
+                                                className="size-6 text-gray-600 group-hover:text-ship-cove-600 dark:text-gray-400 dark:group-hover:text-ship-cove-400 transition-colors"
+                                            />
+                                        </div>
+                                        <div className="flex-auto">
+                                            <Link href={item.href} className="block font-semibold text-gray-900 dark:text-white">
+                                                {item.name}
+                                                <span className="absolute inset-0" />
+                                            </Link>
+                                            <p className="mt-1 text-gray-600 dark:text-gray-400">{item.description}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </PopoverPanel>
+                    </Popover>
+
+                    <Link
+                        href="/about"
+                        className={`text-sm/6 font-semibold transition-colors ${isCurrent('/about')
+                            ? 'text-ship-cove-600 dark:text-ship-cove-400'
+                            : 'text-slate-700 hover:text-ship-cove-600 dark:text-slate-200 dark:hover:text-ship-cove-400'
+                            }`}
+                    >
+                        {t('nav.about')}
+                    </Link>
                 </PopoverGroup>
                 <div className="hidden lg:flex lg:flex-1 lg:justify-end">
                     <ThemeToggle />
@@ -189,30 +238,103 @@ export default function Header() {
                                     <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                                         Menu
                                     </div>
-                                    {navigation.map((item) => (
+                                    <Link
+                                        href="/bands"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className={`-mx-3 flex items-center gap-x-4 rounded-lg p-3 text-base/7 font-semibold transition-colors ${isCurrent('/bands')
+                                            ? 'bg-ship-cove-50 text-ship-cove-600 dark:bg-ship-cove-900/20 dark:text-ship-cove-400'
+                                            : 'text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-slate-800/50'
+                                            }`}
+                                    >
+                                        <div className={`flex size-10 flex-none items-center justify-center rounded-lg transition-colors ${isCurrent('/bands')
+                                            ? 'bg-white dark:bg-slate-800'
+                                            : 'bg-gray-50 dark:bg-slate-800'
+                                            }`}>
+                                            <RadioIcon
+                                                className={`size-5 ${isCurrent('/bands')
+                                                    ? 'text-ship-cove-600 dark:text-ship-cove-400'
+                                                    : 'text-gray-600 dark:text-gray-400'
+                                                    }`}
+                                            />
+                                        </div>
+                                        {t('nav.bands')}
+                                    </Link>
+                                    <Link
+                                        href="/events"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className={`-mx-3 flex items-center gap-x-4 rounded-lg p-3 text-base/7 font-semibold transition-colors ${isCurrent('/events')
+                                            ? 'bg-ship-cove-50 text-ship-cove-600 dark:bg-ship-cove-900/20 dark:text-ship-cove-400'
+                                            : 'text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-slate-800/50'
+                                            }`}
+                                    >
+                                        <div className={`flex size-10 flex-none items-center justify-center rounded-lg transition-colors ${isCurrent('/events')
+                                            ? 'bg-white dark:bg-slate-800'
+                                            : 'bg-gray-50 dark:bg-slate-800'
+                                            }`}>
+                                            <CalendarIcon
+                                                className={`size-5 ${isCurrent('/events')
+                                                    ? 'text-ship-cove-600 dark:text-ship-cove-400'
+                                                    : 'text-gray-600 dark:text-gray-400'
+                                                    }`}
+                                            />
+                                        </div>
+                                        {t('nav.events')}
+                                    </Link>
+                                </div>
+                                <div className="space-y-2 py-6">
+                                    <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                        {t('nav.tools')}
+                                    </div>
+                                    {tools.map((item) => (
                                         <Link
                                             key={item.name}
                                             href={item.href}
                                             onClick={() => setMobileMenuOpen(false)}
                                             className={`-mx-3 flex items-center gap-x-4 rounded-lg p-3 text-base/7 font-semibold transition-colors ${isCurrent(item.href)
-                                                    ? 'bg-ship-cove-50 text-ship-cove-600 dark:bg-ship-cove-900/20 dark:text-ship-cove-400'
-                                                    : 'text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-slate-800/50'
+                                                ? 'bg-ship-cove-50 text-ship-cove-600 dark:bg-ship-cove-900/20 dark:text-ship-cove-400'
+                                                : 'text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-slate-800/50'
                                                 }`}
                                         >
                                             <div className={`flex size-10 flex-none items-center justify-center rounded-lg transition-colors ${isCurrent(item.href)
-                                                    ? 'bg-white dark:bg-slate-800'
-                                                    : 'bg-gray-50 dark:bg-slate-800'
+                                                ? 'bg-white dark:bg-slate-800'
+                                                : 'bg-gray-50 dark:bg-slate-800'
                                                 }`}>
                                                 <item.icon
                                                     className={`size-5 ${isCurrent(item.href)
-                                                            ? 'text-ship-cove-600 dark:text-ship-cove-400'
-                                                            : 'text-gray-600 dark:text-gray-400'
+                                                        ? 'text-ship-cove-600 dark:text-ship-cove-400'
+                                                        : 'text-gray-600 dark:text-gray-400'
                                                         }`}
                                                 />
                                             </div>
                                             {item.name}
                                         </Link>
                                     ))}
+                                </div>
+                                <div className="space-y-2 py-6">
+                                    <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                                        {t('nav.about')}
+                                    </div>
+                                    <Link
+                                        href="/about"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className={`-mx-3 flex items-center gap-x-4 rounded-lg p-3 text-base/7 font-semibold transition-colors ${isCurrent('/about')
+                                            ? 'bg-ship-cove-50 text-ship-cove-600 dark:bg-ship-cove-900/20 dark:text-ship-cove-400'
+                                            : 'text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-slate-800/50'
+                                            }`}
+                                    >
+                                        <div className={`flex size-10 flex-none items-center justify-center rounded-lg transition-colors ${isCurrent('/about')
+                                            ? 'bg-white dark:bg-slate-800'
+                                            : 'bg-gray-50 dark:bg-slate-800'
+                                            }`}>
+                                            <InformationCircleIcon
+                                                className={`size-5 ${isCurrent('/about')
+                                                    ? 'text-ship-cove-600 dark:text-ship-cove-400'
+                                                    : 'text-gray-600 dark:text-gray-400'
+                                                    }`}
+                                            />
+                                        </div>
+                                        {t('nav.about')}
+                                    </Link>
                                 </div>
                             </div>
                         </div>
