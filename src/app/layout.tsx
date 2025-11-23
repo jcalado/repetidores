@@ -1,14 +1,10 @@
 import Footer from "@/components/Footer";
-import MobileMenu from "@/components/MobileMenu";
-import Navigation from "@/components/Navigation";
+import Header from "@/components/Header";
 import PWAInstall from "@/components/PWAInstall";
-import ThemeToggle from "@/components/ThemeToggle";
 import "leaflet/dist/leaflet.css";
-import { RadioTowerIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from 'next-intl';
 import { Geist, Geist_Mono } from "next/font/google";
-import Link from "next/link";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -64,21 +60,7 @@ export default async function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <NextIntlClientProvider messages={messages}>
           <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-            <header className="sticky top-0 z-50 bg-ship-cove-900 dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-200 dark:border-slate-700">
-              <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-16">
-                  <Link href="/" className="flex items-center gap-3 text-ship-cove-100 dark:text-white">
-                    <RadioTowerIcon className="h-8 w-8 text-white" />
-                    <span className="text-xl font-bold">Repetidores</span>
-                  </Link>
-                  <Navigation />
-                  <div className="flex items-center gap-4">
-                    <ThemeToggle />
-                    <MobileMenu />
-                  </div>
-                </div>
-              </div>
-            </header>
+            <Header />
             <main>{children}</main>
             <Footer />
             <PWAInstall />
