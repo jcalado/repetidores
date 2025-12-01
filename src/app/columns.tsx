@@ -4,8 +4,11 @@
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
+import { calculateDistance, formatDistance, type UserLocation } from "@/lib/geolocation"
+import { toggleFavorite, isFavorite } from "@/lib/favorites"
 import { getVoteStats, type VoteStats } from "@/lib/votes"
 import { ColumnDef } from "@tanstack/react-table"
+import { Heart } from "lucide-react"
 import { useTranslations } from "next-intl"
 import * as React from "react"
 
@@ -30,10 +33,36 @@ function getBandFromFrequency(mhz: number): string {
   return "Other"
 }
 
-export function useColumns(): ColumnDef<Repeater>[] {
+type UseColumnsOptions = {
+  userLocation?: UserLocation | null
+  onFavoriteToggle?: () => void
+}
+
+export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>[] {
+  const { userLocation, onFavoriteToggle } = options
   const t = useTranslations('table.columns')
+  const tFav = useTranslations('favorites')
 
   return [
+    // Favorites column
+    {
+      id: "favorite",
+      header: tFav("column"),
+      cell: ({ row }) => {
+        const r = row.original as Repeater
+        return <FavoriteCell callsign={r.callsign} onToggle={onFavoriteToggle} />
+      },
+      enableSorting: false,
+      enableColumnFilter: true,
+      filterFn: (row, _id, value) => {
+        if (!value) return true
+        const r = row.original as Repeater
+        return isFavorite(r.callsign)
+      },
+      size: 36,
+      minSize: 32,
+      maxSize: 48,
+    },
     {
       id: "status",
       header: t("status"),
@@ -55,6 +84,31 @@ export function useColumns(): ColumnDef<Repeater>[] {
       minSize: 32,
       maxSize: 48,
     },
+    // Distance column - only shown when user location is available
+    ...(userLocation
+      ? [
+          {
+            id: "distance",
+            header: t("distance"),
+            accessorFn: (row: Repeater) => {
+              if (!userLocation) return Infinity
+              return calculateDistance(
+                userLocation.latitude,
+                userLocation.longitude,
+                row.latitude,
+                row.longitude
+              )
+            },
+            cell: ({ getValue }: { getValue: () => number }) => {
+              const distance = getValue()
+              if (distance === Infinity) return "—"
+              return formatDistance(distance)
+            },
+            sortingFn: "basic",
+            enableColumnFilter: false,
+          } as ColumnDef<Repeater>,
+        ]
+      : []),
     {
       accessorKey: "callsign",
       header: t("callsign"),
@@ -126,7 +180,7 @@ export function useColumns(): ColumnDef<Repeater>[] {
         if (!value) return true
         const cell = String(row.getValue<string>(id) ?? "").toLowerCase()
         const r = row.original as Repeater
-        
+
         // Handle array of values (multi-select)
         if (Array.isArray(value)) {
           return value.some(v => {
@@ -136,7 +190,7 @@ export function useColumns(): ColumnDef<Repeater>[] {
             return filterVal === cell
           })
         }
-        
+
         // Handle single value (backward compatibility)
         const v = String(value).toLowerCase()
         if (v === 'dmr' && r.dmr) return true
@@ -335,4 +389,42 @@ function statusStyle(category: VoteStats["category"]) {
     default:
       return { dotClass: "bg-gray-400 dark:bg-gray-500" }
   }
+}
+
+// ---- Favorites Icon ----
+function FavoriteCell({ callsign, onToggle }: { callsign: string; onToggle?: () => void }) {
+  const [favorite, setFavorite] = React.useState(() => isFavorite(callsign))
+  const t = useTranslations('favorites')
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation() // Prevent row click
+    const newState = toggleFavorite(callsign)
+    setFavorite(newState)
+    onToggle?.()
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          onClick={handleClick}
+          className="rounded p-0.5 hover:bg-accent"
+          aria-label={favorite ? t('remove') : t('add')}
+        >
+          <Heart
+            className={cn(
+              "h-4 w-4 transition-colors",
+              favorite
+                ? "fill-red-500 text-red-500"
+                : "text-muted-foreground hover:text-red-400"
+            )}
+          />
+        </button>
+      </TooltipTrigger>
+      <TooltipContent>
+        {favorite ? t('remove') : t('add')}
+      </TooltipContent>
+    </Tooltip>
+  )
 }

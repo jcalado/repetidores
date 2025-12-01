@@ -184,6 +184,29 @@
         "clear": "Limpar filtros",
         "export": "Exportar CSV"
     },
+    "location": {
+        "locateMe": "Localizar-me",
+        "locating": "A localizar...",
+        "clearLocation": "Limpar localização",
+        "searchPlaceholder": "Procurar localidade...",
+        "searching": "A procurar...",
+        "noResults": "Nenhum resultado encontrado",
+        "or": "ou",
+        "error": {
+            "notSupported": "Geolocalização não suportada",
+            "denied": "Permissão de localização negada",
+            "unavailable": "Localização indisponível",
+            "timeout": "Timeout ao obter localização",
+            "unknown": "Erro ao obter localização"
+        }
+    },
+    "favorites": {
+        "add": "Adicionar aos favoritos",
+        "remove": "Remover dos favoritos",
+        "showOnly": "Mostrar favoritos",
+        "showAll": "Mostrar todos",
+        "column": "Fav"
+    },
     "table": {
         "visibleColumns": "Colunas",
         "rowsPerPage": "Resultados por página:",
@@ -192,6 +215,7 @@
         "noResults": "Nenhum resultado encontrado.",
         "columns": {
             "status": "Estado",
+            "distance": "Distância",
             "callsign": "Indicativo",
             "band": "Banda",
             "outputFrequency": "Freq. Saída",
@@ -216,6 +240,7 @@
         "details": "Detalhes do Repetidor",
         "close": "Fechar",
         "maps": "Abrir no Maps",
+        "share": "Partilhar",
         "output": "Freq. Saída",
         "input": "Freq. Entrada",
         "offset": "Offset",

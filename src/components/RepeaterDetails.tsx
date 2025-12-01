@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { getVoteStats, postVote, type VoteStats } from "@/lib/votes";
-import { Check, Copy, MapPin, MessageSquare, ThumbsDown, ThumbsUp } from "lucide-react";
+import { Check, Copy, MapPin, MessageSquare, Share2, ThumbsDown, ThumbsUp } from "lucide-react";
 import { useTranslations } from "next-intl";
 import * as React from "react";
 
@@ -69,6 +69,7 @@ export default function RepeaterDetails({ r }: { r: Repeater }) {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <ShareButton callsign={r.callsign} />
           <Button asChild>
             <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
               {t("maps")}
@@ -272,6 +273,48 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
         </span>
       </div>
     </div>
+  );
+}
+
+// --- Share Button ---
+function ShareButton({ callsign }: { callsign: string }) {
+  const [copied, setCopied] = React.useState(false);
+  const t = useTranslations("repeater");
+
+  const handleShare = async () => {
+    // Build share URL
+    const url = new URL(window.location.href);
+    url.search = `?repeater=${encodeURIComponent(callsign)}`;
+    url.hash = "";
+    const shareUrl = url.toString();
+
+    // Try native share first (mobile), fall back to clipboard
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Repeater ${callsign}`,
+          url: shareUrl,
+        });
+        return;
+      } catch {
+        // User cancelled or share failed, fall back to clipboard
+      }
+    }
+
+    // Clipboard fallback
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard failed
+    }
+  };
+
+  return (
+    <Button variant="outline" size="icon" onClick={handleShare} aria-label={t("share")}>
+      {copied ? <Check className="h-4 w-4 text-emerald-600" /> : <Share2 className="h-4 w-4" />}
+    </Button>
   );
 }
 

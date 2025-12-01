@@ -23,8 +23,9 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { VisuallyHidden } from "@/components/ui/visually-hidden"
+import { getCachedLocation, cacheLocation, searchLocation, type UserLocation, type GeocodingResult } from "@/lib/geolocation"
 import type { ColumnFiltersState } from "@tanstack/react-table"
-import { ChevronDown, FunnelX } from "lucide-react"
+import { ChevronDown, FunnelX, Heart, Loader2, MapPin, Search, X } from "lucide-react"
 import { useTranslations } from 'next-intl'
 import * as React from "react"
 
@@ -33,6 +34,8 @@ type Props = {
   activeTab?: string
   onTabChange?: (tab: string) => void
   isLoading?: boolean
+  initialRepeaterCallsign?: string | null
+  onInitialRepeaterOpened?: () => void
 }
 
 function getBandFromFrequency(mhz: number): string {
@@ -47,9 +50,18 @@ export default function RepeaterBrowser({
   activeTab = "table",
   onTabChange,
   isLoading = false,
+  initialRepeaterCallsign,
+  onInitialRepeaterOpened,
 }: Props) {
   const t = useTranslations()
-  const columns = useColumns()
+  const [userLocation, setUserLocation] = React.useState<UserLocation | null>(() => getCachedLocation())
+  const [isLocating, setIsLocating] = React.useState(false)
+  const [locationError, setLocationError] = React.useState<string | null>(null)
+  const [favoritesVersion, setFavoritesVersion] = React.useState(0)
+  const handleFavoriteToggle = React.useCallback(() => {
+    setFavoritesVersion((v) => v + 1)
+  }, [])
+  const columns = useColumns({ userLocation, onFavoriteToggle: handleFavoriteToggle })
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [open, setOpen] = React.useState(false)
   const [selected, setSelected] = React.useState<Repeater | null>(null)
@@ -58,6 +70,119 @@ export default function RepeaterBrowser({
     data.forEach((d) => d.modulation && set.add(d.modulation))
     return Array.from(set).sort()
   }, [data])
+
+  // Auto-open drawer for deep-linked repeater
+  React.useEffect(() => {
+    if (initialRepeaterCallsign && data.length > 0) {
+      const repeater = data.find(
+        (r) => r.callsign.toUpperCase() === initialRepeaterCallsign.toUpperCase()
+      )
+      if (repeater) {
+        setSelected(repeater)
+        setOpen(true)
+        onInitialRepeaterOpened?.()
+      }
+    }
+  }, [initialRepeaterCallsign, data, onInitialRepeaterOpened])
+
+  // Geolocation handler
+  const handleLocateMe = React.useCallback(() => {
+    if (!navigator.geolocation) {
+      setLocationError(t('location.error.notSupported'))
+      return
+    }
+
+    setIsLocating(true)
+    setLocationError(null)
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const location: UserLocation = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        }
+        setUserLocation(location)
+        cacheLocation(location)
+        setIsLocating(false)
+      },
+      (error) => {
+        setIsLocating(false)
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            setLocationError(t('location.error.denied'))
+            break
+          case error.POSITION_UNAVAILABLE:
+            setLocationError(t('location.error.unavailable'))
+            break
+          case error.TIMEOUT:
+            setLocationError(t('location.error.timeout'))
+            break
+          default:
+            setLocationError(t('location.error.unknown'))
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000, // 5 minutes
+      }
+    )
+  }, [t])
+
+  const handleClearLocation = React.useCallback(() => {
+    setUserLocation(null)
+    setLocationError(null)
+    setLocationSearchQuery('')
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('user_location')
+    }
+  }, [])
+
+  // Location search state
+  const [locationSearchQuery, setLocationSearchQuery] = React.useState('')
+  const [locationSearchResults, setLocationSearchResults] = React.useState<GeocodingResult[]>([])
+  const [isSearching, setIsSearching] = React.useState(false)
+  const [showSearchResults, setShowSearchResults] = React.useState(false)
+  const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
+
+  // Debounced location search
+  React.useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current)
+    }
+
+    if (!locationSearchQuery || locationSearchQuery.length < 2) {
+      setLocationSearchResults([])
+      setShowSearchResults(false)
+      return
+    }
+
+    setIsSearching(true)
+    searchTimeoutRef.current = setTimeout(async () => {
+      const results = await searchLocation(locationSearchQuery)
+      setLocationSearchResults(results)
+      setShowSearchResults(true)
+      setIsSearching(false)
+    }, 300) // 300ms debounce
+
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current)
+      }
+    }
+  }, [locationSearchQuery])
+
+  const handleSelectSearchResult = React.useCallback((result: GeocodingResult) => {
+    const location: UserLocation = {
+      latitude: parseFloat(result.lat),
+      longitude: parseFloat(result.lon),
+    }
+    setUserLocation(location)
+    cacheLocation(location)
+    setLocationSearchQuery(result.display_name.split(',')[0]) // Show just the first part
+    setShowSearchResults(false)
+    setLocationSearchResults([])
+  }, [])
 
   const filtered = React.useMemo(() => {
     let result = data
@@ -118,6 +243,98 @@ export default function RepeaterBrowser({
               <TabsTrigger value="map">{t('nav.map')}</TabsTrigger>
             </TabsList>
             <TabsContent value="table">
+              {/* Location controls - search and geolocation */}
+              <div className="mb-4 flex flex-wrap items-center gap-2">
+                {/* Location search input */}
+                <div className="relative">
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      placeholder={t('location.searchPlaceholder')}
+                      value={locationSearchQuery}
+                      onChange={(e) => setLocationSearchQuery(e.target.value)}
+                      className="w-48 pl-8 pr-8"
+                      disabled={!!userLocation}
+                    />
+                    {isSearching && (
+                      <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+                    )}
+                  </div>
+                  {/* Search results dropdown */}
+                  {showSearchResults && locationSearchResults.length > 0 && (
+                    <div className="absolute z-50 mt-1 w-72 rounded-md border bg-popover p-1 shadow-md">
+                      {locationSearchResults.map((result) => (
+                        <button
+                          key={result.place_id}
+                          type="button"
+                          className="w-full rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent hover:text-accent-foreground"
+                          onClick={() => handleSelectSearchResult(result)}
+                        >
+                          <div className="font-medium">{result.display_name.split(',')[0]}</div>
+                          <div className="truncate text-xs text-muted-foreground">
+                            {result.display_name.split(',').slice(1, 3).join(',')}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {showSearchResults && locationSearchResults.length === 0 && !isSearching && locationSearchQuery.length >= 2 && (
+                    <div className="absolute z-50 mt-1 w-72 rounded-md border bg-popover p-2 shadow-md">
+                      <span className="text-sm text-muted-foreground">{t('location.noResults')}</span>
+                    </div>
+                  )}
+                </div>
+
+                <span className="text-sm text-muted-foreground">{t('location.or')}</span>
+
+                {/* Geolocation button */}
+                {!userLocation ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleLocateMe}
+                    disabled={isLocating}
+                  >
+                    <MapPin className="mr-2 h-4 w-4" />
+                    {isLocating ? t('location.locating') : t('location.locateMe')}
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleClearLocation}
+                  >
+                    <X className="mr-2 h-4 w-4" />
+                    {t('location.clearLocation')}
+                  </Button>
+                )}
+                {locationError && (
+                  <span className="text-sm text-destructive">{locationError}</span>
+                )}
+
+                {/* Spacer */}
+                <div className="flex-1" />
+
+                {/* Show favorites toggle */}
+                <Button
+                  variant={columnFilters.find((f) => f.id === "favorite")?.value ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => {
+                    setColumnFilters((prev) => {
+                      const hasFavoriteFilter = prev.find((f) => f.id === "favorite")
+                      if (hasFavoriteFilter) {
+                        return prev.filter((f) => f.id !== "favorite")
+                      }
+                      return [...prev, { id: "favorite", value: true }]
+                    })
+                  }}
+                >
+                  <Heart className="mr-2 h-4 w-4" />
+                  {columnFilters.find((f) => f.id === "favorite")?.value
+                    ? t('favorites.showAll')
+                    : t('favorites.showOnly')}
+                </Button>
+              </div>
               <DataTable
                 columns={columns}
                 data={data}
