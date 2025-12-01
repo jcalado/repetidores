@@ -474,7 +474,13 @@ export default function RepeaterBrowser({
                 </div>
               </div>
               <div className="h-[500px]">
-                <MapClient repeaters={filtered} />
+                <MapClient
+                  repeaters={filtered}
+                  onSelectRepeater={(repeater) => {
+                    setSelected(repeater)
+                    setOpen(true)
+                  }}
+                />
               </div>
             </TabsContent>
           </Tabs>
