@@ -57,11 +57,7 @@ export default function RepeaterBrowser({
   const [userLocation, setUserLocation] = React.useState<UserLocation | null>(() => getCachedLocation())
   const [isLocating, setIsLocating] = React.useState(false)
   const [locationError, setLocationError] = React.useState<string | null>(null)
-  const [favoritesVersion, setFavoritesVersion] = React.useState(0)
-  const handleFavoriteToggle = React.useCallback(() => {
-    setFavoritesVersion((v) => v + 1)
-  }, [])
-  const columns = useColumns({ userLocation, onFavoriteToggle: handleFavoriteToggle })
+  const columns = useColumns({ userLocation })
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [open, setOpen] = React.useState(false)
   const [selected, setSelected] = React.useState<Repeater | null>(null)
