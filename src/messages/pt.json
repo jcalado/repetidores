@@ -11,7 +11,8 @@
         "qth": "QTH Locator",
         "qthDescription": "Calculadora de localizador Maidenhead",
         "about": "Sobre",
-        "menu": "Menu"
+        "menu": "Menu",
+        "theme": "Tema"
     },
     "qth": {
         "title": "Localizador QTH",
@@ -169,6 +170,7 @@
         }
     },
     "filters": {
+        "filter": "Filtros",
         "callsign": "Filtrar por indicativo...",
         "owner": "Filtrar por proprietário...",
         "band": "Banda",

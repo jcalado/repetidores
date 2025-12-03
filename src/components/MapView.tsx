@@ -685,7 +685,6 @@ const MapView = ({ repeaters, onRepeaterClick, userLocation: externalUserLocatio
           </Marker>
         )}
 
-        <MapControls onLocateUser={locateUser} />
         <LayerControl currentLayer={currentLayer} onLayerChange={setCurrentLayer} />
         <MapStatePersistence />
       </MapContainer>

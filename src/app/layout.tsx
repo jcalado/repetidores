@@ -1,4 +1,3 @@
-import BottomNav from "@/components/BottomNav";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import OfflineIndicator from "@/components/OfflineIndicator";
@@ -65,9 +64,8 @@ export default async function RootLayout({
           <UserLocationProvider>
             <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
               <Header />
-              <main className="pb-20 md:pb-0">{children}</main>
-              <Footer className="hidden md:block" />
-              <BottomNav />
+              <main>{children}</main>
+              <Footer />
               <OfflineIndicator />
               <PWAInstall />
             </div>

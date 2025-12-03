@@ -222,12 +222,21 @@ export default function Header() {
                                             key={item.name}
                                             href={item.href}
                                             onClick={() => setMobileMenuOpen(false)}
-                                            className="group -mx-3 flex items-center gap-x-4 rounded-lg p-3 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-slate-800/50 transition-colors"
+                                            className={`-mx-3 flex items-center gap-x-4 rounded-lg p-3 text-base/7 font-semibold transition-colors ${isCurrent(item.href)
+                                                ? 'bg-ship-cove-50 text-ship-cove-600 dark:bg-ship-cove-900/20 dark:text-ship-cove-400'
+                                                : 'text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-slate-800/50'
+                                                }`}
                                         >
-                                            <div className="flex size-10 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white dark:bg-slate-800 dark:group-hover:bg-slate-700 transition-colors">
+                                            <div className={`flex size-10 flex-none items-center justify-center rounded-lg transition-colors ${isCurrent(item.href)
+                                                ? 'bg-white dark:bg-slate-800'
+                                                : 'bg-gray-50 dark:bg-slate-800'
+                                                }`}>
                                                 <item.icon
                                                     aria-hidden="true"
-                                                    className="size-5 text-gray-600 group-hover:text-ship-cove-600 dark:text-gray-400 dark:group-hover:text-ship-cove-400"
+                                                    className={`size-5 ${isCurrent(item.href)
+                                                        ? 'text-ship-cove-600 dark:text-ship-cove-400'
+                                                        : 'text-gray-600 dark:text-gray-400'
+                                                        }`}
                                                 />
                                             </div>
                                             {item.name}
@@ -335,6 +344,14 @@ export default function Header() {
                                         </div>
                                         {t('nav.about')}
                                     </Link>
+                                </div>
+                                <div className="py-6">
+                                    <div className="flex items-center justify-between -mx-3 px-3">
+                                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                                            {t('nav.theme')}
+                                        </span>
+                                        <ThemeToggle />
+                                    </div>
                                 </div>
                             </div>
                         </div>
