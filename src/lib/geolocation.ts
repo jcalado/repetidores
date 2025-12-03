@@ -146,6 +146,97 @@ export function cacheLocation(location: UserLocation): void {
 }
 
 /**
+ * Reverse geocoding result from Nominatim API
+ */
+export type ReverseGeocodingResult = {
+  display_name: string
+  address: {
+    road?: string
+    suburb?: string
+    city?: string
+    town?: string
+    village?: string
+    municipality?: string
+    county?: string
+    state?: string
+    country?: string
+  }
+}
+
+/**
+ * Reverse geocode coordinates to get address
+ * Uses OpenStreetMap Nominatim API
+ */
+export async function reverseGeocode(
+  latitude: number,
+  longitude: number
+): Promise<ReverseGeocodingResult | null> {
+  try {
+    const params = new URLSearchParams({
+      lat: latitude.toString(),
+      lon: longitude.toString(),
+      format: 'json',
+      addressdetails: '1',
+      zoom: '14', // City-level detail
+    })
+
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?${params}`,
+      {
+        headers: {
+          Accept: 'application/json',
+          'User-Agent': 'Repetidores-PT/1.0',
+        },
+      }
+    )
+
+    if (!response.ok) {
+      return null
+    }
+
+    const data = await response.json()
+
+    if (data.error) {
+      return null
+    }
+
+    return {
+      display_name: data.display_name,
+      address: data.address || {},
+    }
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Format a reverse geocoding result into a short, readable address
+ */
+export function formatAddress(result: ReverseGeocodingResult): string {
+  const { address } = result
+  const parts: string[] = []
+
+  // Add locality (city/town/village)
+  const locality = address.city || address.town || address.village || address.municipality
+  if (locality) {
+    parts.push(locality)
+  }
+
+  // Add county/state if different from locality
+  const region = address.county || address.state
+  if (region && region !== locality) {
+    parts.push(region)
+  }
+
+  // Add country
+  if (address.country) {
+    parts.push(address.country)
+  }
+
+  return parts.length > 0 ? parts.join(', ') : result.display_name.split(',').slice(0, 2).join(',')
+}
+
+/**
  * Get approximate location using IP geolocation
  * Uses ip-api.com (free, no API key required)
  * This is a fallback when browser geolocation fails (e.g., 429 from Google's network location provider)
