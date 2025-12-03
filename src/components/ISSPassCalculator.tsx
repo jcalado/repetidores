@@ -33,11 +33,21 @@ export function ISSPassCalculator() {
 
   // Real-time updates every second
   const [currentTime, setCurrentTime] = useState(new Date());
+  // Throttled time for orbit path (updates every 30 seconds)
+  const [orbitBaseTime, setOrbitBaseTime] = useState(new Date());
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Update orbit base time every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setOrbitBaseTime(new Date());
+    }, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -52,18 +62,29 @@ export function ISSPassCalculator() {
     return calculateLookAngles(tle, location, currentTime);
   }, [tle, location, currentTime]);
 
-  // Generate orbit path for ground track (next 90 minutes)
-  const orbitPath = useMemo(() => {
-    if (!tle) return [];
-    const path: SatellitePosition[] = [];
-    const steps = 90; // 90 minutes
-    for (let i = 0; i <= steps; i++) {
-      const time = new Date(currentTime.getTime() + i * 60 * 1000);
-      const pos = calculateSatellitePosition(tle, time);
-      if (pos) path.push(pos);
-    }
-    return path;
-  }, [tle, currentTime]);
+  // Generate orbit paths for ground track
+  // Uses throttled orbitBaseTime to avoid recalculating every second
+  // ISS orbital period is ~92 minutes
+  const orbitPaths = useMemo(() => {
+    if (!tle) return { previous: [], current: [], next: [] };
+
+    const ORBIT_MINUTES = 92;
+    const generatePath = (startOffset: number, duration: number) => {
+      const path: SatellitePosition[] = [];
+      for (let i = 0; i <= duration; i++) {
+        const time = new Date(orbitBaseTime.getTime() + (startOffset + i) * 60 * 1000);
+        const pos = calculateSatellitePosition(tle, time);
+        if (pos) path.push(pos);
+      }
+      return path;
+    };
+
+    return {
+      previous: generatePath(-ORBIT_MINUTES, ORBIT_MINUTES),  // -92 to 0 minutes
+      current: generatePath(0, ORBIT_MINUTES),                 // 0 to +92 minutes
+      next: generatePath(ORBIT_MINUTES, ORBIT_MINUTES),        // +92 to +184 minutes
+    };
+  }, [tle, orbitBaseTime]);
 
   // Apply filters client-side (cheap operation)
   const filteredPasses = useMemo(() => {
@@ -255,7 +276,7 @@ export function ISSPassCalculator() {
               <GroundTrack
                 currentPosition={currentPosition}
                 observer={location}
-                orbitPath={orbitPath}
+                orbitPaths={orbitPaths}
               />
             </TabsContent>
 

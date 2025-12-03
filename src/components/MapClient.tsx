@@ -3,28 +3,24 @@
 
 import dynamic from 'next/dynamic';
 import type { Repeater } from "@/app/columns";
+import type { UserLocation } from "@/lib/geolocation";
 
 const MapView = dynamic(() => import('@/components/MapView'), { ssr: false });
 
-type QuickFilter = {
-  band: '2m' | '70cm' | 'all';
-  modulation: 'fm' | 'dmr' | 'dstar' | 'all';
-};
-
 type Props = {
-  repeaters: Repeater[];
-  onSelectRepeater?: (repeater: Repeater) => void;
-  quickFilter?: QuickFilter;
-  onQuickFilterChange?: (filter: QuickFilter) => void;
+  repeaters: Repeater[]
+  onRepeaterClick?: (repeater: Repeater) => void
+  userLocation?: UserLocation | null
+  radiusKm?: number | null
 };
 
-const MapClient = ({ repeaters, onSelectRepeater, quickFilter, onQuickFilterChange }: Props) => {
+const MapClient = ({ repeaters, onRepeaterClick, userLocation, radiusKm }: Props) => {
   return (
     <MapView
       repeaters={repeaters}
-      onSelectRepeater={onSelectRepeater}
-      quickFilter={quickFilter}
-      onQuickFilterChange={onQuickFilterChange}
+      onRepeaterClick={onRepeaterClick}
+      userLocation={userLocation}
+      radiusKm={radiusKm}
     />
   );
 };

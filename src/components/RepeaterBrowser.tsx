@@ -3,6 +3,7 @@
 import { getOwnerShort, useColumns, type Repeater } from "@/app/columns"
 import MapClient from "@/components/MapClient"
 import RepeaterDetails from "@/components/RepeaterDetails"
+import SearchAutocomplete from "@/components/SearchAutocomplete"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -21,9 +22,11 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { VisuallyHidden } from "@/components/ui/visually-hidden"
-import { getCachedLocation, cacheLocation, searchLocation, type UserLocation, type GeocodingResult } from "@/lib/geolocation"
+import { useUserLocation } from "@/contexts/UserLocationContext"
+import { searchLocation, calculateDistance, type GeocodingResult } from "@/lib/geolocation"
 import type { ColumnFiltersState } from "@tanstack/react-table"
 import { ChevronDown, FunnelX, Heart, Loader2, MapPin, Search, X } from "lucide-react"
 import { useTranslations } from 'next-intl'
@@ -54,13 +57,12 @@ export default function RepeaterBrowser({
   onInitialRepeaterOpened,
 }: Props) {
   const t = useTranslations()
-  const [userLocation, setUserLocation] = React.useState<UserLocation | null>(() => getCachedLocation())
-  const [isLocating, setIsLocating] = React.useState(false)
-  const [locationError, setLocationError] = React.useState<string | null>(null)
+  const { userLocation, isLocating, error: locationError, requestLocation, setLocation, clearLocation } = useUserLocation()
   const columns = useColumns({ userLocation })
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [open, setOpen] = React.useState(false)
   const [selected, setSelected] = React.useState<Repeater | null>(null)
+  const [distanceRadius, setDistanceRadius] = React.useState<number | null>(null) // km, null = no limit
   const modulationOptions = React.useMemo(() => {
     const set = new Set<string>()
     data.forEach((d) => d.modulation && set.add(d.modulation))
@@ -81,58 +83,10 @@ export default function RepeaterBrowser({
     }
   }, [initialRepeaterCallsign, data, onInitialRepeaterOpened])
 
-  // Geolocation handler
-  const handleLocateMe = React.useCallback(() => {
-    if (!navigator.geolocation) {
-      setLocationError(t('location.error.notSupported'))
-      return
-    }
-
-    setIsLocating(true)
-    setLocationError(null)
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const location: UserLocation = {
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        }
-        setUserLocation(location)
-        cacheLocation(location)
-        setIsLocating(false)
-      },
-      (error) => {
-        setIsLocating(false)
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            setLocationError(t('location.error.denied'))
-            break
-          case error.POSITION_UNAVAILABLE:
-            setLocationError(t('location.error.unavailable'))
-            break
-          case error.TIMEOUT:
-            setLocationError(t('location.error.timeout'))
-            break
-          default:
-            setLocationError(t('location.error.unknown'))
-        }
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 300000, // 5 minutes
-      }
-    )
-  }, [t])
-
   const handleClearLocation = React.useCallback(() => {
-    setUserLocation(null)
-    setLocationError(null)
+    clearLocation()
     setLocationSearchQuery('')
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('user_location')
-    }
-  }, [])
+  }, [clearLocation])
 
   // Location search state
   const [locationSearchQuery, setLocationSearchQuery] = React.useState('')
@@ -169,16 +123,14 @@ export default function RepeaterBrowser({
   }, [locationSearchQuery])
 
   const handleSelectSearchResult = React.useCallback((result: GeocodingResult) => {
-    const location: UserLocation = {
+    setLocation({
       latitude: parseFloat(result.lat),
       longitude: parseFloat(result.lon),
-    }
-    setUserLocation(location)
-    cacheLocation(location)
+    })
     setLocationSearchQuery(result.display_name.split(',')[0]) // Show just the first part
     setShowSearchResults(false)
     setLocationSearchResults([])
-  }, [])
+  }, [setLocation])
 
   const filtered = React.useMemo(() => {
     let result = data
@@ -195,6 +147,9 @@ export default function RepeaterBrowser({
       | string[]
       | undefined
     const qth = columnFilters.find((f) => f.id === "qth_locator")?.value as
+      | string
+      | undefined
+    const opStatus = columnFilters.find((f) => f.id === "opStatus")?.value as
       | string
       | undefined
 
@@ -226,8 +181,23 @@ export default function RepeaterBrowser({
       const q = qth.trim().toLowerCase()
       result = result.filter((r) => r.qth_locator?.toLowerCase().includes(q))
     }
+    if (opStatus) {
+      result = result.filter((r) => r.status === opStatus)
+    }
+    // Distance filter - only if user location is set and radius is selected
+    if (userLocation && distanceRadius !== null) {
+      result = result.filter((r) => {
+        const dist = calculateDistance(
+          userLocation.latitude,
+          userLocation.longitude,
+          r.latitude,
+          r.longitude
+        )
+        return dist <= distanceRadius
+      })
+    }
     return result
-  }, [data, columnFilters])
+  }, [data, columnFilters, userLocation, distanceRadius])
 
   return (
     <>
@@ -288,7 +258,7 @@ export default function RepeaterBrowser({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={handleLocateMe}
+                    onClick={requestLocation}
                     disabled={isLocating}
                   >
                     <MapPin className="mr-2 h-4 w-4" />
@@ -348,16 +318,19 @@ export default function RepeaterBrowser({
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                   <div className="space-y-2">
                     <Label>{t('filters.callsign')}</Label>
-                    <Input
-                      placeholder={t('filters.callsign')}
+                    <SearchAutocomplete
+                      repeaters={data}
                       value={(columnFilters.find((f) => f.id === "callsign")?.value as string) ?? ""}
-                      onChange={(event) => {
-                        const v = event.target.value
+                      onChange={(v) => {
                         setColumnFilters((prev) => {
                           const next = prev.filter((f) => f.id !== "callsign")
                           if (v) next.push({ id: "callsign", value: v })
                           return next
                         })
+                      }}
+                      onSelect={(repeater) => {
+                        setSelected(repeater)
+                        setOpen(true)
                       }}
                       className="w-full"
                     />
@@ -461,11 +434,58 @@ export default function RepeaterBrowser({
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
+                  <div className="space-y-2">
+                    <Label>{t('filters.opStatus')}</Label>
+                    <Select
+                      value={(columnFilters.find((f) => f.id === "opStatus")?.value as string) ?? "all"}
+                      onValueChange={(value) => {
+                        setColumnFilters((prev) => {
+                          const next = prev.filter((f) => f.id !== "opStatus")
+                          if (value && value !== "all") next.push({ id: "opStatus", value })
+                          return next
+                        })
+                      }}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">{t('filters.all')}</SelectItem>
+                        <SelectItem value="active">{t('filters.opStatusActive')}</SelectItem>
+                        <SelectItem value="maintenance">{t('filters.opStatusMaintenance')}</SelectItem>
+                        <SelectItem value="offline">{t('filters.opStatusOffline')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {/* Distance radius filter - only enabled when location is set */}
+                  <div className="space-y-2">
+                    <Label className={!userLocation ? "opacity-50" : ""}>
+                      {t('filters.distance')}: {distanceRadius ? `${distanceRadius} km` : t('filters.distanceAll')}
+                    </Label>
+                    <Slider
+                      disabled={!userLocation}
+                      value={[distanceRadius ?? 0]}
+                      min={0}
+                      max={100}
+                      step={5}
+                      onValueChange={([val]) => {
+                        setDistanceRadius(val === 0 ? null : val)
+                      }}
+                      className={!userLocation ? "opacity-50" : ""}
+                    />
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>{t('filters.distanceAll')}</span>
+                      <span>100 km</span>
+                    </div>
+                  </div>
                   <div className="flex items-end">
                     <Button
                       variant="outline"
                       className="w-full"
-                      onClick={() => setColumnFilters([])}
+                      onClick={() => {
+                        setColumnFilters([])
+                        setDistanceRadius(null)
+                      }}
                     >
                       <FunnelX className="mr-2 h-4 w-4" />
                       {t('filters.clear')}
@@ -476,10 +496,12 @@ export default function RepeaterBrowser({
               <div className="h-[500px]">
                 <MapClient
                   repeaters={filtered}
-                  onSelectRepeater={(repeater) => {
+                  onRepeaterClick={(repeater) => {
                     setSelected(repeater)
                     setOpen(true)
                   }}
+                  userLocation={userLocation}
+                  radiusKm={distanceRadius}
                 />
               </div>
             </TabsContent>

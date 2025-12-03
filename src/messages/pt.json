@@ -182,7 +182,13 @@
         "no": "Não",
         "qth": "Filtrar por QTH...",
         "clear": "Limpar filtros",
-        "export": "Exportar CSV"
+        "export": "Exportar CSV",
+        "opStatus": "Estado Operacional",
+        "opStatusActive": "Activo",
+        "opStatusMaintenance": "Em Manutenção",
+        "opStatusOffline": "Desligado",
+        "distance": "Raio",
+        "distanceAll": "Sem limite"
     },
     "location": {
         "locateMe": "Localizar-me",
@@ -227,12 +233,22 @@
             "latitude": "Latitude",
             "longitude": "Longitude",
             "qthLocator": "QTH",
-            "owner": "Proprietário"
+            "owner": "Proprietário",
+            "opStatus": {
+                "header": "Op"
+            }
         },
         "status": {
             "ok": "A funcionar",
             "prob-bad": "Provavelmente com problemas",
             "bad": "Não funciona",
+            "unknown": "Desconhecido"
+        },
+        "opStatus": {
+            "header": "Op",
+            "active": "Activo",
+            "maintenance": "Em manutenção",
+            "offline": "Desligado",
             "unknown": "Desconhecido"
         }
     },

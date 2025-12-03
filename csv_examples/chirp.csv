@@ -1,0 +1,2 @@
+Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPolarity,Mode,TStep,Skip,Comment,URCALL,RPT1CALL,RPT2CALL
+1,CQ0URVM,439.325000,-,7.600000,Tone,,74.4,023,NN,FM,,,IM58KV,,,

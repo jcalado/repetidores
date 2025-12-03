@@ -123,6 +123,50 @@
   }
 }
 
+/* iOS Safe Area for bottom navigation */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Leaflet Marker Cluster styles */
+.marker-cluster-small {
+  background-color: rgba(131, 155, 209, 0.6);
+}
+.marker-cluster-small div {
+  background-color: rgba(131, 155, 209, 0.9);
+}
+.marker-cluster-medium {
+  background-color: rgba(88, 105, 170, 0.6);
+}
+.marker-cluster-medium div {
+  background-color: rgba(88, 105, 170, 0.9);
+}
+.marker-cluster-large {
+  background-color: rgba(74, 89, 137, 0.6);
+}
+.marker-cluster-large div {
+  background-color: rgba(74, 89, 137, 0.9);
+}
+.marker-cluster {
+  background-clip: padding-box;
+  border-radius: 20px;
+}
+.marker-cluster div {
+  width: 30px;
+  height: 30px;
+  margin-left: 5px;
+  margin-top: 5px;
+  text-align: center;
+  border-radius: 15px;
+  font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  color: white;
+  line-height: 30px;
+}
+.marker-cluster span {
+  line-height: 30px;
+}
+
 @theme {
 --color-ship-cove-50: #f2f7fb;
 --color-ship-cove-100: #e7f0f8;

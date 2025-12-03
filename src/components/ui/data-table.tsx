@@ -14,7 +14,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ChevronDown, Loader2 } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 import * as React from "react"
 
 import {
@@ -717,19 +717,21 @@ export function DataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-40">
-                  <div className="flex h-full w-full flex-col items-center justify-center gap-3">
-                    <Loader2
-                      className="h-6 w-6 animate-spin text-muted-foreground"
-                      aria-hidden="true"
-                    />
-                    <span className="text-sm text-muted-foreground">
-                      {t("table.loading")}
-                    </span>
-                  </div>
-                </TableCell>
-              </TableRow>
+              // Skeleton rows while loading
+              Array.from({ length: 10 }).map((_, idx) => (
+                <TableRow key={`skeleton-${idx}`} className="animate-pulse">
+                  {columns.slice(0, 8).map((_, colIdx) => (
+                    <TableCell key={`skeleton-${idx}-${colIdx}`}>
+                      <div
+                        className="h-4 rounded bg-muted"
+                        style={{
+                          width: colIdx === 0 ? '20px' : colIdx === 1 ? '20px' : `${40 + Math.random() * 40}%`
+                        }}
+                      />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
             ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow

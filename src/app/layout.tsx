@@ -1,6 +1,9 @@
+import BottomNav from "@/components/BottomNav";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import OfflineIndicator from "@/components/OfflineIndicator";
 import PWAInstall from "@/components/PWAInstall";
+import { UserLocationProvider } from "@/contexts/UserLocationContext";
 import "leaflet/dist/leaflet.css";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from 'next-intl';
@@ -59,12 +62,16 @@ export default async function RootLayout({
     <html lang="pt">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <NextIntlClientProvider messages={messages}>
-          <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-            <Header />
-            <main>{children}</main>
-            <Footer />
-            <PWAInstall />
-          </div>
+          <UserLocationProvider>
+            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+              <Header />
+              <main className="pb-20 md:pb-0">{children}</main>
+              <Footer className="hidden md:block" />
+              <BottomNav />
+              <OfflineIndicator />
+              <PWAInstall />
+            </div>
+          </UserLocationProvider>
         </NextIntlClientProvider>
       </body>
     </html>

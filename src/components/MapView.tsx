@@ -1,9 +1,10 @@
 
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import type { UserLocation } from "@/lib/geolocation";
+import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import type { Repeater } from "@/app/columns";
 
@@ -25,11 +26,214 @@ const userIcon = new L.Icon({
   shadowSize: [41, 41]
 });
 
-function getBandFromFrequency(mhz: number): string {
-  if (mhz >= 430 && mhz <= 450) return "70cm";
-  if (mhz >= 144 && mhz <= 148) return "2m";
-  if (mhz >= 50 && mhz <= 54) return "6m";
-  return "Other";
+type Props = {
+  repeaters: Repeater[]
+  onRepeaterClick?: (repeater: Repeater) => void
+  userLocation?: UserLocation | null
+  radiusKm?: number | null
+};
+
+// Map state persistence keys
+const MAP_STATE_KEY = 'repetidores_map_state';
+const MAP_LAYER_KEY = 'repetidores_map_layer';
+
+// Available tile layers
+const TILE_LAYERS = {
+  osm: {
+    name: 'OpenStreetMap',
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  },
+  satellite: {
+    name: 'Satélite',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attribution: '&copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+  },
+  terrain: {
+    name: 'Terreno',
+    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    attribution: 'Map data: &copy; OpenStreetMap contributors, SRTM | Map style: &copy; OpenTopoMap (CC-BY-SA)',
+  },
+  dark: {
+    name: 'Escuro',
+    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+  },
+} as const;
+
+type TileLayerKey = keyof typeof TILE_LAYERS;
+
+interface MapState {
+  center: [number, number]
+  zoom: number
+}
+
+function getStoredMapState(): MapState | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const stored = localStorage.getItem(MAP_STATE_KEY);
+    if (stored) {
+      return JSON.parse(stored) as MapState;
+    }
+  } catch {
+    // Ignore parse errors
+  }
+  return null;
+}
+
+function saveMapState(state: MapState) {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(MAP_STATE_KEY, JSON.stringify(state));
+  } catch {
+    // Ignore storage errors
+  }
+}
+
+function getStoredLayer(): TileLayerKey {
+  if (typeof window === 'undefined') return 'osm';
+  try {
+    const stored = localStorage.getItem(MAP_LAYER_KEY);
+    if (stored && stored in TILE_LAYERS) {
+      return stored as TileLayerKey;
+    }
+  } catch {
+    // Ignore errors
+  }
+  return 'osm';
+}
+
+function saveLayer(layer: TileLayerKey) {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(MAP_LAYER_KEY, layer);
+  } catch {
+    // Ignore errors
+  }
+}
+
+// Layer control component
+function LayerControl({
+  currentLayer,
+  onLayerChange
+}: {
+  currentLayer: TileLayerKey
+  onLayerChange: (layer: TileLayerKey) => void
+}) {
+  const map = useMap();
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    // Create layer control container
+    const controlContainer = L.DomUtil.create('div', 'leaflet-control-layers-custom');
+    controlContainer.style.position = 'absolute';
+    controlContainer.style.top = '80px';
+    controlContainer.style.right = '10px';
+    controlContainer.style.zIndex = '1000';
+
+    const updateControl = () => {
+      controlContainer.innerHTML = `
+        <div class="bg-white rounded-md shadow-md border border-gray-300">
+          <button class="layer-toggle px-3 py-2 text-sm font-medium text-gray-700 flex items-center gap-2 hover:bg-gray-50 rounded-md transition-colors">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+            </svg>
+            ${TILE_LAYERS[currentLayer].name}
+          </button>
+          ${isOpen ? `
+            <div class="border-t border-gray-200">
+              ${(Object.keys(TILE_LAYERS) as TileLayerKey[]).map(key => `
+                <button
+                  class="layer-option w-full px-3 py-2 text-sm text-left hover:bg-gray-50 ${key === currentLayer ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'}"
+                  data-layer="${key}"
+                >
+                  ${TILE_LAYERS[key].name}
+                </button>
+              `).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `;
+    };
+
+    updateControl();
+
+    // Event handlers
+    const handleToggleClick = (e: Event) => {
+      e.stopPropagation();
+      setIsOpen(prev => !prev);
+    };
+
+    const handleLayerClick = (e: Event) => {
+      const target = e.target as HTMLElement;
+      const layer = target.getAttribute('data-layer') as TileLayerKey;
+      if (layer) {
+        onLayerChange(layer);
+        saveLayer(layer);
+        setIsOpen(false);
+      }
+    };
+
+    // Add event listeners after DOM update
+    setTimeout(() => {
+      const toggleBtn = controlContainer.querySelector('.layer-toggle');
+      const layerBtns = controlContainer.querySelectorAll('.layer-option');
+
+      if (toggleBtn) {
+        L.DomEvent.disableClickPropagation(toggleBtn as HTMLElement);
+        toggleBtn.addEventListener('click', handleToggleClick);
+      }
+
+      layerBtns.forEach(btn => {
+        L.DomEvent.disableClickPropagation(btn as HTMLElement);
+        btn.addEventListener('click', handleLayerClick);
+      });
+    }, 0);
+
+    const mapContainer = map.getContainer();
+    mapContainer.appendChild(controlContainer);
+
+    return () => {
+      if (mapContainer.contains(controlContainer)) {
+        mapContainer.removeChild(controlContainer);
+      }
+    };
+  }, [map, currentLayer, isOpen, onLayerChange]);
+
+  return null;
+}
+
+// Component to persist map state
+function MapStatePersistence() {
+  const map = useMap();
+
+  useEffect(() => {
+    // Restore saved state on mount
+    const savedState = getStoredMapState();
+    if (savedState) {
+      map.setView(savedState.center, savedState.zoom);
+    }
+
+    // Save state on move end
+    const handleMoveEnd = () => {
+      const center = map.getCenter();
+      const zoom = map.getZoom();
+      saveMapState({
+        center: [center.lat, center.lng],
+        zoom,
+      });
+    };
+
+    map.on('moveend', handleMoveEnd);
+    map.on('zoomend', handleMoveEnd);
+
+    return () => {
+      map.off('moveend', handleMoveEnd);
+      map.off('zoomend', handleMoveEnd);
+    };
+  }, [map]);
+
+  return null;
 }
 
 // Create cluster custom icon
@@ -209,13 +413,17 @@ function MapSizeInvalidator() {
   return null;
 }
 
-const MapView = ({ repeaters, onSelectRepeater, quickFilter, onQuickFilterChange }: Props) => {
+const MapView = ({ repeaters, onRepeaterClick, userLocation: externalUserLocation, radiusKm }: Props) => {
   const mapRef = useRef<L.Map | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const [internalUserLocation, setInternalUserLocation] = useState<[number, number] | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
   const [isLocating, setIsLocating] = useState(false);
-  const [internalFilter, setInternalFilter] = useState<QuickFilter>({ band: 'all', modulation: 'all' });
+  const [currentLayer, setCurrentLayer] = useState<TileLayerKey>(() => getStoredLayer());
+
+  // Use external location if provided, otherwise use internal
+  const userLocation = externalUserLocation
+    ? [externalUserLocation.latitude, externalUserLocation.longitude] as [number, number]
+    : internalUserLocation;
 
   const activeFilter = quickFilter ?? internalFilter;
   const setActiveFilter = onQuickFilterChange ?? setInternalFilter;
@@ -255,7 +463,7 @@ const MapView = ({ repeaters, onSelectRepeater, quickFilter, onQuickFilterChange
         const { latitude, longitude } = position.coords;
         const userPos: [number, number] = [latitude, longitude];
 
-        setUserLocation(userPos);
+        setInternalUserLocation(userPos);
         setIsLocating(false);
 
         // Center map on user location
@@ -399,74 +607,72 @@ const MapView = ({ repeaters, onSelectRepeater, quickFilter, onQuickFilterChange
       >
         <MapSizeInvalidator />
         <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          key={currentLayer}
+          url={TILE_LAYERS[currentLayer].url}
+          attribution={TILE_LAYERS[currentLayer].attribution}
         />
-
-        {/* Clustered markers */}
         <MarkerClusterGroup
           chunkedLoading
-          iconCreateFunction={createClusterCustomIcon}
           maxClusterRadius={50}
-          spiderfyOnMaxZoom={true}
+          spiderfyOnMaxZoom
           showCoverageOnHover={false}
-          zoomToBoundsOnClick={true}
         >
-          {filteredRepeaters.map((repeater) => {
-            const band = getBandFromFrequency(repeater.outputFrequency);
-
-            return (
-              <Marker
-                key={repeater.callsign}
-                position={[repeater.latitude, repeater.longitude]}
-                eventHandlers={{
-                  click: () => {
-                    // Marker click is handled by popup
-                  }
-                }}
-              >
-                <Popup>
-                  <div className="repeater-popup">
-                    <h3>{repeater.callsign}</h3>
-                    <div className="badges">
-                      <span className={`badge badge-${band.replace('cm', 'cm').toLowerCase()}`}>{band}</span>
-                      {repeater.modulation && (
-                        <span className="badge">{repeater.modulation.toUpperCase()}</span>
-                      )}
-                      {repeater.dmr && <span className="badge badge-dmr">DMR</span>}
-                      {repeater.dstar && <span className="badge badge-dstar">D-STAR</span>}
-                    </div>
-                    <div className="info-row">
-                      <span className="info-label">Saída</span>
-                      <span className="info-value">{repeater.outputFrequency.toFixed(4)} MHz</span>
-                    </div>
-                    <div className="info-row">
-                      <span className="info-label">Entrada</span>
-                      <span className="info-value">{repeater.inputFrequency.toFixed(4)} MHz</span>
-                    </div>
-                    {repeater.tone && (
-                      <div className="info-row">
-                        <span className="info-label">Tom</span>
-                        <span className="info-value">{repeater.tone} Hz</span>
-                      </div>
-                    )}
-                    {onSelectRepeater && (
-                      <button
-                        className="open-details-btn"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onSelectRepeater(repeater);
-                        }}
-                      >
-                        Abrir Detalhes
-                      </button>
+          {repeaters.map((repeater) => (
+            <Marker
+              key={repeater.callsign}
+              position={[repeater.latitude, repeater.longitude]}
+              eventHandlers={{
+                click: () => onRepeaterClick?.(repeater),
+              }}
+            >
+              <Popup>
+                <div className="min-w-[180px]">
+                  <div className="font-bold text-base">{repeater.callsign}</div>
+                  <div className="text-sm text-gray-600 mt-1">
+                    {repeater.outputFrequency.toFixed(3)} MHz
+                    {repeater.modulation && (
+                      <span className="ml-2 inline-block rounded bg-blue-100 px-1.5 py-0.5 text-xs text-blue-800">
+                        {repeater.modulation}
+                      </span>
                     )}
                   </div>
-                </Popup>
-              </Marker>
-            );
-          })}
+                  {repeater.tone && (
+                    <div className="text-xs text-gray-500 mt-0.5">
+                      Tom: {repeater.tone} Hz
+                    </div>
+                  )}
+                  {onRepeaterClick && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onRepeaterClick(repeater)
+                      }}
+                      className="mt-2 w-full rounded bg-blue-600 px-2 py-1 text-xs text-white hover:bg-blue-700 transition-colors"
+                    >
+                      Ver detalhes
+                    </button>
+                  )}
+                </div>
+              </Popup>
+            </Marker>
+          ))}
         </MarkerClusterGroup>
+
+        {/* Radius circle for distance filter */}
+        {userLocation && radiusKm && radiusKm > 0 && (
+          <Circle
+            center={userLocation}
+            radius={radiusKm * 1000} // Convert km to meters
+            pathOptions={{
+              color: '#3b82f6',
+              fillColor: '#3b82f6',
+              fillOpacity: 0.1,
+              weight: 2,
+              dashArray: '5, 5',
+            }}
+          />
+        )}
 
         {/* User location marker */}
         {userLocation && (
@@ -478,6 +684,10 @@ const MapView = ({ repeaters, onSelectRepeater, quickFilter, onQuickFilterChange
             </Popup>
           </Marker>
         )}
+
+        <MapControls onLocateUser={locateUser} />
+        <LayerControl currentLayer={currentLayer} onLayerChange={setCurrentLayer} />
+        <MapStatePersistence />
       </MapContainer>
 
       {/* Floating locate button (FAB) */}

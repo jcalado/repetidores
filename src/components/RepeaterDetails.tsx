@@ -1,8 +1,10 @@
 "use client";
 
 import { Repeater } from "@/app/columns";
+import { BearingIndicator } from "@/components/BearingCompass";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
   DialogContent,
@@ -12,10 +14,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useUserLocation } from "@/contexts/UserLocationContext";
 import { cn } from "@/lib/utils";
 import { getVoteStats, postVote, type VoteStats } from "@/lib/votes";
-import { Check, Copy, MapPin, MessageSquare, Share2, ThumbsDown, ThumbsUp } from "lucide-react";
+import { Check, Copy, ExternalLink, MapPin, MessageSquare, Radio, Share2, ThumbsDown, ThumbsUp, Wifi, Zap, Maximize2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import * as React from "react";
 
 function getBandFromFrequency(mhz: number): string {
@@ -39,7 +43,12 @@ function duplex(rx?: number, tx?: number) {
   return { sign, offsetDisplay: `${diff.toFixed(4)} MHz`, offsetCopy: diff.toFixed(4) };
 }
 
-export default function RepeaterDetails({ r }: { r: Repeater }) {
+interface RepeaterDetailsProps {
+  r: Repeater;
+}
+
+export default function RepeaterDetails({ r }: RepeaterDetailsProps) {
+  const { userLocation } = useUserLocation();
   const band = getBandFromFrequency(r.outputFrequency);
   const { sign, offsetDisplay, offsetCopy } = duplex(r.outputFrequency, r.inputFrequency);
 
@@ -49,6 +58,9 @@ export default function RepeaterDetails({ r }: { r: Repeater }) {
       ? `https://www.openstreetmap.org/?mlat=${r.latitude}&mlon=${r.longitude}&zoom=14`
       : undefined;
   const t = useTranslations("repeater");
+
+  const hasValidLocations = userLocation && r.latitude && r.longitude;
+
   return (
     <div className="space-y-4">
       <div className="flex items-start justify-between gap-3">
@@ -69,6 +81,11 @@ export default function RepeaterDetails({ r }: { r: Repeater }) {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Button variant="outline" size="icon" asChild aria-label="Ver página completa">
+            <Link href={`/repeater/${encodeURIComponent(r.callsign)}`}>
+              <Maximize2 className="h-4 w-4" />
+            </Link>
+          </Button>
           <ShareButton callsign={r.callsign} />
           <Button asChild>
             <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
@@ -99,6 +116,163 @@ export default function RepeaterDetails({ r }: { r: Repeater }) {
           }
         />
       </div>
+
+      {/* Bearing to Repeater */}
+      {hasValidLocations && (
+        <div className="rounded-lg border bg-gradient-to-r from-ship-cove-50 to-transparent dark:from-ship-cove-950 dark:to-transparent p-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">Direção para o repetidor:</span>
+            <BearingIndicator
+              userLat={userLocation.latitude}
+              userLon={userLocation.longitude}
+              targetLat={r.latitude}
+              targetLon={r.longitude}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Operational Status Badge */}
+      {r.status && r.status !== 'unknown' && (
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">Status:</span>
+          <OperationalStatusBadge status={r.status} />
+          {r.lastVerified && (
+            <span className="text-xs text-muted-foreground">
+              (verified {new Date(r.lastVerified).toLocaleDateString()})
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Technical Specs Section */}
+      {(r.power || r.antennaHeight || r.coverage || r.operatingHours) && (
+        <>
+          <Separator />
+          <div className="space-y-2">
+            <h4 className="text-sm font-medium flex items-center gap-2">
+              <Zap className="h-4 w-4" />
+              Technical Specs
+            </h4>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              {r.power && (
+                <div>
+                  <span className="text-muted-foreground">Power:</span>{" "}
+                  <span className="font-medium">{r.power}W</span>
+                </div>
+              )}
+              {r.antennaHeight && (
+                <div>
+                  <span className="text-muted-foreground">Antenna:</span>{" "}
+                  <span className="font-medium">{r.antennaHeight}m AGL</span>
+                </div>
+              )}
+              {r.coverage && (
+                <div>
+                  <span className="text-muted-foreground">Coverage:</span>{" "}
+                  <span className="font-medium capitalize">{r.coverage}</span>
+                </div>
+              )}
+              {r.operatingHours && (
+                <div>
+                  <span className="text-muted-foreground">Hours:</span>{" "}
+                  <span className="font-medium">{r.operatingHours}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Digital Modes Section */}
+      {(r.dmr || r.dstar || r.echolinkNode || r.allstarNode) && (
+        <>
+          <Separator />
+          <div className="space-y-3">
+            <h4 className="text-sm font-medium flex items-center gap-2">
+              <Radio className="h-4 w-4" />
+              Digital Modes & Linking
+            </h4>
+
+            {/* DMR Details */}
+            {r.dmr && (r.dmrColorCode || r.dmrTalkgroups) && (
+              <div className="rounded-lg border p-3 space-y-1">
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary">DMR</Badge>
+                  {r.dmrColorCode && (
+                    <span className="text-xs">CC {r.dmrColorCode}</span>
+                  )}
+                </div>
+                {r.dmrTalkgroups && (
+                  <div className="text-xs text-muted-foreground">
+                    TGs: {r.dmrTalkgroups}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* D-STAR Details */}
+            {r.dstar && (r.dstarReflector || r.dstarModule) && (
+              <div className="rounded-lg border p-3 space-y-1">
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary">D-STAR</Badge>
+                  {r.dstarModule && (
+                    <span className="text-xs">Module {r.dstarModule}</span>
+                  )}
+                </div>
+                {r.dstarReflector && (
+                  <div className="text-xs text-muted-foreground">
+                    Reflector: {r.dstarReflector}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* EchoLink & AllStar */}
+            <div className="flex flex-wrap gap-2">
+              {r.echolinkNode && (
+                <a
+                  href={`echolink://${r.echolinkNode}`}
+                  className="inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-sm hover:bg-accent transition-colors"
+                >
+                  <Wifi className="h-3 w-3" />
+                  EchoLink #{r.echolinkNode}
+                </a>
+              )}
+              {r.allstarNode && (
+                <div className="inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-sm">
+                  <Radio className="h-3 w-3" />
+                  AllStar #{r.allstarNode}
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Notes Section */}
+      {r.notes && (
+        <>
+          <Separator />
+          <div className="space-y-2">
+            <h4 className="text-sm font-medium">Notes</h4>
+            <p className="text-sm text-muted-foreground whitespace-pre-wrap">{r.notes}</p>
+          </div>
+        </>
+      )}
+
+      {/* Website Link */}
+      {r.website && (
+        <a
+          href={r.website}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+        >
+          <ExternalLink className="h-4 w-4" />
+          Visit website
+        </a>
+      )}
 
       <VoteSection repeaterId={r.callsign} />
     </div>
@@ -160,6 +334,17 @@ function saveLocalVote(repeaterId: string, v: LocalVote) {
   try {
     localStorage.setItem(getVoteKey(repeaterId), JSON.stringify(v));
   } catch { }
+}
+
+function OperationalStatusBadge({ status }: { status: 'active' | 'maintenance' | 'offline' | 'unknown' }) {
+  const config = {
+    active: { label: 'Active', className: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300' },
+    maintenance: { label: 'Maintenance', className: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300' },
+    offline: { label: 'Offline', className: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' },
+    unknown: { label: 'Unknown', className: 'bg-muted text-muted-foreground' },
+  } as const;
+  const cfg = config[status];
+  return <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium", cfg.className)}>{cfg.label}</span>;
 }
 
 function StatusPill({ status }: { status: "ok" | "prob-bad" | "bad" | "unknown" }) {
@@ -282,11 +467,8 @@ function ShareButton({ callsign }: { callsign: string }) {
   const t = useTranslations("repeater");
 
   const handleShare = async () => {
-    // Build share URL
-    const url = new URL(window.location.href);
-    url.search = `?repeater=${encodeURIComponent(callsign)}`;
-    url.hash = "";
-    const shareUrl = url.toString();
+    // Build share URL using the dedicated repeater page
+    const shareUrl = `${window.location.origin}/repeater/${encodeURIComponent(callsign)}`;
 
     // Try native share first (mobile), fall back to clipboard
     if (navigator.share) {

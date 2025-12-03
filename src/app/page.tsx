@@ -51,6 +51,22 @@ function toBoolean(value: unknown): boolean {
   return Boolean(value);
 }
 
+function toOptionalNumber(value: unknown): number | undefined {
+  if (value === null || value === undefined) return undefined;
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string") {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return undefined;
+}
+
+function toOptionalString(value: unknown): string | undefined {
+  if (value === null || value === undefined) return undefined;
+  if (typeof value === "string" && value.trim()) return value;
+  return undefined;
+}
+
 function normalizeRepeater(doc: Record<string, unknown>): Repeater {
   return {
     callsign: toStringOrEmpty(doc.callsign),
@@ -64,6 +80,21 @@ function normalizeRepeater(doc: Record<string, unknown>): Repeater {
     owner: toStringOrEmpty(doc.owner),
     dmr: toBoolean(doc.dmr),
     dstar: toBoolean(doc.dstar),
+    // Extended fields (optional)
+    status: toOptionalString(doc.status) as Repeater['status'],
+    power: toOptionalNumber(doc.power),
+    antennaHeight: toOptionalNumber(doc.antennaHeight),
+    coverage: toOptionalString(doc.coverage) as Repeater['coverage'],
+    dmrColorCode: toOptionalNumber(doc.dmrColorCode),
+    dmrTalkgroups: toOptionalString(doc.dmrTalkgroups),
+    dstarReflector: toOptionalString(doc.dstarReflector),
+    dstarModule: toOptionalString(doc.dstarModule) as Repeater['dstarModule'],
+    echolinkNode: toOptionalNumber(doc.echolinkNode),
+    allstarNode: toOptionalNumber(doc.allstarNode),
+    operatingHours: toOptionalString(doc.operatingHours),
+    lastVerified: toOptionalString(doc.lastVerified),
+    notes: toOptionalString(doc.notes),
+    website: toOptionalString(doc.website),
   };
 }
 

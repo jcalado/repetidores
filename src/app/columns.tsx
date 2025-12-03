@@ -4,7 +4,8 @@
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
-import { calculateDistance, formatDistance, type UserLocation } from "@/lib/geolocation"
+import { type UserLocation } from "@/contexts/UserLocationContext"
+import { calculateDistance, formatDistance } from "@/lib/geolocation"
 import { toggleFavorite, isFavorite } from "@/lib/favorites"
 import { getVoteStats, type VoteStats } from "@/lib/votes"
 import { ColumnDef } from "@tanstack/react-table"
@@ -24,6 +25,21 @@ export type Repeater = {
   owner: string
   dmr: boolean
   dstar: boolean
+  // New extended fields
+  status?: 'active' | 'maintenance' | 'offline' | 'unknown'
+  power?: number
+  antennaHeight?: number
+  coverage?: 'local' | 'regional' | 'wide'
+  dmrColorCode?: number
+  dmrTalkgroups?: string
+  dstarReflector?: string
+  dstarModule?: 'A' | 'B' | 'C' | 'D'
+  echolinkNode?: number
+  allstarNode?: number
+  operatingHours?: string
+  lastVerified?: string
+  notes?: string
+  website?: string
 }
 
 function getBandFromFrequency(mhz: number): string {
@@ -79,6 +95,30 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
         const s = voteCache.get(r.callsign)
         const cat = s?.category ?? "unknown"
         return cat === value
+      },
+      size: 36,
+      minSize: 32,
+      maxSize: 48,
+    },
+    // Operational status (admin-set)
+    {
+      id: "opStatus",
+      header: t("opStatus.header"),
+      accessorKey: "status",
+      cell: ({ row }) => {
+        const r = row.original as Repeater
+        return <OperationalStatusCell status={r.status} />
+      },
+      enableSorting: false,
+      enableColumnFilter: true,
+      filterFn: (row, _id, value) => {
+        if (!value) return true
+        const r = row.original as Repeater
+        // Handle array of values (multi-select)
+        if (Array.isArray(value)) {
+          return value.includes(r.status ?? 'unknown')
+        }
+        return r.status === value
       },
       size: 36,
       minSize: 32,
@@ -389,6 +429,45 @@ function statusStyle(category: VoteStats["category"]) {
     default:
       return { dotClass: "bg-gray-400 dark:bg-gray-500" }
   }
+}
+
+// ---- Operational Status Cell ----
+function OperationalStatusCell({ status }: { status?: Repeater['status'] }) {
+  const t = useTranslations('table')
+
+  if (!status || status === 'unknown') {
+    return null
+  }
+
+  const config = {
+    active: { dotClass: "bg-emerald-500", icon: "●" },
+    maintenance: { dotClass: "bg-amber-500", icon: "◐" },
+    offline: { dotClass: "bg-red-500", icon: "○" },
+  } as const
+
+  const cfg = config[status as keyof typeof config]
+  if (!cfg) return null
+
+  const label = t(`opStatus.${status}` as const)
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span
+          aria-label={label}
+          className={cn(
+            "inline-flex items-center justify-center h-5 w-5 rounded text-[10px] font-bold",
+            status === 'active' && "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+            status === 'maintenance' && "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+            status === 'offline' && "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+          )}
+        >
+          {status === 'active' ? '✓' : status === 'maintenance' ? '!' : '✕'}
+        </span>
+      </TooltipTrigger>
+      <TooltipContent>{label}</TooltipContent>
+    </Tooltip>
+  )
 }
 
 // ---- Favorites Icon ----
