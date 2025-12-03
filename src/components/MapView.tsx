@@ -203,18 +203,37 @@ function LayerControl({
   return null;
 }
 
-// Component to persist map state
-function MapStatePersistence() {
+// Component to persist map state and center on user location
+function MapStatePersistence({ userLocation }: { userLocation?: [number, number] | null }) {
   const map = useMap();
+  const hasPositionedRef = useRef(false);
+  const hadSavedStateRef = useRef(false);
 
+  // Initial positioning effect
   useEffect(() => {
-    // Restore saved state on mount
     const savedState = getStoredMapState();
-    if (savedState) {
-      map.setView(savedState.center, savedState.zoom);
-    }
+    hadSavedStateRef.current = !!savedState;
 
-    // Save state on move end
+    if (savedState) {
+      // Restore saved state
+      map.setView(savedState.center, savedState.zoom);
+      hasPositionedRef.current = true;
+    }
+  }, [map]);
+
+  // Center on user location when it becomes available (only if no saved state)
+  useEffect(() => {
+    if (hasPositionedRef.current) return;
+    if (!userLocation) return;
+    if (hadSavedStateRef.current) return;
+
+    // No saved state and user location just became available - center on user
+    map.setView(userLocation, 10);
+    hasPositionedRef.current = true;
+  }, [map, userLocation]);
+
+  // Save state on map movement
+  useEffect(() => {
     const handleMoveEnd = () => {
       const center = map.getCenter();
       const zoom = map.getZoom();
@@ -599,7 +618,7 @@ const MapView = ({ repeaters, onRepeaterClick, userLocation: externalUserLocatio
         )}
 
         <LayerControl currentLayer={currentLayer} onLayerChange={setCurrentLayer} />
-        <MapStatePersistence />
+        <MapStatePersistence userLocation={userLocation} />
       </MapContainer>
 
       {/* Floating locate button (FAB) */}
