@@ -1,6 +1,7 @@
 "use client"
 
 import { getOwnerShort, useColumns, type Repeater } from "@/app/columns"
+import LocationPickerDialog from "@/components/LocationPickerDialog"
 import MapClient from "@/components/MapClient"
 import RepeaterDetails from "@/components/RepeaterDetails"
 import SearchAutocomplete from "@/components/SearchAutocomplete"
@@ -270,15 +271,18 @@ export default function RepeaterBrowser({
 
                 {/* Geolocation button */}
                 {!userLocation ? (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={requestLocation}
-                    disabled={isLocating}
-                  >
-                    <MapPin className="mr-2 h-4 w-4" />
-                    {isLocating ? t('location.locating') : t('location.locateMe')}
-                  </Button>
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={requestLocation}
+                      disabled={isLocating}
+                    >
+                      <MapPin className="mr-2 h-4 w-4" />
+                      {isLocating ? t('location.locating') : t('location.locateMe')}
+                    </Button>
+                    <LocationPickerDialog onLocationSelect={setLocation} />
+                  </>
                 ) : (
                   <Button
                     variant="outline"

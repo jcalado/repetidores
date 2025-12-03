@@ -201,6 +201,12 @@
         "noResults": "Nenhum resultado encontrado",
         "or": "ou",
         "approximate": "Localização aproximada (baseada em IP)",
+        "pickOnMap": "Escolher no mapa",
+        "pickOnMapTitle": "Escolher localização no mapa",
+        "pickOnMapDescription": "Clique no mapa para selecionar a sua localização",
+        "selectedCoords": "Coordenadas selecionadas",
+        "confirm": "Confirmar",
+        "cancel": "Cancelar",
         "error": {
             "notSupported": "Geolocalização não suportada",
             "denied": "Permissão de localização negada",
