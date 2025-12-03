@@ -94,6 +94,8 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
         const r = row.original as Repeater
         const s = voteCache.get(r.callsign)
         const cat = s?.category ?? "unknown"
+        // If filtering for "bad" (Não funciona), also include repeaters with offline operational status
+        if (value === "bad" && r.status === "offline") return true
         return cat === value
       },
       size: 36,
