@@ -11,7 +11,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import type { UserLocation } from '@/contexts/UserLocationContext';
-import { MapPinned } from 'lucide-react';
+import { formatAddress, reverseGeocode } from '@/lib/geolocation';
+import { Loader2, MapPinned } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 import * as React from 'react';
@@ -41,6 +42,33 @@ export default function LocationPickerDialog({
     lat: number;
     lng: number;
   } | null>(null);
+  const [address, setAddress] = React.useState<string | null>(null);
+  const [isLoadingAddress, setIsLoadingAddress] = React.useState(false);
+
+  // Reverse geocode when location changes
+  React.useEffect(() => {
+    if (!selectedLocation) {
+      setAddress(null);
+      return;
+    }
+
+    let cancelled = false;
+    setIsLoadingAddress(true);
+
+    reverseGeocode(selectedLocation.lat, selectedLocation.lng).then((result) => {
+      if (cancelled) return;
+      setIsLoadingAddress(false);
+      if (result) {
+        setAddress(formatAddress(result));
+      } else {
+        setAddress(null);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedLocation]);
 
   const handleConfirm = () => {
     if (selectedLocation) {
@@ -51,6 +79,7 @@ export default function LocationPickerDialog({
       });
       setOpen(false);
       setSelectedLocation(null);
+      setAddress(null);
     }
   };
 
@@ -58,6 +87,7 @@ export default function LocationPickerDialog({
     setOpen(isOpen);
     if (!isOpen) {
       setSelectedLocation(null);
+      setAddress(null);
     }
   };
 
@@ -85,9 +115,19 @@ export default function LocationPickerDialog({
         </div>
 
         {selectedLocation && (
-          <p className="text-sm text-muted-foreground text-center">
-            {t('location.selectedCoords')}: {selectedLocation.lat.toFixed(5)}, {selectedLocation.lng.toFixed(5)}
-          </p>
+          <div className="text-center space-y-1">
+            {isLoadingAddress ? (
+              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>{t('location.loadingAddress')}</span>
+              </div>
+            ) : address ? (
+              <p className="text-sm font-medium">{address}</p>
+            ) : null}
+            <p className="text-xs text-muted-foreground">
+              {selectedLocation.lat.toFixed(5)}, {selectedLocation.lng.toFixed(5)}
+            </p>
+          </div>
         )}
 
         <DialogFooter>

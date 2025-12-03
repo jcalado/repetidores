@@ -27,7 +27,7 @@ import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { VisuallyHidden } from "@/components/ui/visually-hidden"
 import { useUserLocation } from "@/contexts/UserLocationContext"
-import { searchLocation, calculateDistance, type GeocodingResult } from "@/lib/geolocation"
+import { searchLocation, calculateDistance, reverseGeocode, formatAddress, type GeocodingResult } from "@/lib/geolocation"
 import type { ColumnFiltersState } from "@tanstack/react-table"
 import { ChevronDown, ChevronUp, Filter, FunnelX, Heart, Loader2, MapPin, Search, X } from "lucide-react"
 import { useTranslations } from 'next-intl'
@@ -110,6 +110,35 @@ export default function RepeaterBrowser({
   const [isSearching, setIsSearching] = React.useState(false)
   const [showSearchResults, setShowSearchResults] = React.useState(false)
   const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
+
+  // Reverse geocoded address for current user location
+  const [userLocationAddress, setUserLocationAddress] = React.useState<string | null>(null)
+  const [isLoadingAddress, setIsLoadingAddress] = React.useState(false)
+
+  // Fetch address when user location changes
+  React.useEffect(() => {
+    if (!userLocation) {
+      setUserLocationAddress(null)
+      return
+    }
+
+    let cancelled = false
+    setIsLoadingAddress(true)
+
+    reverseGeocode(userLocation.latitude, userLocation.longitude).then((result) => {
+      if (cancelled) return
+      setIsLoadingAddress(false)
+      if (result) {
+        setUserLocationAddress(formatAddress(result))
+      } else {
+        setUserLocationAddress(null)
+      }
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [userLocation])
 
   // Debounced location search
   React.useEffect(() => {
@@ -227,47 +256,50 @@ export default function RepeaterBrowser({
             <TabsContent value="table">
               {/* Location controls - search and geolocation */}
               <div className="mb-4 flex flex-wrap items-center gap-2">
-                {/* Location search input */}
-                <div className="relative">
-                  <div className="relative">
-                    <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      placeholder={t('location.searchPlaceholder')}
-                      value={locationSearchQuery}
-                      onChange={(e) => setLocationSearchQuery(e.target.value)}
-                      className="w-48 pl-8 pr-8"
-                      disabled={!!userLocation}
-                    />
-                    {isSearching && (
-                      <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
-                    )}
-                  </div>
-                  {/* Search results dropdown */}
-                  {showSearchResults && locationSearchResults.length > 0 && (
-                    <div className="absolute z-50 mt-1 w-72 rounded-md border bg-popover p-1 shadow-md">
-                      {locationSearchResults.map((result) => (
-                        <button
-                          key={result.place_id}
-                          type="button"
-                          className="w-full rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent hover:text-accent-foreground"
-                          onClick={() => handleSelectSearchResult(result)}
-                        >
-                          <div className="font-medium">{result.display_name.split(',')[0]}</div>
-                          <div className="truncate text-xs text-muted-foreground">
-                            {result.display_name.split(',').slice(1, 3).join(',')}
-                          </div>
-                        </button>
-                      ))}
+                {/* Location search input - hidden when location is set */}
+                {!userLocation && (
+                  <>
+                    <div className="relative">
+                      <div className="relative">
+                        <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        <Input
+                          placeholder={t('location.searchPlaceholder')}
+                          value={locationSearchQuery}
+                          onChange={(e) => setLocationSearchQuery(e.target.value)}
+                          className="w-48 pl-8 pr-8"
+                        />
+                        {isSearching && (
+                          <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+                        )}
+                      </div>
+                      {/* Search results dropdown */}
+                      {showSearchResults && locationSearchResults.length > 0 && (
+                        <div className="absolute z-50 mt-1 w-72 rounded-md border bg-popover p-1 shadow-md">
+                          {locationSearchResults.map((result) => (
+                            <button
+                              key={result.place_id}
+                              type="button"
+                              className="w-full rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent hover:text-accent-foreground"
+                              onClick={() => handleSelectSearchResult(result)}
+                            >
+                              <div className="font-medium">{result.display_name.split(',')[0]}</div>
+                              <div className="truncate text-xs text-muted-foreground">
+                                {result.display_name.split(',').slice(1, 3).join(',')}
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {showSearchResults && locationSearchResults.length === 0 && !isSearching && locationSearchQuery.length >= 2 && (
+                        <div className="absolute z-50 mt-1 w-72 rounded-md border bg-popover p-2 shadow-md">
+                          <span className="text-sm text-muted-foreground">{t('location.noResults')}</span>
+                        </div>
+                      )}
                     </div>
-                  )}
-                  {showSearchResults && locationSearchResults.length === 0 && !isSearching && locationSearchQuery.length >= 2 && (
-                    <div className="absolute z-50 mt-1 w-72 rounded-md border bg-popover p-2 shadow-md">
-                      <span className="text-sm text-muted-foreground">{t('location.noResults')}</span>
-                    </div>
-                  )}
-                </div>
 
-                <span className="text-sm text-muted-foreground">{t('location.or')}</span>
+                    <span className="text-sm text-muted-foreground">{t('location.or')}</span>
+                  </>
+                )}
 
                 {/* Geolocation button */}
                 {!userLocation ? (
@@ -284,14 +316,35 @@ export default function RepeaterBrowser({
                     <LocationPickerDialog onLocationSelect={setLocation} />
                   </>
                 ) : (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleClearLocation}
-                  >
-                    <X className="mr-2 h-4 w-4" />
-                    {t('location.clearLocation')}
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+                    <div className="flex flex-col">
+                      {isLoadingAddress ? (
+                        <span className="text-sm text-muted-foreground flex items-center gap-1">
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                          {t('location.loadingAddress')}
+                        </span>
+                      ) : userLocationAddress ? (
+                        <span className="text-sm font-medium">{userLocationAddress}</span>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">
+                          {userLocation.latitude.toFixed(4)}, {userLocation.longitude.toFixed(4)}
+                        </span>
+                      )}
+                      {userLocation.isApproximate && (
+                        <span className="text-xs text-muted-foreground">{t('location.approximate')}</span>
+                      )}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleClearLocation}
+                      className="h-7 w-7 p-0"
+                    >
+                      <X className="h-4 w-4" />
+                      <span className="sr-only">{t('location.clearLocation')}</span>
+                    </Button>
+                  </div>
                 )}
                 {locationError && (
                   <span className="text-sm text-destructive">{locationError}</span>

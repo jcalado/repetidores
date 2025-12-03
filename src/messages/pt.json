@@ -207,6 +207,7 @@
         "selectedCoords": "Coordenadas selecionadas",
         "confirm": "Confirmar",
         "cancel": "Cancelar",
+        "loadingAddress": "A carregar endereço...",
         "error": {
             "notSupported": "Geolocalização não suportada",
             "denied": "Permissão de localização negada",
