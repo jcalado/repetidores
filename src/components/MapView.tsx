@@ -4,7 +4,7 @@
 import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import type { UserLocation } from "@/lib/geolocation";
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import type { Repeater } from "@/app/columns";
 
@@ -258,18 +258,6 @@ function createClusterCustomIcon(cluster: any) {
   });
 }
 
-type QuickFilter = {
-  band: '2m' | '70cm' | 'all';
-  modulation: 'fm' | 'dmr' | 'dstar' | 'all';
-};
-
-type Props = {
-  repeaters: Repeater[];
-  onSelectRepeater?: (repeater: Repeater) => void;
-  quickFilter?: QuickFilter;
-  onQuickFilterChange?: (filter: QuickFilter) => void;
-};
-
 // Floating Action Button for locating user
 function FloatingLocateButton({ onClick, isLocating }: { onClick: () => void; isLocating: boolean }) {
   return (
@@ -335,59 +323,6 @@ function FullscreenButton({ containerRef }: { containerRef: React.RefObject<HTML
   );
 }
 
-// Quick filter chips
-function QuickFilterChips({
-  filter,
-  onChange
-}: {
-  filter: QuickFilter;
-  onChange: (filter: QuickFilter) => void;
-}) {
-  const chips = [
-    { key: 'band', value: 'all', label: 'Todas' },
-    { key: 'band', value: '2m', label: '2m' },
-    { key: 'band', value: '70cm', label: '70cm' },
-    { key: 'modulation', value: 'all', label: 'Todas Mod.' },
-    { key: 'modulation', value: 'fm', label: 'FM' },
-    { key: 'modulation', value: 'dmr', label: 'DMR' },
-    { key: 'modulation', value: 'dstar', label: 'D-STAR' },
-  ] as const;
-
-  return (
-    <div className="absolute top-4 left-4 right-16 z-[1000] overflow-x-auto">
-      <div className="flex gap-2 pb-2">
-        {chips.map((chip) => {
-          const isActive = chip.key === 'band'
-            ? filter.band === chip.value
-            : filter.modulation === chip.value;
-
-          return (
-            <button
-              key={`${chip.key}-${chip.value}`}
-              onClick={() => {
-                if (chip.key === 'band') {
-                  onChange({ ...filter, band: chip.value as QuickFilter['band'] });
-                } else {
-                  onChange({ ...filter, modulation: chip.value as QuickFilter['modulation'] });
-                }
-              }}
-              className={`
-                whitespace-nowrap px-3 py-1.5 text-sm font-medium rounded-full border shadow-sm transition-all
-                ${isActive
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                }
-              `}
-            >
-              {chip.label}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
 // Component to invalidate map size
 function MapSizeInvalidator() {
   const map = useMap();
@@ -415,6 +350,7 @@ function MapSizeInvalidator() {
 
 const MapView = ({ repeaters, onRepeaterClick, userLocation: externalUserLocation, radiusKm }: Props) => {
   const mapRef = useRef<L.Map | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [internalUserLocation, setInternalUserLocation] = useState<[number, number] | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
   const [isLocating, setIsLocating] = useState(false);
@@ -425,28 +361,8 @@ const MapView = ({ repeaters, onRepeaterClick, userLocation: externalUserLocatio
     ? [externalUserLocation.latitude, externalUserLocation.longitude] as [number, number]
     : internalUserLocation;
 
-  const activeFilter = quickFilter ?? internalFilter;
-  const setActiveFilter = onQuickFilterChange ?? setInternalFilter;
-
-  // Filter repeaters based on quick filter
-  const filteredRepeaters = repeaters.filter(r => {
-    // Band filter
-    if (activeFilter.band !== 'all') {
-      const band = getBandFromFrequency(r.outputFrequency);
-      if (activeFilter.band === '2m' && band !== '2m') return false;
-      if (activeFilter.band === '70cm' && band !== '70cm') return false;
-    }
-
-    // Modulation filter
-    if (activeFilter.modulation !== 'all') {
-      const mod = r.modulation?.toLowerCase() || '';
-      if (activeFilter.modulation === 'fm' && mod !== 'fm' && mod !== 'nfm') return false;
-      if (activeFilter.modulation === 'dmr' && !r.dmr) return false;
-      if (activeFilter.modulation === 'dstar' && !r.dstar) return false;
-    }
-
-    return true;
-  });
+  // Note: Filtering is handled by RepeaterBrowser, not here
+  const filteredRepeaters = repeaters;
 
   // Function to locate user
   const locateUser = useCallback(() => {
@@ -592,9 +508,6 @@ const MapView = ({ repeaters, onRepeaterClick, userLocation: externalUserLocatio
           background: #1d4ed8;
         }
       `}</style>
-
-      {/* Quick filter chips */}
-      <QuickFilterChips filter={activeFilter} onChange={setActiveFilter} />
 
       {/* Fullscreen button */}
       <FullscreenButton containerRef={containerRef} />

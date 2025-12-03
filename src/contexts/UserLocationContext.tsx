@@ -1,12 +1,14 @@
 'use client';
 
 import * as React from 'react';
+import { getIPLocation } from '@/lib/geolocation';
 
 export interface UserLocation {
   latitude: number;
   longitude: number;
   accuracy?: number;
   timestamp?: number;
+  isApproximate?: boolean; // True when using IP-based fallback
 }
 
 interface UserLocationContextValue {
@@ -73,9 +75,33 @@ export function UserLocationProvider({ children }: { children: React.ReactNode }
           // Ignore storage errors
         }
       },
-      (err) => {
-        setError(err.message);
-        setIsLocating(false);
+      async (err) => {
+        console.warn('Browser geolocation failed, trying IP fallback:', err.message);
+
+        // Try IP-based geolocation as fallback
+        const ipLocation = await getIPLocation();
+
+        if (ipLocation) {
+          const location: UserLocation = {
+            latitude: ipLocation.latitude,
+            longitude: ipLocation.longitude,
+            timestamp: Date.now(),
+            isApproximate: true,
+          };
+          setUserLocation(location);
+          setError(null);
+          setIsLocating(false);
+
+          // Cache in localStorage
+          try {
+            localStorage.setItem(LOCATION_STORAGE_KEY, JSON.stringify(location));
+          } catch {
+            // Ignore storage errors
+          }
+        } else {
+          setError(err.message);
+          setIsLocating(false);
+        }
       },
       {
         enableHighAccuracy: true,

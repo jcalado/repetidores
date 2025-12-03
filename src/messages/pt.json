@@ -200,6 +200,7 @@
         "searching": "A procurar...",
         "noResults": "Nenhum resultado encontrado",
         "or": "ou",
+        "approximate": "Localização aproximada (baseada em IP)",
         "error": {
             "notSupported": "Geolocalização não suportada",
             "denied": "Permissão de localização negada",

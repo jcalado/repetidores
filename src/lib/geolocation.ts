@@ -144,3 +144,35 @@ export function cacheLocation(location: UserLocation): void {
     // Ignore storage errors
   }
 }
+
+/**
+ * Get approximate location using IP geolocation
+ * Uses ip-api.com (free, no API key required)
+ * This is a fallback when browser geolocation fails (e.g., 429 from Google's network location provider)
+ */
+export async function getIPLocation(): Promise<UserLocation | null> {
+  try {
+    const response = await fetch('http://ip-api.com/json/?fields=status,lat,lon', {
+      // Short timeout since this is a fallback
+      signal: AbortSignal.timeout(5000),
+    })
+
+    if (!response.ok) {
+      return null
+    }
+
+    const data = await response.json()
+
+    if (data.status === 'success' && typeof data.lat === 'number' && typeof data.lon === 'number') {
+      return {
+        latitude: data.lat,
+        longitude: data.lon,
+      }
+    }
+
+    return null
+  } catch {
+    // Silently fail - this is just a fallback
+    return null
+  }
+}
