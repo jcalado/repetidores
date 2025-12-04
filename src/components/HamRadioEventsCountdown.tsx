@@ -22,11 +22,13 @@ import {
   MapPin,
   Mic2,
   Radio,
+  RefreshCw,
   SatelliteDish,
   SlidersHorizontal,
   Table as TableIcon
 } from "lucide-react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { fetchEvents } from "@/lib/events";
 
 /**
  * Ham Radio Events Countdown & Mini-Calendar (with Payload CMS API)
@@ -504,17 +506,36 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
   const [mounted, setMounted] = useState(false);
 
   // State
-  const [events] = useState<EventItem[]>(initialEvents);
+  const [events, setEvents] = useState<EventItem[]>(initialEvents);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   const [search, setSearch] = useState("");
   const [filterTag, setFilterTag] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("startAsc");
   const [tab, setTab] = useState<string>("cards");
 
-  // Set mounted on client
+  // Refresh events from API
+  const refreshEvents = useCallback(async (showIndicator = true) => {
+    if (showIndicator) setIsRefreshing(true);
+    setFetchError(null);
+    try {
+      const response = await fetchEvents({ limit: 500, sort: 'startAsc' });
+      setEvents(response.docs);
+    } catch (err) {
+      console.error('Failed to refresh events:', err);
+      setFetchError('Failed to refresh events');
+      // Keep showing current events - don't clear
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, []);
+
+  // Set mounted on client and fetch fresh events
   useEffect(() => {
     setMounted(true);
-  }, []);
+    refreshEvents(false); // Fetch on mount without spinner
+  }, [refreshEvents]);
 
   const tags = useMemo(() => {
     const s = new Set<string>();
@@ -624,8 +645,19 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
               <SelectItem value="title">Title (A–Z)</SelectItem>
             </SelectContent>
           </Select>
+          <button
+            onClick={() => refreshEvents(true)}
+            disabled={isRefreshing}
+            className="inline-flex items-center justify-center h-9 w-9 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:pointer-events-none shrink-0"
+            title="Refresh events"
+          >
+            <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+          </button>
         </div>
       </div>
+      {fetchError && (
+        <div className="text-xs text-amber-600 dark:text-amber-400 mt-2">{fetchError}</div>
+      )}
 
       <Separator className="my-4" />
 
