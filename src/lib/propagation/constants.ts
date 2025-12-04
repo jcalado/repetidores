@@ -19,8 +19,9 @@ const API_BASE_URL =
   'http://localhost:3000';
 export const PROPAGATION_ENDPOINT = `${API_BASE_URL}/api/propagation`;
 
-// HamDXMap iframe URL centered on Portugal (IM58)
-export const MUF_MAP_URL = 'https://dxmap.f5uii.net/?g1=IM58&muf=1';
+// KC2G MUF prediction map SVG
+export const MUF_MAP_URL = 'https://prop.kc2g.com/renders/current/mufd-normal-now.svg';
+export const MUF_MAP_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
 // K-Index thresholds for color coding
 export const K_INDEX_COLORS: Record<number, { bg: string; text: string; label: string }> = {
