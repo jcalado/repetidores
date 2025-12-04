@@ -29,7 +29,7 @@ import { VisuallyHidden } from "@/components/ui/visually-hidden"
 import { useUserLocation } from "@/contexts/UserLocationContext"
 import { searchLocation, calculateDistance, reverseGeocode, formatAddress, type GeocodingResult } from "@/lib/geolocation"
 import type { ColumnFiltersState } from "@tanstack/react-table"
-import { ChevronDown, ChevronUp, Filter, FunnelX, Heart, Loader2, MapPin, Search, X } from "lucide-react"
+import { ChevronDown, ChevronUp, Filter, FunnelX, Heart, Loader2, MapPin, RefreshCw, Search, X } from "lucide-react"
 import { useTranslations } from 'next-intl'
 import * as React from "react"
 
@@ -40,6 +40,8 @@ type Props = {
   isLoading?: boolean
   initialRepeaterCallsign?: string | null
   onInitialRepeaterOpened?: () => void
+  isRefreshing?: boolean
+  onRefresh?: () => void
 }
 
 function getBandFromFrequency(mhz: number): string {
@@ -56,6 +58,8 @@ export default function RepeaterBrowser({
   isLoading = false,
   initialRepeaterCallsign,
   onInitialRepeaterOpened,
+  isRefreshing = false,
+  onRefresh,
 }: Props) {
   const t = useTranslations()
   const { userLocation, isLocating, error: locationError, requestLocation, setLocation, clearLocation } = useUserLocation()
@@ -249,10 +253,24 @@ export default function RepeaterBrowser({
       <Card className="w-full max-w-7xl">
         <CardContent>
           <Tabs value={activeTab} onValueChange={onTabChange}>
-            <TabsList>
-              <TabsTrigger value="table">{t('nav.table')}</TabsTrigger>
-              <TabsTrigger value="map">{t('nav.map')}</TabsTrigger>
-            </TabsList>
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <TabsList>
+                <TabsTrigger value="table">{t('nav.table')}</TabsTrigger>
+                <TabsTrigger value="map">{t('nav.map')}</TabsTrigger>
+              </TabsList>
+              {onRefresh && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={onRefresh}
+                  disabled={isRefreshing}
+                  title="Refresh repeaters"
+                  className="h-9 w-9"
+                >
+                  <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                </Button>
+              )}
+            </div>
             <TabsContent value="table">
               {/* Location controls - search and geolocation */}
               <div className="mb-4 flex flex-wrap items-center gap-2">

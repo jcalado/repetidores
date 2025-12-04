@@ -3,14 +3,40 @@
 import * as React from "react"
 import RepeaterBrowser from "@/components/RepeaterBrowser"
 import { Repeater } from "@/app/columns"
+import { fetchRepeaters } from "@/lib/repeaters"
 
 type Props = {
   data: Repeater[]
 }
 
-export default function RepeaterBrowserClient({ data }: Props) {
+export default function RepeaterBrowserClient({ data: initialData }: Props) {
+  const [repeaters, setRepeaters] = React.useState<Repeater[]>(initialData)
+  const [isRefreshing, setIsRefreshing] = React.useState(false)
+  const [fetchError, setFetchError] = React.useState<string | null>(null)
+
   const [activeTab, setActiveTab] = React.useState("table")
   const [initialRepeater, setInitialRepeater] = React.useState<string | null>(null)
+
+  // Refresh repeaters from API
+  const refreshRepeaters = React.useCallback(async (showIndicator = true) => {
+    if (showIndicator) setIsRefreshing(true)
+    setFetchError(null)
+    try {
+      const data = await fetchRepeaters()
+      setRepeaters(data)
+    } catch (err) {
+      console.error('Failed to refresh repeaters:', err)
+      setFetchError('Failed to refresh repeaters')
+      // Keep showing current data
+    } finally {
+      setIsRefreshing(false)
+    }
+  }, [])
+
+  // Fetch fresh data on mount
+  React.useEffect(() => {
+    refreshRepeaters(false)
+  }, [refreshRepeaters])
 
   // Handle URL hash changes to sync with navigation
   React.useEffect(() => {
@@ -57,12 +83,19 @@ export default function RepeaterBrowserClient({ data }: Props) {
   }, [])
 
   return (
-    <RepeaterBrowser
-      data={data}
-      activeTab={activeTab}
-      onTabChange={handleTabChange}
-      initialRepeaterCallsign={initialRepeater}
-      onInitialRepeaterOpened={handleRepeaterOpened}
-    />
+    <>
+      <RepeaterBrowser
+        data={repeaters}
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+        initialRepeaterCallsign={initialRepeater}
+        onInitialRepeaterOpened={handleRepeaterOpened}
+        isRefreshing={isRefreshing}
+        onRefresh={() => refreshRepeaters(true)}
+      />
+      {fetchError && (
+        <div className="text-xs text-amber-600 dark:text-amber-400 mt-2 text-center">{fetchError}</div>
+      )}
+    </>
   )
 }
