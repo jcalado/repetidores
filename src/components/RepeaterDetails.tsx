@@ -17,7 +17,12 @@ import {
 import { useUserLocation } from "@/contexts/UserLocationContext";
 import { cn } from "@/lib/utils";
 import { getVoteStats, postVote, type VoteStats } from "@/lib/votes";
-import { Check, Copy, ExternalLink, MapPin, MessageSquare, Radio, Share2, ThumbsDown, ThumbsUp, Wifi, Zap, Maximize2 } from "lucide-react";
+import { Check, Copy, ExternalLink, MapPin, MessageSquare, Radio, Share2, ThumbsDown, ThumbsUp, Wifi, Zap, Maximize2, Users, TrendingUp, TrendingDown, AlertCircle, CheckCircle2, XCircle, HelpCircle } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import * as React from "react";
@@ -347,15 +352,107 @@ function OperationalStatusBadge({ status }: { status: 'active' | 'maintenance' |
   return <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium", cfg.className)}>{cfg.label}</span>;
 }
 
-function StatusPill({ status }: { status: "ok" | "prob-bad" | "bad" | "unknown" }) {
-  const map: Record<typeof status, { label: string; className: string }> = {
-    ok: { label: "Working OK", className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300" },
-    "prob-bad": { label: "Probably Not Working", className: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300" },
-    bad: { label: "Not Working", className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300" },
-    unknown: { label: "Status Unknown", className: "bg-muted text-muted-foreground" },
+function StatusDisplay({ status, stats }: { status: "ok" | "prob-bad" | "bad" | "unknown"; stats: VoteStats | null }) {
+  const config = {
+    ok: {
+      label: "Working",
+      description: "Confirmed operational by community",
+      icon: CheckCircle2,
+      bgClass: "bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950/40 dark:to-emerald-900/30",
+      borderClass: "border-emerald-200 dark:border-emerald-800/50",
+      iconClass: "text-emerald-600 dark:text-emerald-400",
+      textClass: "text-emerald-700 dark:text-emerald-300",
+    },
+    "prob-bad": {
+      label: "Uncertain",
+      description: "Mixed reports from community",
+      icon: AlertCircle,
+      bgClass: "bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950/40 dark:to-amber-900/30",
+      borderClass: "border-amber-200 dark:border-amber-800/50",
+      iconClass: "text-amber-600 dark:text-amber-400",
+      textClass: "text-amber-700 dark:text-amber-300",
+    },
+    bad: {
+      label: "Not Working",
+      description: "Reported offline by community",
+      icon: XCircle,
+      bgClass: "bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950/40 dark:to-red-900/30",
+      borderClass: "border-red-200 dark:border-red-800/50",
+      iconClass: "text-red-600 dark:text-red-400",
+      textClass: "text-red-700 dark:text-red-300",
+    },
+    unknown: {
+      label: "Unknown",
+      description: "Not enough reports yet",
+      icon: HelpCircle,
+      bgClass: "bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/40 dark:to-slate-800/30",
+      borderClass: "border-slate-200 dark:border-slate-700/50",
+      iconClass: "text-slate-500 dark:text-slate-400",
+      textClass: "text-slate-600 dark:text-slate-300",
+    },
   } as const;
-  const cfg = map[status];
-  return <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-xs", cfg.className)}>{cfg.label}</span>;
+
+  const cfg = config[status];
+  const Icon = cfg.icon;
+
+  return (
+    <div className={cn("rounded-lg border p-3", cfg.bgClass, cfg.borderClass)}>
+      <div className="flex items-center gap-3">
+        <div className={cn("rounded-full p-2", cfg.bgClass)}>
+          <Icon className={cn("h-5 w-5", cfg.iconClass)} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className={cn("font-semibold text-sm", cfg.textClass)}>{cfg.label}</div>
+          <div className="text-xs text-muted-foreground">{cfg.description}</div>
+        </div>
+        {stats && stats.total > 0 && (
+          <div className="text-right">
+            <div className="text-lg font-bold tabular-nums">
+              {Math.round((stats.up / stats.total) * 100)}%
+            </div>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">positive</div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function VoteDistributionBar({ stats }: { stats: VoteStats | null }) {
+  if (!stats || stats.total === 0) return null;
+
+  const upPercent = (stats.up / stats.total) * 100;
+  const downPercent = (stats.down / stats.total) * 100;
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between text-xs">
+        <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+          <TrendingUp className="h-3 w-3" />
+          <span className="font-medium">{stats.up}</span>
+          <span className="text-muted-foreground">working</span>
+        </span>
+        <span className="flex items-center gap-1.5 text-red-600 dark:text-red-400">
+          <span className="text-muted-foreground">issues</span>
+          <span className="font-medium">{stats.down}</span>
+          <TrendingDown className="h-3 w-3" />
+        </span>
+      </div>
+      <div className="relative h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+        <div
+          className="absolute left-0 top-0 h-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-500 ease-out"
+          style={{ width: `${upPercent}%` }}
+        />
+        <div
+          className="absolute right-0 top-0 h-full bg-gradient-to-l from-red-500 to-red-400 transition-all duration-500 ease-out"
+          style={{ width: `${downPercent}%` }}
+        />
+      </div>
+      <div className="text-center text-[10px] text-muted-foreground">
+        {stats.total} reports in last {stats.windowDays} days
+      </div>
+    </div>
+  );
 }
 
 function VoteSection({ repeaterId }: { repeaterId: string }) {
@@ -364,13 +461,19 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
   const [feedback, setFeedback] = React.useState("");
   const [stats, setStats] = React.useState<VoteStats | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
     setVote(loadLocalVote(repeaterId));
+    setIsLoading(true);
     let alive = true;
-    getVoteStats(repeaterId).then((s) => {
-      if (alive) setStats(s);
-    });
+    getVoteStats(repeaterId)
+      .then((s) => {
+        if (alive) setStats(s);
+      })
+      .finally(() => {
+        if (alive) setIsLoading(false);
+      });
     return () => {
       alive = false;
     };
@@ -401,61 +504,124 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
   }
 
   return (
-    <div className="rounded-xl border p-3 sm:p-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Community status</span>
-          <StatusPill status={status} />
-          {vote?.vote && (
-            <Badge variant="secondary" className="ml-1 text-[10px]">You voted {vote.vote === "up" ? "Up" : "Down"}</Badge>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant={vote?.vote === "up" ? "default" : "outline"} size="sm" onClick={() => handleVote("up")} disabled={submitting}>
-            <ThumbsUp className="mr-1 h-4 w-4" /> Up
-          </Button>
-          <Button variant={vote?.vote === "down" ? "default" : "outline"} size="sm" onClick={() => handleVote("down")} disabled={submitting}>
-            <ThumbsDown className="mr-1 h-4 w-4" /> Down
-          </Button>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button variant="ghost" size="sm" className="gap-1">
-                <MessageSquare className="h-4 w-4" /> Feedback
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Feedback</DialogTitle>
-                <DialogDescription>Tell us more about the repeater status (optional, max 500 chars).</DialogDescription>
-              </DialogHeader>
-              <div>
-                <textarea
-                  className="w-full rounded-md border bg-background p-2 text-sm outline-none focus:ring-2 focus:ring-ring min-h-[120px]"
-                  placeholder="E.g., no carrier, weak audio, tone mismatch, works fine, etc."
-                  maxLength={500}
-                  value={feedback}
-                  onChange={(e) => setFeedback(e.target.value)}
-                />
-                <div className="mt-1 text-xs text-muted-foreground">{feedback.length}/500</div>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-                <Button onClick={handleSubmitFeedback}>Save</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
+    <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center gap-2 px-4 py-3 border-b bg-muted/30">
+        <Users className="h-4 w-4 text-muted-foreground" />
+        <span className="text-sm font-medium">Community Status</span>
+        {vote?.vote && (
+          <Badge
+            variant="outline"
+            className={cn(
+              "ml-auto text-[10px] gap-1",
+              vote.vote === "up"
+                ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"
+                : "border-red-300 bg-red-50 text-red-700 dark:border-red-700 dark:bg-red-950/50 dark:text-red-300"
+            )}
+          >
+            {vote.vote === "up" ? <ThumbsUp className="h-3 w-3" /> : <ThumbsDown className="h-3 w-3" />}
+            Your vote
+          </Badge>
+        )}
       </div>
-      <div className="mt-2 text-xs text-muted-foreground flex items-center gap-2">
-        <span>
-          {stats ? (
-            <>
-              Last {stats.windowDays}d — Up {stats.up} · Down {stats.down}
-            </>
-          ) : (
-            "Loading vote stats…"
-          )}
-        </span>
+
+      <div className="p-4 space-y-4">
+        {/* Loading State */}
+        {isLoading ? (
+          <div className="space-y-3 animate-pulse">
+            <div className="h-16 rounded-lg bg-muted" />
+            <div className="h-2 rounded-full bg-muted" />
+            <div className="h-10 rounded-lg bg-muted" />
+          </div>
+        ) : (
+          <>
+            {/* Status Display */}
+            <StatusDisplay status={status} stats={stats} />
+
+            {/* Vote Distribution Bar */}
+            <VoteDistributionBar stats={stats} />
+
+            {/* Voting Buttons */}
+            <div className="flex gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={vote?.vote === "up" ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "flex-1 gap-2 transition-all",
+                      vote?.vote === "up" && "bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-700"
+                    )}
+                    onClick={() => handleVote("up")}
+                    disabled={submitting}
+                  >
+                    <ThumbsUp className="h-4 w-4" />
+                    <span>Working</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Report this repeater as operational</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={vote?.vote === "down" ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "flex-1 gap-2 transition-all",
+                      vote?.vote === "down" && "bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
+                    )}
+                    onClick={() => handleVote("down")}
+                    disabled={submitting}
+                  >
+                    <ThumbsDown className="h-4 w-4" />
+                    <span>Issues</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Report problems with this repeater</TooltipContent>
+              </Tooltip>
+
+              <Dialog open={open} onOpenChange={setOpen}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" size="sm" className="gap-1.5 px-3">
+                        <MessageSquare className="h-4 w-4" />
+                      </Button>
+                    </DialogTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent>Add detailed feedback</TooltipContent>
+                </Tooltip>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add Feedback</DialogTitle>
+                    <DialogDescription>
+                      Share details about the repeater status to help other operators.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-3">
+                    <textarea
+                      className="w-full rounded-lg border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-ring min-h-[120px] resize-none"
+                      placeholder="E.g., no carrier, weak audio, tone mismatch, works great from my QTH, etc."
+                      maxLength={500}
+                      value={feedback}
+                      onChange={(e) => setFeedback(e.target.value)}
+                    />
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">{feedback.length}/500 characters</span>
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+                    <Button onClick={handleSubmitFeedback} disabled={submitting}>
+                      Submit Feedback
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
