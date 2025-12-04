@@ -12,8 +12,12 @@ export const NOAA_ENDPOINTS = {
   GEOMAG_SCALES: 'https://services.swpc.noaa.gov/products/noaa-scales.json',
 } as const;
 
-// HamQSL endpoint
-export const HAMQSL_ENDPOINT = 'https://www.hamqsl.com/solarxml.php';
+// Backend propagation endpoint (proxies HamQSL to avoid CORS issues)
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL ||
+  process.env.PAYLOAD_API_BASE_URL ||
+  'http://localhost:3000';
+export const PROPAGATION_ENDPOINT = `${API_BASE_URL}/api/propagation`;
 
 // HamDXMap iframe URL centered on Portugal (IM58)
 export const MUF_MAP_URL = 'https://dxmap.f5uii.net/?g1=IM58&muf=1';

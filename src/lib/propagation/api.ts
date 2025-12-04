@@ -1,4 +1,4 @@
-import { NOAA_ENDPOINTS, HAMQSL_ENDPOINT } from './constants';
+import { NOAA_ENDPOINTS, PROPAGATION_ENDPOINT } from './constants';
 import type {
   SolarFluxData,
   KIndexData,
@@ -8,7 +8,6 @@ import type {
   HamQSLData,
   BandCondition,
   VHFConditionStatus,
-  HFBandConditions,
 } from './types';
 
 // Fetch Solar Flux from NOAA
@@ -103,7 +102,7 @@ export async function fetchSolarIndices(): Promise<SolarIndices> {
   };
 }
 
-// Parse band condition from HamQSL XML
+// Parse band condition string to typed value
 function parseBandCondition(value: string): BandCondition {
   const lower = value.toLowerCase();
   if (lower === 'good') return 'good';
@@ -112,7 +111,7 @@ function parseBandCondition(value: string): BandCondition {
   return 'unknown';
 }
 
-// Parse VHF condition from HamQSL XML
+// Parse VHF condition string to typed value
 function parseVHFCondition(value: string): VHFConditionStatus {
   const lower = value.toLowerCase();
   if (lower === 'band open' || lower === 'high muf') return 'open';
@@ -130,65 +129,86 @@ function parseGeomagField(value: string): 'quiet' | 'unsettled' | 'active' | 'st
   return 'quiet';
 }
 
-// Fetch HamQSL solar data (includes HF band conditions)
+// Backend propagation response type
+interface BackendPropagationResponse {
+  solarflux: number;
+  aindex: number;
+  kindex: number;
+  xray: string;
+  sunspots: number;
+  solarwind: number;
+  geomagField: string;
+  signalNoise: string;
+  calculatedConditions: { band: string; time: 'day' | 'night'; condition: string }[];
+  calculatedVHFConditions: { phenomenon: string; location: string; condition: string }[];
+  cached?: boolean;
+  error?: string;
+}
+
+// Fetch propagation data from backend (proxied HamQSL data)
 export async function fetchHamQSLData(): Promise<HamQSLData | null> {
   try {
-    const response = await fetch(HAMQSL_ENDPOINT);
+    const response = await fetch(PROPAGATION_ENDPOINT);
     if (!response.ok) return null;
 
-    const xmlText = await response.text();
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+    const data: BackendPropagationResponse = await response.json();
 
-    const getElementText = (tagName: string): string => {
-      const element = xmlDoc.getElementsByTagName(tagName)[0];
-      return element?.textContent ?? '';
-    };
+    if (data.error) {
+      console.error('Backend propagation error:', data.error);
+      return null;
+    }
 
-    // Parse HF band conditions
-    const hfBands: HFBandConditions[] = [
-      {
-        band: '80m-40m',
-        day: parseBandCondition(getElementText('dayBands80-40')),
-        night: parseBandCondition(getElementText('nightBands80-40')),
-      },
-      {
-        band: '30m-20m',
-        day: parseBandCondition(getElementText('dayBands30-20')),
-        night: parseBandCondition(getElementText('nightBands30-20')),
-      },
-      {
-        band: '17m-15m',
-        day: parseBandCondition(getElementText('dayBands17-15')),
-        night: parseBandCondition(getElementText('nightBands17-15')),
-      },
-      {
-        band: '12m-10m',
-        day: parseBandCondition(getElementText('dayBands12-10')),
-        night: parseBandCondition(getElementText('nightBands12-10')),
-      },
-    ];
+    // Transform calculatedConditions array into hfBands format
+    const bandMap = new Map<string, { day: BandCondition; night: BandCondition }>();
+    for (const cond of data.calculatedConditions) {
+      const existing = bandMap.get(cond.band) || { day: 'unknown' as BandCondition, night: 'unknown' as BandCondition };
+      if (cond.time === 'day') {
+        existing.day = parseBandCondition(cond.condition);
+      } else {
+        existing.night = parseBandCondition(cond.condition);
+      }
+      bandMap.set(cond.band, existing);
+    }
+
+    const hfBands = Array.from(bandMap.entries()).map(([band, conditions]) => ({
+      band,
+      day: conditions.day,
+      night: conditions.night,
+    }));
+
+    // Parse VHF conditions from calculatedVHFConditions
+    let sporadicE: VHFConditionStatus = 'unknown';
+    let aurora: VHFConditionStatus = 'unknown';
+    for (const vhf of data.calculatedVHFConditions) {
+      const phenom = vhf.phenomenon.toLowerCase();
+      if (phenom.includes('e-skip') || phenom.includes('eskip') || phenom.includes('sporadic')) {
+        sporadicE = parseVHFCondition(vhf.condition);
+      }
+      if (phenom.includes('aurora')) {
+        aurora = parseVHFCondition(vhf.condition);
+      }
+    }
 
     return {
-      solarFlux: parseInt(getElementText('solarflux'), 10) || 0,
-      sunspotNumber: parseInt(getElementText('sunspots'), 10) || 0,
-      aIndex: parseInt(getElementText('aindex'), 10) || 0,
-      kIndex: parseInt(getElementText('kindex'), 10) || 0,
-      xRay: getElementText('xray') || 'N/A',
-      geomagField: parseGeomagField(getElementText('geomagfield')),
-      solarWind: parseInt(getElementText('solarwind'), 10) || 0,
-      signalNoise: getElementText('signalnoise') || 'N/A',
+      solarFlux: data.solarflux || 0,
+      sunspotNumber: data.sunspots || 0,
+      aIndex: data.aindex || 0,
+      kIndex: data.kindex || 0,
+      xRay: data.xray || 'N/A',
+      geomagField: parseGeomagField(data.geomagField || ''),
+      solarWind: data.solarwind || 0,
+      signalNoise: data.signalNoise || 'N/A',
       hfBands,
       vhf: {
-        sporadicE: parseVHFCondition(getElementText('vhfEuSpE')),
-        tropospheric: parseVHFCondition(getElementText('vhfTrop')),
-        aurora: parseVHFCondition(getElementText('vhfAurora')),
+        sporadicE,
+        tropospheric: 'unknown', // Not provided by HamQSL in this format
+        aurora,
         meteorScatter: 'unknown', // Not provided by HamQSL
       },
       lastUpdated: new Date(),
     };
   } catch (error) {
-    console.error('Failed to fetch HamQSL data:', error);
+    console.error('Failed to fetch propagation data:', error);
     return null;
   }
 }
