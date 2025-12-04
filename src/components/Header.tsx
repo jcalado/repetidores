@@ -10,6 +10,7 @@ import {
     MapIcon,
     MapPinIcon,
     RadioIcon,
+    SignalIcon,
     TableCellsIcon,
     XMarkIcon,
 } from '@heroicons/react/24/outline'
@@ -60,6 +61,7 @@ export default function Header() {
     const tools = [
         { name: t('nav.iss'), description: t('nav.issDescription'), href: '/iss', icon: GlobeAmericasIcon },
         { name: t('nav.qth'), description: t('nav.qthDescription'), href: '/qth', icon: MapPinIcon },
+        { name: t('nav.propagation'), description: t('nav.propagationDescription'), href: '/propagation', icon: SignalIcon },
     ]
 
     return (

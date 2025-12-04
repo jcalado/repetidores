@@ -10,6 +10,8 @@
         "issDescription": "Passagens da Estação Espacial",
         "qth": "QTH Locator",
         "qthDescription": "Calculadora de localizador Maidenhead",
+        "propagation": "Propagação",
+        "propagationDescription": "Condições de propagação em tempo real",
         "about": "Sobre",
         "menu": "Menu",
         "theme": "Tema"
@@ -327,5 +329,58 @@
         "formatAnytone": "Anytone",
         "confirmButton": "Descarregar",
         "cancelButton": "Cancelar"
+    },
+    "propagation": {
+        "title": "Propagação",
+        "subtitle": "Condições em tempo real para Portugal",
+        "loading": "A carregar dados de propagação...",
+        "error": "Erro ao carregar dados de propagação",
+        "lastUpdated": "Última atualização",
+        "autoRefresh": "Atualização automática",
+        "refreshNow": "Atualizar agora",
+        "solar": {
+            "title": "Índices Solares",
+            "flux": "Fluxo Solar (SFI)",
+            "sunspots": "Manchas Solares",
+            "wind": "Vento Solar",
+            "xray": "Raios-X"
+        },
+        "geomagnetic": {
+            "title": "Atividade Geomagnética",
+            "kIndex": "Índice K",
+            "aIndex": "Índice A",
+            "status": {
+                "title": "Estado",
+                "quiet": "Calmo",
+                "unsettled": "Instável",
+                "active": "Ativo",
+                "storm": "Tempestade"
+            }
+        },
+        "hf": {
+            "title": "Condições HF",
+            "band": "Banda",
+            "day": "Dia",
+            "night": "Noite",
+            "good": "Boa",
+            "fair": "Razoável",
+            "poor": "Má",
+            "unknown": "Desconhecido"
+        },
+        "vhf": {
+            "title": "Condições VHF/UHF",
+            "sporadicE": "Esporádica E",
+            "tropo": "Condução Troposférica",
+            "aurora": "Aurora",
+            "meteor": "Meteor Scatter",
+            "open": "Aberto",
+            "possible": "Possível",
+            "closed": "Fechado",
+            "unknown": "Desconhecido"
+        },
+        "muf": {
+            "title": "Mapa MUF (Portugal)",
+            "source": "Fonte: HamDXMap (F5UII)"
+        }
     }
 }
