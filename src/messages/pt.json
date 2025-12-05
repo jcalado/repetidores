@@ -347,7 +347,11 @@
             "tag": "Tag",
             "location": "Local",
             "countdown": "Contagem"
-        }
+        },
+        "days": "dias",
+        "hours": "horas",
+        "minutes": "min",
+        "seconds": "seg"
     },
     "about": {
         "title": "Sobre o repetidores",

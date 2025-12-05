@@ -367,6 +367,19 @@ function CurrentEvents({ events, t }: { events: EventItem[]; t: (key: string) =>
   );
 }
 
+function CountdownSegment({ value, label, colorClass }: { value: number; label: string; colorClass: string }) {
+  return (
+    <div className="flex flex-col items-center">
+      <div className={`text-3xl sm:text-4xl md:text-5xl font-black tabular-nums ${colorClass}`}>
+        {String(value).padStart(2, '0')}
+      </div>
+      <div className="text-[10px] sm:text-xs uppercase tracking-wider text-muted-foreground mt-1">
+        {label}
+      </div>
+    </div>
+  );
+}
+
 function NextUp({ events, t }: { events: EventItem[]; t: (key: string) => string }) {
   useTick(1000);
   const next = useMemo(() => {
@@ -384,38 +397,111 @@ function NextUp({ events, t }: { events: EventItem[]; t: (key: string) => string
 
   if (!next) return null;
   const remaining = msUntil(next.start);
+  const { days, hours, minutes, seconds } = breakdown(remaining);
+  const tagColors = getTagColors(next.tag);
+
+  // Dynamic border and background classes based on tag
+  const borderColorMap: Record<string, string> = {
+    Net: 'border-blue-400/50 dark:border-blue-500/50',
+    Contest: 'border-amber-400/50 dark:border-amber-500/50',
+    Meetup: 'border-purple-400/50 dark:border-purple-500/50',
+    Satellite: 'border-cyan-400/50 dark:border-cyan-500/50',
+    DX: 'border-emerald-400/50 dark:border-emerald-500/50',
+    Default: 'border-primary/50',
+  };
+
+  const bgGradientMap: Record<string, string> = {
+    Net: 'from-blue-500/10 via-blue-500/5',
+    Contest: 'from-amber-500/10 via-amber-500/5',
+    Meetup: 'from-purple-500/10 via-purple-500/5',
+    Satellite: 'from-cyan-500/10 via-cyan-500/5',
+    DX: 'from-emerald-500/10 via-emerald-500/5',
+    Default: 'from-primary/10 via-primary/5',
+  };
+
+  const iconBgMap: Record<string, string> = {
+    Net: 'bg-blue-500',
+    Contest: 'bg-amber-500',
+    Meetup: 'bg-purple-500',
+    Satellite: 'bg-cyan-500',
+    DX: 'bg-emerald-500',
+    Default: 'bg-primary',
+  };
+
+  const borderClass = next.tag && borderColorMap[next.tag] ? borderColorMap[next.tag] : borderColorMap.Default;
+  const bgClass = next.tag && bgGradientMap[next.tag] ? bgGradientMap[next.tag] : bgGradientMap.Default;
+  const iconBgClass = next.tag && iconBgMap[next.tag] ? iconBgMap[next.tag] : iconBgMap.Default;
 
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="grid">
-      <Card className="rounded-2xl shadow-md border-primary/40 bg-gradient-to-br from-primary/5 to-transparent">
-        <CardHeader>
-          <div className="flex items-center gap-3 text-primary">
-            <CalendarClock className="w-5 h-5" />
-            <CardTitle className="text-xl">{t('nextUp')}</CardTitle>
+      <Card className={`relative overflow-hidden rounded-2xl shadow-lg border-2 ${borderClass} bg-gradient-to-br ${bgClass} to-transparent`}>
+        {/* Decorative background element */}
+        <div className={`absolute -top-20 -right-20 w-56 h-56 ${iconBgClass} opacity-[0.07] rounded-full blur-3xl pointer-events-none`} />
+
+        <CardContent className="p-5 sm:p-6">
+          {/* Header row */}
+          <div className="flex items-start justify-between gap-4 mb-4">
+            <div className="flex items-center gap-3">
+              <div className={`flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-xl ${iconBgClass} text-white shadow-lg`}>
+                <TagIcon tag={next.tag} className="w-6 h-6 sm:w-7 sm:h-7" />
+              </div>
+              <div>
+                <div className={`flex items-center gap-2 text-sm font-medium ${tagColors.text}`}>
+                  <CalendarClock className="w-4 h-4" />
+                  {t('nextUp')}
+                </div>
+                <h3 className="text-lg sm:text-xl font-bold text-foreground leading-tight mt-0.5 flex items-center gap-2">
+                  {next.isFeatured && <Star className="w-4 h-4 text-yellow-500 fill-yellow-500 shrink-0" />}
+                  {next.title}
+                </h3>
+              </div>
+            </div>
+
+            {/* Tag badge */}
+            <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium border ${tagColors.bg} ${tagColors.text} ${tagColors.border}`}>
+              {next.tag ?? t('event')}
+            </span>
           </div>
-          <div className="mt-1 flex items-center gap-2 text-2xl font-bold leading-tight">
-            <TagIcon tag={next.tag} />
-            <span>{next.title}</span>
-          </div>
-          <div className="text-sm text-muted-foreground flex flex-wrap items-center gap-3">
+
+          {/* Event details */}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground mb-5">
             <span className="inline-flex items-center">
-              <CalendarIcon className="w-4 h-4 mr-1" /> {formatDateTime(next.start)}
+              <CalendarIcon className="w-4 h-4 mr-1.5" /> {formatDateTime(next.start)}
             </span>
             {next.location && (
               <span className="inline-flex items-center">
-                <MapPin className="w-4 h-4 mr-1" /> {next.location}
+                <MapPin className="w-4 h-4 mr-1.5" /> {next.location}
               </span>
             )}
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="text-4xl md:text-5xl font-black tracking-tight tabular-nums">
-            <CountdownText ms={remaining} />
+
+          {/* Countdown */}
+          <div className="flex items-center justify-center gap-2 sm:gap-4 py-4 px-2 rounded-xl bg-background/50 backdrop-blur-sm border border-border/50">
+            <CountdownSegment value={days} label={t('days')} colorClass={tagColors.text} />
+            <span className={`text-2xl sm:text-3xl font-light ${tagColors.text} opacity-50`}>:</span>
+            <CountdownSegment value={hours} label={t('hours')} colorClass={tagColors.text} />
+            <span className={`text-2xl sm:text-3xl font-light ${tagColors.text} opacity-50`}>:</span>
+            <CountdownSegment value={minutes} label={t('minutes')} colorClass={tagColors.text} />
+            <span className={`text-2xl sm:text-3xl font-light ${tagColors.text} opacity-50`}>:</span>
+            <CountdownSegment value={seconds} label={t('seconds')} colorClass={tagColors.text} />
           </div>
+
+          {/* Progress bar */}
+          <div className="mt-5">
+            <MiniProgress startISO={next.start} />
+          </div>
+
+          {/* Action button */}
           {next.url && (
-            <div className="mt-3">
-              <a href={next.url} target="_blank" rel="noreferrer" className="inline-flex items-center underline hover:no-underline">
-                <ExternalLink className="w-4 h-4 mr-1" /> {t('eventDetails')}
+            <div className="mt-4 flex justify-end">
+              <a
+                href={next.url}
+                target="_blank"
+                rel="noreferrer"
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tagColors.bg} ${tagColors.text} ${tagColors.border} border hover:opacity-80`}
+              >
+                {t('eventDetails')}
+                <ExternalLink className="w-4 h-4" />
               </a>
             </div>
           )}
