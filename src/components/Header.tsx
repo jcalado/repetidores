@@ -5,6 +5,7 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import {
     Bars3Icon,
     CalendarIcon,
+    ClockIcon,
     GlobeAmericasIcon,
     InformationCircleIcon,
     LanguageIcon,
@@ -15,7 +16,7 @@ import {
     TableCellsIcon,
     XMarkIcon,
 } from '@heroicons/react/24/outline'
-import { RadioTowerIcon } from 'lucide-react'
+import { BookOpen, Volume2, Radio, RadioTowerIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -64,6 +65,10 @@ export default function Header() {
         { name: t('nav.qth'), description: t('nav.qthDescription'), href: '/qth', icon: MapPinIcon },
         { name: t('nav.propagation'), description: t('nav.propagationDescription'), href: '/propagation', icon: SignalIcon },
         { name: t('nav.nato'), description: t('nav.natoDescription'), href: '/nato', icon: LanguageIcon },
+        { name: t('nav.utc'), description: t('nav.utcDescription'), href: '/utc', icon: ClockIcon },
+        { name: t('nav.antenna'), description: t('nav.antennaDescription'), href: '/antenna', icon: Radio },
+        { name: t('nav.qcodes'), description: t('nav.qcodesDescription'), href: '/qcodes', icon: BookOpen },
+        { name: t('nav.morse'), description: t('nav.morseDescription'), href: '/morse', icon: Volume2 },
     ]
 
     return (
