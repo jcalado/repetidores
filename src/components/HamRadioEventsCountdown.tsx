@@ -96,7 +96,7 @@ function breakdown(ms: number) {
 
 function formatDateTime(iso: string) {
   const d = new Date(iso);
-  return d.toLocaleString(undefined, {
+  return d.toLocaleString('pt-PT', {
     weekday: "short",
     year: "numeric",
     month: "short",
@@ -497,7 +497,7 @@ function CalendarView({ events, t }: { events: EventItem[]; t: (key: string) => 
         <Card className="rounded-2xl">
           <CardHeader>
             <CardTitle className="text-lg">
-              {t('eventsOn')} {date ? date.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "short", day: "numeric" }) : "—"}
+              {t('eventsOn')} {date ? date.toLocaleDateString('pt-PT', { weekday: "long", year: "numeric", month: "short", day: "numeric" }) : "—"}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
