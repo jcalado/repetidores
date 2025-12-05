@@ -13,7 +13,7 @@ import {
     SignalIcon,
     TableCellsIcon,
 } from '@heroicons/react/24/outline'
-import { BookOpen, Calculator, Volume2, Radio, RadioTowerIcon, Wrench } from 'lucide-react'
+import { BookOpen, Cable, Calculator, Gauge, Volume2, Radio, RadioTowerIcon, Waves, Wrench } from 'lucide-react'
 
 export default function LandingPage() {
     const t = useTranslations()
@@ -50,12 +50,18 @@ export default function LandingPage() {
         { name: t('nav.iss'), description: t('nav.issDescription'), href: '/iss', icon: GlobeAmericasIcon },
         { name: t('nav.qth'), description: t('nav.qthDescription'), href: '/qth', icon: MapPinIcon },
         { name: t('nav.propagation'), description: t('nav.propagationDescription'), href: '/propagation', icon: SignalIcon },
-        { name: t('nav.calculadoras'), description: t('nav.calculadorasDescription'), href: '/calculadoras', icon: Calculator },
         { name: t('nav.nato'), description: t('nav.natoDescription'), href: '/nato', icon: LanguageIcon },
         { name: t('nav.utc'), description: t('nav.utcDescription'), href: '/utc', icon: ClockIcon },
         { name: t('nav.antenna'), description: t('nav.antennaDescription'), href: '/antenna', icon: Radio },
         { name: t('nav.qcodes'), description: t('nav.qcodesDescription'), href: '/qcodes', icon: BookOpen },
         { name: t('nav.morse'), description: t('nav.morseDescription'), href: '/morse', icon: Volume2 },
+    ]
+
+    const calculators = [
+        { name: t('calculadoras.db.title'), description: t('calculadoras.db.shortDesc'), href: '/calculadoras/db', icon: Calculator },
+        { name: t('calculadoras.swr.title'), description: t('calculadoras.swr.shortDesc'), href: '/calculadoras/swr', icon: Gauge },
+        { name: t('calculadoras.coax.title'), description: t('calculadoras.coax.shortDesc'), href: '/calculadoras/coax', icon: Cable },
+        { name: t('calculadoras.frequencia.title'), description: t('calculadoras.frequencia.shortDesc'), href: '/calculadoras/frequencia', icon: Waves },
     ]
 
     return (
@@ -136,6 +142,39 @@ export default function LandingPage() {
                                 </h3>
                                 <p className="text-sm text-slate-500 dark:text-slate-400 truncate">
                                     {tool.description}
+                                </p>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            </div>
+
+            {/* Calculators Section */}
+            <div className="mb-8">
+                <div className="flex items-center gap-3 mb-6">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg">
+                        <Calculator className="h-5 w-5" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+                        {t('calculadoras.title')}
+                    </h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {calculators.map((calc) => (
+                        <Link
+                            key={calc.name}
+                            href={calc.href}
+                            className="group flex items-start gap-4 p-4 rounded-xl bg-white dark:bg-slate-800/50 border border-gray-200/50 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-700 shadow-sm hover:shadow-md transition-all duration-200"
+                        >
+                            <div className="flex h-10 w-10 flex-none items-center justify-center rounded-lg bg-gray-100 dark:bg-slate-700 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 transition-colors">
+                                <calc.icon className="h-5 w-5 text-slate-600 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <h3 className="font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                    {calc.name}
+                                </h3>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 truncate">
+                                    {calc.description}
                                 </p>
                             </div>
                         </Link>
