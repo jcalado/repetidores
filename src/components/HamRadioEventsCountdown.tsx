@@ -33,6 +33,7 @@ import {
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { fetchEvents } from "@/lib/events";
+import EventSubmitDialog from "@/components/EventSubmitDialog";
 
 /**
  * Ham Radio Events Countdown & Mini-Calendar (with Payload CMS API)
@@ -54,6 +55,8 @@ export type EventItem = {
   url?: string;
   tag?: EventTag;
   isFeatured?: boolean;
+  brandmeister?: boolean;
+  talkgroup?: number;
 };
 
 export type EventsAPIResponse = {
@@ -271,6 +274,17 @@ function EventCard({ evt, t }: { evt: EventItem; t: (key: string) => string }) {
                   <MapPin className="w-4 h-4 mr-1" /> {evt.location}
                 </span>
               )}
+              {evt.brandmeister && evt.talkgroup && (
+                <a
+                  href={`https://hose.brandmeister.network/?tg=${evt.talkgroup}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-xs bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                  title={t('brandmeister.listen')}
+                >
+                  <Radio className="w-3 h-3" /> TG {evt.talkgroup}
+                </a>
+              )}
               <span className={`rounded-full px-2 py-0.5 text-[10px] sm:text-xs inline-flex items-center gap-1 border ${tagColors.bg} ${tagColors.text} ${tagColors.border}`}>
                 <TagIcon tag={evt.tag} className="w-3 h-3" /> {evt.tag ?? t('event')}
               </span>
@@ -340,6 +354,17 @@ function CurrentEvents({ events, t }: { events: EventItem[]; t: (key: string) =>
                         <span className="inline-flex items-center">
                           <MapPin className="w-4 h-4 mr-1" /> {event.location}
                         </span>
+                      )}
+                      {event.brandmeister && event.talkgroup && (
+                        <a
+                          href={`https://hose.brandmeister.network/?tg=${event.talkgroup}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                          title={t('brandmeister.listen')}
+                        >
+                          <Radio className="w-3 h-3" /> TG {event.talkgroup}
+                        </a>
                       )}
                     </div>
                     {event.end && timeUntilEnd > 0 && (
@@ -453,6 +478,17 @@ function NextUp({ events, t }: { events: EventItem[]; t: (key: string) => string
                     <MapPin className="w-3.5 h-3.5 mr-1" /> {next.location}
                   </span>
                 )}
+                {next.brandmeister && next.talkgroup && (
+                  <a
+                    href={`https://hose.brandmeister.network/?tg=${next.talkgroup}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                    title={t('brandmeister.listen')}
+                  >
+                    <Radio className="w-3 h-3" /> TG {next.talkgroup}
+                  </a>
+                )}
               </div>
             </div>
 
@@ -518,7 +554,22 @@ function EventsTable({ events, t }: { events: EventItem[]; t: (key: string) => s
                     <TagIcon tag={e.tag} className="w-3 h-3" /> {e.tag ?? t('event')}
                   </span>
                 </TableCell>
-                <TableCell className="text-muted-foreground">{e.location ?? "—"}</TableCell>
+                <TableCell className="text-muted-foreground">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span>{e.location ?? "—"}</span>
+                    {e.brandmeister && e.talkgroup && (
+                      <a
+                        href={`https://hose.brandmeister.network/?tg=${e.talkgroup}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                        title={t('brandmeister.listen')}
+                      >
+                        <Radio className="w-3 h-3" /> TG {e.talkgroup}
+                      </a>
+                    )}
+                  </div>
+                </TableCell>
                 <TableCell className="tabular-nums">
                   {isInProgress ? (
                     <span className="text-green-600 dark:text-green-400">{t('endsIn')} {formatSmartCountdown(remainingToEnd, t)}</span>
@@ -884,6 +935,9 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
                 <SelectItem value="title">{t('titleAZ')}</SelectItem>
               </SelectContent>
             </Select>
+
+            {/* Submit Event Button */}
+            <EventSubmitDialog />
 
             {/* Refresh Button */}
             <button

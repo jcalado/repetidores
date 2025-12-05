@@ -350,7 +350,52 @@
         "startsIn": "Começa em",
         "endsIn": "Termina em",
         "ended": "Terminado",
-        "inDays": "{count} dias"
+        "inDays": "{count} dias",
+        "submit": {
+            "button": "Submeter Evento",
+            "title": "Submeter Novo Evento",
+            "description": "Submeta um evento de radioamador para revisão. O evento será visível após aprovação de um administrador.",
+            "fields": {
+                "title": "Título",
+                "start": "Início",
+                "end": "Fim",
+                "location": "Local",
+                "url": "URL",
+                "tag": "Categoria",
+                "brandmeister": "BrandMeister",
+                "talkgroup": "Talkgroup",
+                "email": "Email (opcional)"
+            },
+            "placeholders": {
+                "title": "Nome do evento",
+                "location": "Local ou detalhes do evento",
+                "url": "https://exemplo.com/evento",
+                "tag": "Selecione uma categoria",
+                "talkgroup": "Ex: 268",
+                "email": "seu@email.com"
+            },
+            "brandmeisterNote": "Ative se o evento usa a rede BrandMeister DMR",
+            "emailNote": "O email é opcional e não será publicado. Pode ser usado para contacto sobre o evento.",
+            "errors": {
+                "titleRequired": "Título é obrigatório (mínimo 3 caracteres)",
+                "startRequired": "Data/hora de início é obrigatória",
+                "startFuture": "Data de início deve ser no futuro",
+                "endAfterStart": "Data de fim deve ser após a data de início",
+                "invalidUrl": "URL inválido",
+                "invalidEmail": "Email inválido",
+                "invalidTalkgroup": "Talkgroup inválido",
+                "unknown": "Ocorreu um erro. Tente novamente.",
+                "rateLimit": "Limite de submissões excedido. Tente novamente amanhã."
+            },
+            "cancel": "Cancelar",
+            "submit": "Submeter",
+            "submitting": "A submeter...",
+            "successMessage": "Evento submetido com sucesso! Será visível após revisão."
+        },
+        "brandmeister": {
+            "listen": "Ouvir no BrandMeister",
+            "talkgroup": "TG {tg}"
+        }
     },
     "about": {
         "title": "Sobre o repetidores",
