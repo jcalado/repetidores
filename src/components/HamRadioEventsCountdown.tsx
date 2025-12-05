@@ -5,6 +5,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -18,6 +19,7 @@ import {
   Globe2,
   Info,
   LayoutGrid,
+  Loader2,
   MapPin,
   Mic2,
   Radio,
@@ -28,7 +30,7 @@ import {
   Table as TableIcon,
   X
 } from "lucide-react";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { fetchEvents } from "@/lib/events";
 
@@ -74,9 +76,47 @@ const tagIconMap: Record<string, React.ComponentType<{ className?: string }>> = 
   Default: Info,
 };
 
-function TagIcon({ tag }: { tag?: string }) {
+// Subtle accent colors for each tag type
+const tagColorMap: Record<string, { text: string; bg: string; border: string }> = {
+  Net: {
+    text: 'text-blue-600 dark:text-blue-400',
+    bg: 'bg-blue-50 dark:bg-blue-950/30',
+    border: 'border-blue-200 dark:border-blue-800'
+  },
+  Contest: {
+    text: 'text-amber-600 dark:text-amber-400',
+    bg: 'bg-amber-50 dark:bg-amber-950/30',
+    border: 'border-amber-200 dark:border-amber-800'
+  },
+  Meetup: {
+    text: 'text-purple-600 dark:text-purple-400',
+    bg: 'bg-purple-50 dark:bg-purple-950/30',
+    border: 'border-purple-200 dark:border-purple-800'
+  },
+  Satellite: {
+    text: 'text-cyan-600 dark:text-cyan-400',
+    bg: 'bg-cyan-50 dark:bg-cyan-950/30',
+    border: 'border-cyan-200 dark:border-cyan-800'
+  },
+  DX: {
+    text: 'text-emerald-600 dark:text-emerald-400',
+    bg: 'bg-emerald-50 dark:bg-emerald-950/30',
+    border: 'border-emerald-200 dark:border-emerald-800'
+  },
+  Default: {
+    text: 'text-slate-600 dark:text-slate-400',
+    bg: 'bg-slate-50 dark:bg-slate-800/50',
+    border: 'border-slate-200 dark:border-slate-700'
+  },
+};
+
+function getTagColors(tag?: string) {
+  return tag && tagColorMap[tag] ? tagColorMap[tag] : tagColorMap.Default;
+}
+
+function TagIcon({ tag, className }: { tag?: string; className?: string }) {
   const Cmp = tag && tagIconMap[tag] ? tagIconMap[tag] : tagIconMap.Default;
-  return <Cmp className="w-4 h-4" />;
+  return <Cmp className={className || "w-4 h-4"} />;
 }
 
 function msUntil(dateISO: string) {
@@ -179,11 +219,12 @@ function EventCard({ evt, t }: { evt: EventItem; t: (key: string) => string }) {
   useTick(1000);
   const remaining = msUntil(evt.start);
   const isPast = remaining === 0;
+  const tagColors = getTagColors(evt.tag);
   return (
     <Card className="group relative rounded-2xl shadow-sm transition-shadow hover:shadow-md hover:border-primary/30 focus-within:ring-2 focus-within:ring-ring">
       <CardHeader className="space-y-2 pb-0">
         <div className="flex items-start gap-3">
-          <div className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-br from-primary/15 to-primary/5 text-primary">
+          <div className={`shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full ${tagColors.bg} ${tagColors.text}`}>
             <TagIcon tag={evt.tag} />
           </div>
           <div className="flex-1 min-w-0">
@@ -222,9 +263,9 @@ function EventCard({ evt, t }: { evt: EventItem; t: (key: string) => string }) {
                   <MapPin className="w-4 h-4 mr-1" /> {evt.location}
                 </span>
               )}
-              <Badge variant="secondary" className="rounded-full px-2 py-0.5 text-[10px] sm:text-xs inline-flex items-center gap-1">
-                <TagIcon tag={evt.tag} /> {evt.tag ?? t('event')}
-              </Badge>
+              <span className={`rounded-full px-2 py-0.5 text-[10px] sm:text-xs inline-flex items-center gap-1 border ${tagColors.bg} ${tagColors.text} ${tagColors.border}`}>
+                <TagIcon tag={evt.tag} className="w-3 h-3" /> {evt.tag ?? t('event')}
+              </span>
             </div>
           </div>
         </div>
@@ -402,17 +443,18 @@ function EventsTable({ events, t }: { events: EventItem[]; t: (key: string) => s
           {events.map((e) => {
             const remaining = msUntil(e.start);
             const isPast = remaining === 0;
+            const tagColors = getTagColors(e.tag);
             return (
               <TableRow key={e.id}>
                 <TableCell className="font-medium flex items-center gap-2">
                   {e.isFeatured && <Star className="w-4 h-4 text-yellow-500 fill-yellow-500 shrink-0" />}
-                  <TagIcon tag={e.tag} /> {e.title}
+                  <span className={tagColors.text}><TagIcon tag={e.tag} /></span> {e.title}
                 </TableCell>
                 <TableCell>{formatDateTime(e.start)}</TableCell>
                 <TableCell>
-                  <Badge variant="secondary" className="inline-flex items-center gap-1">
-                    <TagIcon tag={e.tag} /> {e.tag ?? t('event')}
-                  </Badge>
+                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs border ${tagColors.bg} ${tagColors.text} ${tagColors.border}`}>
+                    <TagIcon tag={e.tag} className="w-3 h-3" /> {e.tag ?? t('event')}
+                  </span>
                 </TableCell>
                 <TableCell className="text-muted-foreground">{e.location ?? "—"}</TableCell>
                 <TableCell className="tabular-nums">{isPast ? t('started') : <CountdownText ms={remaining} />}</TableCell>
@@ -512,6 +554,54 @@ function CalendarView({ events, t }: { events: EventItem[]; t: (key: string) => 
   );
 }
 
+// Skeleton components for loading states
+function EventCardSkeleton() {
+  return (
+    <Card className="rounded-2xl">
+      <CardHeader className="space-y-2 pb-0">
+        <div className="flex items-start gap-3">
+          <Skeleton className="h-9 w-9 rounded-full shrink-0" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-5 w-3/4" />
+            <div className="flex gap-2">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-4 w-16" />
+            </div>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-3 pt-4">
+        <Skeleton className="h-2 w-full rounded-full" />
+        <div className="flex justify-end">
+          <Skeleton className="h-4 w-24" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function FilterSkeleton() {
+  return (
+    <Card className="rounded-2xl mb-6">
+      <CardContent className="p-4 space-y-4">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Skeleton className="h-10 flex-1" />
+          <Skeleton className="h-10 w-full sm:w-[160px]" />
+          <Skeleton className="h-10 w-10" />
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-8 w-20 rounded-full" />
+          ))}
+        </div>
+        <div className="flex items-center justify-between pt-2 border-t border-border/50">
+          <Skeleton className="h-4 w-24" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 interface HamRadioEventsCountdownProps {
   initialEvents?: EventItem[];
 }
@@ -531,6 +621,13 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
   const [sortBy, setSortBy] = useState<string>("startAsc");
   const [tab, setTab] = useState<string>("cards");
 
+  // Pagination state for infinite scroll
+  const ITEMS_PER_PAGE = 12;
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const cardsLoadMoreRef = useRef<HTMLDivElement>(null);
+  const tableLoadMoreRef = useRef<HTMLDivElement>(null);
+
   // Refresh events from API
   const refreshEvents = useCallback(async (showIndicator = true) => {
     if (showIndicator) setIsRefreshing(true);
@@ -538,10 +635,10 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
     try {
       const response = await fetchEvents({ limit: 500, sort: 'startAsc' });
       setEvents(response.docs);
-    } catch (err) {
-      console.error('Failed to refresh events:', err);
+    } catch {
+      // Silently fail - CMS may not be running in dev mode
+      // Keep showing initial events from build time
       setFetchError('error');
-      // Keep showing current events - don't clear
     } finally {
       setIsRefreshing(false);
     }
@@ -611,17 +708,64 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
     return list;
   }, [events, sortBy, applyFilters]);
 
+  // Paginated visible events for infinite scroll
+  const visibleEvents = useMemo(() => {
+    return filtered.slice(0, visibleCount);
+  }, [filtered, visibleCount]);
+
+  const hasMoreEvents = visibleCount < filtered.length;
+
+  // Reset visible count when filters change
+  useEffect(() => {
+    setVisibleCount(ITEMS_PER_PAGE);
+  }, [search, filterTag, sortBy]);
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const currentRef = tab === 'cards' ? cardsLoadMoreRef.current : tableLoadMoreRef.current;
+    if (!currentRef) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting && hasMoreEvents && !isLoadingMore) {
+          setIsLoadingMore(true);
+          // Simulate a small delay for smooth UX
+          setTimeout(() => {
+            setVisibleCount((prev) => prev + ITEMS_PER_PAGE);
+            setIsLoadingMore(false);
+          }, 300);
+        }
+      },
+      { threshold: 0.1, rootMargin: '100px' }
+    );
+
+    observer.observe(currentRef);
+    return () => observer.disconnect();
+  }, [hasMoreEvents, isLoadingMore, tab]);
+
   // Filtered events for calendar view (includes past events but applies filters)
   const filteredForCalendar = useMemo(() => {
     return applyFilters(events);
   }, [events, applyFilters]);
 
-  // Don't render time-sensitive content until client is mounted
+  // Don't render time-sensitive content until client is mounted - show skeleton
   if (!mounted) {
     return (
       <div className="p-4 md:p-8 max-w-6xl mx-auto">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-muted-foreground">{t('loading')}</div>
+        {/* Filter Skeleton */}
+        <FilterSkeleton />
+
+        {/* Tabs Skeleton */}
+        <div className="mb-6">
+          <Skeleton className="h-10 w-full max-w-md rounded-lg" />
+        </div>
+
+        {/* Cards Skeleton */}
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <EventCardSkeleton key={i} />
+          ))}
         </div>
       </div>
     );
@@ -695,20 +839,23 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
               >
                 {t('allTags')}
               </button>
-              {tags.map((tag) => (
-                <button
-                  key={tag}
-                  onClick={() => setFilterTag(tag)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                    filterTag === tag
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  <TagIcon tag={tag} />
-                  {tag}
-                </button>
-              ))}
+              {tags.map((tag) => {
+                const colors = getTagColors(tag);
+                return (
+                  <button
+                    key={tag}
+                    onClick={() => setFilterTag(tag)}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors border ${
+                      filterTag === tag
+                        ? `${colors.bg} ${colors.text} ${colors.border}`
+                        : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground border-transparent'
+                    }`}
+                  >
+                    <TagIcon tag={tag} className={filterTag === tag ? '' : colors.text} />
+                    {tag}
+                  </button>
+                );
+              })}
             </div>
           )}
 
@@ -752,18 +899,48 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
           <NextUp events={filtered} t={t} />
           <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             <AnimatePresence>
-              {filtered.map((evt) => (
+              {visibleEvents.map((evt) => (
                 <motion.div key={evt.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
                   <EventCard evt={evt} t={t} />
                 </motion.div>
               ))}
             </AnimatePresence>
           </div>
+          {/* Infinite scroll sentinel and loading indicator */}
+          {hasMoreEvents && (
+            <div ref={cardsLoadMoreRef} className="flex justify-center items-center py-8">
+              {isLoadingMore ? (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span className="text-sm">{t('loadingMore')}</span>
+                </div>
+              ) : (
+                <span className="text-sm text-muted-foreground">
+                  {t('showingCount', { visible: visibleEvents.length, total: filtered.length })}
+                </span>
+              )}
+            </div>
+          )}
           {filtered.length === 0 && <div className="text-center text-muted-foreground mt-12">{t('noMatching')}</div>}
         </TabsContent>
 
         <TabsContent value="table" className="mt-6">
-          <EventsTable events={filtered} t={t} />
+          <EventsTable events={visibleEvents} t={t} />
+          {/* Infinite scroll sentinel and loading indicator */}
+          {hasMoreEvents && (
+            <div ref={tableLoadMoreRef} className="flex justify-center items-center py-8">
+              {isLoadingMore ? (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span className="text-sm">{t('loadingMore')}</span>
+                </div>
+              ) : (
+                <span className="text-sm text-muted-foreground">
+                  {t('showingCount', { visible: visibleEvents.length, total: filtered.length })}
+                </span>
+              )}
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="calendar" className="mt-6">

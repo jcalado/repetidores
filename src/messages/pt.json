@@ -327,6 +327,8 @@
         "clearFilters": "Limpar filtros",
         "resultsCount": "{count} eventos",
         "resultsCountSingular": "1 evento",
+        "loadingMore": "A carregar mais eventos...",
+        "showingCount": "A mostrar {visible} de {total}",
         "tip": "Dica: Os horários são exibidos no seu fuso horário local. Use pesquisa, filtros e separadores para visualizar eventos.",
         "happeningNow": "A Decorrer",
         "nextUp": "Próximo Evento",
