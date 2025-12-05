@@ -29,6 +29,7 @@ import {
   Table as TableIcon
 } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { fetchEvents } from "@/lib/events";
 
 /**
@@ -174,7 +175,7 @@ function MiniProgress({ startISO }: { startISO: string }) {
   );
 }
 
-function EventCard({ evt }: { evt: EventItem }) {
+function EventCard({ evt, t }: { evt: EventItem; t: (key: string) => string }) {
   useTick(1000);
   const remaining = msUntil(evt.start);
   const isPast = remaining === 0;
@@ -200,13 +201,13 @@ function EventCard({ evt }: { evt: EventItem }) {
                         target="_blank"
                         rel="noreferrer"
                         className="ml-auto inline-flex items-center h-6 px-2 rounded-md border text-xs text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"
-                        aria-label="Open event page"
+                        aria-label={t('openEventPage')}
                       >
-                        <ExternalLink className="w-3.5 h-3.5 mr-1" /> Info
+                        <ExternalLink className="w-3.5 h-3.5 mr-1" /> {t('info')}
                       </a>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Open official event page</p>
+                      <p>{t('openEventPage')}</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -222,7 +223,7 @@ function EventCard({ evt }: { evt: EventItem }) {
                 </span>
               )}
               <Badge variant="secondary" className="rounded-full px-2 py-0.5 text-[10px] sm:text-xs inline-flex items-center gap-1">
-                <TagIcon tag={evt.tag} /> {evt.tag ?? "Event"}
+                <TagIcon tag={evt.tag} /> {evt.tag ?? t('event')}
               </Badge>
             </div>
           </div>
@@ -236,7 +237,7 @@ function EventCard({ evt }: { evt: EventItem }) {
           <div className="text-sm">
             {isPast ? (
               <span className="inline-flex items-center gap-2 text-muted-foreground">
-                <Clock className="w-4 h-4" /> Started
+                <Clock className="w-4 h-4" /> {t('started')}
               </span>
             ) : (
               <span className="inline-flex items-center gap-2">
@@ -250,7 +251,7 @@ function EventCard({ evt }: { evt: EventItem }) {
   );
 }
 
-function CurrentEvents({ events }: { events: EventItem[] }) {
+function CurrentEvents({ events, t }: { events: EventItem[]; t: (key: string) => string }) {
   useTick(1000);
   const currentEvents = useMemo(() => {
     const now = Date.now();
@@ -269,7 +270,7 @@ function CurrentEvents({ events }: { events: EventItem[] }) {
         <CardHeader>
           <div className="flex items-center gap-3 text-green-600 dark:text-green-400">
             <Activity className="w-5 h-5 animate-pulse" />
-            <CardTitle className="text-xl">Happening Now</CardTitle>
+            <CardTitle className="text-xl">{t('happeningNow')}</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -285,7 +286,7 @@ function CurrentEvents({ events }: { events: EventItem[] }) {
                     </div>
                     <div className="text-sm text-muted-foreground flex flex-wrap items-center gap-3 mt-1">
                       <span className="inline-flex items-center">
-                        <Clock className="w-4 h-4 mr-1" /> Started {formatDateTime(event.start)}
+                        <Clock className="w-4 h-4 mr-1" /> {t('started')} {formatDateTime(event.start)}
                       </span>
                       {event.location && (
                         <span className="inline-flex items-center">
@@ -295,7 +296,7 @@ function CurrentEvents({ events }: { events: EventItem[] }) {
                     </div>
                     {event.end && timeUntilEnd > 0 && (
                       <div className="mt-2 text-sm">
-                        <span className="text-muted-foreground">Ends in: </span>
+                        <span className="text-muted-foreground">{t('endsIn')} </span>
                         <CountdownText ms={timeUntilEnd} />
                       </div>
                     )}
@@ -312,7 +313,7 @@ function CurrentEvents({ events }: { events: EventItem[] }) {
                       rel="noopener noreferrer"
                       className="text-primary hover:underline flex items-center gap-1 text-sm shrink-0"
                     >
-                      Details <ExternalLink className="w-3 h-3" />
+                      {t('details')} <ExternalLink className="w-3 h-3" />
                     </a>
                   )}
                 </div>
@@ -325,7 +326,7 @@ function CurrentEvents({ events }: { events: EventItem[] }) {
   );
 }
 
-function NextUp({ events }: { events: EventItem[] }) {
+function NextUp({ events, t }: { events: EventItem[]; t: (key: string) => string }) {
   useTick(1000);
   const next = useMemo(() => {
     const now = Date.now();
@@ -349,7 +350,7 @@ function NextUp({ events }: { events: EventItem[] }) {
         <CardHeader>
           <div className="flex items-center gap-3 text-primary">
             <CalendarClock className="w-5 h-5" />
-            <CardTitle className="text-xl">Next Up</CardTitle>
+            <CardTitle className="text-xl">{t('nextUp')}</CardTitle>
           </div>
           <div className="mt-1 flex items-center gap-2 text-2xl font-bold leading-tight">
             <TagIcon tag={next.tag} />
@@ -373,7 +374,7 @@ function NextUp({ events }: { events: EventItem[] }) {
           {next.url && (
             <div className="mt-3">
               <a href={next.url} target="_blank" rel="noreferrer" className="inline-flex items-center underline hover:no-underline">
-                <ExternalLink className="w-4 h-4 mr-1" /> Event details
+                <ExternalLink className="w-4 h-4 mr-1" /> {t('eventDetails')}
               </a>
             </div>
           )}
@@ -383,18 +384,18 @@ function NextUp({ events }: { events: EventItem[] }) {
   );
 }
 
-function EventsTable({ events }: { events: EventItem[] }) {
+function EventsTable({ events, t }: { events: EventItem[]; t: (key: string) => string }) {
   useTick(1000);
   return (
     <div className="rounded-2xl border">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>Start (local)</TableHead>
-            <TableHead>Tag</TableHead>
-            <TableHead>Location</TableHead>
-            <TableHead>Countdown</TableHead>
+            <TableHead>{t('tableHeaders.title')}</TableHead>
+            <TableHead>{t('tableHeaders.start')}</TableHead>
+            <TableHead>{t('tableHeaders.tag')}</TableHead>
+            <TableHead>{t('tableHeaders.location')}</TableHead>
+            <TableHead>{t('tableHeaders.countdown')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -410,11 +411,11 @@ function EventsTable({ events }: { events: EventItem[] }) {
                 <TableCell>{formatDateTime(e.start)}</TableCell>
                 <TableCell>
                   <Badge variant="secondary" className="inline-flex items-center gap-1">
-                    <TagIcon tag={e.tag} /> {e.tag ?? "Event"}
+                    <TagIcon tag={e.tag} /> {e.tag ?? t('event')}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-muted-foreground">{e.location ?? "—"}</TableCell>
-                <TableCell className="tabular-nums">{isPast ? "Started" : <CountdownText ms={remaining} />}</TableCell>
+                <TableCell className="tabular-nums">{isPast ? t('started') : <CountdownText ms={remaining} />}</TableCell>
               </TableRow>
             );
           })}
@@ -424,7 +425,7 @@ function EventsTable({ events }: { events: EventItem[] }) {
   );
 }
 
-function CalendarView({ events }: { events: EventItem[] }) {
+function CalendarView({ events, t }: { events: EventItem[]; t: (key: string) => string }) {
   const [date, setDate] = useState<Date | undefined>(new Date());
 
   const countsByDay = useMemo(() => {
@@ -496,13 +497,13 @@ function CalendarView({ events }: { events: EventItem[] }) {
         <Card className="rounded-2xl">
           <CardHeader>
             <CardTitle className="text-lg">
-              Events on {date ? date.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "short", day: "numeric" }) : "—"}
+              {t('eventsOn')} {date ? date.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "short", day: "numeric" }) : "—"}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {selectedEvents.length === 0 && <div className="text-sm text-muted-foreground">No events on this date.</div>}
+            {selectedEvents.length === 0 && <div className="text-sm text-muted-foreground">{t('noEventsOnDate')}</div>}
             {selectedEvents.map((evt) => (
-              <EventCard key={evt.id} evt={evt} />
+              <EventCard key={evt.id} evt={evt} t={t} />
             ))}
           </CardContent>
         </Card>
@@ -516,6 +517,7 @@ interface HamRadioEventsCountdownProps {
 }
 
 export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadioEventsCountdownProps) {
+  const t = useTranslations('events');
   // Prevent hydration mismatch
   const [mounted, setMounted] = useState(false);
 
@@ -538,7 +540,7 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
       setEvents(response.docs);
     } catch (err) {
       console.error('Failed to refresh events:', err);
-      setFetchError('Failed to refresh events');
+      setFetchError('error');
       // Keep showing current events - don't clear
     } finally {
       setIsRefreshing(false);
@@ -619,7 +621,7 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
     return (
       <div className="p-4 md:p-8 max-w-6xl mx-auto">
         <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-muted-foreground">Loading events...</div>
+          <div className="text-muted-foreground">{t('loading')}</div>
         </div>
       </div>
     );
@@ -630,11 +632,11 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
       <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
         <div className="flex items-center gap-2 text-muted-foreground shrink-0">
           <SlidersHorizontal className="w-4 h-4" />
-          <span className="text-sm font-medium">Filter:</span>
+          <span className="text-sm font-medium">{t('filter')}</span>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 flex-1">
           <Input
-            placeholder="Search events..."
+            placeholder={t('searchPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="flex-1 min-w-0 h-9"
@@ -642,10 +644,10 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
           {tags.length > 0 && (
             <Select value={filterTag} onValueChange={setFilterTag}>
               <SelectTrigger className="w-full sm:w-[130px] h-9">
-                <SelectValue placeholder="All tags" />
+                <SelectValue placeholder={t('allTags')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All tags</SelectItem>
+                <SelectItem value="all">{t('allTags')}</SelectItem>
                 {tags.map((tag) => (
                   <SelectItem key={tag} value={tag}>
                     {tag}
@@ -656,26 +658,26 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
           )}
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className="w-full sm:w-[140px] h-9">
-              <SelectValue placeholder="Sort by" />
+              <SelectValue placeholder={t('sortBy')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="startAsc">Soonest first</SelectItem>
-              <SelectItem value="startDesc">Latest first</SelectItem>
-              <SelectItem value="title">Title (A–Z)</SelectItem>
+              <SelectItem value="startAsc">{t('soonestFirst')}</SelectItem>
+              <SelectItem value="startDesc">{t('latestFirst')}</SelectItem>
+              <SelectItem value="title">{t('titleAZ')}</SelectItem>
             </SelectContent>
           </Select>
           <button
             onClick={() => refreshEvents(true)}
             disabled={isRefreshing}
             className="inline-flex items-center justify-center h-9 w-9 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:pointer-events-none shrink-0"
-            title="Refresh events"
+            title={t('refresh')}
           >
             <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
           </button>
         </div>
       </div>
       {fetchError && (
-        <div className="text-xs text-amber-600 dark:text-amber-400 mt-2">{fetchError}</div>
+        <div className="text-xs text-amber-600 dark:text-amber-400 mt-2">{t('refreshError')}</div>
       )}
 
       <Separator className="my-4" />
@@ -683,42 +685,42 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
       <Tabs value={tab} onValueChange={setTab} className="w-full">
         <TabsList className="grid grid-cols-3 w-full max-w-md">
           <TabsTrigger value="cards" className="inline-flex items-center gap-2">
-            <LayoutGrid className="w-4 h-4" /> Cards
+            <LayoutGrid className="w-4 h-4" /> {t('tabs.cards')}
           </TabsTrigger>
           <TabsTrigger value="table" className="inline-flex items-center gap-2">
-            <TableIcon className="w-4 h-4" /> Table
+            <TableIcon className="w-4 h-4" /> {t('tabs.table')}
           </TabsTrigger>
           <TabsTrigger value="calendar" className="inline-flex items-center gap-2">
-            <CalendarIcon className="w-4 h-4" /> Calendar
+            <CalendarIcon className="w-4 h-4" /> {t('tabs.calendar')}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="cards" className="mt-6">
-          <CurrentEvents events={filtered} />
-          <NextUp events={filtered} />
+          <CurrentEvents events={filtered} t={t} />
+          <NextUp events={filtered} t={t} />
           <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             <AnimatePresence>
               {filtered.map((evt) => (
                 <motion.div key={evt.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-                  <EventCard evt={evt} />
+                  <EventCard evt={evt} t={t} />
                 </motion.div>
               ))}
             </AnimatePresence>
           </div>
-          {filtered.length === 0 && <div className="text-center text-muted-foreground mt-12">No matching events. Try clearing filters.</div>}
+          {filtered.length === 0 && <div className="text-center text-muted-foreground mt-12">{t('noMatching')}</div>}
         </TabsContent>
 
         <TabsContent value="table" className="mt-6">
-          <EventsTable events={filtered} />
+          <EventsTable events={filtered} t={t} />
         </TabsContent>
 
         <TabsContent value="calendar" className="mt-6">
-          <CalendarView events={filteredForCalendar} />
+          <CalendarView events={filteredForCalendar} t={t} />
         </TabsContent>
       </Tabs>
 
       <footer className="mt-10 text-xs text-muted-foreground text-center">
-        Tip: Times are displayed in your local timezone. Use search, filters, and tabs to view events.
+        {t('tip')}
       </footer>
     </div>
   );

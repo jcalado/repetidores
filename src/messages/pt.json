@@ -307,6 +307,43 @@
             "description": "O acesso de transmissão aos repetidores de radioamador é restrito a operadores devidamente licenciados. Transmitir sem a licença apropriada, mesmo que não seja para um repetidor, é proibido e viola regulamentos nacionais. Identifique-se sempre corretamente e siga as diretrizes do proprietário do repetidor e os planos de banda."
         }
     },
+    "events": {
+        "tabs": {
+            "cards": "Cartões",
+            "table": "Tabela",
+            "calendar": "Calendário"
+        },
+        "loading": "A carregar eventos...",
+        "filter": "Filtro:",
+        "searchPlaceholder": "Pesquisar eventos...",
+        "allTags": "Todas as tags",
+        "sortBy": "Ordenar",
+        "soonestFirst": "Mais próximos",
+        "latestFirst": "Mais recentes",
+        "titleAZ": "Título (A–Z)",
+        "refresh": "Atualizar eventos",
+        "refreshError": "Falha ao atualizar eventos",
+        "noMatching": "Nenhum evento encontrado. Tente limpar os filtros.",
+        "tip": "Dica: Os horários são exibidos no seu fuso horário local. Use pesquisa, filtros e separadores para visualizar eventos.",
+        "happeningNow": "A Decorrer",
+        "nextUp": "Próximo Evento",
+        "started": "Iniciado",
+        "endsIn": "Termina em:",
+        "details": "Detalhes",
+        "eventDetails": "Detalhes do evento",
+        "info": "Info",
+        "openEventPage": "Abrir página do evento",
+        "event": "Evento",
+        "eventsOn": "Eventos em",
+        "noEventsOnDate": "Sem eventos nesta data.",
+        "tableHeaders": {
+            "title": "Título",
+            "start": "Início (local)",
+            "tag": "Tag",
+            "location": "Local",
+            "countdown": "Contagem"
+        }
+    },
     "about": {
         "title": "Sobre o repetidores",
         "subtitle": "Explorando repetidores de radioamador em Portugal com uma interface moderna e intuitiva",
