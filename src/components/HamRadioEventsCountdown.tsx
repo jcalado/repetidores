@@ -25,6 +25,7 @@ import {
   RefreshCw,
   SatelliteDish,
   SlidersHorizontal,
+  Star,
   Table as TableIcon
 } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -49,6 +50,7 @@ export type EventItem = {
   location?: string;
   url?: string;
   tag?: EventTag;
+  isFeatured?: boolean;
 };
 
 export type EventsAPIResponse = {
@@ -185,7 +187,10 @@ function EventCard({ evt }: { evt: EventItem }) {
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-start gap-2">
-              <CardTitle className="text-base sm:text-lg font-semibold truncate leading-tight">{evt.title}</CardTitle>
+              <CardTitle className="text-base sm:text-lg font-semibold truncate leading-tight inline-flex items-center gap-1.5">
+                {evt.isFeatured && <Star className="w-4 h-4 text-yellow-500 fill-yellow-500 shrink-0" />}
+                {evt.title}
+              </CardTitle>
               {evt.url && (
                 <TooltipProvider>
                   <Tooltip>
@@ -399,6 +404,7 @@ function EventsTable({ events }: { events: EventItem[] }) {
             return (
               <TableRow key={e.id}>
                 <TableCell className="font-medium flex items-center gap-2">
+                  {e.isFeatured && <Star className="w-4 h-4 text-yellow-500 fill-yellow-500 shrink-0" />}
                   <TagIcon tag={e.tag} /> {e.title}
                 </TableCell>
                 <TableCell>{formatDateTime(e.start)}</TableCell>
@@ -444,7 +450,15 @@ function CalendarView({ events }: { events: EventItem[] }) {
 
   const selectedEvents = useMemo(() => {
     if (!date) return [] as EventItem[];
-    return events.filter((e) => eventOccursOnDay(e, date));
+    return events
+      .filter((e) => eventOccursOnDay(e, date))
+      .sort((a, b) => {
+        // Featured events come first
+        if (a.isFeatured && !b.isFeatured) return -1;
+        if (!a.isFeatured && b.isFeatured) return 1;
+        // Then sort by start time
+        return new Date(a.start).getTime() - new Date(b.start).getTime();
+      });
   }, [events, date]);
 
   const CustomDay = ({ day, ...props }: { day: { date: Date }; className?: string; children?: React.ReactNode } & React.TdHTMLAttributes<HTMLTableCellElement>) => {
@@ -581,6 +595,11 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
     list = applyFilters(list);
 
     list.sort((a, b) => {
+      // Featured events come first
+      if (a.isFeatured && !b.isFeatured) return -1;
+      if (!a.isFeatured && b.isFeatured) return 1;
+
+      // Then apply normal sort
       if (sortBy === "title") return a.title.localeCompare(b.title);
       const da = new Date(a.start).getTime();
       const db = new Date(b.start).getTime();
