@@ -16,7 +16,7 @@ import {
     TableCellsIcon,
     XMarkIcon,
 } from '@heroicons/react/24/outline'
-import { BookOpen, Volume2, Radio, RadioTowerIcon } from 'lucide-react'
+import { BookOpen, Calculator, Volume2, Radio, RadioTowerIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -64,6 +64,7 @@ export default function Header() {
         { name: t('nav.iss'), description: t('nav.issDescription'), href: '/iss', icon: GlobeAmericasIcon },
         { name: t('nav.qth'), description: t('nav.qthDescription'), href: '/qth', icon: MapPinIcon },
         { name: t('nav.propagation'), description: t('nav.propagationDescription'), href: '/propagation', icon: SignalIcon },
+        { name: t('nav.calculadoras'), description: t('nav.calculadorasDescription'), href: '/calculadoras', icon: Calculator },
         { name: t('nav.nato'), description: t('nav.natoDescription'), href: '/nato', icon: LanguageIcon },
         { name: t('nav.utc'), description: t('nav.utcDescription'), href: '/utc', icon: ClockIcon },
         { name: t('nav.antenna'), description: t('nav.antennaDescription'), href: '/antenna', icon: Radio },

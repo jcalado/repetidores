@@ -23,6 +23,8 @@
         "qcodesDescription": "Referência de códigos Q",
         "morse": "Código Morse",
         "morseDescription": "Treinador de CW",
+        "calculadoras": "Calculadoras RF",
+        "calculadorasDescription": "dB, SWR, perdas em cabos",
         "about": "Sobre",
         "menu": "Menu",
         "theme": "Tema"
@@ -490,5 +492,68 @@
         "incorrectAnswer": "Incorreto",
         "yourAnswer": "Sua resposta",
         "correctWas": "Correto era"
+    },
+    "calculadoras": {
+        "title": "Calculadoras RF",
+        "subtitle": "Ferramentas de cálculo para radioamadores",
+        "db": {
+            "title": "Calculadora de dB",
+            "shortDesc": "Conversão dB ↔ razão de potência/tensão",
+            "dbToRatio": "dB para Razão",
+            "dbToRatioDesc": "Converta valores em dB para razões de potência e tensão",
+            "ratioToDb": "Razão para dB",
+            "ratioToDbDesc": "Converta razões de potência ou tensão para dB",
+            "dbValue": "Valor em dB",
+            "powerRatio": "Razão de Potência",
+            "voltageRatio": "Razão de Tensão",
+            "ratio": "Razão",
+            "ratioType": "Tipo de Razão",
+            "power": "Potência",
+            "voltage": "Tensão",
+            "result": "Resultado",
+            "referenceTable": "Tabela de Referência"
+        },
+        "swr": {
+            "title": "Calculadora de SWR",
+            "shortDesc": "SWR, coeficiente de reflexão, perdas",
+            "description": "Calcule SWR, coeficiente de reflexão e perdas de retorno",
+            "inputType": "Tipo de Entrada",
+            "reflectionCoefficient": "Coef. de Reflexão",
+            "returnLoss": "Perda de Retorno",
+            "mismatchLoss": "Perda de Desadaptação",
+            "reflectedPower": "Potência Refletida",
+            "transmittedPower": "Potência Transmitida",
+            "referenceTable": "Tabela de Referência",
+            "formulas": "Fórmulas"
+        },
+        "coax": {
+            "title": "Perdas em Cabo Coaxial",
+            "shortDesc": "Atenuação por tipo de cabo e frequência",
+            "description": "Calcule a perda de sinal em cabos coaxiais",
+            "cableType": "Tipo de Cabo",
+            "impedance": "Impedância",
+            "velocityFactor": "Fator de Velocidade",
+            "diameter": "Diâmetro",
+            "length": "Comprimento",
+            "frequency": "Frequência",
+            "totalLoss": "Perda Total",
+            "lossAtFrequencies": "Perda por Frequência",
+            "loss": "Perda",
+            "cableComparison": "Comparação de Cabos",
+            "lossAt": "Perda a",
+            "cable": "Cabo",
+            "selected": "selecionado"
+        },
+        "frequencia": {
+            "title": "Frequência ↔ Comprimento de Onda",
+            "shortDesc": "Conversão frequência e comprimento de onda",
+            "description": "Converta entre frequência e comprimento de onda",
+            "frequency": "Frequência",
+            "wavelength": "Comprimento de Onda",
+            "unit": "Unidade",
+            "referenceTable": "Tabela de Referência",
+            "band": "Banda",
+            "formula": "Fórmula"
+        }
     }
 }
