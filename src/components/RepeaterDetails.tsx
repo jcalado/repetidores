@@ -153,17 +153,7 @@ export default function RepeaterDetails({ r }: RepeaterDetailsProps) {
 
       {/* Operational Status */}
       {r.status && r.status !== 'unknown' && (
-        <div className="rounded-xl border bg-card p-3">
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">Status Operacional:</span>
-            <OperationalStatusBadge status={r.status} />
-            {r.lastVerified && (
-              <span className="text-xs text-muted-foreground ml-auto">
-                Verificado em {new Date(r.lastVerified).toLocaleDateString('pt-PT')}
-              </span>
-            )}
-          </div>
-        </div>
+        <OperationalStatusCard status={r.status} lastVerified={r.lastVerified} />
       )}
 
       {/* Technical Specs Section */}
@@ -358,15 +348,77 @@ function saveLocalVote(repeaterId: string, v: LocalVote) {
   } catch { }
 }
 
-function OperationalStatusBadge({ status }: { status: 'active' | 'maintenance' | 'offline' | 'unknown' }) {
+function OperationalStatusCard({ status, lastVerified }: { status: 'active' | 'maintenance' | 'offline' | 'unknown'; lastVerified?: string }) {
   const config = {
-    active: { label: 'Active', className: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300' },
-    maintenance: { label: 'Maintenance', className: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300' },
-    offline: { label: 'Offline', className: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' },
-    unknown: { label: 'Unknown', className: 'bg-muted text-muted-foreground' },
+    active: {
+      label: 'Operacional',
+      description: 'Repetidor a funcionar normalmente',
+      icon: CheckCircle2,
+      bgClass: 'bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-950/40 dark:to-emerald-900/20',
+      borderClass: 'border-emerald-200 dark:border-emerald-800/50',
+      iconBgClass: 'bg-emerald-100 dark:bg-emerald-900/50',
+      iconClass: 'text-emerald-600 dark:text-emerald-400',
+      textClass: 'text-emerald-700 dark:text-emerald-300',
+    },
+    maintenance: {
+      label: 'Em Manutenção',
+      description: 'Temporariamente indisponível para manutenção',
+      icon: AlertCircle,
+      bgClass: 'bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-950/40 dark:to-amber-900/20',
+      borderClass: 'border-amber-200 dark:border-amber-800/50',
+      iconBgClass: 'bg-amber-100 dark:bg-amber-900/50',
+      iconClass: 'text-amber-600 dark:text-amber-400',
+      textClass: 'text-amber-700 dark:text-amber-300',
+    },
+    offline: {
+      label: 'Offline',
+      description: 'Repetidor fora de serviço',
+      icon: XCircle,
+      bgClass: 'bg-gradient-to-br from-red-50 to-red-100/50 dark:from-red-950/40 dark:to-red-900/20',
+      borderClass: 'border-red-200 dark:border-red-800/50',
+      iconBgClass: 'bg-red-100 dark:bg-red-900/50',
+      iconClass: 'text-red-600 dark:text-red-400',
+      textClass: 'text-red-700 dark:text-red-300',
+    },
+    unknown: {
+      label: 'Desconhecido',
+      description: 'Estado não verificado',
+      icon: HelpCircle,
+      bgClass: 'bg-gradient-to-br from-slate-50 to-slate-100/50 dark:from-slate-900/40 dark:to-slate-800/20',
+      borderClass: 'border-slate-200 dark:border-slate-700/50',
+      iconBgClass: 'bg-slate-100 dark:bg-slate-800/50',
+      iconClass: 'text-slate-500 dark:text-slate-400',
+      textClass: 'text-slate-600 dark:text-slate-300',
+    },
   } as const;
+
   const cfg = config[status];
-  return <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium", cfg.className)}>{cfg.label}</span>;
+  const Icon = cfg.icon;
+
+  return (
+    <div className={cn("rounded-xl border overflow-hidden", cfg.bgClass, cfg.borderClass)}>
+      <div className="p-4">
+        <div className="flex items-start gap-3">
+          <div className={cn("rounded-full p-2.5 shrink-0", cfg.iconBgClass)}>
+            <Icon className={cn("h-5 w-5", cfg.iconClass)} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="text-xs uppercase tracking-wider text-muted-foreground font-medium">Status Operacional</span>
+            </div>
+            <div className={cn("font-semibold mt-0.5", cfg.textClass)}>{cfg.label}</div>
+            <div className="text-xs text-muted-foreground mt-0.5">{cfg.description}</div>
+          </div>
+        </div>
+        {lastVerified && (
+          <div className="mt-3 pt-3 border-t border-current/10 flex items-center gap-1.5 text-xs text-muted-foreground">
+            <CheckCircle2 className="h-3 w-3" />
+            <span>Verificado em {new Date(lastVerified).toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 function StatusDisplay({ status, stats }: { status: "ok" | "prob-bad" | "bad" | "unknown"; stats: VoteStats | null }) {
