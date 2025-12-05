@@ -333,7 +333,6 @@
         "happeningNow": "A Decorrer",
         "nextUp": "Próximo Evento",
         "started": "Iniciado",
-        "endsIn": "Termina em:",
         "details": "Detalhes",
         "eventDetails": "Detalhes do evento",
         "info": "Info",
@@ -348,10 +347,10 @@
             "location": "Local",
             "countdown": "Contagem"
         },
-        "days": "dias",
-        "hours": "horas",
-        "minutes": "min",
-        "seconds": "seg"
+        "startsIn": "Começa em",
+        "endsIn": "Termina em",
+        "ended": "Terminado",
+        "inDays": "{count} dias"
     },
     "about": {
         "title": "Sobre o repetidores",

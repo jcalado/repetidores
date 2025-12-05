@@ -195,34 +195,42 @@ function useTick(intervalMs = 1000) {
 }
 
 // ---- Components ----
-function CountdownText({ ms }: { ms: number }) {
+// Smart time display: shows days if > 24h, otherwise hours/minutes/seconds
+function formatSmartCountdown(ms: number, t: (key: string, params?: Record<string, unknown>) => string): string {
   const { days, hours, minutes, seconds } = breakdown(ms);
-  return (
-    <span className="tabular-nums font-semibold">
-      {days}d {hours}h {minutes}m {seconds}s
-    </span>
-  );
-}
 
-function MiniProgress({ startISO }: { startISO: string }) {
-  const ms = msUntil(startISO);
-  const sevenDays = 7 * 24 * 3600 * 1000;
-  const pct = Math.round(100 - Math.min(100, (ms / sevenDays) * 100));
-  return (
-    <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-      <div className="h-full bg-primary transition-all" style={{ width: `${pct}%` }} />
-    </div>
-  );
+  if (days > 0) {
+    return t('inDays', { count: days });
+  }
+
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  }
+
+  if (minutes > 0) {
+    return `${minutes}m ${seconds}s`;
+  }
+
+  return `${seconds}s`;
 }
 
 function EventCard({ evt, t }: { evt: EventItem; t: (key: string) => string }) {
   useTick(1000);
-  const remaining = msUntil(evt.start);
-  const isPast = remaining === 0;
+  const now = Date.now();
+  const startTime = new Date(evt.start).getTime();
+  const endTime = evt.end ? new Date(evt.end).getTime() : startTime + 3600000; // Default 1 hour if no end
+  const hasStarted = now >= startTime;
+  const hasEnded = now >= endTime;
+  const isInProgress = hasStarted && !hasEnded;
+
+  const remainingToStart = msUntil(evt.start);
+  const remainingToEnd = evt.end ? msUntil(evt.end) : 0;
+
   const tagColors = getTagColors(evt.tag);
+
   return (
     <Card className="group relative rounded-2xl shadow-sm transition-shadow hover:shadow-md hover:border-primary/30 focus-within:ring-2 focus-within:ring-ring">
-      <CardHeader className="space-y-2 pb-0">
+      <CardHeader className="space-y-2 pb-3">
         <div className="flex items-start gap-3">
           <div className={`shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full ${tagColors.bg} ${tagColors.text}`}>
             <TagIcon tag={evt.tag} />
@@ -267,27 +275,26 @@ function EventCard({ evt, t }: { evt: EventItem; t: (key: string) => string }) {
                 <TagIcon tag={evt.tag} className="w-3 h-3" /> {evt.tag ?? t('event')}
               </span>
             </div>
+            {/* Time remaining display */}
+            <div className="mt-2 text-sm font-medium">
+              {isInProgress ? (
+                <span className="inline-flex items-center gap-1.5 text-green-600 dark:text-green-400">
+                  <Activity className="w-4 h-4 animate-pulse" />
+                  {t('endsIn')} {formatSmartCountdown(remainingToEnd, t)}
+                </span>
+              ) : hasEnded ? (
+                <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+                  <Clock className="w-4 h-4" /> {t('ended')}
+                </span>
+              ) : (
+                <span className={`inline-flex items-center gap-1.5 ${tagColors.text}`}>
+                  <Clock className="w-4 h-4" /> {t('startsIn')} {formatSmartCountdown(remainingToStart, t)}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-3">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex-1 min-w-[160px]">
-            <MiniProgress startISO={evt.start} />
-          </div>
-          <div className="text-sm">
-            {isPast ? (
-              <span className="inline-flex items-center gap-2 text-muted-foreground">
-                <Clock className="w-4 h-4" /> {t('started')}
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-2">
-                <Clock className="w-4 h-4" /> <CountdownText ms={remaining} />
-              </span>
-            )}
-          </div>
-        </div>
-      </CardContent>
     </Card>
   );
 }
@@ -336,9 +343,8 @@ function CurrentEvents({ events, t }: { events: EventItem[]; t: (key: string) =>
                       )}
                     </div>
                     {event.end && timeUntilEnd > 0 && (
-                      <div className="mt-2 text-sm">
-                        <span className="text-muted-foreground">{t('endsIn')} </span>
-                        <CountdownText ms={timeUntilEnd} />
+                      <div className="mt-2 text-sm font-medium">
+                        <span className="text-green-600 dark:text-green-400">{t('endsIn')} {formatSmartCountdown(timeUntilEnd, t)}</span>
                       </div>
                     )}
                     {event.tag && (
@@ -367,19 +373,6 @@ function CurrentEvents({ events, t }: { events: EventItem[]; t: (key: string) =>
   );
 }
 
-function CountdownSegment({ value, label, colorClass }: { value: number; label: string; colorClass: string }) {
-  return (
-    <div className="flex flex-col items-center">
-      <div className={`text-3xl sm:text-4xl md:text-5xl font-black tabular-nums ${colorClass}`}>
-        {String(value).padStart(2, '0')}
-      </div>
-      <div className="text-[10px] sm:text-xs uppercase tracking-wider text-muted-foreground mt-1">
-        {label}
-      </div>
-    </div>
-  );
-}
-
 function NextUp({ events, t }: { events: EventItem[]; t: (key: string) => string }) {
   useTick(1000);
   const next = useMemo(() => {
@@ -397,7 +390,6 @@ function NextUp({ events, t }: { events: EventItem[]; t: (key: string) => string
 
   if (!next) return null;
   const remaining = msUntil(next.start);
-  const { days, hours, minutes, seconds } = breakdown(remaining);
   const tagColors = getTagColors(next.tag);
 
   // Dynamic border and background classes based on tag
@@ -434,77 +426,54 @@ function NextUp({ events, t }: { events: EventItem[]; t: (key: string) => string
 
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="grid">
-      <Card className={`relative overflow-hidden rounded-2xl shadow-lg border-2 ${borderClass} bg-gradient-to-br ${bgClass} to-transparent`}>
-        {/* Decorative background element */}
-        <div className={`absolute -top-20 -right-20 w-56 h-56 ${iconBgClass} opacity-[0.07] rounded-full blur-3xl pointer-events-none`} />
+      <Card className={`relative overflow-hidden rounded-xl shadow-md border ${borderClass} bg-gradient-to-br ${bgClass} to-transparent`}>
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3">
+            {/* Icon */}
+            <div className={`flex items-center justify-center w-10 h-10 rounded-lg ${iconBgClass} text-white shadow`}>
+              <TagIcon tag={next.tag} className="w-5 h-5" />
+            </div>
 
-        <CardContent className="p-5 sm:p-6">
-          {/* Header row */}
-          <div className="flex items-start justify-between gap-4 mb-4">
-            <div className="flex items-center gap-3">
-              <div className={`flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-xl ${iconBgClass} text-white shadow-lg`}>
-                <TagIcon tag={next.tag} className="w-6 h-6 sm:w-7 sm:h-7" />
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <div className={`flex items-center gap-1.5 text-xs font-medium ${tagColors.text}`}>
+                <CalendarClock className="w-3.5 h-3.5" />
+                {t('nextUp')}
               </div>
-              <div>
-                <div className={`flex items-center gap-2 text-sm font-medium ${tagColors.text}`}>
-                  <CalendarClock className="w-4 h-4" />
-                  {t('nextUp')}
-                </div>
-                <h3 className="text-lg sm:text-xl font-bold text-foreground leading-tight mt-0.5 flex items-center gap-2">
-                  {next.isFeatured && <Star className="w-4 h-4 text-yellow-500 fill-yellow-500 shrink-0" />}
-                  {next.title}
-                </h3>
+              <h3 className="text-base font-bold text-foreground leading-tight truncate flex items-center gap-1.5">
+                {next.isFeatured && <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500 shrink-0" />}
+                {next.title}
+              </h3>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground mt-0.5">
+                <span className="inline-flex items-center">
+                  <CalendarIcon className="w-3.5 h-3.5 mr-1" /> {formatDateTime(next.start)}
+                </span>
+                {next.location && (
+                  <span className="inline-flex items-center">
+                    <MapPin className="w-3.5 h-3.5 mr-1" /> {next.location}
+                  </span>
+                )}
               </div>
             </div>
 
-            {/* Tag badge */}
-            <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium border ${tagColors.bg} ${tagColors.text} ${tagColors.border}`}>
-              {next.tag ?? t('event')}
-            </span>
-          </div>
-
-          {/* Event details */}
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground mb-5">
-            <span className="inline-flex items-center">
-              <CalendarIcon className="w-4 h-4 mr-1.5" /> {formatDateTime(next.start)}
-            </span>
-            {next.location && (
-              <span className="inline-flex items-center">
-                <MapPin className="w-4 h-4 mr-1.5" /> {next.location}
-              </span>
-            )}
-          </div>
-
-          {/* Countdown */}
-          <div className="flex items-center justify-center gap-2 sm:gap-4 py-4 px-2 rounded-xl bg-background/50 backdrop-blur-sm border border-border/50">
-            <CountdownSegment value={days} label={t('days')} colorClass={tagColors.text} />
-            <span className={`text-2xl sm:text-3xl font-light ${tagColors.text} opacity-50`}>:</span>
-            <CountdownSegment value={hours} label={t('hours')} colorClass={tagColors.text} />
-            <span className={`text-2xl sm:text-3xl font-light ${tagColors.text} opacity-50`}>:</span>
-            <CountdownSegment value={minutes} label={t('minutes')} colorClass={tagColors.text} />
-            <span className={`text-2xl sm:text-3xl font-light ${tagColors.text} opacity-50`}>:</span>
-            <CountdownSegment value={seconds} label={t('seconds')} colorClass={tagColors.text} />
-          </div>
-
-          {/* Progress bar */}
-          <div className="mt-5">
-            <MiniProgress startISO={next.start} />
-          </div>
-
-          {/* Action button */}
-          {next.url && (
-            <div className="mt-4 flex justify-end">
-              <a
-                href={next.url}
-                target="_blank"
-                rel="noreferrer"
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tagColors.bg} ${tagColors.text} ${tagColors.border} border hover:opacity-80`}
-              >
-                {t('eventDetails')}
-                <ExternalLink className="w-4 h-4" />
-              </a>
+            {/* Time remaining + link */}
+            <div className="shrink-0 text-right">
+              <div className={`text-lg font-bold tabular-nums ${tagColors.text}`}>
+                {t('startsIn')} {formatSmartCountdown(remaining, t)}
+              </div>
+              {next.url && (
+                <a
+                  href={next.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {t('eventDetails')}
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
             </div>
-          )}
+          </div>
         </CardContent>
       </Card>
     </motion.div>
@@ -527,9 +496,16 @@ function EventsTable({ events, t }: { events: EventItem[]; t: (key: string) => s
         </TableHeader>
         <TableBody>
           {events.map((e) => {
-            const remaining = msUntil(e.start);
-            const isPast = remaining === 0;
+            const now = Date.now();
+            const startTime = new Date(e.start).getTime();
+            const endTime = e.end ? new Date(e.end).getTime() : startTime + 3600000;
+            const hasStarted = now >= startTime;
+            const hasEnded = now >= endTime;
+            const isInProgress = hasStarted && !hasEnded;
+            const remainingToStart = msUntil(e.start);
+            const remainingToEnd = e.end ? msUntil(e.end) : 0;
             const tagColors = getTagColors(e.tag);
+
             return (
               <TableRow key={e.id}>
                 <TableCell className="font-medium flex items-center gap-2">
@@ -543,7 +519,15 @@ function EventsTable({ events, t }: { events: EventItem[]; t: (key: string) => s
                   </span>
                 </TableCell>
                 <TableCell className="text-muted-foreground">{e.location ?? "—"}</TableCell>
-                <TableCell className="tabular-nums">{isPast ? t('started') : <CountdownText ms={remaining} />}</TableCell>
+                <TableCell className="tabular-nums">
+                  {isInProgress ? (
+                    <span className="text-green-600 dark:text-green-400">{t('endsIn')} {formatSmartCountdown(remainingToEnd, t)}</span>
+                  ) : hasEnded ? (
+                    <span className="text-muted-foreground">{t('ended')}</span>
+                  ) : (
+                    <span className={tagColors.text}>{formatSmartCountdown(remainingToStart, t)}</span>
+                  )}
+                </TableCell>
               </TableRow>
             );
           })}
