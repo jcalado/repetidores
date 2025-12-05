@@ -12,6 +12,8 @@
         "qthDescription": "Calculadora de localizador Maidenhead",
         "propagation": "Propagação",
         "propagationDescription": "Condições de propagação em tempo real",
+        "nato": "Alfabeto NATO",
+        "natoDescription": "Aprenda o alfabeto fonético",
         "about": "Sobre",
         "menu": "Menu",
         "theme": "Tema"
@@ -382,5 +384,17 @@
             "title": "Mapa MUF",
             "source": "Fonte: KC2G Propagation"
         }
+    },
+    "nato": {
+        "title": "Alfabeto Fonético NATO",
+        "subtitle": "Aprenda o alfabeto usado em comunicações de rádio",
+        "pressKey": "Prima uma tecla para começar",
+        "pronunciation": "Pronúncia",
+        "hearIt": "Ouvir",
+        "audioEnabled": "Som ativado",
+        "audioDisabled": "Som desativado",
+        "includeNumbers": "Incluir números (0-9)",
+        "speechNotSupported": "O seu navegador não suporta síntese de voz",
+        "reference": "Tabela de Referência"
     }
 }

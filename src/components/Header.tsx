@@ -7,6 +7,7 @@ import {
     CalendarIcon,
     GlobeAmericasIcon,
     InformationCircleIcon,
+    LanguageIcon,
     MapIcon,
     MapPinIcon,
     RadioIcon,
@@ -62,6 +63,7 @@ export default function Header() {
         { name: t('nav.iss'), description: t('nav.issDescription'), href: '/iss', icon: GlobeAmericasIcon },
         { name: t('nav.qth'), description: t('nav.qthDescription'), href: '/qth', icon: MapPinIcon },
         { name: t('nav.propagation'), description: t('nav.propagationDescription'), href: '/propagation', icon: SignalIcon },
+        { name: t('nav.nato'), description: t('nav.natoDescription'), href: '/nato', icon: LanguageIcon },
     ]
 
     return (
