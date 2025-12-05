@@ -5,7 +5,6 @@ import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -24,9 +23,10 @@ import {
   Radio,
   RefreshCw,
   SatelliteDish,
-  SlidersHorizontal,
+  Search,
   Star,
-  Table as TableIcon
+  Table as TableIcon,
+  X
 } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
@@ -627,60 +627,112 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
     );
   }
 
+  const hasActiveFilters = search.trim() !== '' || filterTag !== 'all';
+  const clearFilters = () => {
+    setSearch('');
+    setFilterTag('all');
+  };
+
   return (
     <div className="p-4 md:p-8 max-w-6xl mx-auto">
-      <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
-        <div className="flex items-center gap-2 text-muted-foreground shrink-0">
-          <SlidersHorizontal className="w-4 h-4" />
-          <span className="text-sm font-medium">{t('filter')}</span>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-2 flex-1">
-          <Input
-            placeholder={t('searchPlaceholder')}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 min-w-0 h-9"
-          />
-          {tags.length > 0 && (
-            <Select value={filterTag} onValueChange={setFilterTag}>
-              <SelectTrigger className="w-full sm:w-[130px] h-9">
-                <SelectValue placeholder={t('allTags')} />
+      {/* Filter Section */}
+      <Card className="rounded-2xl mb-6">
+        <CardContent className="p-4 space-y-4">
+          {/* Search and Controls Row */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            {/* Search Input with Icon */}
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder={t('searchPlaceholder')}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9 h-10"
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+
+            {/* Sort Dropdown */}
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-full sm:w-[160px] h-10">
+                <SelectValue placeholder={t('sortBy')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t('allTags')}</SelectItem>
-                {tags.map((tag) => (
-                  <SelectItem key={tag} value={tag}>
-                    {tag}
-                  </SelectItem>
-                ))}
+                <SelectItem value="startAsc">{t('soonestFirst')}</SelectItem>
+                <SelectItem value="startDesc">{t('latestFirst')}</SelectItem>
+                <SelectItem value="title">{t('titleAZ')}</SelectItem>
               </SelectContent>
             </Select>
-          )}
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-full sm:w-[140px] h-9">
-              <SelectValue placeholder={t('sortBy')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="startAsc">{t('soonestFirst')}</SelectItem>
-              <SelectItem value="startDesc">{t('latestFirst')}</SelectItem>
-              <SelectItem value="title">{t('titleAZ')}</SelectItem>
-            </SelectContent>
-          </Select>
-          <button
-            onClick={() => refreshEvents(true)}
-            disabled={isRefreshing}
-            className="inline-flex items-center justify-center h-9 w-9 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:pointer-events-none shrink-0"
-            title={t('refresh')}
-          >
-            <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-          </button>
-        </div>
-      </div>
-      {fetchError && (
-        <div className="text-xs text-amber-600 dark:text-amber-400 mt-2">{t('refreshError')}</div>
-      )}
 
-      <Separator className="my-4" />
+            {/* Refresh Button */}
+            <button
+              onClick={() => refreshEvents(true)}
+              disabled={isRefreshing}
+              className="inline-flex items-center justify-center h-10 w-10 rounded-lg border border-input bg-background hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:pointer-events-none shrink-0 transition-colors"
+              title={t('refresh')}
+            >
+              <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
+
+          {/* Tag Filter Chips */}
+          {tags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setFilterTag('all')}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  filterTag === 'all'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {t('allTags')}
+              </button>
+              {tags.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => setFilterTag(tag)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                    filterTag === tag
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <TagIcon tag={tag} />
+                  {tag}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Results Count and Clear Filters */}
+          <div className="flex items-center justify-between pt-2 border-t border-border/50">
+            <span className="text-sm text-muted-foreground">
+              {filtered.length === 1 ? t('resultsCountSingular') : t('resultsCount', { count: filtered.length })}
+            </span>
+            {hasActiveFilters && (
+              <button
+                onClick={clearFilters}
+                className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <X className="h-3.5 w-3.5" />
+                {t('clearFilters')}
+              </button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {fetchError && (
+        <div className="text-xs text-amber-600 dark:text-amber-400 mb-4">{t('refreshError')}</div>
+      )}
 
       <Tabs value={tab} onValueChange={setTab} className="w-full">
         <TabsList className="grid grid-cols-3 w-full max-w-md">
