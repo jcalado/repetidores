@@ -46,18 +46,18 @@ export default function Header() {
     const isCurrent = (href: string) => {
         if (href.includes('#')) {
             const [path, hash] = href.split('#')
-            // Check if we are on the correct path (e.g. /) and the hash matches
-            // Note: href might be "/#tabela", so path is "/" and hash is "tabela"
+            // Check if we are on the correct path and the hash matches
+            // Note: href might be "/repeaters#tabela", so path is "/repeaters" and hash is "tabela"
             // activeHash includes the #, so we need to compare with `#${hash}`
-            return pathname === (path || '/') && activeHash === `#${hash}`
+            return pathname === path && activeHash === `#${hash}`
         }
         return pathname === href
     }
 
 
     const repeaters = [
-        { name: t('nav.table'), description: 'Lista de repetidores', href: '/#tabela', icon: TableCellsIcon },
-        { name: t('nav.map'), description: 'Mapa de repetidores', href: '/#mapa', icon: MapIcon },
+        { name: t('nav.table'), description: 'Lista de repetidores', href: '/repeaters#tabela', icon: TableCellsIcon },
+        { name: t('nav.map'), description: 'Mapa de repetidores', href: '/repeaters#mapa', icon: MapIcon },
     ]
 
     const tools = [
@@ -96,6 +96,16 @@ export default function Header() {
                     </button>
                 </div>
                 <PopoverGroup className="hidden lg:flex lg:gap-x-8">
+                    <Link
+                        href="/"
+                        className={`text-sm/6 font-semibold transition-colors ${isCurrent('/')
+                            ? 'text-ship-cove-600 dark:text-ship-cove-400'
+                            : 'text-slate-700 hover:text-ship-cove-600 dark:text-slate-200 dark:hover:text-ship-cove-400'
+                            }`}
+                    >
+                        {t('nav.home')}
+                    </Link>
+
                     <Popover className="relative">
                         <PopoverButton className="group flex items-center gap-x-1 text-sm/6 font-semibold text-slate-700 hover:text-ship-cove-600 focus:outline-none dark:text-slate-200 dark:hover:text-ship-cove-400 transition-colors">
                             {t('nav.repeaters')}
@@ -222,6 +232,29 @@ export default function Header() {
                         </div>
                         <div className="mt-8 flow-root">
                             <div className="-my-6 divide-y divide-gray-500/10 dark:divide-white/10">
+                                <div className="space-y-2 py-6">
+                                    <Link
+                                        href="/"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className={`-mx-3 flex items-center gap-x-4 rounded-lg p-3 text-base/7 font-semibold transition-colors ${isCurrent('/')
+                                            ? 'bg-ship-cove-50 text-ship-cove-600 dark:bg-ship-cove-900/20 dark:text-ship-cove-400'
+                                            : 'text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-slate-800/50'
+                                            }`}
+                                    >
+                                        <div className={`flex size-10 flex-none items-center justify-center rounded-lg transition-colors ${isCurrent('/')
+                                            ? 'bg-white dark:bg-slate-800'
+                                            : 'bg-gray-50 dark:bg-slate-800'
+                                            }`}>
+                                            <RadioTowerIcon
+                                                className={`size-5 ${isCurrent('/')
+                                                    ? 'text-ship-cove-600 dark:text-ship-cove-400'
+                                                    : 'text-gray-600 dark:text-gray-400'
+                                                    }`}
+                                            />
+                                        </div>
+                                        {t('nav.home')}
+                                    </Link>
+                                </div>
                                 <div className="space-y-2 py-6">
                                     <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                                         {t('nav.repeaters')}

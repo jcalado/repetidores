@@ -1,5 +1,6 @@
 {
     "nav": {
+        "home": "Início",
         "repeaters": "Repetidores",
         "bands": "Bandas",
         "table": "Tabela",
@@ -289,6 +290,14 @@
     "metadata": {
         "title": "Repetidores",
         "description": "Explorar repetidores de rádio com mapa e filtros"
+    },
+    "landing": {
+        "title": "Repetidores",
+        "subtitle": "O portal do radioamador em Portugal. Explore repetidores, eventos, propagação e ferramentas para comunicações de rádio.",
+        "repeatersDescription": "Consulte a lista completa de repetidores em Portugal com filtros avançados e mapa interativo.",
+        "eventsDescription": "Fique a par dos próximos eventos, contests e nets de radioamador.",
+        "bandsDescription": "Referência das bandas de frequência para radioamadores.",
+        "learnMore": "Saiba mais sobre o projeto"
     },
     "home": {
         "important": {
