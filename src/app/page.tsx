@@ -22,12 +22,12 @@ export default function LandingPage() {
         {
             title: t('nav.repeaters'),
             description: t('landing.repeatersDescription'),
-            href: '/repeaters',
+            href: '/repetidores',
             icon: RadioTowerIcon,
             gradient: 'from-ship-cove-500 to-ship-cove-700',
             items: [
-                { name: t('nav.table'), href: '/repeaters#tabela', icon: TableCellsIcon },
-                { name: t('nav.map'), href: '/repeaters#mapa', icon: MapIcon },
+                { name: t('nav.table'), href: '/repetidores', icon: TableCellsIcon },
+                { name: t('nav.map'), href: '/repetidores/mapa', icon: MapIcon },
             ]
         },
         {

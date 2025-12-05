@@ -1,8 +1,6 @@
 import { Suspense } from "react";
-import RepeaterBrowser from "@/components/RepeaterBrowser";
-import RepeaterBrowserClient from "@/components/RepeaterBrowserClient";
 import { Repeater } from "../columns";
-import ImportantNotice from "../notice";
+import RepetidoresProvider from "./RepeatersProvider";
 
 type PayloadRepeatersResponse = {
   docs?: Array<Record<string, unknown>>;
@@ -80,7 +78,6 @@ function normalizeRepeater(doc: Record<string, unknown>): Repeater {
     owner: toStringOrEmpty(doc.owner),
     dmr: toBoolean(doc.dmr),
     dstar: toBoolean(doc.dstar),
-    // Extended fields (optional)
     status: toOptionalString(doc.status) as Repeater['status'],
     power: toOptionalNumber(doc.power),
     antennaHeight: toOptionalNumber(doc.antennaHeight),
@@ -102,8 +99,6 @@ async function fetchRepeaters(): Promise<Repeater[]> {
   const baseUrl = resolveApiBaseUrl();
   const repeaters: Repeater[] = [];
 
-  console.log('[RepeatersPage] Starting fetch from baseUrl:', baseUrl);
-
   let page = 1;
 
   while (true) {
@@ -113,30 +108,23 @@ async function fetchRepeaters(): Promise<Repeater[]> {
     });
 
     const url = `${baseUrl}/api/repeaters?${params.toString()}`;
-    console.log(`[RepeatersPage] Fetching page ${page} from:`, url);
 
     const response = await fetch(url);
 
-    console.log(`[RepeatersPage] Response status:`, response.status);
-
     if (!response.ok) {
-      console.error(`[RepeatersPage] Failed to fetch: ${response.status} ${response.statusText}`);
+      console.error(`[RepeatersLayout] Failed to fetch: ${response.status} ${response.statusText}`);
       throw new Error(`Failed to fetch repeaters: ${response.status} ${response.statusText}`);
     }
 
     const payload = (await response.json()) as PayloadRepeatersResponse;
-    console.log(`[RepeatersPage] Payload keys:`, Object.keys(payload), 'docs is array:', Array.isArray(payload.docs), 'docs length:', payload.docs?.length);
     const docs = Array.isArray(payload.docs) ? payload.docs : [];
     repeaters.push(...docs.map(normalizeRepeater));
-
-    console.log(`[RepeatersPage] Fetched ${docs.length} repeaters from page ${page}, total so far: ${repeaters.length}`);
 
     const totalPages = typeof payload.totalPages === "number" ? payload.totalPages : undefined;
     const hasNext = Boolean(payload.hasNextPage);
     const reachedEnd = docs.length === 0 || (!hasNext && (!totalPages || page >= totalPages));
 
     if (reachedEnd) {
-      console.log(`[RepeatersPage] Reached end. Total repeaters fetched: ${repeaters.length}`);
       break;
     }
 
@@ -149,18 +137,39 @@ async function fetchRepeaters(): Promise<Repeater[]> {
   return repeaters.sort((a, b) => a.callsign.localeCompare(b.callsign));
 }
 
-async function RepeatersContent() {
-  const data = await fetchRepeaters();
-  return <RepeaterBrowserClient data={data} />;
+function LoadingSkeleton() {
+  return (
+    <div className="w-full max-w-7xl mx-auto">
+      <div className="rounded-xl border bg-card p-6">
+        <div className="flex gap-2 mb-4">
+          <div className="h-10 w-24 bg-muted rounded animate-pulse" />
+          <div className="h-10 w-24 bg-muted rounded animate-pulse" />
+        </div>
+        <div className="space-y-3">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="h-12 bg-muted rounded animate-pulse" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export default function RepeatersPage() {
+async function RepetidoresContent({ children }: { children: React.ReactNode }) {
+  const data = await fetchRepeaters();
+  return <RepetidoresProvider initialData={data}>{children}</RepetidoresProvider>;
+}
+
+export default function RepetidoresLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-      <Suspense fallback={<RepeaterBrowser data={[]} isLoading />}>
-        <RepeatersContent />
+      <Suspense fallback={<LoadingSkeleton />}>
+        <RepetidoresContent>{children}</RepetidoresContent>
       </Suspense>
-      <ImportantNotice />
     </main>
   );
 }

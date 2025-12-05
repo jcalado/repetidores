@@ -56,8 +56,8 @@ export default function Header() {
 
 
     const repeaters = [
-        { name: t('nav.table'), description: 'Lista de repetidores', href: '/repeaters#tabela', icon: TableCellsIcon },
-        { name: t('nav.map'), description: 'Mapa de repetidores', href: '/repeaters#mapa', icon: MapIcon },
+        { name: t('nav.table'), description: 'Lista de repetidores', href: '/repetidores', icon: TableCellsIcon },
+        { name: t('nav.map'), description: 'Mapa de repetidores', href: '/repetidores/mapa', icon: MapIcon },
     ]
 
     const tools = [
