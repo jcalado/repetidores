@@ -205,7 +205,7 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
 
       {/* Location Info */}
       {userLocation && (
-        <Card>
+        <Card className="rounded-2xl">
           <CardContent className="py-3">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <MapPin className="h-4 w-4" />
@@ -234,7 +234,7 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
 
       {/* Loading State */}
       {isLocating && (
-        <Card>
+        <Card className="rounded-2xl">
           <CardContent className="py-12 text-center">
             <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-muted-foreground" />
             <p className="text-muted-foreground">{t('locating')}</p>
@@ -244,7 +244,7 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
 
       {/* No Location State */}
       {!userLocation && !isLocating && !locationError && (
-        <Card>
+        <Card className="rounded-2xl">
           <CardContent className="py-12 text-center">
             <MapPin className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
             <p className="text-muted-foreground mb-4">{t('noLocation')}</p>
@@ -267,7 +267,7 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
               <Card
                 key={repeater.callsign}
                 className={cn(
-                  'transition-all hover:shadow-md',
+                  'rounded-2xl transition-all hover:shadow-md',
                   isFirst && 'ring-2 ring-ship-cove-500 bg-ship-cove-50/50 dark:bg-ship-cove-950/20'
                 )}
               >
@@ -377,7 +377,7 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
 
       {/* Info */}
       {userLocation && (
-        <Card>
+        <Card className="rounded-2xl">
           <CardContent className="py-4">
             <div className="flex items-start gap-2 text-sm text-muted-foreground">
               <Radio className="h-4 w-4 mt-0.5 flex-shrink-0" />
