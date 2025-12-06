@@ -21,6 +21,7 @@ import {
   ExternalLink,
   RefreshCw,
 } from 'lucide-react';
+import PageHeader from '@/components/PageHeader';
 
 interface RepeaterWithDistance extends Repeater {
   distance: number;
@@ -166,48 +167,46 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header Card */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Navigation className="h-5 w-5" />
-                {t('title')}
-              </CardTitle>
-              <CardDescription>{t('description')}</CardDescription>
-            </div>
-            <div className="flex items-center gap-2">
-              {compass.isSupported && userLocation && (
-                <Button
-                  variant={compass.isEnabled ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => compass.toggle()}
-                  className={cn('gap-2', compass.isEnabled && 'bg-green-600 hover:bg-green-700')}
-                >
-                  <Compass className={cn('h-4 w-4', compass.isEnabled && 'animate-pulse')} />
-                  {compass.isEnabled ? tCompass('disable') : tCompass('enable')}
-                </Button>
-              )}
+      {/* Page Header */}
+      <PageHeader
+        title={t('title')}
+        description={t('description')}
+        icon={Navigation}
+        actions={
+          <>
+            {compass.isSupported && userLocation && (
               <Button
-                variant="outline"
+                variant={compass.isEnabled ? 'default' : 'outline'}
                 size="sm"
-                onClick={handleGetLocation}
-                disabled={isLocating}
-                className="gap-2"
+                onClick={() => compass.toggle()}
+                className={cn('gap-2', compass.isEnabled && 'bg-green-600 hover:bg-green-700')}
               >
-                {isLocating ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <RefreshCw className="h-4 w-4" />
-                )}
-                {t('refreshLocation')}
+                <Compass className={cn('h-4 w-4', compass.isEnabled && 'animate-pulse')} />
+                {compass.isEnabled ? tCompass('disable') : tCompass('enable')}
               </Button>
-            </div>
-          </div>
-        </CardHeader>
-        {userLocation && (
-          <CardContent>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleGetLocation}
+              disabled={isLocating}
+              className="gap-2"
+            >
+              {isLocating ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
+              {t('refreshLocation')}
+            </Button>
+          </>
+        }
+      />
+
+      {/* Location Info */}
+      {userLocation && (
+        <Card>
+          <CardContent className="py-3">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <MapPin className="h-4 w-4" />
               <span>
@@ -221,8 +220,8 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
               )}
             </div>
           </CardContent>
-        )}
-      </Card>
+        </Card>
+      )}
 
       {/* Location Error */}
       {locationError && (
