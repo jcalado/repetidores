@@ -729,7 +729,7 @@ export default function RepeaterView({ view }: Props) {
                     : t("repeater.details")}
                 </DrawerTitle>
               </VisuallyHidden>
-              <div className="p-4">
+              <div className="flex-1 overflow-y-auto p-4">
                 {selected && <RepeaterDetails r={selected} />}
               </div>
               <DrawerFooter>
