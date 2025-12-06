@@ -256,7 +256,7 @@ function MapStatePersistence({ userLocation }: { userLocation?: [number, number]
 }
 
 // Create cluster custom icon
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
 function createClusterCustomIcon(cluster: any) {
   const count = cluster.getChildCount();
   let size = 'small';
