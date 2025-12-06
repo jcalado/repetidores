@@ -31,7 +31,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock,
-  Copy,
   Download,
   ExternalLink,
   Globe,
@@ -46,8 +45,6 @@ import {
   Radio,
   SatelliteDish,
   Share2,
-  Star,
-  Timer,
 } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";
