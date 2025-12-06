@@ -6,6 +6,8 @@
         "table": "Tabela",
         "map": "Mapa",
         "events": "Eventos",
+        "news": "Notícias",
+        "newsDescription": "Últimas notícias e anúncios",
         "tools": "Ferramentas",
         "satellites": "Satélites",
         "satellitesDescription": "Passagens de satélites radioamador",
@@ -301,7 +303,35 @@
         "repeatersDescription": "Consulte a lista completa de repetidores em Portugal com filtros avançados e mapa interativo.",
         "eventsDescription": "Fique a par dos próximos eventos, contests e nets de radioamador.",
         "bandsDescription": "Referência das bandas de frequência para radioamadores.",
+        "newsTitle": "Últimas Notícias",
+        "newsDescription": "Novidades e anúncios sobre radioamadorismo",
+        "viewAllNews": "Ver todas as notícias",
         "learnMore": "Saiba mais sobre o projeto"
+    },
+    "news": {
+        "title": "Notícias",
+        "description": "Últimas notícias e anúncios sobre radioamadorismo em Portugal",
+        "readMore": "Ler mais",
+        "publishedOn": "Publicado em",
+        "by": "por",
+        "noNews": "Sem notícias disponíveis de momento.",
+        "loading": "A carregar notícias...",
+        "backToNews": "Voltar às notícias",
+        "share": "Partilhar",
+        "copyLink": "Copiar link",
+        "copied": "Copiado!",
+        "externalLink": "Ler artigo completo",
+        "featured": "Em Destaque",
+        "categories": {
+            "announcement": "Anúncio",
+            "news": "Notícia",
+            "event": "Evento",
+            "technical": "Técnico"
+        },
+        "filter": {
+            "all": "Todas",
+            "searchPlaceholder": "Pesquisar notícias..."
+        }
     },
     "home": {
         "important": {

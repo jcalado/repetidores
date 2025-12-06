@@ -14,6 +14,7 @@ import {
     TableCellsIcon,
 } from '@heroicons/react/24/outline'
 import { BookOpen, Cable, Calculator, Gauge, Volume2, Radio, RadioTowerIcon, Waves, Wrench } from 'lucide-react'
+import LandingNewsSection from '@/components/LandingNewsSection'
 
 export default function LandingPage() {
     const t = useTranslations()
@@ -181,6 +182,9 @@ export default function LandingPage() {
                     ))}
                 </div>
             </div>
+
+            {/* News Section */}
+            <LandingNewsSection />
 
             {/* About Link */}
             <div className="text-center pt-8 border-t border-gray-200 dark:border-slate-700">

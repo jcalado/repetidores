@@ -17,7 +17,7 @@ import {
     XMarkIcon,
 } from '@heroicons/react/24/outline'
 import { Navigation } from 'lucide-react'
-import { BookOpen, Calculator, Volume2, Radio, RadioTowerIcon } from 'lucide-react'
+import { BookOpen, Calculator, Newspaper, Volume2, Radio, RadioTowerIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -162,6 +162,16 @@ export default function Header() {
                             }`}
                     >
                         {t('nav.events')}
+                    </Link>
+
+                    <Link
+                        href="/noticias"
+                        className={`text-sm/6 font-semibold transition-colors ${isCurrent('/noticias')
+                            ? 'text-ship-cove-600 dark:text-ship-cove-400'
+                            : 'text-slate-700 hover:text-ship-cove-600 dark:text-slate-200 dark:hover:text-ship-cove-400'
+                            }`}
+                    >
+                        {t('nav.news')}
                     </Link>
 
                     <Popover className="relative">
@@ -333,6 +343,27 @@ export default function Header() {
                                             />
                                         </div>
                                         {t('nav.events')}
+                                    </Link>
+                                    <Link
+                                        href="/noticias"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className={`-mx-3 flex items-center gap-x-4 rounded-lg p-3 text-base/7 font-semibold transition-colors ${isCurrent('/noticias')
+                                            ? 'bg-ship-cove-50 text-ship-cove-600 dark:bg-ship-cove-900/20 dark:text-ship-cove-400'
+                                            : 'text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-slate-800/50'
+                                            }`}
+                                    >
+                                        <div className={`flex size-10 flex-none items-center justify-center rounded-lg transition-colors ${isCurrent('/noticias')
+                                            ? 'bg-white dark:bg-slate-800'
+                                            : 'bg-gray-50 dark:bg-slate-800'
+                                            }`}>
+                                            <Newspaper
+                                                className={`size-5 ${isCurrent('/noticias')
+                                                    ? 'text-ship-cove-600 dark:text-ship-cove-400'
+                                                    : 'text-gray-600 dark:text-gray-400'
+                                                    }`}
+                                            />
+                                        </div>
+                                        {t('nav.news')}
                                     </Link>
                                 </div>
                                 <div className="space-y-2 py-6">
