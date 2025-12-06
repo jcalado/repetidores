@@ -57,7 +57,7 @@ export default async function EventDetailPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <EventDetailsClient event={event} />
+      <EventDetailsClient event={event} allEvents={events} />
     </div>
   );
 }
