@@ -15,6 +15,7 @@ import {
   CalendarClock,
   Calendar as CalendarIcon,
   CalendarDays,
+  ChevronRight,
   Clock,
   ExternalLink,
   Globe2,
@@ -31,6 +32,7 @@ import {
   Table as TableIcon,
   X
 } from "lucide-react";
+import Link from "next/link";
 import PageHeader from "@/components/PageHeader";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
@@ -234,84 +236,93 @@ function EventCard({ evt, t }: { evt: EventItem; t: (key: string) => string }) {
   const tagColors = getTagColors(evt.tag);
 
   return (
-    <Card className="group relative rounded-2xl shadow-sm transition-shadow hover:shadow-md hover:border-primary/30 focus-within:ring-2 focus-within:ring-ring">
-      <CardHeader className="space-y-2 pb-3">
-        <div className="flex items-start gap-3">
-          <div className={`shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full ${tagColors.bg} ${tagColors.text}`}>
-            <TagIcon tag={evt.tag} />
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start gap-2">
-              <CardTitle className="text-base sm:text-lg font-semibold truncate leading-tight inline-flex items-center gap-1.5">
-                {evt.isFeatured && <Star className="w-4 h-4 text-yellow-500 fill-yellow-500 shrink-0" />}
-                {evt.title}
-              </CardTitle>
-              {evt.url && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <a
-                        href={evt.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="ml-auto inline-flex items-center h-6 px-2 rounded-md border text-xs text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"
-                        aria-label={t('openEventPage')}
-                      >
-                        <ExternalLink className="w-3.5 h-3.5 mr-1" /> {t('info')}
-                      </a>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{t('openEventPage')}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
+    <Link href={`/events/${encodeURIComponent(evt.id)}/`} className="block">
+      <Card className="group relative rounded-2xl shadow-sm transition-all hover:shadow-md hover:border-primary/30 focus-within:ring-2 focus-within:ring-ring cursor-pointer">
+        <CardHeader className="space-y-2 pb-3">
+          <div className="flex items-start gap-3">
+            <div className={`shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full ${tagColors.bg} ${tagColors.text}`}>
+              <TagIcon tag={evt.tag} />
             </div>
-            <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm text-muted-foreground">
-              <span className="inline-flex items-center">
-                <CalendarIcon className="w-4 h-4 mr-1" /> {formatDateTime(evt.start)}
-              </span>
-              {evt.location && (
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start gap-2">
+                <CardTitle className="text-base sm:text-lg font-semibold truncate leading-tight inline-flex items-center gap-1.5 group-hover:text-primary transition-colors">
+                  {evt.isFeatured && <Star className="w-4 h-4 text-yellow-500 fill-yellow-500 shrink-0" />}
+                  {evt.title}
+                </CardTitle>
+                {evt.url && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            window.open(evt.url, '_blank');
+                          }}
+                          className="ml-auto inline-flex items-center h-6 px-2 rounded-md border text-xs text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors cursor-pointer"
+                          aria-label={t('openEventPage')}
+                        >
+                          <ExternalLink className="w-3.5 h-3.5 mr-1" /> {t('info')}
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{t('openEventPage')}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+              </div>
+              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm text-muted-foreground">
                 <span className="inline-flex items-center">
-                  <MapPin className="w-4 h-4 mr-1" /> {evt.location}
+                  <CalendarIcon className="w-4 h-4 mr-1" /> {formatDateTime(evt.start)}
                 </span>
-              )}
-              {evt.brandmeister && evt.talkgroup && (
-                <a
-                  href={`https://hose.brandmeister.network/?tg=${evt.talkgroup}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-xs bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-                  title={t('brandmeister.listen')}
-                >
-                  <Radio className="w-3 h-3" /> TG {evt.talkgroup}
-                </a>
-              )}
-              <span className={`rounded-full px-2 py-0.5 text-[10px] sm:text-xs inline-flex items-center gap-1 border ${tagColors.bg} ${tagColors.text} ${tagColors.border}`}>
-                <TagIcon tag={evt.tag} className="w-3 h-3" /> {evt.tag ?? t('event')}
-              </span>
-            </div>
-            {/* Time remaining display */}
-            <div className="mt-2 text-sm font-medium">
-              {isInProgress ? (
-                <span className="inline-flex items-center gap-1.5 text-green-600 dark:text-green-400">
-                  <Activity className="w-4 h-4 animate-pulse" />
-                  {t('endsIn')} {formatSmartCountdown(remainingToEnd, t)}
+                {evt.location && (
+                  <span className="inline-flex items-center">
+                    <MapPin className="w-4 h-4 mr-1" /> {evt.location}
+                  </span>
+                )}
+                {evt.brandmeister && evt.talkgroup && (
+                  <span
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      window.open(`https://hose.brandmeister.network/?tg=${evt.talkgroup}`, '_blank');
+                    }}
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-xs bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors cursor-pointer"
+                    title={t('brandmeister.listen')}
+                  >
+                    <Radio className="w-3 h-3" /> TG {evt.talkgroup}
+                  </span>
+                )}
+                <span className={`rounded-full px-2 py-0.5 text-[10px] sm:text-xs inline-flex items-center gap-1 border ${tagColors.bg} ${tagColors.text} ${tagColors.border}`}>
+                  <TagIcon tag={evt.tag} className="w-3 h-3" /> {evt.tag ?? t('event')}
                 </span>
-              ) : hasEnded ? (
-                <span className="inline-flex items-center gap-1.5 text-muted-foreground">
-                  <Clock className="w-4 h-4" /> {t('ended')}
-                </span>
-              ) : (
-                <span className={`inline-flex items-center gap-1.5 ${tagColors.text}`}>
-                  <Clock className="w-4 h-4" /> {t('startsIn')} {formatSmartCountdown(remainingToStart, t)}
-                </span>
-              )}
+              </div>
+              {/* Time remaining display */}
+              <div className="mt-2 flex items-center justify-between">
+                <div className="text-sm font-medium">
+                  {isInProgress ? (
+                    <span className="inline-flex items-center gap-1.5 text-green-600 dark:text-green-400">
+                      <Activity className="w-4 h-4 animate-pulse" />
+                      {t('endsIn')} {formatSmartCountdown(remainingToEnd, t)}
+                    </span>
+                  ) : hasEnded ? (
+                    <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+                      <Clock className="w-4 h-4" /> {t('ended')}
+                    </span>
+                  ) : (
+                    <span className={`inline-flex items-center gap-1.5 ${tagColors.text}`}>
+                      <Clock className="w-4 h-4" /> {t('startsIn')} {formatSmartCountdown(remainingToStart, t)}
+                    </span>
+                  )}
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+              </div>
             </div>
           </div>
-        </div>
-      </CardHeader>
-    </Card>
+        </CardHeader>
+      </Card>
+    </Link>
   );
 }
 
@@ -530,6 +541,7 @@ function EventsTable({ events, t }: { events: EventItem[]; t: (key: string) => s
             <TableHead>{t('tableHeaders.tag')}</TableHead>
             <TableHead>{t('tableHeaders.location')}</TableHead>
             <TableHead>{t('tableHeaders.countdown')}</TableHead>
+            <TableHead className="w-10"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -545,10 +557,11 @@ function EventsTable({ events, t }: { events: EventItem[]; t: (key: string) => s
             const tagColors = getTagColors(e.tag);
 
             return (
-              <TableRow key={e.id}>
+              <TableRow key={e.id} className="group cursor-pointer hover:bg-muted/50" onClick={() => window.location.href = `/events/${encodeURIComponent(e.id)}/`}>
                 <TableCell className="font-medium flex items-center gap-2">
                   {e.isFeatured && <Star className="w-4 h-4 text-yellow-500 fill-yellow-500 shrink-0" />}
-                  <span className={tagColors.text}><TagIcon tag={e.tag} /></span> {e.title}
+                  <span className={tagColors.text}><TagIcon tag={e.tag} /></span>
+                  <span className="group-hover:text-primary transition-colors">{e.title}</span>
                 </TableCell>
                 <TableCell>{formatDateTime(e.start)}</TableCell>
                 <TableCell>
@@ -560,15 +573,16 @@ function EventsTable({ events, t }: { events: EventItem[]; t: (key: string) => s
                   <div className="flex flex-wrap items-center gap-2">
                     <span>{e.location ?? "—"}</span>
                     {e.brandmeister && e.talkgroup && (
-                      <a
-                        href={`https://hose.brandmeister.network/?tg=${e.talkgroup}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                      <span
+                        onClick={(ev) => {
+                          ev.stopPropagation();
+                          window.open(`https://hose.brandmeister.network/?tg=${e.talkgroup}`, '_blank');
+                        }}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors cursor-pointer"
                         title={t('brandmeister.listen')}
                       >
                         <Radio className="w-3 h-3" /> TG {e.talkgroup}
-                      </a>
+                      </span>
                     )}
                   </div>
                 </TableCell>
@@ -580,6 +594,9 @@ function EventsTable({ events, t }: { events: EventItem[]; t: (key: string) => s
                   ) : (
                     <span className={tagColors.text}>{formatSmartCountdown(remainingToStart, t)}</span>
                   )}
+                </TableCell>
+                <TableCell>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
                 </TableCell>
               </TableRow>
             );

@@ -399,6 +399,15 @@
         "brandmeister": {
             "listen": "Ouvir no BrandMeister",
             "talkgroup": "TG {tg}"
+        },
+        "detailsPage": {
+            "backToEvents": "Voltar aos eventos",
+            "featured": "Em Destaque",
+            "startTime": "Início",
+            "endTime": "Fim",
+            "location": "Localização",
+            "visitWebsite": "Visitar Website",
+            "share": "Partilhar"
         }
     },
     "about": {
