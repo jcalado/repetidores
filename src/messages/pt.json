@@ -687,6 +687,10 @@
         "left": "À esquerda",
         "behind": "Para trás"
     },
+    "offline": {
+        "usingCache": "Modo offline — dados de {age}",
+        "noData": "Sem conexão — dados indisponíveis"
+    },
     "nearest": {
         "title": "Repetidor Mais Próximo",
         "description": "Encontre os repetidores mais próximos da sua localização atual",

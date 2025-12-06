@@ -3,11 +3,17 @@
 import * as React from "react";
 import { Repeater } from "@/app/columns";
 import { fetchRepeaters } from "@/lib/repeaters";
+import {
+  saveRepeatersCache,
+  getRepeatersCache,
+  getCacheTimestamp,
+} from "@/lib/offline-storage";
 
 type RepeatersContextType = {
   repeaters: Repeater[];
   isRefreshing: boolean;
   fetchError: string | null;
+  lastSyncTime: number | null;
   refreshRepeaters: () => Promise<void>;
 };
 
@@ -30,6 +36,7 @@ export default function RepetidoresProvider({ initialData, children }: Props) {
   const [repeaters, setRepeaters] = React.useState<Repeater[]>(initialData);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
   const [fetchError, setFetchError] = React.useState<string | null>(null);
+  const [lastSyncTime, setLastSyncTime] = React.useState<number | null>(null);
 
   const refreshRepeaters = React.useCallback(async () => {
     setIsRefreshing(true);
@@ -37,6 +44,9 @@ export default function RepetidoresProvider({ initialData, children }: Props) {
     try {
       const data = await fetchRepeaters();
       setRepeaters(data);
+      // Save to cache on successful fetch
+      saveRepeatersCache(data);
+      setLastSyncTime(Date.now());
     } catch (err) {
       console.error("Failed to refresh repeaters:", err);
       setFetchError("Failed to refresh repeaters");
@@ -45,16 +55,37 @@ export default function RepetidoresProvider({ initialData, children }: Props) {
     }
   }, []);
 
-  // Fetch fresh data on mount
+  // On mount: Load cache first, then fetch fresh data
   React.useEffect(() => {
+    // Try to load cached data immediately for instant UI
+    const cached = getRepeatersCache();
+    const cachedTimestamp = getCacheTimestamp();
+
+    if (cached && cached.length > 0) {
+      setRepeaters(cached);
+      setLastSyncTime(cachedTimestamp);
+    }
+
+    // Then fetch fresh data from network
     fetchRepeaters()
-      .then(setRepeaters)
-      .catch((err) => console.error("Failed to refresh repeaters:", err));
+      .then((data) => {
+        setRepeaters(data);
+        saveRepeatersCache(data);
+        setLastSyncTime(Date.now());
+        setFetchError(null);
+      })
+      .catch((err) => {
+        console.error("Failed to refresh repeaters:", err);
+        // If we have cached data, don't show an error - just use the cache
+        if (!cached || cached.length === 0) {
+          setFetchError("Failed to fetch repeaters");
+        }
+      });
   }, []);
 
   return (
     <RepeatersContext.Provider
-      value={{ repeaters, isRefreshing, fetchError, refreshRepeaters }}
+      value={{ repeaters, isRefreshing, fetchError, lastSyncTime, refreshRepeaters }}
     >
       {children}
     </RepeatersContext.Provider>
