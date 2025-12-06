@@ -6,6 +6,7 @@ import { getTranslations } from "next-intl/server"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import ReactMarkdown from "react-markdown"
 import NewsDetailClient from "./NewsDetailClient"
 
 interface PageProps {
@@ -183,15 +184,9 @@ function RichTextContent({ content }: { content: unknown }) {
     }
   }
 
-  // Fallback: render as plain text if it's a string
+  // Render markdown content if it's a string
   if (typeof content === "string") {
-    return (
-      <div className="whitespace-pre-wrap">
-        {content.split("\n\n").map((paragraph, i) => (
-          <p key={i}>{paragraph}</p>
-        ))}
-      </div>
-    )
+    return <ReactMarkdown>{content}</ReactMarkdown>
   }
 
   return null
