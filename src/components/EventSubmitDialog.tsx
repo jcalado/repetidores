@@ -212,7 +212,7 @@ export default function EventSubmitDialog() {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="gap-2">
+        <Button variant="outline" size="lg" className="gap-2">
           <CalendarPlus className="h-4 w-4" />
           {t('button')}
         </Button>
