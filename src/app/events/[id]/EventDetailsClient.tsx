@@ -449,7 +449,7 @@ export default function EventDetailsClient({ event, allEvents = [] }: EventDetai
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <Card className={`rounded-2xl overflow-hidden border-2 ${tagColors.border} ${event.isFeatured ? 'ring-2 ring-yellow-400/50' : ''}`}>
+        <Card className={`rounded-2xl overflow-hidden border-2 py-0 ${tagColors.border} ${event.isFeatured ? 'ring-2 ring-yellow-400/50' : ''}`}>
           {/* Hero header */}
           <div className={`relative bg-gradient-to-br ${tagColors.gradient} p-6 sm:p-8`}>
             {/* Featured ribbon */}
