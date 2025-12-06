@@ -47,7 +47,7 @@ export default function LandingPage() {
     ]
 
     const tools = [
-        { name: t('nav.iss'), description: t('nav.issDescription'), href: '/iss', icon: GlobeAmericasIcon },
+        { name: t('nav.satellites'), description: t('nav.satellitesDescription'), href: '/satelites', icon: GlobeAmericasIcon },
         { name: t('nav.qth'), description: t('nav.qthDescription'), href: '/qth', icon: MapPinIcon },
         { name: t('nav.propagation'), description: t('nav.propagationDescription'), href: '/propagation', icon: SignalIcon },
         { name: t('nav.nato'), description: t('nav.natoDescription'), href: '/nato', icon: LanguageIcon },

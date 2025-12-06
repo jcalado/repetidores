@@ -1,17 +1,21 @@
 'use client';
 
-import dynamic from 'next/dynamic';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
-// Disable SSR for this page since it uses browser APIs (localStorage, navigator.geolocation)
-const ISSPassCalculator = dynamic(
-  () => import('@/components/ISSPassCalculator').then((mod) => ({ default: mod.ISSPassCalculator })),
-  { ssr: false }
-);
-
+// Redirect old /iss route to new /satelites route
 export default function ISSPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace('/satelites');
+  }, [router]);
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <ISSPassCalculator />
+      <p className="text-center text-slate-600 dark:text-slate-400">
+        Redirecionando para /satelites...
+      </p>
     </div>
   );
 }
