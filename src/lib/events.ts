@@ -1,4 +1,4 @@
-import type { EventItem, EventsAPIResponse } from '@/components/HamRadioEventsCountdown';
+import type { EventsAPIResponse } from '@/components/HamRadioEventsCountdown';
 
 const API_BASE_URL = (() => {
   const source =

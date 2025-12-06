@@ -87,7 +87,7 @@ export function useDeviceCompass() {
           error: permission === 'denied' ? 'Permissão de bússola negada' : null,
         }));
         return permission === 'granted';
-      } catch (error) {
+      } catch {
         setState(prev => ({
           ...prev,
           permissionState: 'denied',

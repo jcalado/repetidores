@@ -243,7 +243,7 @@ function LexicalNodeRenderer({ node }: { node: LexicalNode }) {
 
   // Headings
   if (type === "heading") {
-    const HeadingTag = (tag || "h2") as keyof JSX.IntrinsicElements
+    const HeadingTag = (tag || "h2") as keyof React.JSX.IntrinsicElements
     return (
       <HeadingTag>
         {children?.map((child, i) => (

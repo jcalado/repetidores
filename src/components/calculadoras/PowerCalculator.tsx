@@ -11,8 +11,6 @@ import {
   dbmToWatts,
   wattsToDbw,
   dbwToWatts,
-  dbmToDbw,
-  dbwToDbm,
   formatNumber,
 } from "@/lib/rf-calculations";
 

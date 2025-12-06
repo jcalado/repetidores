@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { Navigation2, Compass } from 'lucide-react';
+import { Navigation2 } from 'lucide-react';
 import * as React from 'react';
 
 interface BearingCompassProps {

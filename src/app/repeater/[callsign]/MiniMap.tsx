@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from "react-
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useState, useCallback } from "react";
-import { Maximize2, Minimize2, X } from "lucide-react";
+import { Maximize2, X } from "lucide-react";
 
 // Repeater marker icon (blue)
 const markerIcon = new L.Icon({

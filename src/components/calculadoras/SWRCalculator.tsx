@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import {
   swrToReflectionCoefficient,
   reflectionCoefficientToSwr,
-  swrToReturnLoss,
   returnLossToSwr,
   returnLossToReflectionCoefficient,
   reflectionCoefficientToReturnLoss,
