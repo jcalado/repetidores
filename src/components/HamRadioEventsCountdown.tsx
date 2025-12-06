@@ -14,6 +14,7 @@ import {
   Activity,
   CalendarClock,
   Calendar as CalendarIcon,
+  CalendarDays,
   Clock,
   ExternalLink,
   Globe2,
@@ -30,6 +31,7 @@ import {
   Table as TableIcon,
   X
 } from "lucide-react";
+import PageHeader from "@/components/PageHeader";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { fetchEvents } from "@/lib/events";
@@ -900,6 +902,12 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
 
   return (
     <div className="p-4 md:p-8 max-w-6xl mx-auto">
+      <PageHeader
+        title={t('title') || 'Eventos'}
+        description={t('description') || 'Eventos de radioamador'}
+        icon={CalendarDays}
+      />
+
       {/* Filter Section */}
       <Card className="rounded-2xl mb-6">
         <CardContent className="p-4 space-y-4">

@@ -310,6 +310,8 @@
         }
     },
     "events": {
+        "title": "Eventos",
+        "description": "Contests, nets e encontros de radioamador",
         "tabs": {
             "cards": "Cartões",
             "table": "Tabela",
