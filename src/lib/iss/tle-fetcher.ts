@@ -1,12 +1,19 @@
-// TLE (Two-Line Element) data fetcher for ISS
+// TLE (Two-Line Element) data fetcher for satellites
 // Fetches orbital parameters from CelesTrak with localStorage caching
 
 import { TLEData } from './types';
 
-const ISS_CATALOG_NUMBER = '25544';
-const CELESTRAK_URL = `https://celestrak.org/NORAD/elements/gp.php?CATNR=${ISS_CATALOG_NUMBER}&FORMAT=TLE`;
-const CACHE_KEY = 'iss_tle_cache';
+const DEFAULT_NORAD_ID = '25544'; // ISS
+const CACHE_KEY_PREFIX = 'satellite_tle_cache_';
 const CACHE_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+function getCelestrakUrl(noradId: string): string {
+  return `https://celestrak.org/NORAD/elements/gp.php?CATNR=${noradId}&FORMAT=TLE`;
+}
+
+function getCacheKey(noradId: string): string {
+  return `${CACHE_KEY_PREFIX}${noradId}`;
+}
 
 export interface TLEFetchResult {
   data: TLEData | null;
@@ -15,13 +22,17 @@ export interface TLEFetchResult {
 }
 
 /**
- * Fetches ISS TLE data with localStorage caching
+ * Fetches satellite TLE data with localStorage caching
  * Cache expires after 24 hours
+ * @param noradId NORAD catalog number (defaults to ISS)
+ * @param forceRefresh Force fetch from network
  */
-export async function fetchISSTLE(forceRefresh = false): Promise<TLEFetchResult> {
+export async function fetchSatelliteTLE(noradId: string = DEFAULT_NORAD_ID, forceRefresh = false): Promise<TLEFetchResult> {
+  const cacheKey = getCacheKey(noradId);
+
   // Check cache first (unless force refresh)
   if (!forceRefresh && typeof window !== 'undefined') {
-    const cached = getCachedTLE();
+    const cached = getCachedTLE(cacheKey);
     if (cached) {
       return { data: cached, cached: true };
     }
@@ -29,7 +40,7 @@ export async function fetchISSTLE(forceRefresh = false): Promise<TLEFetchResult>
 
   // Fetch fresh TLE data
   try {
-    const response = await fetch(CELESTRAK_URL, {
+    const response = await fetch(getCelestrakUrl(noradId), {
       method: 'GET',
       headers: {
         'Accept': 'text/plain',
@@ -64,17 +75,17 @@ export async function fetchISSTLE(forceRefresh = false): Promise<TLEFetchResult>
 
     // Cache the result
     if (typeof window !== 'undefined') {
-      cacheTLE(tleData);
+      cacheTLE(cacheKey, tleData);
     }
 
     return { data: tleData, cached: false };
 
   } catch (error) {
-    console.error('Error fetching ISS TLE:', error);
+    console.error('Error fetching satellite TLE:', error);
 
     // Try to return cached data even if expired
     if (typeof window !== 'undefined') {
-      const cached = getCachedTLE(true); // ignore expiry
+      const cached = getCachedTLE(cacheKey, true); // ignore expiry
       if (cached) {
         return {
           data: cached,
@@ -93,11 +104,18 @@ export async function fetchISSTLE(forceRefresh = false): Promise<TLEFetchResult>
 }
 
 /**
+ * Fetches ISS TLE data (backward compatibility wrapper)
+ */
+export async function fetchISSTLE(forceRefresh = false): Promise<TLEFetchResult> {
+  return fetchSatelliteTLE(DEFAULT_NORAD_ID, forceRefresh);
+}
+
+/**
  * Gets cached TLE data from localStorage
  */
-function getCachedTLE(ignoreExpiry = false): TLEData | null {
+function getCachedTLE(cacheKey: string, ignoreExpiry = false): TLEData | null {
   try {
-    const cached = localStorage.getItem(CACHE_KEY);
+    const cached = localStorage.getItem(cacheKey);
     if (!cached) return null;
 
     const tleData: TLEData = JSON.parse(cached);
@@ -120,9 +138,9 @@ function getCachedTLE(ignoreExpiry = false): TLEData | null {
 /**
  * Caches TLE data in localStorage
  */
-function cacheTLE(tleData: TLEData): void {
+function cacheTLE(cacheKey: string, tleData: TLEData): void {
   try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify(tleData));
+    localStorage.setItem(cacheKey, JSON.stringify(tleData));
   } catch (error) {
     console.error('Error caching TLE:', error);
   }
@@ -176,11 +194,11 @@ function validateTLEChecksum(line: string): boolean {
 }
 
 /**
- * Clears TLE cache
+ * Clears TLE cache for a specific satellite
  */
-export function clearTLECache(): void {
+export function clearTLECache(noradId: string = DEFAULT_NORAD_ID): void {
   try {
-    localStorage.removeItem(CACHE_KEY);
+    localStorage.removeItem(getCacheKey(noradId));
   } catch (error) {
     console.error('Error clearing TLE cache:', error);
   }
@@ -190,8 +208,8 @@ export function clearTLECache(): void {
  * Gets the age of cached TLE data in milliseconds
  * Returns null if no cache exists
  */
-export function getCacheAge(): number | null {
-  const cached = getCachedTLE(true); // ignore expiry
+export function getCacheAge(noradId: string = DEFAULT_NORAD_ID): number | null {
+  const cached = getCachedTLE(getCacheKey(noradId), true); // ignore expiry
   if (!cached) return null;
   return Date.now() - cached.fetchedAt;
 }

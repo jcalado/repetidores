@@ -1,12 +1,17 @@
 'use client';
 
+import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { TLEData, ObserverLocation, SatellitePosition, LookAngles } from '@/lib/iss/types';
 import { azimuthToCardinal } from '@/lib/iss/satellite-calculations';
 import { formatDistanceToNow } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { Satellite, Compass, TrendingUp, Navigation, Clock, Eye } from 'lucide-react';
+import { useDeviceCompass } from '@/hooks/useDeviceCompass';
+import { useTranslations } from 'next-intl';
+import { cn } from '@/lib/utils';
 
 interface RealTimeTrackerProps {
   tle: TLEData | null;
@@ -23,7 +28,27 @@ export function RealTimeTracker({
   currentLookAngles,
   nextPassTime,
 }: RealTimeTrackerProps) {
+  const tCompass = useTranslations('compass');
+  const compass = useDeviceCompass();
   const isOverhead = currentLookAngles ? currentLookAngles.elevation > 0 : false;
+
+  // Calculate relative bearing when compass is active
+  const relativeBearing = React.useMemo(() => {
+    if (!currentLookAngles || compass.heading === null) return null;
+    let relative = currentLookAngles.azimuth - compass.heading;
+    while (relative > 180) relative -= 360;
+    while (relative < -180) relative += 360;
+    return relative;
+  }, [currentLookAngles, compass.heading]);
+
+  // Get direction instruction
+  const getDirectionInstruction = (rel: number): string => {
+    const abs = Math.abs(rel);
+    if (abs <= 15) return tCompass('ahead');
+    if (abs <= 45) return rel > 0 ? tCompass('slightRight') : tCompass('slightLeft');
+    if (abs <= 135) return rel > 0 ? tCompass('right') : tCompass('left');
+    return tCompass('behind');
+  };
 
   if (!currentPosition || !currentLookAngles) {
     return (
@@ -44,22 +69,43 @@ export function RealTimeTracker({
         : 'bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950'
       }>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <CardTitle className="flex items-center gap-2">
               <Satellite className="h-5 w-5" />
               Estado Atual
             </CardTitle>
-            {isOverhead ? (
-              <Badge className="bg-green-600 hover:bg-green-700 animate-pulse">
-                <Eye className="h-3 w-3 mr-1" />
-                VISÍVEL AGORA
-              </Badge>
-            ) : (
-              <Badge variant="secondary">
-                Abaixo do Horizonte
-              </Badge>
-            )}
+            <div className="flex items-center gap-2">
+              {compass.isSupported && (
+                <Button
+                  variant={compass.isEnabled ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => compass.toggle()}
+                  className={cn(
+                    "gap-1",
+                    compass.isEnabled && "bg-green-600 hover:bg-green-700"
+                  )}
+                >
+                  <Compass className={cn("h-3 w-3", compass.isEnabled && "animate-pulse")} />
+                  <span className="hidden sm:inline">
+                    {compass.isEnabled ? tCompass('disable') : tCompass('enable')}
+                  </span>
+                </Button>
+              )}
+              {isOverhead ? (
+                <Badge className="bg-green-600 hover:bg-green-700 animate-pulse">
+                  <Eye className="h-3 w-3 mr-1" />
+                  VISÍVEL AGORA
+                </Badge>
+              ) : (
+                <Badge variant="secondary">
+                  Abaixo do Horizonte
+                </Badge>
+              )}
+            </div>
           </div>
+          {compass.error && (
+            <p className="text-sm text-red-500 mt-1">{compass.error}</p>
+          )}
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
@@ -72,10 +118,23 @@ export function RealTimeTracker({
                 {currentLookAngles.elevation.toFixed(1)}°
               </div>
             </div>
-            <div className="space-y-1">
-              <div className="text-slate-600 dark:text-slate-400 flex items-center gap-1">
-                <Compass className="h-3 w-3" />
+            <div className={cn(
+              "space-y-1 p-2 -m-2 rounded-lg transition-all",
+              compass.isEnabled && "bg-green-100 dark:bg-green-900/30"
+            )}>
+              <div className={cn(
+                "flex items-center gap-1",
+                compass.isEnabled ? "text-green-700 dark:text-green-400" : "text-slate-600 dark:text-slate-400"
+              )}>
+                <Compass className="h-3 w-3" style={{
+                  transform: compass.isEnabled && relativeBearing !== null
+                    ? `rotate(${relativeBearing}deg)`
+                    : `rotate(${currentLookAngles.azimuth}deg)`
+                }} />
                 Azimute
+                {compass.isEnabled && (
+                  <span className="text-[10px] font-medium ml-1">(LIVE)</span>
+                )}
               </div>
               <div className="text-2xl font-bold font-mono">
                 {currentLookAngles.azimuth.toFixed(1)}°
@@ -83,6 +142,16 @@ export function RealTimeTracker({
               <div className="text-xs text-slate-600 dark:text-slate-400">
                 {azimuthToCardinal(currentLookAngles.azimuth)}
               </div>
+              {compass.isEnabled && relativeBearing !== null && (
+                <div className={cn(
+                  "text-xs font-medium",
+                  Math.abs(relativeBearing) <= 15
+                    ? "text-green-600 dark:text-green-400"
+                    : "text-orange-600 dark:text-orange-400"
+                )}>
+                  {getDirectionInstruction(relativeBearing)}
+                </div>
+              )}
             </div>
             <div className="space-y-1">
               <div className="text-slate-600 dark:text-slate-400 flex items-center gap-1">

@@ -194,6 +194,60 @@ export function mmToMeters(mm: number): number {
 }
 
 // =====================
+// Power Conversions
+// =====================
+
+/**
+ * Convert Watts to dBm
+ * dBm = 10 × log₁₀(watts × 1000)
+ */
+export function wattsToDbm(watts: number): number {
+  if (watts <= 0) return -Infinity;
+  return 10 * Math.log10(watts * 1000);
+}
+
+/**
+ * Convert dBm to Watts
+ * watts = 10^(dBm/10) / 1000
+ */
+export function dbmToWatts(dbm: number): number {
+  return Math.pow(10, dbm / 10) / 1000;
+}
+
+/**
+ * Convert Watts to dBW
+ * dBW = 10 × log₁₀(watts)
+ */
+export function wattsToDbw(watts: number): number {
+  if (watts <= 0) return -Infinity;
+  return 10 * Math.log10(watts);
+}
+
+/**
+ * Convert dBW to Watts
+ * watts = 10^(dBW/10)
+ */
+export function dbwToWatts(dbw: number): number {
+  return Math.pow(10, dbw / 10);
+}
+
+/**
+ * Convert dBm to dBW
+ * dBW = dBm - 30
+ */
+export function dbmToDbw(dbm: number): number {
+  return dbm - 30;
+}
+
+/**
+ * Convert dBW to dBm
+ * dBm = dBW + 30
+ */
+export function dbwToDbm(dbw: number): number {
+  return dbw + 30;
+}
+
+// =====================
 // Formatting Helpers
 // =====================
 

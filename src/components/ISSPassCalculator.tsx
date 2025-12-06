@@ -4,9 +4,10 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { RefreshCw, Satellite, Map, Eye, Activity, AlertCircle } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { RefreshCw, Satellite, Map, Eye, Activity, AlertCircle, Radio } from 'lucide-react';
 import { ObserverLocation, TLEData, ISSPass, PassFilters as PassFiltersType, SatellitePosition } from '@/lib/iss/types';
-import { fetchISSTLE, getCacheAge, formatCacheAge } from '@/lib/iss/tle-fetcher';
+import { fetchSatelliteTLE, getCacheAge, formatCacheAge } from '@/lib/iss/tle-fetcher';
 import { predictPasses } from '@/lib/iss/pass-predictor';
 import { enrichPassesWithVisibility, filterVisiblePasses } from '@/lib/iss/visibility-calculator';
 import { calculateSatellitePosition, calculateLookAngles } from '@/lib/iss/satellite-calculations';
@@ -17,8 +18,10 @@ import { PassList } from '@/components/iss/PassList';
 import { SkyChart } from '@/components/iss/SkyChart';
 import { GroundTrack } from '@/components/iss/GroundTrack';
 import { RealTimeTracker } from '@/components/iss/RealTimeTracker';
+import { SATELLITES, SatelliteInfo, DEFAULT_SATELLITE } from '@/lib/satellites/satellite-catalog';
 
 export function ISSPassCalculator() {
+  const [selectedSatellite, setSelectedSatellite] = useState<SatelliteInfo>(DEFAULT_SATELLITE);
   const [location, setLocation] = useState<ObserverLocation | null>(null);
   const [tle, setTle] = useState<TLEData | null>(null);
   const [allPasses, setAllPasses] = useState<ISSPass[]>([]); // Unfiltered passes
@@ -112,15 +115,34 @@ export function ISSPassCalculator() {
     return nextPass ? nextPass.startTime : null;
   }, [tle, location, filteredPasses, currentTime]);
 
-  // Load TLE data on mount
+  // Load TLE function
+  const loadTLE = useCallback(async (forceRefresh = false) => {
+    setIsLoading(true);
+    setError(null);
+
+    const result = await fetchSatelliteTLE(selectedSatellite.noradId, forceRefresh);
+
+    if (result.error) {
+      setError(result.error);
+    }
+
+    if (result.data) {
+      setTle(result.data);
+      setTleAge(Date.now() - result.data.fetchedAt);
+    }
+
+    setIsLoading(false);
+  }, [selectedSatellite.noradId]);
+
+  // Load TLE data on mount and when satellite changes
   useEffect(() => {
     loadTLE();
     // Update cache age every minute
     const interval = setInterval(() => {
-      setTleAge(getCacheAge());
+      setTleAge(getCacheAge(selectedSatellite.noradId));
     }, 60000);
     return () => clearInterval(interval);
-  }, []);
+  }, [loadTLE, selectedSatellite.noradId]);
 
   // Calculate passes when location or TLE changes (expensive operation)
   const calculatePasses = useCallback(async () => {
@@ -163,39 +185,30 @@ export function ISSPassCalculator() {
     }
   }, [location, tle, calculatePasses]);
 
-  const loadTLE = async (forceRefresh = false) => {
-    setIsLoading(true);
-    setError(null);
-
-    const result = await fetchISSTLE(forceRefresh);
-
-    if (result.error) {
-      setError(result.error);
-    }
-
-    if (result.data) {
-      setTle(result.data);
-      setTleAge(Date.now() - result.data.fetchedAt);
-    }
-
-    setIsLoading(false);
-  };
-
   const handleRefreshTLE = () => {
     loadTLE(true);
+  };
+
+  const handleSatelliteChange = (satelliteId: string) => {
+    const sat = SATELLITES.find(s => s.id === satelliteId);
+    if (sat) {
+      setSelectedSatellite(sat);
+      setTle(null);
+      setAllPasses([]);
+    }
   };
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold flex items-center gap-2">
             <Satellite className="h-8 w-8" />
-            Passagens da ISS
+            Passagens de Satélites
           </h1>
           <p className="text-slate-600 dark:text-slate-400 mt-1">
-            Previsões de passagens da Estação Espacial Internacional
+            Previsões de passagens de satélites de radioamador
           </p>
         </div>
         <Button
@@ -207,6 +220,44 @@ export function ISSPassCalculator() {
           <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
           Atualizar TLE
         </Button>
+      </div>
+
+      {/* Satellite Selector */}
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+        <div className="flex-1 max-w-xs">
+          <Select value={selectedSatellite.id} onValueChange={handleSatelliteChange}>
+            <SelectTrigger>
+              <SelectValue placeholder="Selecionar satélite" />
+            </SelectTrigger>
+            <SelectContent>
+              {SATELLITES.map((sat) => (
+                <SelectItem key={sat.id} value={sat.id}>
+                  {sat.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        {selectedSatellite && (
+          <div className="flex flex-wrap gap-2 text-sm">
+            {selectedSatellite.mode && (
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
+                <Radio className="h-3 w-3" />
+                {selectedSatellite.mode}
+              </span>
+            )}
+            {selectedSatellite.downlink && (
+              <span className="px-2 py-1 rounded-md bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300">
+                ↓ {selectedSatellite.downlink}
+              </span>
+            )}
+            {selectedSatellite.uplink && (
+              <span className="px-2 py-1 rounded-md bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300">
+                ↑ {selectedSatellite.uplink}
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* TLE Status */}

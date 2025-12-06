@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { Navigation2 } from 'lucide-react';
+import { Navigation2, Compass } from 'lucide-react';
 import * as React from 'react';
 
 interface BearingCompassProps {
@@ -12,6 +12,8 @@ interface BearingCompassProps {
   className?: string;
   size?: 'sm' | 'md' | 'lg';
   showDistance?: boolean;
+  deviceHeading?: number | null;
+  isCompassActive?: boolean;
 }
 
 // Calculate bearing from point A to point B
@@ -56,6 +58,23 @@ function getCardinalDirection(bearing: number): string {
   return directions[index];
 }
 
+// Calculate relative bearing (how far to turn from device heading)
+function calculateRelativeBearing(targetBearing: number, deviceHeading: number): number {
+  let relative = targetBearing - deviceHeading;
+  while (relative > 180) relative -= 360;
+  while (relative < -180) relative += 360;
+  return relative;
+}
+
+// Get direction instruction
+function getDirectionInstruction(relativeBearing: number): string {
+  const abs = Math.abs(relativeBearing);
+  if (abs <= 15) return 'Em frente';
+  if (abs <= 45) return relativeBearing > 0 ? 'Vire à direita' : 'Vire à esquerda';
+  if (abs <= 135) return relativeBearing > 0 ? 'À direita' : 'À esquerda';
+  return 'Para trás';
+}
+
 export default function BearingCompass({
   userLat,
   userLon,
@@ -64,10 +83,16 @@ export default function BearingCompass({
   className,
   size = 'md',
   showDistance = true,
+  deviceHeading = null,
+  isCompassActive = false,
 }: BearingCompassProps) {
   const bearing = calculateBearing(userLat, userLon, targetLat, targetLon);
   const distance = calculateDistance(userLat, userLon, targetLat, targetLon);
   const cardinal = getCardinalDirection(bearing);
+
+  // Calculate relative bearing when compass is active
+  const relativeBearing = deviceHeading !== null ? calculateRelativeBearing(bearing, deviceHeading) : null;
+  const instruction = relativeBearing !== null ? getDirectionInstruction(relativeBearing) : null;
 
   const sizeClasses = {
     sm: { container: 'w-16 h-16', arrow: 'h-6 w-6', text: 'text-xs' },
@@ -77,33 +102,56 @@ export default function BearingCompass({
 
   const sizes = sizeClasses[size];
 
+  // When compass is active, rotate the entire rose to match device heading
+  // The arrow then points to the relative direction
+  const roseRotation = deviceHeading !== null ? -deviceHeading : 0;
+  const arrowRotation = deviceHeading !== null ? relativeBearing! : bearing;
+
   return (
     <div className={cn('flex flex-col items-center gap-2', className)}>
       {/* Compass Rose */}
       <div
         className={cn(
-          'relative rounded-full border-2 border-muted bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 shadow-inner',
-          sizes.container
+          'relative rounded-full border-2 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 shadow-inner transition-all duration-300',
+          sizes.container,
+          isCompassActive
+            ? 'border-green-500 ring-2 ring-green-500/30'
+            : 'border-muted'
         )}
       >
-        {/* Cardinal directions */}
-        <span className="absolute top-1 left-1/2 -translate-x-1/2 text-[10px] font-bold text-muted-foreground">N</span>
-        <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[10px] font-medium text-muted-foreground/60">S</span>
-        <span className="absolute left-1 top-1/2 -translate-y-1/2 text-[10px] font-medium text-muted-foreground/60">W</span>
-        <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[10px] font-medium text-muted-foreground/60">E</span>
+        {/* Compass active indicator */}
+        {isCompassActive && (
+          <div className="absolute -top-1 -right-1 w-3 h-3">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+            <span className="relative inline-flex h-3 w-3 rounded-full bg-green-500" />
+          </div>
+        )}
 
-        {/* Compass ticks */}
-        <div className="absolute inset-2 rounded-full border border-muted-foreground/20" />
-
-        {/* Direction arrow */}
+        {/* Cardinal directions - rotate with device heading when active */}
         <div
-          className="absolute inset-0 flex items-center justify-center transition-transform duration-300"
-          style={{ transform: `rotate(${bearing}deg)` }}
+          className="absolute inset-0 transition-transform duration-150"
+          style={{ transform: `rotate(${roseRotation}deg)` }}
+        >
+          <span className="absolute top-1 left-1/2 -translate-x-1/2 text-[10px] font-bold text-muted-foreground">N</span>
+          <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[10px] font-medium text-muted-foreground/60">S</span>
+          <span className="absolute left-1 top-1/2 -translate-y-1/2 text-[10px] font-medium text-muted-foreground/60">W</span>
+          <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[10px] font-medium text-muted-foreground/60">E</span>
+          {/* Compass ticks */}
+          <div className="absolute inset-2 rounded-full border border-muted-foreground/20" />
+        </div>
+
+        {/* Direction arrow - shows relative bearing when compass active, absolute otherwise */}
+        <div
+          className="absolute inset-0 flex items-center justify-center transition-transform duration-150"
+          style={{ transform: `rotate(${arrowRotation}deg)` }}
         >
           <div className="flex flex-col items-center">
             <Navigation2
               className={cn(
-                'text-ship-cove-600 dark:text-ship-cove-400 fill-ship-cove-500 dark:fill-ship-cove-500',
+                'fill-ship-cove-500 dark:fill-ship-cove-500',
+                isCompassActive
+                  ? 'text-green-600 dark:text-green-400'
+                  : 'text-ship-cove-600 dark:text-ship-cove-400',
                 sizes.arrow
               )}
             />
@@ -121,6 +169,18 @@ export default function BearingCompass({
         </div>
         {showDistance && (
           <div className="text-xs text-muted-foreground">{formatDistance(distance)}</div>
+        )}
+        {/* Real-time instruction when compass active */}
+        {isCompassActive && instruction && (
+          <div className={cn(
+            'font-medium mt-1',
+            sizes.text,
+            Math.abs(relativeBearing!) <= 15
+              ? 'text-green-600 dark:text-green-400'
+              : 'text-orange-600 dark:text-orange-400'
+          )}>
+            {instruction}
+          </div>
         )}
       </div>
     </div>

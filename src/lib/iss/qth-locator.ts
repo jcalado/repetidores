@@ -140,3 +140,54 @@ function haversineDistance(coord1: LatLon, coord2: LatLon): number {
 function toRadians(degrees: number): number {
   return degrees * (Math.PI / 180);
 }
+
+function toDegrees(radians: number): number {
+  return radians * (180 / Math.PI);
+}
+
+/**
+ * Calculates the initial bearing from coord1 to coord2
+ * Returns bearing in degrees (0-360, where 0 = North)
+ */
+export function calculateBearing(coord1: LatLon, coord2: LatLon): number {
+  const lat1 = toRadians(coord1.latitude);
+  const lat2 = toRadians(coord2.latitude);
+  const dLon = toRadians(coord2.longitude - coord1.longitude);
+
+  const y = Math.sin(dLon) * Math.cos(lat2);
+  const x = Math.cos(lat1) * Math.sin(lat2) -
+            Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+
+  const bearing = toDegrees(Math.atan2(y, x));
+  return (bearing + 360) % 360;
+}
+
+/**
+ * Calculates bearing between two QTH locators
+ * Returns bearing in degrees (0-360, where 0 = North)
+ */
+export function bearingBetweenQth(qth1: string, qth2: string): number | null {
+  const coord1 = qthToLatLon(qth1);
+  const coord2 = qthToLatLon(qth2);
+
+  if (!coord1 || !coord2) return null;
+
+  return calculateBearing(coord1, coord2);
+}
+
+/**
+ * Converts bearing in degrees to cardinal direction
+ */
+export function bearingToCardinal(bearing: number): string {
+  const directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE',
+                      'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+  const index = Math.round(bearing / 22.5) % 16;
+  return directions[index];
+}
+
+/**
+ * Calculates distance between two coordinates in km
+ */
+export function distanceBetweenCoords(coord1: LatLon, coord2: LatLon): number {
+  return haversineDistance(coord1, coord2);
+}

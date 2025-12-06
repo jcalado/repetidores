@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Calculator, Gauge, Cable, Waves } from "lucide-react";
+import { Calculator, Gauge, Cable, Waves, Zap, MapPin } from "lucide-react";
 
 const calculators = [
   {
@@ -29,6 +29,18 @@ const calculators = [
     href: "/calculadoras/frequencia",
     icon: Waves,
     gradient: "from-purple-500 to-violet-600",
+  },
+  {
+    id: "power",
+    href: "/calculadoras/power",
+    icon: Zap,
+    gradient: "from-yellow-500 to-orange-600",
+  },
+  {
+    id: "distance",
+    href: "/calculadoras/distance",
+    icon: MapPin,
+    gradient: "from-teal-500 to-emerald-600",
   },
 ];
 

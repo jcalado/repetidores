@@ -16,6 +16,7 @@ import {
     TableCellsIcon,
     XMarkIcon,
 } from '@heroicons/react/24/outline'
+import { Navigation } from 'lucide-react'
 import { BookOpen, Calculator, Volume2, Radio, RadioTowerIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
@@ -58,6 +59,7 @@ export default function Header() {
     const repeaters = [
         { name: t('nav.table'), description: 'Lista de repetidores', href: '/repetidores', icon: TableCellsIcon },
         { name: t('nav.map'), description: 'Mapa de repetidores', href: '/repetidores/mapa', icon: MapIcon },
+        { name: t('nav.nearest'), description: t('nav.nearestDescription'), href: '/repetidores/proximo', icon: Navigation },
     ]
 
     const tools = [

@@ -27,7 +27,9 @@
         "calculadorasDescription": "dB, SWR, perdas em cabos",
         "about": "Sobre",
         "menu": "Menu",
-        "theme": "Tema"
+        "theme": "Tema",
+        "nearest": "Mais Próximo",
+        "nearestDescription": "Encontre o repetidor mais próximo de si"
     },
     "qth": {
         "title": "Localizador QTH",
@@ -644,6 +646,64 @@
             "referenceTable": "Tabela de Referência",
             "band": "Banda",
             "formula": "Fórmula"
+        },
+        "power": {
+            "title": "Calculadora de Potência",
+            "shortDesc": "Conversão W/dBm/dBW",
+            "description": "Converta entre watts, dBm e dBW",
+            "inputType": "Tipo de Entrada",
+            "watts": "Watts",
+            "dbm": "dBm",
+            "dbw": "dBW",
+            "presets": "Valores Comuns",
+            "referenceTable": "Tabela de Referência",
+            "formulas": "Fórmulas"
+        },
+        "distance": {
+            "title": "Distância QTH",
+            "shortDesc": "Distância entre localizadores",
+            "description": "Calcule a distância e direção entre dois localizadores QTH Maidenhead",
+            "qth1": "Localizador 1",
+            "qth2": "Localizador 2",
+            "distance": "Distância",
+            "bearing": "Azimute",
+            "direction": "Direção",
+            "swap": "Trocar",
+            "info": "Introduza dois localizadores QTH (4 ou 6 caracteres) para calcular a distância e direção entre eles.",
+            "qthFormat": "Formato QTH"
+        }
+    },
+    "compass": {
+        "enable": "Ativar bússola",
+        "disable": "Desativar bússola",
+        "notSupported": "Bússola não suportada neste dispositivo",
+        "permissionDenied": "Permissão de bússola negada",
+        "deviceHeading": "Rumo",
+        "pointTo": "Aponte para",
+        "ahead": "Em frente",
+        "slightRight": "Ligeiramente à direita",
+        "slightLeft": "Ligeiramente à esquerda",
+        "right": "À direita",
+        "left": "À esquerda",
+        "behind": "Para trás"
+    },
+    "nearest": {
+        "title": "Repetidor Mais Próximo",
+        "description": "Encontre os repetidores mais próximos da sua localização atual",
+        "locating": "A obter localização...",
+        "noLocation": "Localização não disponível",
+        "getLocation": "Obter Localização",
+        "refreshLocation": "Atualizar",
+        "heading": "Rumo",
+        "showingCount": "A mostrar {shown} de {total} repetidores",
+        "info": "Os repetidores são ordenados por distância. Ative a bússola para ver a direção em tempo real.",
+        "errors": {
+            "title": "Erro de Localização",
+            "notSupported": "Geolocalização não suportada neste navegador",
+            "denied": "Permissão de localização negada",
+            "unavailable": "Localização indisponível",
+            "timeout": "Tempo esgotado ao obter localização",
+            "unknown": "Erro desconhecido ao obter localização"
         }
     }
 }

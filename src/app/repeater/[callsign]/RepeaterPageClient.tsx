@@ -16,6 +16,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useUserLocation } from "@/contexts/UserLocationContext";
+import { useDeviceCompass } from "@/hooks/useDeviceCompass";
 import { cn } from "@/lib/utils";
 import { getVoteStats, postVote, type VoteStats } from "@/lib/votes";
 import { toggleFavorite, isFavorite } from "@/lib/favorites";
@@ -24,6 +25,7 @@ import {
   Check,
   ChevronRight,
   Clipboard,
+  Compass,
   Copy,
   ExternalLink,
   Heart,
@@ -105,6 +107,7 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
   const { sign, offsetDisplay, offsetCopy } = duplex(r.outputFrequency, r.inputFrequency);
   const [favorite, setFavorite] = React.useState(() => isFavorite(r.callsign));
   const { userLocation, requestLocation, isLocating } = useUserLocation();
+  const compass = useDeviceCompass();
 
   const mapsUrl = `https://www.google.com/maps?q=${encodeURIComponent(r.latitude + "," + r.longitude)}`;
   const osmUrl =
@@ -249,14 +252,38 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
 
       {/* Bearing Compass - shows when user location is available */}
       {hasValidLocations ? (
-        <Card className="bg-gradient-to-br from-ship-cove-50 to-ship-cove-100/50 dark:from-ship-cove-950 dark:to-ship-cove-900/50 border-ship-cove-200 dark:border-ship-cove-800">
+        <Card className={cn(
+          "bg-gradient-to-br border-ship-cove-200 dark:border-ship-cove-800",
+          compass.isEnabled
+            ? "from-green-50 to-green-100/50 dark:from-green-950 dark:to-green-900/50 border-green-300 dark:border-green-700"
+            : "from-ship-cove-50 to-ship-cove-100/50 dark:from-ship-cove-950 dark:to-ship-cove-900/50"
+        )}>
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
+            <div className="flex items-center justify-between gap-4">
+              <div className="space-y-2">
                 <h3 className="font-medium">Direção para o Repetidor</h3>
                 <p className="text-sm text-muted-foreground">
-                  Baseado na sua localização atual
+                  {compass.isEnabled
+                    ? "Aponte o dispositivo para a direção indicada"
+                    : "Baseado na sua localização atual"}
                 </p>
+                {compass.isSupported && (
+                  <Button
+                    variant={compass.isEnabled ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => compass.toggle()}
+                    className={cn(
+                      "gap-2",
+                      compass.isEnabled && "bg-green-600 hover:bg-green-700"
+                    )}
+                  >
+                    <Compass className="h-4 w-4" />
+                    {compass.isEnabled ? "Desativar bússola" : "Ativar bússola"}
+                  </Button>
+                )}
+                {compass.error && (
+                  <p className="text-xs text-red-600 dark:text-red-400">{compass.error}</p>
+                )}
               </div>
               <BearingCompass
                 userLat={userLocation.latitude}
@@ -264,6 +291,8 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
                 targetLat={r.latitude}
                 targetLon={r.longitude}
                 size="lg"
+                deviceHeading={compass.heading}
+                isCompassActive={compass.isEnabled}
               />
             </div>
           </CardContent>
