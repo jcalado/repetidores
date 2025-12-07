@@ -26,7 +26,8 @@ interface FormData {
   url: string;
   tag: string;
   category: string;
-  brandmeister: boolean;
+  dmr: boolean;
+  dmrNetwork: string;
   talkgroup: string;
   submitterEmail: string;
   honeypot: string;
@@ -65,7 +66,8 @@ export default function EventSubmitDialog() {
     url: '',
     tag: '',
     category: 'national', // Default to national for user submissions
-    brandmeister: false,
+    dmr: false,
+    dmrNetwork: 'brandmeister',
     talkgroup: '',
     submitterEmail: '',
     honeypot: '',
@@ -80,7 +82,8 @@ export default function EventSubmitDialog() {
       url: '',
       tag: '',
       category: 'national',
-      brandmeister: false,
+      dmr: false,
+      dmrNetwork: 'brandmeister',
       talkgroup: '',
       submitterEmail: '',
       honeypot: '',
@@ -129,7 +132,7 @@ export default function EventSubmitDialog() {
       }
     }
 
-    if (formData.brandmeister && formData.talkgroup) {
+    if (formData.dmr && formData.talkgroup) {
       const tg = Number(formData.talkgroup);
       if (isNaN(tg) || tg <= 0) {
         newErrors.talkgroup = t('errors.invalidTalkgroup');
@@ -171,8 +174,9 @@ export default function EventSubmitDialog() {
           url: formData.url.trim() || undefined,
           tag: formData.tag || undefined,
           category: formData.category || 'national',
-          brandmeister: formData.brandmeister,
-          talkgroup: formData.brandmeister && formData.talkgroup ? Number(formData.talkgroup) : undefined,
+          dmr: formData.dmr,
+          dmrNetwork: formData.dmr && formData.dmrNetwork ? formData.dmrNetwork : undefined,
+          talkgroup: formData.dmr && formData.talkgroup ? Number(formData.talkgroup) : undefined,
           submitterEmail: formData.submitterEmail.trim() || undefined,
           honeypot: formData.honeypot,
         }),
@@ -202,9 +206,10 @@ export default function EventSubmitDialog() {
   const updateField = (field: keyof FormData, value: string | boolean) => {
     setFormData((prev) => {
       const updated = { ...prev, [field]: value };
-      // Auto-enable brandmeister when tag is 'Net'
-      if (field === 'tag' && value === 'Net' && !prev.brandmeister) {
-        updated.brandmeister = true;
+      // Auto-enable dmr when tag is 'Net'
+      if (field === 'tag' && value === 'Net' && !prev.dmr) {
+        updated.dmr = true;
+        updated.dmrNetwork = 'brandmeister';
       }
       return updated;
     });
@@ -361,33 +366,48 @@ export default function EventSubmitDialog() {
             <div className="space-y-4 rounded-lg border p-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label htmlFor="brandmeister">{t('fields.brandmeister')}</Label>
-                  <p className="text-xs text-muted-foreground">{t('brandmeisterNote')}</p>
+                  <Label htmlFor="dmr">{t('fields.dmr') || 'DMR'}</Label>
+                  <p className="text-xs text-muted-foreground">{t('dmrNote') || 'Evento usa rede DMR'}</p>
                 </div>
                 <Switch
-                  id="brandmeister"
-                  checked={formData.brandmeister}
-                  onCheckedChange={(checked) => updateField('brandmeister', checked)}
+                  id="dmr"
+                  checked={formData.dmr}
+                  onCheckedChange={(checked) => updateField('dmr', checked)}
                 />
               </div>
 
-              {formData.brandmeister && (
-                <div className="space-y-2">
-                  <Label htmlFor="talkgroup">{t('fields.talkgroup')}</Label>
-                  <Input
-                    id="talkgroup"
-                    type="number"
-                    value={formData.talkgroup}
-                    onChange={(e) => updateField('talkgroup', e.target.value)}
-                    placeholder={t('placeholders.talkgroup')}
-                    aria-invalid={!!errors.talkgroup}
-                  />
-                  {errors.talkgroup && (
-                    <p className="text-sm text-destructive flex items-center gap-1">
-                      <AlertCircle className="h-3 w-3" /> {errors.talkgroup}
-                    </p>
-                  )}
-                </div>
+              {formData.dmr && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="dmrNetwork">{t('fields.dmrNetwork') || 'Rede DMR'}</Label>
+                    <Select value={formData.dmrNetwork} onValueChange={(value) => updateField('dmrNetwork', value)}>
+                      <SelectTrigger id="dmrNetwork">
+                        <SelectValue placeholder={t('placeholders.dmrNetwork') || 'Selecionar rede'} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="brandmeister">Brandmeister</SelectItem>
+                        <SelectItem value="adn">ADN Systems</SelectItem>
+                        <SelectItem value="other">{t('dmr.other') || 'Outra'}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="talkgroup">{t('fields.talkgroup')}</Label>
+                    <Input
+                      id="talkgroup"
+                      type="number"
+                      value={formData.talkgroup}
+                      onChange={(e) => updateField('talkgroup', e.target.value)}
+                      placeholder={t('placeholders.talkgroup')}
+                      aria-invalid={!!errors.talkgroup}
+                    />
+                    {errors.talkgroup && (
+                      <p className="text-sm text-destructive flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" /> {errors.talkgroup}
+                      </p>
+                    )}
+                  </div>
+                </>
               )}
             </div>
 

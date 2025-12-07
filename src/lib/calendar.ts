@@ -54,11 +54,12 @@ export function generateICS(event: EventItem): string {
     lines.push(`URL:${event.url}`);
   }
 
-  // Add description with tag and BrandMeister info
+  // Add description with tag and DMR info
   const descParts: string[] = [];
   if (event.tag) descParts.push(`Categoria: ${event.tag}`);
-  if (event.brandmeister && event.talkgroup) {
-    descParts.push(`BrandMeister TG: ${event.talkgroup}`);
+  if (event.dmr && event.talkgroup) {
+    const network = event.dmrNetwork === 'brandmeister' ? 'Brandmeister' : event.dmrNetwork === 'adn' ? 'ADN Systems' : 'DMR';
+    descParts.push(`${network} TG: ${event.talkgroup}`);
   }
   if (event.url) descParts.push(`Mais info: ${event.url}`);
 
@@ -105,8 +106,9 @@ export function getGoogleCalendarUrl(event: EventItem): string {
 
   const details: string[] = [];
   if (event.tag) details.push(`Categoria: ${event.tag}`);
-  if (event.brandmeister && event.talkgroup) {
-    details.push(`BrandMeister TG: ${event.talkgroup}`);
+  if (event.dmr && event.talkgroup) {
+    const network = event.dmrNetwork === 'brandmeister' ? 'Brandmeister' : event.dmrNetwork === 'adn' ? 'ADN Systems' : 'DMR';
+    details.push(`${network} TG: ${event.talkgroup}`);
   }
   if (event.url) details.push(`Mais info: ${event.url}`);
 
@@ -137,8 +139,9 @@ export function getOutlookCalendarUrl(event: EventItem): string {
 
   const details: string[] = [];
   if (event.tag) details.push(`Categoria: ${event.tag}`);
-  if (event.brandmeister && event.talkgroup) {
-    details.push(`BrandMeister TG: ${event.talkgroup}`);
+  if (event.dmr && event.talkgroup) {
+    const network = event.dmrNetwork === 'brandmeister' ? 'Brandmeister' : event.dmrNetwork === 'adn' ? 'ADN Systems' : 'DMR';
+    details.push(`${network} TG: ${event.talkgroup}`);
   }
   if (event.url) details.push(`Mais info: ${event.url}`);
 

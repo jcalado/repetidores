@@ -51,6 +51,7 @@ import EventSubmitDialog from "@/components/EventSubmitDialog";
 // ---- Types ----
 export type EventTag = 'Net' | 'Contest' | 'Meetup' | 'Satellite' | 'DX';
 export type EventCategory = 'international' | 'national';
+export type DMRNetwork = 'brandmeister' | 'adn' | 'other';
 
 export type EventFeaturedImage = {
   id: string;
@@ -69,7 +70,8 @@ export type EventItem = {
   url?: string;
   tag?: EventTag;
   isFeatured?: boolean;
-  brandmeister?: boolean;
+  dmr?: boolean;
+  dmrNetwork?: DMRNetwork;
   talkgroup?: number;
   featuredImage?: EventFeaturedImage;
   description?: unknown;
@@ -145,6 +147,46 @@ function getImageUrl(url: string | undefined): string | null {
   if (url.startsWith('http')) return url;
   const baseUrl = process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL || '';
   return `${baseUrl}${url}`;
+}
+
+function getDMRNetworkLabel(network: DMRNetwork | undefined, t: (key: string) => string): string {
+  switch (network) {
+    case 'brandmeister': return 'Brandmeister';
+    case 'adn': return 'ADN Systems';
+    case 'other': return t('dmr.other') || 'Outra';
+    default: return 'DMR';
+  }
+}
+
+function DMRBadge({ dmr, dmrNetwork, talkgroup, t, onClick }: {
+  dmr?: boolean;
+  dmrNetwork?: DMRNetwork;
+  talkgroup?: number;
+  t: (key: string) => string;
+  onClick?: (e: React.MouseEvent) => void;
+}) {
+  if (!dmr || !talkgroup) return null;
+
+  const isBrandmeister = dmrNetwork === 'brandmeister';
+  const networkLabel = getDMRNetworkLabel(dmrNetwork, t);
+
+  const badge = (
+    <span
+      onClick={onClick}
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-xs bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 ${
+        isBrandmeister ? 'hover:bg-red-100 dark:hover:bg-red-900/30 cursor-pointer' : ''
+      } transition-colors`}
+      title={isBrandmeister ? t('dmr.listen') : `${networkLabel} TG ${talkgroup}`}
+    >
+      <Radio className="w-3 h-3" /> {networkLabel} TG {talkgroup}
+    </span>
+  );
+
+  if (isBrandmeister && onClick) {
+    return badge;
+  }
+
+  return badge;
 }
 
 function msUntil(dateISO: string) {
@@ -328,19 +370,17 @@ function EventCard({ evt, t }: { evt: EventItem; t: (key: string) => string }) {
                     <MapPin className="w-4 h-4 mr-1" /> {evt.location}
                   </span>
                 )}
-                {evt.brandmeister && evt.talkgroup && (
-                  <span
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      window.open(`https://hose.brandmeister.network/?tg=${evt.talkgroup}`, '_blank');
-                    }}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-xs bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors cursor-pointer"
-                    title={t('brandmeister.listen')}
-                  >
-                    <Radio className="w-3 h-3" /> TG {evt.talkgroup}
-                  </span>
-                )}
+                <DMRBadge
+                  dmr={evt.dmr}
+                  dmrNetwork={evt.dmrNetwork}
+                  talkgroup={evt.talkgroup}
+                  t={t}
+                  onClick={evt.dmrNetwork === 'brandmeister' ? (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.open(`https://hose.brandmeister.network/?tg=${evt.talkgroup}`, '_blank');
+                  } : undefined}
+                />
                 <span className={`rounded-full px-2 py-0.5 text-[10px] sm:text-xs inline-flex items-center gap-1 border ${tagColors.bg} ${tagColors.text} ${tagColors.border}`}>
                   <TagIcon tag={evt.tag} className="w-3 h-3" /> {evt.tag ?? t('event')}
                 </span>
@@ -426,16 +466,22 @@ function CurrentEvents({ events, t }: { events: EventItem[]; t: (key: string) =>
                           <MapPin className="w-4 h-4 mr-1" /> {event.location}
                         </span>
                       )}
-                      {event.brandmeister && event.talkgroup && (
-                        <a
-                          href={`https://hose.brandmeister.network/?tg=${event.talkgroup}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-                          title={t('brandmeister.listen')}
-                        >
-                          <Radio className="w-3 h-3" /> TG {event.talkgroup}
-                        </a>
+                      {event.dmr && event.talkgroup && (
+                        event.dmrNetwork === 'brandmeister' ? (
+                          <a
+                            href={`https://hose.brandmeister.network/?tg=${event.talkgroup}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                            title={t('dmr.listen')}
+                          >
+                            <Radio className="w-3 h-3" /> {getDMRNetworkLabel(event.dmrNetwork, t)} TG {event.talkgroup}
+                          </a>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800">
+                            <Radio className="w-3 h-3" /> {getDMRNetworkLabel(event.dmrNetwork, t)} TG {event.talkgroup}
+                          </span>
+                        )
                       )}
                     </div>
                     {event.end && timeUntilEnd > 0 && (
@@ -549,16 +595,22 @@ function NextUp({ events, t }: { events: EventItem[]; t: (key: string) => string
                     <MapPin className="w-3.5 h-3.5 mr-1" /> {next.location}
                   </span>
                 )}
-                {next.brandmeister && next.talkgroup && (
-                  <a
-                    href={`https://hose.brandmeister.network/?tg=${next.talkgroup}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-                    title={t('brandmeister.listen')}
-                  >
-                    <Radio className="w-3 h-3" /> TG {next.talkgroup}
-                  </a>
+                {next.dmr && next.talkgroup && (
+                  next.dmrNetwork === 'brandmeister' ? (
+                    <a
+                      href={`https://hose.brandmeister.network/?tg=${next.talkgroup}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                      title={t('dmr.listen')}
+                    >
+                      <Radio className="w-3 h-3" /> {getDMRNetworkLabel(next.dmrNetwork, t)} TG {next.talkgroup}
+                    </a>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800">
+                      <Radio className="w-3 h-3" /> {getDMRNetworkLabel(next.dmrNetwork, t)} TG {next.talkgroup}
+                    </span>
+                  )
                 )}
               </div>
             </div>
@@ -630,17 +682,23 @@ function EventsTable({ events, t }: { events: EventItem[]; t: (key: string) => s
                 <TableCell className="text-muted-foreground">
                   <div className="flex flex-wrap items-center gap-2">
                     <span>{e.location ?? "—"}</span>
-                    {e.brandmeister && e.talkgroup && (
-                      <span
-                        onClick={(ev) => {
-                          ev.stopPropagation();
-                          window.open(`https://hose.brandmeister.network/?tg=${e.talkgroup}`, '_blank');
-                        }}
-                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors cursor-pointer"
-                        title={t('brandmeister.listen')}
-                      >
-                        <Radio className="w-3 h-3" /> TG {e.talkgroup}
-                      </span>
+                    {e.dmr && e.talkgroup && (
+                      e.dmrNetwork === 'brandmeister' ? (
+                        <span
+                          onClick={(ev) => {
+                            ev.stopPropagation();
+                            window.open(`https://hose.brandmeister.network/?tg=${e.talkgroup}`, '_blank');
+                          }}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors cursor-pointer"
+                          title={t('dmr.listen')}
+                        >
+                          <Radio className="w-3 h-3" /> {getDMRNetworkLabel(e.dmrNetwork, t)} TG {e.talkgroup}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800">
+                          <Radio className="w-3 h-3" /> {getDMRNetworkLabel(e.dmrNetwork, t)} TG {e.talkgroup}
+                        </span>
+                      )
                     )}
                   </div>
                 </TableCell>

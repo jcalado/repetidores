@@ -700,26 +700,32 @@ export default function EventDetailsClient({ event, allEvents = [] }: EventDetai
                 </div>
               )}
 
-              {/* BrandMeister */}
-              {event.brandmeister && event.talkgroup && (
+              {/* DMR Network */}
+              {event.dmr && event.talkgroup && (
                 <div className="flex items-start gap-3 p-3 sm:p-4 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800">
                   <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/50">
                     <Radio className="w-5 h-5 text-red-600 dark:text-red-400" />
                   </div>
                   <div className="flex-1">
-                    <div className="text-xs sm:text-sm text-muted-foreground">BrandMeister DMR</div>
+                    <div className="text-xs sm:text-sm text-muted-foreground">
+                      {event.dmrNetwork === 'brandmeister' ? 'Brandmeister' :
+                       event.dmrNetwork === 'adn' ? 'ADN Systems' :
+                       event.dmrNetwork === 'other' ? (t('dmr.other') || 'Outra') : 'DMR'}
+                    </div>
                     <div className="font-medium text-sm sm:text-base text-red-600 dark:text-red-400">
                       Talkgroup {event.talkgroup}
                     </div>
-                    <a
-                      href={`https://hose.brandmeister.network/?tg=${event.talkgroup}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1 text-xs sm:text-sm text-red-600 dark:text-red-400 hover:underline mt-1"
-                    >
-                      {t('brandmeister.listen')}
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
+                    {event.dmrNetwork === 'brandmeister' && (
+                      <a
+                        href={`https://hose.brandmeister.network/?tg=${event.talkgroup}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 text-xs sm:text-sm text-red-600 dark:text-red-400 hover:underline mt-1"
+                      >
+                        {t('dmr.listen')}
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
                   </div>
                 </div>
               )}
