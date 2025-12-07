@@ -786,6 +786,24 @@
         "usingCache": "Modo offline — dados de {age}",
         "noData": "Sem conexão — dados indisponíveis"
     },
+    "communityStatus": {
+        "title": "Estado da Comunidade",
+        "yourVote": "O seu voto",
+        "working": "a funcionar",
+        "issues": "problemas",
+        "workingButton": "A Funcionar",
+        "issuesButton": "Problemas",
+        "reportWorking": "Reportar este repetidor como operacional",
+        "reportIssues": "Reportar problemas com este repetidor",
+        "addFeedback": "Adicionar feedback detalhado",
+        "feedbackTitle": "Adicionar Feedback",
+        "feedbackDescription": "Partilhe detalhes sobre o estado do repetidor para ajudar outros operadores.",
+        "feedbackPlaceholder": "Ex: sem portadora, áudio fraco, tom incorreto, funciona bem do meu QTH, etc.",
+        "characters": "{count}/500 caracteres",
+        "cancel": "Cancelar",
+        "submitFeedback": "Enviar Feedback",
+        "reportsInDays": "{count} relatórios nos últimos {days} dias"
+    },
     "nearest": {
         "title": "Repetidor Mais Próximo",
         "description": "Encontre os repetidores mais próximos da sua localização atual",

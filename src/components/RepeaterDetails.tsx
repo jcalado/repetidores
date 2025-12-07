@@ -487,7 +487,7 @@ function StatusDisplay({ status, stats }: { status: "ok" | "prob-bad" | "bad" | 
   );
 }
 
-function VoteDistributionBar({ stats }: { stats: VoteStats | null }) {
+function VoteDistributionBar({ stats, t }: { stats: VoteStats | null; t: ReturnType<typeof useTranslations<"communityStatus">> }) {
   if (!stats || stats.total === 0) return null;
 
   const upPercent = (stats.up / stats.total) * 100;
@@ -499,10 +499,10 @@ function VoteDistributionBar({ stats }: { stats: VoteStats | null }) {
         <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
           <TrendingUp className="h-3 w-3" />
           <span className="font-medium">{stats.up}</span>
-          <span className="text-muted-foreground">working</span>
+          <span className="text-muted-foreground">{t("working")}</span>
         </span>
         <span className="flex items-center gap-1.5 text-red-600 dark:text-red-400">
-          <span className="text-muted-foreground">issues</span>
+          <span className="text-muted-foreground">{t("issues")}</span>
           <span className="font-medium">{stats.down}</span>
           <TrendingDown className="h-3 w-3" />
         </span>
@@ -518,13 +518,14 @@ function VoteDistributionBar({ stats }: { stats: VoteStats | null }) {
         />
       </div>
       <div className="text-center text-[10px] text-muted-foreground">
-        {stats.total} reports in last {stats.windowDays} days
+        {t("reportsInDays", { count: stats.total, days: stats.windowDays })}
       </div>
     </div>
   );
 }
 
 function VoteSection({ repeaterId }: { repeaterId: string }) {
+  const t = useTranslations("communityStatus");
   const [vote, setVote] = React.useState<LocalVote | null>(null);
   const [open, setOpen] = React.useState(false);
   const [feedback, setFeedback] = React.useState("");
@@ -577,7 +578,7 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
       {/* Header */}
       <div className="flex items-center gap-2 px-4 py-3 border-b bg-muted/30">
         <Users className="h-4 w-4 text-muted-foreground" />
-        <span className="text-sm font-medium">Community Status</span>
+        <span className="text-sm font-medium">{t("title")}</span>
         {vote?.vote && (
           <Badge
             variant="outline"
@@ -589,7 +590,7 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
             )}
           >
             {vote.vote === "up" ? <ThumbsUp className="h-3 w-3" /> : <ThumbsDown className="h-3 w-3" />}
-            Your vote
+            {t("yourVote")}
           </Badge>
         )}
       </div>
@@ -608,7 +609,7 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
             <StatusDisplay status={status} stats={stats} />
 
             {/* Vote Distribution Bar */}
-            <VoteDistributionBar stats={stats} />
+            <VoteDistributionBar stats={stats} t={t} />
 
             {/* Voting Buttons */}
             <div className="flex gap-2">
@@ -625,10 +626,10 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
                     disabled={submitting}
                   >
                     <ThumbsUp className="h-4 w-4" />
-                    <span>Working</span>
+                    <span>{t("workingButton")}</span>
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Report this repeater as operational</TooltipContent>
+                <TooltipContent>{t("reportWorking")}</TooltipContent>
               </Tooltip>
 
               <Tooltip>
@@ -644,10 +645,10 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
                     disabled={submitting}
                   >
                     <ThumbsDown className="h-4 w-4" />
-                    <span>Issues</span>
+                    <span>{t("issuesButton")}</span>
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Report problems with this repeater</TooltipContent>
+                <TooltipContent>{t("reportIssues")}</TooltipContent>
               </Tooltip>
 
               <Dialog open={open} onOpenChange={setOpen}>
@@ -659,31 +660,31 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
                       </Button>
                     </DialogTrigger>
                   </TooltipTrigger>
-                  <TooltipContent>Add detailed feedback</TooltipContent>
+                  <TooltipContent>{t("addFeedback")}</TooltipContent>
                 </Tooltip>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Add Feedback</DialogTitle>
+                    <DialogTitle>{t("feedbackTitle")}</DialogTitle>
                     <DialogDescription>
-                      Share details about the repeater status to help other operators.
+                      {t("feedbackDescription")}
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-3">
                     <textarea
                       className="w-full rounded-lg border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-ring min-h-[120px] resize-none"
-                      placeholder="E.g., no carrier, weak audio, tone mismatch, works great from my QTH, etc."
+                      placeholder={t("feedbackPlaceholder")}
                       maxLength={500}
                       value={feedback}
                       onChange={(e) => setFeedback(e.target.value)}
                     />
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">{feedback.length}/500 characters</span>
+                      <span className="text-xs text-muted-foreground">{t("characters", { count: feedback.length })}</span>
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+                    <Button variant="outline" onClick={() => setOpen(false)}>{t("cancel")}</Button>
                     <Button onClick={handleSubmitFeedback} disabled={submitting}>
-                      Submit Feedback
+                      {t("submitFeedback")}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
