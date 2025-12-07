@@ -46,6 +46,7 @@ import {
   SatelliteDish,
   Share2,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
@@ -61,6 +62,68 @@ import {
 } from "@/lib/calendar";
 
 // ---- Utilities ----
+function getImageUrl(url: string | undefined): string | null {
+  if (!url) return null;
+  if (url.startsWith('http')) return url;
+  const baseUrl = process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL || '';
+  return `${baseUrl}${url}`;
+}
+
+// Rich text content renderer for Payload Lexical format
+interface RichTextNode {
+  type?: string;
+  children?: Array<{ text?: string; bold?: boolean; italic?: boolean }>;
+  tag?: string;
+  text?: string;
+}
+
+function RichTextContent({ content }: { content: unknown }) {
+  if (typeof content === 'string') {
+    return <p>{content}</p>;
+  }
+
+  if (!Array.isArray(content)) {
+    // Handle Lexical root object format
+    if (content && typeof content === 'object' && 'root' in content) {
+      const root = (content as { root: { children: RichTextNode[] } }).root;
+      if (root && Array.isArray(root.children)) {
+        return <>{root.children.map((node, index) => renderNode(node, index))}</>;
+      }
+    }
+    return null;
+  }
+
+  return <>{content.map((node: RichTextNode, index: number) => renderNode(node, index))}</>;
+}
+
+function renderNode(node: RichTextNode, index: number): React.ReactNode {
+  if (node.type === 'paragraph' && node.children) {
+    return (
+      <p key={index}>
+        {node.children.map((child, childIndex) => (
+          <span key={childIndex} className={`${child.bold ? 'font-bold' : ''} ${child.italic ? 'italic' : ''}`}>
+            {child.text}
+          </span>
+        ))}
+      </p>
+    );
+  }
+  if (node.type === 'heading' && node.children) {
+    const HeadingComponent = node.tag === 'h1' ? 'h1' : node.tag === 'h2' ? 'h2' : node.tag === 'h4' ? 'h4' : 'h3';
+    return (
+      <HeadingComponent key={index}>
+        {node.children.map((child, childIndex) => (
+          <span key={childIndex}>{child.text}</span>
+        ))}
+      </HeadingComponent>
+    );
+  }
+  if (node.text !== undefined) {
+    return <span key={index}>{node.text}</span>;
+  }
+  return null;
+}
+
 const tagIconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Net: Radio,
   Contest: Activity,
@@ -348,6 +411,7 @@ export default function EventDetailsClient({ event, allEvents = [] }: EventDetai
   const tagColors = getTagColors(event.tag);
   const duration = formatDuration(event.start, event.end);
   const tzInfo = getTimezoneInfo();
+  const imageUrl = getImageUrl(event.featuredImage?.url);
 
   // Related events by tag
   const relatedByTag = useMemo(() => {
@@ -450,6 +514,32 @@ export default function EventDetailsClient({ event, allEvents = [] }: EventDetai
         transition={{ delay: 0.1 }}
       >
         <Card className={`rounded-2xl overflow-hidden border-2 py-0 ${tagColors.border} ${event.isFeatured ? 'ring-2 ring-yellow-400/50' : ''}`}>
+          {/* Featured Image */}
+          {imageUrl && (
+            <div className="relative w-full h-48 sm:h-64 md:h-80 overflow-hidden">
+              <Image
+                src={imageUrl}
+                alt={event.featuredImage?.alt || event.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 800px"
+                priority
+              />
+              {/* Category badge overlay on image */}
+              {event.category && (
+                <div className="absolute top-4 right-4">
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium backdrop-blur-sm shadow-sm ${
+                    event.category === 'international'
+                      ? 'bg-sky-500/90 text-white'
+                      : 'bg-green-500/90 text-white'
+                  }`}>
+                    {event.category === 'international' ? <Globe2 className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
+                    {event.category === 'international' ? 'Internacional' : 'Nacional'}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
           {/* Hero header */}
           <div className={`relative bg-gradient-to-br ${tagColors.gradient} p-6 sm:p-8`}>
             {/* Featured ribbon */}
@@ -472,11 +562,22 @@ export default function EventDetailsClient({ event, allEvents = [] }: EventDetai
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  {/* Tag badge */}
-                  <div className="flex items-center gap-2 mb-2">
+                  {/* Tag and Category badges */}
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
                     <Badge className={`${tagColors.bg} ${tagColors.text} ${tagColors.border} border`}>
                       {event.tag ?? t('event')}
                     </Badge>
+                    {/* Category badge (shown when no image, since image shows overlay) */}
+                    {!imageUrl && event.category && (
+                      <Badge className={`inline-flex items-center gap-1 border ${
+                        event.category === 'international'
+                          ? 'bg-sky-50 dark:bg-sky-950/30 text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-800'
+                          : 'bg-green-50 dark:bg-green-950/30 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800'
+                      }`}>
+                        {event.category === 'international' ? <Globe2 className="w-3 h-3" /> : <MapPin className="w-3 h-3" />}
+                        {event.category === 'international' ? 'Internacional' : 'Nacional'}
+                      </Badge>
+                    )}
                   </div>
 
                   {/* Title */}
@@ -623,6 +724,17 @@ export default function EventDetailsClient({ event, allEvents = [] }: EventDetai
                 </div>
               )}
             </div>
+
+            {/* Description */}
+            {Boolean(event.description) && (
+              <div className="space-y-2">
+                <h2 className="text-lg font-semibold">{tDetails('description') || 'Descrição'}</h2>
+                <div className="prose prose-sm dark:prose-invert max-w-none p-4 rounded-xl bg-muted/50">
+                  {/* Rich text rendering - Payload returns richText as an object */}
+                  <RichTextContent content={event.description} />
+                </div>
+              </div>
+            )}
 
             {/* Action buttons */}
             <div className="flex flex-wrap gap-2 sm:gap-3 pt-4 border-t border-border">

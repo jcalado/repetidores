@@ -32,6 +32,7 @@ import {
   Table as TableIcon,
   X
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import PageHeader from "@/components/PageHeader";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -49,6 +50,15 @@ import EventSubmitDialog from "@/components/EventSubmitDialog";
 
 // ---- Types ----
 export type EventTag = 'Net' | 'Contest' | 'Meetup' | 'Satellite' | 'DX';
+export type EventCategory = 'international' | 'national';
+
+export type EventFeaturedImage = {
+  id: string;
+  url: string;
+  alt: string;
+  width?: number;
+  height?: number;
+};
 
 export type EventItem = {
   id: string;
@@ -61,6 +71,9 @@ export type EventItem = {
   isFeatured?: boolean;
   brandmeister?: boolean;
   talkgroup?: number;
+  featuredImage?: EventFeaturedImage;
+  description?: unknown;
+  category?: EventCategory;
 };
 
 export type EventsAPIResponse = {
@@ -124,6 +137,14 @@ function getTagColors(tag?: string) {
 function TagIcon({ tag, className }: { tag?: string; className?: string }) {
   const Cmp = tag && tagIconMap[tag] ? tagIconMap[tag] : tagIconMap.Default;
   return <Cmp className={className || "w-4 h-4"} />;
+}
+
+function getImageUrl(url: string | undefined): string | null {
+  if (!url) return null;
+  // Handle both relative and absolute URLs
+  if (url.startsWith('http')) return url;
+  const baseUrl = process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL || '';
+  return `${baseUrl}${url}`;
 }
 
 function msUntil(dateISO: string) {
@@ -234,11 +255,37 @@ function EventCard({ evt, t }: { evt: EventItem; t: (key: string) => string }) {
   const remainingToEnd = evt.end ? msUntil(evt.end) : 0;
 
   const tagColors = getTagColors(evt.tag);
+  const imageUrl = getImageUrl(evt.featuredImage?.url);
 
   return (
     <Link href={`/events/${encodeURIComponent(evt.id)}/`} className="block">
-      <Card className="group relative rounded-2xl shadow-sm transition-all hover:shadow-md hover:border-primary/30 focus-within:ring-2 focus-within:ring-ring cursor-pointer">
-        <CardHeader className="space-y-2 pb-3">
+      <Card className="group relative rounded-2xl shadow-sm transition-all hover:shadow-md hover:border-primary/30 focus-within:ring-2 focus-within:ring-ring cursor-pointer overflow-hidden">
+        {/* Featured Image */}
+        {imageUrl && (
+          <div className="relative w-full h-32 overflow-hidden">
+            <Image
+              src={imageUrl}
+              alt={evt.featuredImage?.alt || evt.title}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-200"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
+            {/* Category badge overlay */}
+            {evt.category && (
+              <div className="absolute top-2 right-2">
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium backdrop-blur-sm ${
+                  evt.category === 'international'
+                    ? 'bg-sky-500/80 text-white'
+                    : 'bg-green-500/80 text-white'
+                }`}>
+                  {evt.category === 'international' ? <Globe2 className="w-3 h-3" /> : <MapPin className="w-3 h-3" />}
+                  {evt.category === 'international' ? (t('international') || 'Internacional') : (t('national') || 'Nacional')}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+        <CardHeader className={`space-y-2 pb-3 ${imageUrl ? 'pt-3' : ''}`}>
           <div className="flex items-start gap-3">
             <div className={`shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full ${tagColors.bg} ${tagColors.text}`}>
               <TagIcon tag={evt.tag} />
@@ -297,6 +344,17 @@ function EventCard({ evt, t }: { evt: EventItem; t: (key: string) => string }) {
                 <span className={`rounded-full px-2 py-0.5 text-[10px] sm:text-xs inline-flex items-center gap-1 border ${tagColors.bg} ${tagColors.text} ${tagColors.border}`}>
                   <TagIcon tag={evt.tag} className="w-3 h-3" /> {evt.tag ?? t('event')}
                 </span>
+                {/* Category badge (shown when no image, since image cards show category overlay) */}
+                {!imageUrl && evt.category && (
+                  <span className={`rounded-full px-2 py-0.5 text-[10px] sm:text-xs inline-flex items-center gap-1 border ${
+                    evt.category === 'international'
+                      ? 'bg-sky-50 dark:bg-sky-950/30 text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-800'
+                      : 'bg-green-50 dark:bg-green-950/30 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800'
+                  }`}>
+                    {evt.category === 'international' ? <Globe2 className="w-3 h-3" /> : <MapPin className="w-3 h-3" />}
+                    {evt.category === 'international' ? (t('international') || 'Internacional') : (t('national') || 'Nacional')}
+                  </span>
+                )}
               </div>
               {/* Time remaining display */}
               <div className="mt-2 flex items-center justify-between">
@@ -758,6 +816,7 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
 
   const [search, setSearch] = useState("");
   const [filterTag, setFilterTag] = useState<string>("all");
+  const [filterCategory, setFilterCategory] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("startAsc");
   const [tab, setTab] = useState<string>("cards");
 
@@ -798,7 +857,7 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
     return Array.from(s);
   }, [events]);
 
-  // Helper function to apply tag and search filters
+  // Helper function to apply tag, category and search filters
   const applyFilters = useMemo(() => {
     return (list: EventItem[]) => {
       const q = search.trim().toLowerCase();
@@ -806,6 +865,10 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
 
       if (filterTag !== "all") {
         filtered = filtered.filter((e) => (e.tag ?? "").toLowerCase() === filterTag.toLowerCase());
+      }
+
+      if (filterCategory !== "all") {
+        filtered = filtered.filter((e) => (e.category ?? "").toLowerCase() === filterCategory.toLowerCase());
       }
 
       if (q) {
@@ -818,7 +881,7 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
 
       return filtered;
     };
-  }, [search, filterTag]);
+  }, [search, filterTag, filterCategory]);
 
   // Filter events for cards/table view (future/current events only)
   const filtered = useMemo(() => {
@@ -911,10 +974,11 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
     );
   }
 
-  const hasActiveFilters = search.trim() !== '' || filterTag !== 'all';
+  const hasActiveFilters = search.trim() !== '' || filterTag !== 'all' || filterCategory !== 'all';
   const clearFilters = () => {
     setSearch('');
     setFilterTag('all');
+    setFilterCategory('all');
   };
 
   return (
@@ -975,38 +1039,79 @@ export default function HamRadioEventsCountdown({ initialEvents = [] }: HamRadio
             </button>
           </div>
 
-          {/* Tag Filter Chips */}
-          {tags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
+          {/* Combined Filter: Category + Tag */}
+          <div className="flex flex-col gap-3">
+            {/* Category Filter */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider mr-1">{t('scope') || 'Âmbito'}:</span>
               <button
-                onClick={() => setFilterTag('all')}
+                onClick={() => setFilterCategory('all')}
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                  filterTag === 'all'
+                  filterCategory === 'all'
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground'
                 }`}
               >
-                {t('allTags')}
+                {t('allCategories') || 'Todos'}
               </button>
-              {tags.map((tag) => {
-                const colors = getTagColors(tag);
-                return (
-                  <button
-                    key={tag}
-                    onClick={() => setFilterTag(tag)}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors border ${
-                      filterTag === tag
-                        ? `${colors.bg} ${colors.text} ${colors.border}`
-                        : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground border-transparent'
-                    }`}
-                  >
-                    <TagIcon tag={tag} className={filterTag === tag ? '' : colors.text} />
-                    {tag}
-                  </button>
-                );
-              })}
+              <button
+                onClick={() => setFilterCategory('international')}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors border ${
+                  filterCategory === 'international'
+                    ? 'bg-sky-50 dark:bg-sky-950/30 text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-800'
+                    : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground border-transparent'
+                }`}
+              >
+                <Globe2 className="w-4 h-4" />
+                {t('international') || 'Internacional'}
+              </button>
+              <button
+                onClick={() => setFilterCategory('national')}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors border ${
+                  filterCategory === 'national'
+                    ? 'bg-green-50 dark:bg-green-950/30 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800'
+                    : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground border-transparent'
+                }`}
+              >
+                <MapPin className="w-4 h-4" />
+                {t('national') || 'Nacional'}
+              </button>
             </div>
-          )}
+
+            {/* Tag Filter Chips */}
+            {tags.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider mr-1">{t('type') || 'Tipo'}:</span>
+                <button
+                  onClick={() => setFilterTag('all')}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                    filterTag === 'all'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {t('allTags')}
+                </button>
+                {tags.map((tag) => {
+                  const colors = getTagColors(tag);
+                  return (
+                    <button
+                      key={tag}
+                      onClick={() => setFilterTag(tag)}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-colors border ${
+                        filterTag === tag
+                          ? `${colors.bg} ${colors.text} ${colors.border}`
+                          : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground border-transparent'
+                      }`}
+                    >
+                      <TagIcon tag={tag} className={filterTag === tag ? '' : colors.text} />
+                      {tag}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
 
           {/* Results Count and Clear Filters */}
           <div className="flex items-center justify-between pt-2 border-t border-border/50">

@@ -25,6 +25,7 @@ interface FormData {
   location: string;
   url: string;
   tag: string;
+  category: string;
   brandmeister: boolean;
   talkgroup: string;
   submitterEmail: string;
@@ -63,6 +64,7 @@ export default function EventSubmitDialog() {
     location: '',
     url: '',
     tag: '',
+    category: 'national', // Default to national for user submissions
     brandmeister: false,
     talkgroup: '',
     submitterEmail: '',
@@ -77,6 +79,7 @@ export default function EventSubmitDialog() {
       location: '',
       url: '',
       tag: '',
+      category: 'national',
       brandmeister: false,
       talkgroup: '',
       submitterEmail: '',
@@ -167,6 +170,7 @@ export default function EventSubmitDialog() {
           location: formData.location.trim() || undefined,
           url: formData.url.trim() || undefined,
           tag: formData.tag || undefined,
+          category: formData.category || 'national',
           brandmeister: formData.brandmeister,
           talkgroup: formData.brandmeister && formData.talkgroup ? Number(formData.talkgroup) : undefined,
           submitterEmail: formData.submitterEmail.trim() || undefined,
@@ -323,20 +327,35 @@ export default function EventSubmitDialog() {
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="tag">{t('fields.tag')}</Label>
-              <Select value={formData.tag} onValueChange={(value) => updateField('tag', value)}>
-                <SelectTrigger id="tag">
-                  <SelectValue placeholder={t('placeholders.tag')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Net">Net</SelectItem>
-                  <SelectItem value="Contest">Contest</SelectItem>
-                  <SelectItem value="Meetup">Meetup</SelectItem>
-                  <SelectItem value="Satellite">Satellite</SelectItem>
-                  <SelectItem value="DX">DX</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="tag">{t('fields.tag')}</Label>
+                <Select value={formData.tag} onValueChange={(value) => updateField('tag', value)}>
+                  <SelectTrigger id="tag">
+                    <SelectValue placeholder={t('placeholders.tag')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Net">Net</SelectItem>
+                    <SelectItem value="Contest">Contest</SelectItem>
+                    <SelectItem value="Meetup">Meetup</SelectItem>
+                    <SelectItem value="Satellite">Satellite</SelectItem>
+                    <SelectItem value="DX">DX</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="category">{t('fields.category') || 'Âmbito'}</Label>
+                <Select value={formData.category} onValueChange={(value) => updateField('category', value)}>
+                  <SelectTrigger id="category">
+                    <SelectValue placeholder={t('placeholders.category') || 'Selecionar âmbito'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="national">{t('national') || 'Nacional'}</SelectItem>
+                    <SelectItem value="international">{t('international') || 'Internacional'}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="space-y-4 rounded-lg border p-4">
