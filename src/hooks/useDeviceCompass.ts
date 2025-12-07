@@ -48,16 +48,15 @@ export function useDeviceCompass() {
       heading = event.webkitCompassHeading;
       accuracy = event.webkitCompassAccuracy ?? null;
     }
-    // Android/others use alpha (but 0 might not be North, depends on device)
+    // Android/others use alpha (0 = North when absolute is true)
     else if (event.alpha !== null) {
-      // Alpha is clockwise from arbitrary reference
-      // We need to check if absolute orientation is available
       if (event.absolute) {
-        heading = (360 - event.alpha) % 360;
+        // When absolute=true, alpha is compass heading: 0=North, 90=East, etc.
+        heading = event.alpha;
       } else {
         // For non-absolute, alpha is relative and may not represent compass heading
         // This is a fallback - less accurate
-        heading = (360 - event.alpha) % 360;
+        heading = event.alpha;
       }
     }
 
