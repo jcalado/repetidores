@@ -1,6 +1,6 @@
 'use client'
 
-import { Dialog, DialogPanel, Popover, PopoverButton, PopoverGroup, PopoverPanel } from '@headlessui/react'
+import { CloseButton, Dialog, DialogPanel, Popover, PopoverButton, PopoverGroup, PopoverPanel } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import {
     Bars3Icon,
@@ -132,10 +132,10 @@ export default function Header() {
                                             />
                                         </div>
                                         <div className="flex-auto">
-                                            <Link href={item.href} className="block font-semibold text-gray-900 dark:text-white">
+                                            <CloseButton as={Link} href={item.href} className="block font-semibold text-gray-900 dark:text-white">
                                                 {item.name}
                                                 <span className="absolute inset-0" />
-                                            </Link>
+                                            </CloseButton>
                                             <p className="mt-1 text-gray-600 dark:text-gray-400">{item.description}</p>
                                         </div>
                                     </div>
@@ -197,10 +197,10 @@ export default function Header() {
                                             />
                                         </div>
                                         <div className="flex-auto">
-                                            <Link href={item.href} className="block font-semibold text-gray-900 dark:text-white">
+                                            <CloseButton as={Link} href={item.href} className="block font-semibold text-gray-900 dark:text-white">
                                                 {item.name}
                                                 <span className="absolute inset-0" />
-                                            </Link>
+                                            </CloseButton>
                                             <p className="mt-1 text-gray-600 dark:text-gray-400">{item.description}</p>
                                         </div>
                                     </div>
