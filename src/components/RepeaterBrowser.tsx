@@ -28,7 +28,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { VisuallyHidden } from "@/components/ui/visually-hidden"
 import { useUserLocation } from "@/contexts/UserLocationContext"
 import { searchLocation, calculateDistance, reverseGeocode, formatAddress, type GeocodingResult } from "@/lib/geolocation"
-import type { ColumnFiltersState } from "@tanstack/react-table"
+import type { ColumnFiltersState, SortingState } from "@tanstack/react-table"
 import { ChevronDown, ChevronUp, Filter, FunnelX, Heart, Loader2, MapPin, RefreshCw, Search, X } from "lucide-react"
 import { useTranslations } from 'next-intl'
 import * as React from "react"
@@ -401,6 +401,7 @@ export default function RepeaterBrowser({
                   setOpen(true)
                 }}
                 isLoading={isLoading}
+                initialSorting={userLocation ? [{ id: 'distance', desc: false }] : undefined}
               />
             </TabsContent>
             <TabsContent value="map" className="h-[500px]">

@@ -66,6 +66,7 @@ interface DataTableProps<TData, TValue> {
   onColumnFiltersChange?: React.Dispatch<React.SetStateAction<ColumnFiltersState>>
   onRowClick?: (row: TData) => void
   isLoading?: boolean
+  initialSorting?: SortingState
 }
 
 export function DataTable<TData, TValue>({
@@ -76,10 +77,26 @@ export function DataTable<TData, TValue>({
   onColumnFiltersChange,
   onRowClick,
   isLoading = false,
+  initialSorting,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([
-    { id: 'outputFrequency', desc: false },
-  ])
+  const [sorting, setSorting] = React.useState<SortingState>(
+    initialSorting ?? [{ id: 'outputFrequency', desc: false }]
+  )
+  const [userHasChangedSort, setUserHasChangedSort] = React.useState(false)
+
+  // Update sorting when initialSorting changes (e.g., when user location becomes available)
+  // but only if the user hasn't manually changed the sort
+  React.useEffect(() => {
+    if (initialSorting && !userHasChangedSort) {
+      setSorting(initialSorting)
+    }
+  }, [initialSorting, userHasChangedSort])
+
+  const handleSortingChange: typeof setSorting = (updater) => {
+    setUserHasChangedSort(true)
+    setSorting(updater)
+  }
+
   const [internalColumnFilters, setInternalColumnFilters] =
     React.useState<ColumnFiltersState>([])
   const columnFilters = columnFiltersProp ?? internalColumnFilters
@@ -102,7 +119,7 @@ export function DataTable<TData, TValue>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
+    onSortingChange: handleSortingChange,
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: onColumnFiltersChange ?? setInternalColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
