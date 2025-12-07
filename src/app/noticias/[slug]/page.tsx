@@ -207,6 +207,14 @@ function LexicalNodeRenderer({ node }: { node: LexicalNode }) {
 
   // Text node
   if (type === "text" && text) {
+    // Check if text contains markdown patterns (user pasted markdown)
+    const hasMarkdown = /(\*\*|__|##|^- |\n- |^\d+\. |\n\d+\. |`[^`]+`|\[.*\]\(.*\))/m.test(text)
+
+    if (hasMarkdown) {
+      // Render markdown content
+      return <ReactMarkdown>{text}</ReactMarkdown>
+    }
+
     let element: React.ReactNode = text
 
     // Apply formatting
