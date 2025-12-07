@@ -122,6 +122,7 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
 
     const withDistances = repeaters
       .filter((r) => r.latitude && r.longitude)
+      .filter((r) => !r.status || r.status === 'active' || r.status === 'unknown')
       .map((repeater) => ({
         ...repeater,
         distance: calculateDistance(
@@ -272,9 +273,10 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
                 )}
               >
                 <CardContent className="py-4">
-                  <div className="flex items-center gap-4">
-                    {/* Rank & Distance */}
-                    <div className="flex-shrink-0 text-center min-w-[60px]">
+                  {/* Mobile: stacked layout / Desktop: horizontal flex */}
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                    {/* Mobile: rank + distance inline / Desktop: vertical stack */}
+                    <div className="flex items-center gap-3 sm:flex-col sm:text-center sm:min-w-[60px] sm:gap-0">
                       <div
                         className={cn(
                           'text-2xl font-bold',
@@ -286,10 +288,10 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
                       <div className="text-sm font-medium">{formatDistance(repeater.distance)}</div>
                     </div>
 
-                    {/* Bearing Indicator */}
+                    {/* Bearing Indicator - smaller on mobile */}
                     <div
                       className={cn(
-                        'flex-shrink-0 w-16 h-16 rounded-full flex items-center justify-center transition-all',
+                        'flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all',
                         compass.isEnabled
                           ? 'bg-green-100 dark:bg-green-900/30 ring-2 ring-green-500'
                           : 'bg-muted'
@@ -297,7 +299,7 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
                     >
                       <Navigation
                         className={cn(
-                          'h-8 w-8 transition-transform',
+                          'h-6 w-6 sm:h-8 sm:w-8 transition-transform',
                           compass.isEnabled
                             ? 'text-green-600 dark:text-green-400'
                             : 'text-muted-foreground'
@@ -312,7 +314,7 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
                       />
                     </div>
 
-                    {/* Repeater Info */}
+                    {/* Repeater Info - full width on mobile */}
                     <div className="flex-grow min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <Link
@@ -335,9 +337,9 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
                       </div>
                     </div>
 
-                    {/* Bearing & Direction */}
-                    <div className="flex-shrink-0 text-right min-w-[100px]">
-                      <div className="text-lg font-bold font-mono">
+                    {/* Bearing & Direction - inline on mobile, stacked on desktop */}
+                    <div className="flex items-center gap-2 sm:flex-col sm:items-end sm:gap-0 sm:text-right sm:min-w-[100px]">
+                      <div className="text-base sm:text-lg font-bold font-mono">
                         {Math.round(repeater.bearing)}° {bearingToCardinal(repeater.bearing)}
                       </div>
                       {compass.isEnabled && relativeBearing !== null && (
@@ -354,10 +356,10 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
                       )}
                     </div>
 
-                    {/* Link */}
+                    {/* Link - hidden on mobile (callsign is clickable) */}
                     <Link
                       href={`/repeater/${repeater.callsign}`}
-                      className="flex-shrink-0 p-2 rounded-lg hover:bg-muted transition-colors"
+                      className="hidden sm:flex flex-shrink-0 p-2 rounded-lg hover:bg-muted transition-colors"
                     >
                       <ExternalLink className="h-5 w-5 text-muted-foreground" />
                     </Link>
