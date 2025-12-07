@@ -802,7 +802,26 @@
         "characters": "{count}/500 caracteres",
         "cancel": "Cancelar",
         "submitFeedback": "Enviar Feedback",
-        "reportsInDays": "{count} relatórios nos últimos {days} dias"
+        "reportsInDays": "{count} relatórios nos últimos {days} dias",
+        "positive": "positivo",
+        "status": {
+            "ok": {
+                "label": "A Funcionar",
+                "description": "Confirmado operacional pela comunidade"
+            },
+            "probBad": {
+                "label": "Incerto",
+                "description": "Relatórios mistos da comunidade"
+            },
+            "bad": {
+                "label": "Não Funciona",
+                "description": "Reportado offline pela comunidade"
+            },
+            "unknown": {
+                "label": "Desconhecido",
+                "description": "Ainda não há relatórios suficientes"
+            }
+        }
     },
     "nearest": {
         "title": "Repetidor Mais Próximo",

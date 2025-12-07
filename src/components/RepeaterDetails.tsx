@@ -421,11 +421,11 @@ function OperationalStatusCard({ status, lastVerified }: { status: 'active' | 'm
   );
 }
 
-function StatusDisplay({ status, stats }: { status: "ok" | "prob-bad" | "bad" | "unknown"; stats: VoteStats | null }) {
+function StatusDisplay({ status, stats, t }: { status: "ok" | "prob-bad" | "bad" | "unknown"; stats: VoteStats | null; t: ReturnType<typeof useTranslations<"communityStatus">> }) {
   const config = {
     ok: {
-      label: "Working",
-      description: "Confirmed operational by community",
+      labelKey: "status.ok.label" as const,
+      descriptionKey: "status.ok.description" as const,
       icon: CheckCircle2,
       bgClass: "bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950/40 dark:to-emerald-900/30",
       borderClass: "border-emerald-200 dark:border-emerald-800/50",
@@ -433,8 +433,8 @@ function StatusDisplay({ status, stats }: { status: "ok" | "prob-bad" | "bad" | 
       textClass: "text-emerald-700 dark:text-emerald-300",
     },
     "prob-bad": {
-      label: "Uncertain",
-      description: "Mixed reports from community",
+      labelKey: "status.probBad.label" as const,
+      descriptionKey: "status.probBad.description" as const,
       icon: AlertCircle,
       bgClass: "bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950/40 dark:to-amber-900/30",
       borderClass: "border-amber-200 dark:border-amber-800/50",
@@ -442,8 +442,8 @@ function StatusDisplay({ status, stats }: { status: "ok" | "prob-bad" | "bad" | 
       textClass: "text-amber-700 dark:text-amber-300",
     },
     bad: {
-      label: "Not Working",
-      description: "Reported offline by community",
+      labelKey: "status.bad.label" as const,
+      descriptionKey: "status.bad.description" as const,
       icon: XCircle,
       bgClass: "bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950/40 dark:to-red-900/30",
       borderClass: "border-red-200 dark:border-red-800/50",
@@ -451,8 +451,8 @@ function StatusDisplay({ status, stats }: { status: "ok" | "prob-bad" | "bad" | 
       textClass: "text-red-700 dark:text-red-300",
     },
     unknown: {
-      label: "Unknown",
-      description: "Not enough reports yet",
+      labelKey: "status.unknown.label" as const,
+      descriptionKey: "status.unknown.description" as const,
       icon: HelpCircle,
       bgClass: "bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/40 dark:to-slate-800/30",
       borderClass: "border-slate-200 dark:border-slate-700/50",
@@ -471,15 +471,15 @@ function StatusDisplay({ status, stats }: { status: "ok" | "prob-bad" | "bad" | 
           <Icon className={cn("h-5 w-5", cfg.iconClass)} />
         </div>
         <div className="flex-1 min-w-0">
-          <div className={cn("font-semibold text-sm", cfg.textClass)}>{cfg.label}</div>
-          <div className="text-xs text-muted-foreground">{cfg.description}</div>
+          <div className={cn("font-semibold text-sm", cfg.textClass)}>{t(cfg.labelKey)}</div>
+          <div className="text-xs text-muted-foreground">{t(cfg.descriptionKey)}</div>
         </div>
         {stats && stats.total > 0 && (
           <div className="text-right">
             <div className="text-lg font-bold tabular-nums">
               {Math.round((stats.up / stats.total) * 100)}%
             </div>
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">positive</div>
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{t("positive")}</div>
           </div>
         )}
       </div>
@@ -606,7 +606,7 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
         ) : (
           <>
             {/* Status Display */}
-            <StatusDisplay status={status} stats={stats} />
+            <StatusDisplay status={status} stats={stats} t={t} />
 
             {/* Vote Distribution Bar */}
             <VoteDistributionBar stats={stats} t={t} />
