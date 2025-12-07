@@ -440,6 +440,9 @@
             "talkgroup": "TG {tg}",
             "other": "Outra"
         },
+        "notFound": "Evento não encontrado",
+        "notFoundDescription": "O evento que procura não existe ou foi removido.",
+        "backToEvents": "Ver todos os eventos",
         "detailsPage": {
             "backToEvents": "Voltar aos eventos",
             "featured": "Em Destaque",
