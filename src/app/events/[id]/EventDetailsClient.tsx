@@ -381,14 +381,38 @@ function RelatedEventCard({ event, tagColors }: { event: EventItem; tagColors: R
   );
 }
 
+const API_BASE_URL = (() => {
+  const source =
+    typeof window !== 'undefined'
+      ? process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL || 'http://localhost:3000'
+      : process.env.PAYLOAD_API_BASE_URL || process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL || 'http://localhost:3000';
+  return source.replace(/\/$/, '');
+})();
+
+async function fetchEventById(eventId: string): Promise<EventItem | null> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/events/list?limit=500`);
+    if (!response.ok) return null;
+    const data = await response.json();
+    const events: EventItem[] = data.docs || [];
+    return events.find(e => e.id === eventId) || null;
+  } catch {
+    return null;
+  }
+}
+
 interface EventDetailsClientProps {
-  event: EventItem;
+  event?: EventItem;
+  eventId: string;
   allEvents?: EventItem[];
 }
 
-export default function EventDetailsClient({ event, allEvents = [] }: EventDetailsClientProps) {
+export default function EventDetailsClient({ event: initialEvent, eventId, allEvents = [] }: EventDetailsClientProps) {
   const t = useTranslations('events');
   const tDetails = useTranslations('events.detailsPage');
+  const [event, setEvent] = useState<EventItem | null>(initialEvent || null);
+  const [loading, setLoading] = useState(!initialEvent);
+  const [notFoundState, setNotFoundState] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
 
@@ -398,29 +422,46 @@ export default function EventDetailsClient({ event, allEvents = [] }: EventDetai
     setMounted(true);
   }, []);
 
+  // Fallback: fetch from API if event wasn't pre-rendered
+  useEffect(() => {
+    if (!initialEvent && !event && !notFoundState) {
+      setLoading(true);
+      fetchEventById(eventId)
+        .then(data => {
+          if (data) {
+            setEvent(data);
+          } else {
+            setNotFoundState(true);
+          }
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [initialEvent, eventId, event, notFoundState]);
+
+  // Calculate values only when event is available
   const now = Date.now();
-  const startTime = new Date(event.start).getTime();
-  const endTime = event.end ? new Date(event.end).getTime() : startTime + 3600000;
+  const startTime = event ? new Date(event.start).getTime() : 0;
+  const endTime = event?.end ? new Date(event.end).getTime() : startTime + 3600000;
   const hasStarted = now >= startTime;
   const hasEnded = now >= endTime;
   const isInProgress = hasStarted && !hasEnded;
 
-  const remainingToStart = msUntil(event.start);
-  const remainingToEnd = event.end ? msUntil(event.end) : 0;
+  const remainingToStart = event ? msUntil(event.start) : 0;
+  const remainingToEnd = event?.end ? msUntil(event.end) : 0;
 
-  const tagColors = getTagColors(event.tag);
-  const duration = formatDuration(event.start, event.end);
+  const tagColors = getTagColors(event?.tag);
+  const duration = event ? formatDuration(event.start, event.end) : null;
   const tzInfo = getTimezoneInfo();
-  const imageUrl = getImageUrl(event.featuredImage?.url);
+  const imageUrl = getImageUrl(event?.featuredImage?.url);
 
   // Related events by tag
   const relatedByTag = useMemo(() => {
-    if (!event.tag) return [];
+    if (!event?.tag) return [];
     return allEvents
       .filter(e => e.id !== event.id && e.tag === event.tag && new Date(e.start).getTime() > Date.now())
       .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
       .slice(0, 4);
-  }, [allEvents, event.id, event.tag]);
+  }, [allEvents, event?.id, event?.tag]);
 
   // Next/Previous events
   const sortedEvents = useMemo(() =>
@@ -428,7 +469,7 @@ export default function EventDetailsClient({ event, allEvents = [] }: EventDetai
     [allEvents]
   );
 
-  const currentIndex = sortedEvents.findIndex(e => e.id === event.id);
+  const currentIndex = event ? sortedEvents.findIndex(e => e.id === event.id) : -1;
   const prevEvent = currentIndex > 0 ? sortedEvents[currentIndex - 1] : null;
   const nextEvent = currentIndex < sortedEvents.length - 1 ? sortedEvents[currentIndex + 1] : null;
 
@@ -442,15 +483,39 @@ export default function EventDetailsClient({ event, allEvents = [] }: EventDetai
     }
   };
 
-  const shareText = `${event.title} - ${new Date(event.start).toLocaleDateString('pt-PT')}`;
+  const shareText = event ? `${event.title} - ${new Date(event.start).toLocaleDateString('pt-PT')}` : '';
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
 
   // Loading skeleton
-  if (!mounted) {
+  if (!mounted || loading) {
     return (
       <div className="p-4 md:p-8 max-w-4xl mx-auto">
         <div className="h-8 w-32 bg-muted rounded animate-pulse mb-6" />
         <div className="h-96 bg-muted rounded-2xl animate-pulse" />
+      </div>
+    );
+  }
+
+  // Not found state
+  if (notFoundState || !event) {
+    return (
+      <div className="p-4 md:p-8 max-w-4xl mx-auto">
+        <Link href="/events/">
+          <Button variant="ghost" size="sm" className="gap-2 pl-2 mb-6">
+            <ArrowLeft className="w-4 h-4" />
+            {tDetails('backToEvents')}
+          </Button>
+        </Link>
+        <Card className="rounded-2xl p-8 text-center">
+          <div className="text-6xl mb-4">🔍</div>
+          <h1 className="text-2xl font-bold mb-2">{t('notFound') || 'Evento não encontrado'}</h1>
+          <p className="text-muted-foreground mb-4">
+            {t('notFoundDescription') || 'O evento que procura não existe ou foi removido.'}
+          </p>
+          <Link href="/events/">
+            <Button>{t('backToEvents') || 'Ver todos os eventos'}</Button>
+          </Link>
+        </Card>
       </div>
     );
   }

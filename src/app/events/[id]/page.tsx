@@ -1,4 +1,3 @@
-import { notFound } from 'next/navigation';
 import type { EventItem } from '@/components/HamRadioEventsCountdown';
 import EventDetailsClient from './EventDetailsClient';
 
@@ -51,13 +50,14 @@ export default async function EventDetailPage({ params }: PageProps) {
   const events = await getEvents();
   const event = events.find((e) => e.id === decodedId);
 
-  if (!event) {
-    notFound();
-  }
-
+  // Don't call notFound() here - let client handle fallback fetch from API
   return (
     <div className="min-h-screen bg-background">
-      <EventDetailsClient event={event} allEvents={events} />
+      <EventDetailsClient
+        event={event}
+        eventId={decodedId}
+        allEvents={events}
+      />
     </div>
   );
 }
