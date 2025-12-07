@@ -6,20 +6,19 @@ import { useTranslations } from 'next-intl';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Repeater } from '@/app/columns';
 import { calculateDistance, formatDistance } from '@/lib/geolocation';
 import { useDeviceCompass } from '@/hooks/useDeviceCompass';
+import { useUserLocation } from '@/contexts/UserLocationContext';
 import { cn } from '@/lib/utils';
 import {
   MapPin,
   Navigation,
   Compass,
   Loader2,
-  AlertCircle,
-  Radio,
   ExternalLink,
   RefreshCw,
+  Info,
 } from 'lucide-react';
 import PageHeader from '@/components/PageHeader';
 
@@ -64,54 +63,10 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
   const t = useTranslations('nearest');
   const tCompass = useTranslations('compass');
 
-  const [userLocation, setUserLocation] = React.useState<{ latitude: number; longitude: number } | null>(null);
-  const [isLocating, setIsLocating] = React.useState(false);
-  const [locationError, setLocationError] = React.useState<string | null>(null);
+  const { userLocation, isLocating, requestLocation } = useUserLocation();
   const [sortedRepeaters, setSortedRepeaters] = React.useState<RepeaterWithDistance[]>([]);
 
   const compass = useDeviceCompass();
-
-  // Get user location
-  const handleGetLocation = React.useCallback(() => {
-    if (!navigator.geolocation) {
-      setLocationError(t('errors.notSupported'));
-      return;
-    }
-
-    setIsLocating(true);
-    setLocationError(null);
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setUserLocation({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        });
-        setIsLocating(false);
-      },
-      (error) => {
-        setIsLocating(false);
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            setLocationError(t('errors.denied'));
-            break;
-          case error.POSITION_UNAVAILABLE:
-            setLocationError(t('errors.unavailable'));
-            break;
-          case error.TIMEOUT:
-            setLocationError(t('errors.timeout'));
-            break;
-          default:
-            setLocationError(t('errors.unknown'));
-        }
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 60000,
-      }
-    );
-  }, [t]);
 
   // Calculate distances and sort repeaters when location changes
   React.useEffect(() => {
@@ -161,11 +116,6 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
     return tCompass('behind');
   };
 
-  // Auto-request location on mount
-  React.useEffect(() => {
-    handleGetLocation();
-  }, [handleGetLocation]);
-
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -189,7 +139,7 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
             <Button
               variant="outline"
               size="sm"
-              onClick={handleGetLocation}
+              onClick={() => requestLocation(true)}
               disabled={isLocating}
               className="gap-2"
             >
@@ -210,8 +160,8 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
           <CardContent className="py-3">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <MapPin className="h-4 w-4" />
-              <span>
-                {userLocation.latitude.toFixed(4)}°, {userLocation.longitude.toFixed(4)}°
+              <span className="font-mono">
+                {userLocation.qthLocator || `${userLocation.latitude.toFixed(4)}°, ${userLocation.longitude.toFixed(4)}°`}
               </span>
               {compass.isEnabled && compass.heading !== null && (
                 <span className="ml-4 text-green-600 dark:text-green-400">
@@ -224,17 +174,8 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
         </Card>
       )}
 
-      {/* Location Error */}
-      {locationError && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>{t('errors.title')}</AlertTitle>
-          <AlertDescription>{locationError}</AlertDescription>
-        </Alert>
-      )}
-
       {/* Loading State */}
-      {isLocating && (
+      {isLocating && !userLocation && (
         <Card className="rounded-2xl">
           <CardContent className="py-12 text-center">
             <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-muted-foreground" />
@@ -244,15 +185,12 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
       )}
 
       {/* No Location State */}
-      {!userLocation && !isLocating && !locationError && (
+      {!userLocation && !isLocating && (
         <Card className="rounded-2xl">
           <CardContent className="py-12 text-center">
             <MapPin className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <p className="text-muted-foreground mb-4">{t('noLocation')}</p>
-            <Button onClick={handleGetLocation} className="gap-2">
-              <MapPin className="h-4 w-4" />
-              {t('getLocation')}
-            </Button>
+            <p className="text-muted-foreground mb-2">{t('noLocation')}</p>
+            <p className="text-sm text-muted-foreground">{t('setLocationHint')}</p>
           </CardContent>
         </Card>
       )}
@@ -382,7 +320,7 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
         <Card className="rounded-2xl">
           <CardContent className="py-4">
             <div className="flex items-start gap-2 text-sm text-muted-foreground">
-              <Radio className="h-4 w-4 mt-0.5 flex-shrink-0" />
+              <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
               <p>{t('info')}</p>
             </div>
           </CardContent>

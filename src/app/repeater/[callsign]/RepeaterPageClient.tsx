@@ -307,7 +307,7 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
                   Partilhe a sua localização para ver a direção
                 </p>
               </div>
-              <Button variant="outline" onClick={requestLocation} disabled={isLocating}>
+              <Button variant="outline" onClick={() => requestLocation()} disabled={isLocating}>
                 <MapPin className="mr-2 h-4 w-4" />
                 {isLocating ? "A localizar..." : "Obter localização"}
               </Button>

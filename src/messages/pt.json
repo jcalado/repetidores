@@ -31,7 +31,8 @@
         "menu": "Menu",
         "theme": "Tema",
         "nearest": "Mais Próximo",
-        "nearestDescription": "Encontre o repetidor mais próximo de si"
+        "nearestDescription": "Encontre o repetidor mais próximo de si",
+        "location": "Localização"
     },
     "qth": {
         "title": "Localizador QTH",
@@ -234,6 +235,17 @@
             "timeout": "Timeout ao obter localização",
             "unknown": "Erro ao obter localização"
         }
+    },
+    "locationPicker": {
+        "title": "A sua localização",
+        "setLocation": "Definir localização",
+        "qthLabel": "Localizador QTH",
+        "qthPlaceholder": "ex: IM58kr",
+        "qthInvalid": "Formato QTH inválido",
+        "qthApply": "Aplicar",
+        "gpsButton": "Usar a minha localização",
+        "currentLocation": "Localização atual",
+        "clear": "Limpar"
     },
     "favorites": {
         "add": "Adicionar aos favoritos",
@@ -778,7 +790,8 @@
         "title": "Repetidor Mais Próximo",
         "description": "Encontre os repetidores mais próximos da sua localização atual",
         "locating": "A obter localização...",
-        "noLocation": "Localização não disponível",
+        "noLocation": "Localização não definida",
+        "setLocationHint": "Defina a sua localização no menu para ver os repetidores mais próximos",
         "getLocation": "Obter Localização",
         "refreshLocation": "Atualizar",
         "heading": "Rumo",

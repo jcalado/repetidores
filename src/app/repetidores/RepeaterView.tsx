@@ -1,7 +1,6 @@
 "use client";
 
 import { getOwnerShort, useColumns, type Repeater } from "@/app/columns";
-import LocationPickerDialog from "@/components/LocationPickerDialog";
 import MapClient from "@/components/MapClient";
 import RepeaterDetails from "@/components/RepeaterDetails";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
@@ -35,13 +34,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { useUserLocation } from "@/contexts/UserLocationContext";
-import {
-  searchLocation,
-  calculateDistance,
-  reverseGeocode,
-  formatAddress,
-  type GeocodingResult,
-} from "@/lib/geolocation";
+import { calculateDistance } from "@/lib/geolocation";
 import type { ColumnFiltersState } from "@tanstack/react-table";
 import {
   ChevronDown,
@@ -49,13 +42,10 @@ import {
   Filter,
   FunnelX,
   Heart,
-  Loader2,
   MapIcon,
   MapPin,
   RefreshCw,
-  Search,
   TableIcon,
-  X,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -77,14 +67,7 @@ function getBandFromFrequency(mhz: number): string {
 export default function RepeaterView({ view }: Props) {
   const t = useTranslations();
   const { repeaters: data, isRefreshing, fetchError, refreshRepeaters } = useRepeaters();
-  const {
-    userLocation,
-    isLocating,
-    error: locationError,
-    requestLocation,
-    setLocation,
-    clearLocation,
-  } = useUserLocation();
+  const { userLocation } = useUserLocation();
   const columns = useColumns({ userLocation });
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [open, setOpen] = React.useState(false);
@@ -114,91 +97,6 @@ export default function RepeaterView({ view }: Props) {
     data.forEach((d) => d.modulation && set.add(d.modulation));
     return Array.from(set).sort();
   }, [data]);
-
-  const handleClearLocation = React.useCallback(() => {
-    clearLocation();
-    setLocationSearchQuery("");
-  }, [clearLocation]);
-
-  // Location search state
-  const [locationSearchQuery, setLocationSearchQuery] = React.useState("");
-  const [locationSearchResults, setLocationSearchResults] = React.useState<
-    GeocodingResult[]
-  >([]);
-  const [isSearching, setIsSearching] = React.useState(false);
-  const [showSearchResults, setShowSearchResults] = React.useState(false);
-  const searchTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
-
-  // Reverse geocoded address for current user location
-  const [userLocationAddress, setUserLocationAddress] = React.useState<string | null>(
-    null
-  );
-  const [isLoadingAddress, setIsLoadingAddress] = React.useState(false);
-
-  // Fetch address when user location changes
-  React.useEffect(() => {
-    if (!userLocation) {
-      setUserLocationAddress(null);
-      return;
-    }
-
-    let cancelled = false;
-    setIsLoadingAddress(true);
-
-    reverseGeocode(userLocation.latitude, userLocation.longitude).then((result) => {
-      if (cancelled) return;
-      setIsLoadingAddress(false);
-      if (result) {
-        setUserLocationAddress(formatAddress(result));
-      } else {
-        setUserLocationAddress(null);
-      }
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [userLocation]);
-
-  // Debounced location search
-  React.useEffect(() => {
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-
-    if (!locationSearchQuery || locationSearchQuery.length < 2) {
-      setLocationSearchResults([]);
-      setShowSearchResults(false);
-      return;
-    }
-
-    setIsSearching(true);
-    searchTimeoutRef.current = setTimeout(async () => {
-      const results = await searchLocation(locationSearchQuery);
-      setLocationSearchResults(results);
-      setShowSearchResults(true);
-      setIsSearching(false);
-    }, 300);
-
-    return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
-    };
-  }, [locationSearchQuery]);
-
-  const handleSelectSearchResult = React.useCallback(
-    (result: GeocodingResult) => {
-      setLocation({
-        latitude: parseFloat(result.lat),
-        longitude: parseFloat(result.lon),
-      });
-      setLocationSearchQuery(result.display_name.split(",")[0]);
-      setShowSearchResults(false);
-      setLocationSearchResults([]);
-    },
-    [setLocation]
-  );
 
   const filtered = React.useMemo(() => {
     let result = data;
@@ -308,106 +206,16 @@ export default function RepeaterView({ view }: Props) {
 
           {view === "table" && (
             <>
-              {/* Location controls */}
+              {/* Location display and favorites */}
               <div className="mb-4 flex flex-wrap items-center gap-2">
-                {!userLocation && (
-                  <>
-                    <div className="relative">
-                      <div className="relative">
-                        <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                          placeholder={t("location.searchPlaceholder")}
-                          value={locationSearchQuery}
-                          onChange={(e) => setLocationSearchQuery(e.target.value)}
-                          className="w-48 pl-8 pr-8"
-                        />
-                        {isSearching && (
-                          <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
-                        )}
-                      </div>
-                      {showSearchResults && locationSearchResults.length > 0 && (
-                        <div className="absolute z-50 mt-1 w-72 rounded-md border bg-popover p-1 shadow-md">
-                          {locationSearchResults.map((result) => (
-                            <button
-                              key={result.place_id}
-                              type="button"
-                              className="w-full rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent hover:text-accent-foreground"
-                              onClick={() => handleSelectSearchResult(result)}
-                            >
-                              <div className="font-medium">
-                                {result.display_name.split(",")[0]}
-                              </div>
-                              <div className="truncate text-xs text-muted-foreground">
-                                {result.display_name.split(",").slice(1, 3).join(",")}
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                      {showSearchResults &&
-                        locationSearchResults.length === 0 &&
-                        !isSearching &&
-                        locationSearchQuery.length >= 2 && (
-                          <div className="absolute z-50 mt-1 w-72 rounded-md border bg-popover p-2 shadow-md">
-                            <span className="text-sm text-muted-foreground">
-                              {t("location.noResults")}
-                            </span>
-                          </div>
-                        )}
-                    </div>
-                    <span className="text-sm text-muted-foreground">{t("location.or")}</span>
-                  </>
-                )}
-
-                {!userLocation ? (
-                  <>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={requestLocation}
-                      disabled={isLocating}
-                    >
-                      <MapPin className="mr-2 h-4 w-4" />
-                      {isLocating ? t("location.locating") : t("location.locateMe")}
-                    </Button>
-                    <LocationPickerDialog onLocationSelect={setLocation} />
-                  </>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
-                    <div className="flex flex-col">
-                      {isLoadingAddress ? (
-                        <span className="text-sm text-muted-foreground flex items-center gap-1">
-                          <Loader2 className="h-3 w-3 animate-spin" />
-                          {t("location.loadingAddress")}
-                        </span>
-                      ) : userLocationAddress ? (
-                        <span className="text-sm font-medium">{userLocationAddress}</span>
-                      ) : (
-                        <span className="text-sm text-muted-foreground">
-                          {userLocation.latitude.toFixed(4)},{" "}
-                          {userLocation.longitude.toFixed(4)}
-                        </span>
-                      )}
-                      {userLocation.isApproximate && (
-                        <span className="text-xs text-muted-foreground">
-                          {t("location.approximate")}
-                        </span>
-                      )}
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleClearLocation}
-                      className="h-7 w-7 p-0"
-                    >
-                      <X className="h-4 w-4" />
-                      <span className="sr-only">{t("location.clearLocation")}</span>
-                    </Button>
+                {userLocation && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <MapPin className="h-4 w-4" />
+                    <span className="font-mono">
+                      {userLocation.qthLocator ||
+                        `${userLocation.latitude.toFixed(4)}, ${userLocation.longitude.toFixed(4)}`}
+                    </span>
                   </div>
-                )}
-                {locationError && (
-                  <span className="text-sm text-destructive">{locationError}</span>
                 )}
 
                 <div className="flex-1" />

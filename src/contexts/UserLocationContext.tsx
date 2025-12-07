@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { getIPLocation } from '@/lib/geolocation';
+import { latLonToQth } from '@/lib/iss/qth-locator';
 
 export interface UserLocation {
   latitude: number;
@@ -9,13 +10,14 @@ export interface UserLocation {
   accuracy?: number;
   timestamp?: number;
   isApproximate?: boolean; // True when using IP-based fallback
+  qthLocator?: string; // Maidenhead grid locator
 }
 
 interface UserLocationContextValue {
   userLocation: UserLocation | null;
   isLocating: boolean;
   error: string | null;
-  requestLocation: () => void;
+  requestLocation: (highAccuracy?: boolean) => void;
   setLocation: (location: UserLocation) => void;
   clearLocation: () => void;
 }
@@ -48,7 +50,7 @@ export function UserLocationProvider({ children }: { children: React.ReactNode }
     }
   }, []);
 
-  const requestLocation = React.useCallback(() => {
+  const requestLocation = React.useCallback((highAccuracy = true) => {
     if (!navigator.geolocation) {
       setError('Geolocation not supported');
       return;
@@ -64,6 +66,7 @@ export function UserLocationProvider({ children }: { children: React.ReactNode }
           longitude: position.coords.longitude,
           accuracy: position.coords.accuracy,
           timestamp: Date.now(),
+          qthLocator: latLonToQth(position.coords.latitude, position.coords.longitude),
         };
         setUserLocation(location);
         setIsLocating(false);
@@ -87,6 +90,7 @@ export function UserLocationProvider({ children }: { children: React.ReactNode }
             longitude: ipLocation.longitude,
             timestamp: Date.now(),
             isApproximate: true,
+            qthLocator: latLonToQth(ipLocation.latitude, ipLocation.longitude),
           };
           setUserLocation(location);
           setError(null);
@@ -104,22 +108,23 @@ export function UserLocationProvider({ children }: { children: React.ReactNode }
         }
       },
       {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 60000,
+        enableHighAccuracy: highAccuracy,
+        timeout: highAccuracy ? 15000 : 10000, // More time for GPS
+        maximumAge: 0, // Always get fresh position
       }
     );
   }, []);
 
   const setLocation = React.useCallback((location: UserLocation) => {
-    const locationWithTimestamp = {
+    const locationWithMeta = {
       ...location,
       timestamp: location.timestamp ?? Date.now(),
+      qthLocator: location.qthLocator ?? latLonToQth(location.latitude, location.longitude),
     };
-    setUserLocation(locationWithTimestamp);
+    setUserLocation(locationWithMeta);
     setError(null);
     try {
-      localStorage.setItem(LOCATION_STORAGE_KEY, JSON.stringify(locationWithTimestamp));
+      localStorage.setItem(LOCATION_STORAGE_KEY, JSON.stringify(locationWithMeta));
     } catch {
       // Ignore storage errors
     }

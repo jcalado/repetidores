@@ -325,7 +325,7 @@ export default function RepeaterBrowser({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={requestLocation}
+                      onClick={() => requestLocation()}
                       disabled={isLocating}
                     >
                       <MapPin className="mr-2 h-4 w-4" />

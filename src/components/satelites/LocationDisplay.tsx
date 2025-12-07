@@ -62,7 +62,7 @@ export function LocationDisplay({ onLocationChange }: LocationDisplayProps) {
             <span>Defina sua localizacao para ver passagens de satelites.</span>
             <div className="flex gap-2">
               <Button
-                onClick={requestLocation}
+                onClick={() => requestLocation()}
                 disabled={isLocating}
                 size="sm"
                 variant="default"

@@ -23,6 +23,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import ThemeToggle from './ThemeToggle'
+import LocationPickerPopover from './LocationPickerPopover'
 
 export default function Header() {
     const t = useTranslations()
@@ -85,7 +86,10 @@ export default function Header() {
                         <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Repetidores</span>
                     </Link>
                 </div>
-                <div className="flex lg:hidden">
+                <div className="flex lg:hidden items-center">
+                    <div className="mr-2">
+                        <LocationPickerPopover compact />
+                    </div>
                     <div className="mr-2">
                         <ThemeToggle />
                     </div>
@@ -219,7 +223,8 @@ export default function Header() {
                         {t('nav.about')}
                     </Link>
                 </PopoverGroup>
-                <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+                <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:items-center lg:gap-x-4">
+                    <LocationPickerPopover />
                     <ThemeToggle />
                 </div>
             </nav>
@@ -420,6 +425,14 @@ export default function Header() {
                                         </div>
                                         {t('nav.about')}
                                     </Link>
+                                </div>
+                                <div className="py-6">
+                                    <div className="flex items-center justify-between -mx-3 px-3">
+                                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                                            {t('nav.location')}
+                                        </span>
+                                        <LocationPickerPopover compact />
+                                    </div>
                                 </div>
                                 <div className="py-6">
                                     <div className="flex items-center justify-between -mx-3 px-3">
