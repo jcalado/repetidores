@@ -22,8 +22,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://repetidores.jcalado.com"),
-  title: "Repetidores",
-  description: "Explorar repetidores de rádio com mapa e filtros",
+  title: {
+    default: "Repetidores de Rádio Amador em Portugal",
+    template: "%s | Repetidores",
+  },
+  description: "Diretório de repetidores de radioamadorismo em Portugal. Mapa interativo, filtros por frequência e modulação.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -32,6 +35,28 @@ export const metadata: Metadata = {
   },
   formatDetection: {
     telephone: false,
+  },
+  openGraph: {
+    title: "Repetidores de Rádio Amador em Portugal",
+    description: "Diretório de repetidores de radioamadorismo em Portugal. Mapa interativo, filtros por frequência e modulação.",
+    url: "https://repetidores.jcalado.com",
+    siteName: "Repetidores",
+    locale: "pt_PT",
+    type: "website",
+    images: [
+      {
+        url: "/og-default.png",
+        width: 512,
+        height: 512,
+        alt: "Repetidores - Diretório de Radioamadorismo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary",
+    title: "Repetidores de Rádio Amador em Portugal",
+    description: "Diretório de repetidores de radioamadorismo em Portugal. Mapa interativo, filtros por frequência e modulação.",
+    images: ["/og-default.png"],
   },
   other: {
     "mobile-web-app-capable": "yes",

@@ -44,15 +44,99 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+export async function generateMetadata({ params }: PageProps) {
+  const { id } = await params;
+  const decodedId = decodeURIComponent(id);
+
+  try {
+    const events = await getEvents();
+    const event = events.find((e) => e.id === decodedId);
+
+    if (!event) {
+      return {
+        title: "Evento não encontrado",
+      };
+    }
+
+    const startDate = new Date(event.start);
+    const formattedDate = startDate.toLocaleDateString("pt-PT", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+
+    const title = event.title;
+    const description = `${event.title} - ${formattedDate}${event.location ? ` em ${event.location}` : ""}. Evento de radioamadorismo.`;
+
+    return {
+      title,
+      description,
+      alternates: {
+        canonical: `/events/${encodeURIComponent(event.id)}`,
+      },
+      openGraph: {
+        title,
+        description,
+        type: "website",
+        url: `/events/${encodeURIComponent(event.id)}`,
+        siteName: "Repetidores",
+        locale: "pt_PT",
+      },
+      twitter: {
+        card: "summary",
+        title,
+        description,
+      },
+    };
+  } catch {
+    return {
+      title: "Evento",
+    };
+  }
+}
+
+function generateEventJsonLd(event: EventItem) {
+  const startDate = new Date(event.start);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: event.title,
+    startDate: event.start,
+    ...(event.end && { endDate: event.end }),
+    ...(event.location && {
+      location: {
+        "@type": "Place",
+        name: event.location,
+      },
+    }),
+    ...(event.url && { url: event.url }),
+    organizer: {
+      "@type": "Organization",
+      name: "Repetidores",
+      url: "https://repetidores.jcalado.com",
+    },
+    eventStatus: startDate > new Date() ? "https://schema.org/EventScheduled" : "https://schema.org/EventMovedOnline",
+  };
+}
+
 export default async function EventDetailPage({ params }: PageProps) {
   const { id } = await params;
   const decodedId = decodeURIComponent(id);
   const events = await getEvents();
   const event = events.find((e) => e.id === decodedId);
 
+  const jsonLd = event ? generateEventJsonLd(event) : null;
+
   // Don't call notFound() here - let client handle fallback fetch from API
   return (
     <div className="min-h-screen bg-background">
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
       <EventDetailsClient
         event={event}
         eventId={decodedId}

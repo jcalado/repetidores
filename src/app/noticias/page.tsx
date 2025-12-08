@@ -42,9 +42,27 @@ export default async function NewsPage() {
 
 export async function generateMetadata() {
   const t = await getTranslations("news")
+  const title = t("title")
+  const description = t("description")
 
   return {
-    title: t("title"),
-    description: t("description"),
+    title,
+    description,
+    alternates: {
+      canonical: "/noticias",
+    },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url: "/noticias",
+      siteName: "Repetidores",
+      locale: "pt_PT",
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
   }
 }

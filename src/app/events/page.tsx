@@ -1,5 +1,27 @@
 import HamRadioEventsCountdown from '@/components/HamRadioEventsCountdown'
 import type { EventItem } from '@/components/HamRadioEventsCountdown'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: "Eventos de Radioamadorismo",
+  description: "Calendário de eventos, contests e nets de radioamadorismo em Portugal e internacional.",
+  alternates: {
+    canonical: "/events",
+  },
+  openGraph: {
+    title: "Eventos de Radioamadorismo",
+    description: "Calendário de eventos, contests e nets de radioamadorismo em Portugal e internacional.",
+    type: "website",
+    url: "/events",
+    siteName: "Repetidores",
+    locale: "pt_PT",
+  },
+  twitter: {
+    card: "summary",
+    title: "Eventos de Radioamadorismo",
+    description: "Calendário de eventos, contests e nets de radioamadorismo em Portugal e internacional.",
+  },
+}
 
 async function getEvents(): Promise<EventItem[]> {
   const apiBaseUrl = (

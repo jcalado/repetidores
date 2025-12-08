@@ -28,13 +28,70 @@ export async function generateMetadata({ params }: PageProps) {
     }
   }
 
+  const imageUrl = news.featuredImage?.url
+    ? news.featuredImage.url.startsWith("http")
+      ? news.featuredImage.url
+      : `${process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL || ""}${news.featuredImage.url}`
+    : null
+
   return {
     title: news.title,
     description: news.excerpt,
+    alternates: {
+      canonical: `/noticias/${slug}`,
+    },
     openGraph: {
       title: news.title,
       description: news.excerpt,
-      images: news.featuredImage?.url ? [news.featuredImage.url] : [],
+      type: "article",
+      url: `/noticias/${slug}`,
+      siteName: "Repetidores",
+      locale: "pt_PT",
+      publishedTime: news.publishedDate,
+      ...(imageUrl && { images: [imageUrl] }),
+    },
+    twitter: {
+      card: imageUrl ? "summary_large_image" : "summary",
+      title: news.title,
+      description: news.excerpt,
+      ...(imageUrl && { images: [imageUrl] }),
+    },
+  }
+}
+
+function generateNewsJsonLd(news: Awaited<ReturnType<typeof fetchNewsBySlug>>) {
+  if (!news) return null
+
+  const imageUrl = news.featuredImage?.url
+    ? news.featuredImage.url.startsWith("http")
+      ? news.featuredImage.url
+      : `${process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL || ""}${news.featuredImage.url}`
+    : null
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    headline: news.title,
+    description: news.excerpt,
+    datePublished: news.publishedDate,
+    ...(news.updatedAt && { dateModified: news.updatedAt }),
+    ...(news.author && {
+      author: {
+        "@type": "Person",
+        name: news.author,
+      },
+    }),
+    ...(imageUrl && {
+      image: imageUrl,
+    }),
+    publisher: {
+      "@type": "Organization",
+      name: "Repetidores",
+      url: "https://repetidores.jcalado.com",
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `https://repetidores.jcalado.com/noticias/${news.slug}`,
     },
   }
 }
@@ -66,8 +123,16 @@ export default async function NewsDetailPage({ params }: PageProps) {
       : `${process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL || ""}${news.featuredImage.url}`
     : null
 
+  const jsonLd = generateNewsJsonLd(news)
+
   return (
     <div className="min-h-screen bg-background">
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Back Link */}
         <Link

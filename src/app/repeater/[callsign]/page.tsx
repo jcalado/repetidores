@@ -181,9 +181,85 @@ export async function generateMetadata({ params }: { params: Promise<{ callsign:
   const { callsign } = await params;
   const decodedCallsign = decodeURIComponent(callsign);
 
+  try {
+    const allRepeaters = await fetchAllRepeaters();
+    const repeater = findRepeaterByCallsign(allRepeaters, decodedCallsign);
+
+    if (!repeater) {
+      return {
+        title: "Repetidor não encontrado",
+      };
+    }
+
+    const title = `${repeater.callsign} - Repetidor ${repeater.modulation} ${repeater.outputFrequency.toFixed(3)} MHz`;
+    const description = `Informação do repetidor ${repeater.callsign}: frequência ${repeater.outputFrequency.toFixed(3)} MHz, tom ${repeater.tone} Hz, modulação ${repeater.modulation}.${repeater.qth_locator ? ` Localização: ${repeater.qth_locator}.` : ""}`;
+
+    const keywords = [
+      repeater.callsign,
+      repeater.modulation,
+      repeater.qth_locator,
+      "repetidor",
+      "radioamador",
+      "ham radio",
+      "Portugal",
+    ].filter(Boolean);
+
+    return {
+      title,
+      description,
+      alternates: {
+        canonical: `/repeater/${encodeURIComponent(repeater.callsign)}`,
+      },
+      openGraph: {
+        title,
+        description,
+        type: "website",
+        url: `/repeater/${encodeURIComponent(repeater.callsign)}`,
+        siteName: "Repetidores",
+        locale: "pt_PT",
+      },
+      twitter: {
+        card: "summary",
+        title,
+        description,
+      },
+      keywords,
+    };
+  } catch {
+    return {
+      title: `${decodedCallsign} - Repetidores`,
+      description: `Informação detalhada sobre o repetidor ${decodedCallsign}`,
+    };
+  }
+}
+
+function generateRepeaterJsonLd(repeater: Repeater) {
   return {
-    title: `${decodedCallsign} - Repetidores`,
-    description: `Informação detalhada sobre o repetidor ${decodedCallsign}`,
+    "@context": "https://schema.org",
+    "@type": "RadioBroadcastService",
+    name: repeater.callsign,
+    description: `Repetidor ${repeater.modulation} - ${repeater.outputFrequency.toFixed(3)} MHz`,
+    broadcastFrequency: {
+      "@type": "BroadcastFrequencySpecification",
+      broadcastFrequencyValue: repeater.outputFrequency,
+      broadcastFrequencyUnit: "MHz",
+    },
+    ...(repeater.latitude && repeater.longitude && {
+      areaServed: {
+        "@type": "Place",
+        geo: {
+          "@type": "GeoCoordinates",
+          latitude: repeater.latitude,
+          longitude: repeater.longitude,
+        },
+        ...(repeater.qth_locator && { name: repeater.qth_locator }),
+      },
+    }),
+    provider: {
+      "@type": "Organization",
+      name: "Repetidores",
+      url: "https://repetidores.jcalado.com",
+    },
   };
 }
 
@@ -195,7 +271,17 @@ async function RepeaterContent({ callsign }: { callsign: string }) {
     notFound();
   }
 
-  return <RepeaterPageClient repeater={repeater} allRepeaters={allRepeaters} />;
+  const jsonLd = generateRepeaterJsonLd(repeater);
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <RepeaterPageClient repeater={repeater} allRepeaters={allRepeaters} />
+    </>
+  );
 }
 
 export default async function RepeaterPage({ params }: { params: Promise<{ callsign: string }> }) {

@@ -1,0 +1,30 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Sobre",
+  description: "Informação sobre o projeto Repetidores - diretório de repetidores de radioamadorismo em Portugal.",
+  alternates: {
+    canonical: "/about",
+  },
+  openGraph: {
+    title: "Sobre o Repetidores",
+    description: "Informação sobre o projeto Repetidores - diretório de repetidores de radioamadorismo em Portugal.",
+    type: "website",
+    url: "/about",
+    siteName: "Repetidores",
+    locale: "pt_PT",
+  },
+  twitter: {
+    card: "summary",
+    title: "Sobre o Repetidores",
+    description: "Informação sobre o projeto Repetidores.",
+  },
+};
+
+export default function AboutLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return children;
+}
