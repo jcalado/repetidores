@@ -21,6 +21,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://repetidores.jcalado.com"),
   title: "Repetidores",
   description: "Explorar repetidores de rádio com mapa e filtros",
   manifest: "/manifest.json",

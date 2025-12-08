@@ -38,15 +38,66 @@ export async function generateMetadata({ params }: PageProps) {
     const association = await fetchAssociationBySlug(slug)
 
     if (!association) {
-      return { title: "Associacao nao encontrada" }
+      return { title: "Associação não encontrada" }
     }
 
+    const repeaterCount = association.repeaters.length
+    const modulations = [
+      ...new Set(association.repeaters.map((r) => r.modulation)),
+    ].filter(Boolean)
+
+    const title = `${association.abbreviation} - ${association.name}`
+    const description =
+      repeaterCount > 0
+        ? `${association.name} (${association.abbreviation}) - ${repeaterCount} repetidor${repeaterCount > 1 ? "es" : ""} de rádio amador${modulations.length > 0 ? ` (${modulations.join(", ")})` : ""} em Portugal.`
+        : `Informações sobre ${association.name} (${association.abbreviation}) - associação de radioamadores em Portugal.`
+
+    const logoUrl = association.logo?.url
+      ? association.logo.url.startsWith("http")
+        ? association.logo.url
+        : `${process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL || ""}${association.logo.url}`
+      : null
+
     return {
-      title: `${association.abbreviation} - ${association.name}`,
-      description: `Informacoes sobre ${association.name} e os seus repetidores`,
+      title,
+      description,
+      alternates: {
+        canonical: `/association/${slug}`,
+      },
+      openGraph: {
+        title,
+        description,
+        type: "website",
+        url: `/association/${slug}`,
+        siteName: "Repetidores",
+        locale: "pt_PT",
+        ...(logoUrl && {
+          images: [
+            {
+              url: logoUrl,
+              alt: association.logo?.alt || `Logo ${association.abbreviation}`,
+            },
+          ],
+        }),
+      },
+      twitter: {
+        card: logoUrl ? "summary_large_image" : "summary",
+        title,
+        description,
+        ...(logoUrl && { images: [logoUrl] }),
+      },
+      keywords: [
+        association.name,
+        association.abbreviation,
+        "repetidores",
+        "radioamador",
+        "ham radio",
+        "Portugal",
+        ...modulations,
+      ].filter(Boolean),
     }
   } catch {
-    return { title: "Associacao" }
+    return { title: "Associação" }
   }
 }
 
@@ -67,6 +118,47 @@ function AssociationPageSkeleton() {
   )
 }
 
+function generateOrganizationJsonLd(association: Awaited<ReturnType<typeof fetchAssociationBySlug>>) {
+  if (!association) return null
+
+  const logoUrl = association.logo?.url
+    ? association.logo.url.startsWith("http")
+      ? association.logo.url
+      : `${process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL || ""}${association.logo.url}`
+    : null
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: association.name,
+    alternateName: association.abbreviation,
+    url: association.website || `https://repetidores.jcalado.com/association/${association.slug}`,
+    ...(logoUrl && { logo: logoUrl }),
+    ...(association.email && { email: association.email }),
+    ...(association.address && {
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: association.address,
+        addressCountry: "PT",
+      },
+    }),
+    ...(association.repeaters.length > 0 && {
+      owns: association.repeaters.map((repeater) => ({
+        "@type": "Thing",
+        name: repeater.callsign,
+        description: `Repetidor ${repeater.modulation} - ${repeater.outputFrequency.toFixed(3)} MHz`,
+        ...(repeater.latitude && repeater.longitude && {
+          geo: {
+            "@type": "GeoCoordinates",
+            latitude: repeater.latitude,
+            longitude: repeater.longitude,
+          },
+        }),
+      })),
+    }),
+  }
+}
+
 async function AssociationContent({
   slug,
   t,
@@ -83,8 +175,18 @@ async function AssociationContent({
   const hasContactInfo =
     association.address || association.website || association.email
 
+  const jsonLd = generateOrganizationJsonLd(association)
+
   return (
     <>
+      {/* JSON-LD Structured Data */}
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+
       {/* Back Link */}
       <Link
         href="/repetidores"
