@@ -16,6 +16,17 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
 });
 
+// Default blue icon for repeaters
+const defaultIcon = new L.Icon({
+  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
 // Custom icon for user location
 const userIcon = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
@@ -563,7 +574,7 @@ const MapView = ({ repeaters, onRepeaterClick, userLocation: externalUserLocatio
             <Marker
               key={repeater.callsign}
               position={[repeater.latitude, repeater.longitude]}
-              icon={repeater.status === 'offline' ? offlineIcon : undefined}
+              icon={repeater.status === 'offline' ? offlineIcon : defaultIcon}
               eventHandlers={{
                 click: () => onRepeaterClick?.(repeater),
               }}
