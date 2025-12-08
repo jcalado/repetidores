@@ -501,11 +501,11 @@
         }
     },
     "about": {
-        "title": "Sobre o repetidores",
-        "subtitle": "Explorando repetidores de radioamador em Portugal com uma interface moderna e intuitiva",
+        "title": "Sobre o Radioamador.info",
+        "subtitle": "Ferramentas e informação para radioamadores.",
         "project": {
             "title": "O que é este projeto?",
-            "description": "Este projeto é uma ferramenta para explorar repetidores de radioamador em Portugal. Os dados são públicos, recolhidos da ANACOM e apresentados de forma interativa, permitindo aos utilizadores filtrar e localizar repetidores com facilidade."
+            "description": "Este projeto é uma ferramenta para descobrir ferramentas e recursos úteis para radioamadores em Portugal. Inclui um diretório de repetidores, eventos, notícias e várias ferramentas online para auxiliar na prática do radioamadorismo."
         },
         "github": "Ver Código no GitHub",
         "features": {
