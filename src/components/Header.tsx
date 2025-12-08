@@ -83,7 +83,7 @@ export default function Header() {
                         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-ship-cove-500 to-ship-cove-700 text-white shadow-lg shadow-ship-cove-500/20">
                             <RadioTowerIcon className="h-6 w-6" />
                         </div>
-                        <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Repetidores</span>
+                        <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Radioamador.info</span>
                     </Link>
                 </div>
                 <div className="flex lg:hidden items-center">
