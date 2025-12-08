@@ -1,5 +1,7 @@
 import { MetadataRoute } from 'next'
 
+export const dynamic = 'force-static'
+
 const BASE_URL = 'https://repetidores.jcalado.com'
 
 function getApiBaseUrl(): string {
