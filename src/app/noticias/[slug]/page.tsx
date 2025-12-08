@@ -87,11 +87,11 @@ function generateNewsJsonLd(news: Awaited<ReturnType<typeof fetchNewsBySlug>>) {
     publisher: {
       "@type": "Organization",
       name: "Repetidores",
-      url: "https://repetidores.jcalado.com",
+      url: "https://www.radioamador.info",
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://repetidores.jcalado.com/noticias/${news.slug}`,
+      "@id": `https://www.radioamador.info/noticias/${news.slug}`,
     },
   }
 }

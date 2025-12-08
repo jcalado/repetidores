@@ -316,10 +316,10 @@
         "description": "Explorar repetidores de rádio com mapa e filtros"
     },
     "landing": {
-        "title": "Repetidores",
-        "subtitle": "O portal do radioamador em Portugal. Explore repetidores, eventos, propagação e ferramentas para comunicações de rádio.",
+        "title": "Radioamador.info",
+        "subtitle": "O portal do radioamador em Portugal. Repetidores, eventos, notícias, e ferramentas para comunicações de rádio.",
         "repeatersDescription": "Consulte a lista completa de repetidores em Portugal com filtros avançados e mapa interativo.",
-        "eventsDescription": "Fique a par dos próximos eventos, contests e nets de radioamador.",
+        "eventsDescription": "Fique a par dos próximos eventos, contests e nets.",
         "bandsDescription": "Referência das bandas de frequência para radioamadores.",
         "newsTitle": "Últimas Notícias",
         "newsDescription": "Novidades e anúncios sobre radioamadorismo",

@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 
 export const dynamic = 'force-static'
 
-const BASE_URL = 'https://repetidores.jcalado.com'
+const BASE_URL = 'https://www.radioamador.info'
 
 function getApiBaseUrl(): string {
   const source =

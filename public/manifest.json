@@ -1,7 +1,7 @@
 {
-  "name": "Repetidores - Estações Repetidoras de Amador",
-  "short_name": "Repetidores",
-  "description": "Explorar repetidores de radioamador com mapa interativo e filtros avançados",
+  "name": "Radioamador.info - Ferramentas para Radioamadores",
+  "short_name": "Radioamador.info",
+  "description": "Repetidores, eventos, notícias e ferramentas para radioamadores em Portugal",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1e293b",

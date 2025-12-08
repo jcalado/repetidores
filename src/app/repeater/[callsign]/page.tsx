@@ -258,7 +258,7 @@ function generateRepeaterJsonLd(repeater: Repeater) {
     provider: {
       "@type": "Organization",
       name: "Repetidores",
-      url: "https://repetidores.jcalado.com",
+      url: "https://www.radioamador.info",
     },
   };
 }

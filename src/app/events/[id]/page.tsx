@@ -114,7 +114,7 @@ function generateEventJsonLd(event: EventItem) {
     organizer: {
       "@type": "Organization",
       name: "Repetidores",
-      url: "https://repetidores.jcalado.com",
+      url: "https://www.radioamador.info",
     },
     eventStatus: startDate > new Date() ? "https://schema.org/EventScheduled" : "https://schema.org/EventMovedOnline",
   };

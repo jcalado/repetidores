@@ -21,7 +21,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://repetidores.jcalado.com"),
+  metadataBase: new URL("https://www.radioamador.info"),
   title: {
     default: "Repetidores de Rádio Amador em Portugal",
     template: "%s | Repetidores",
@@ -37,10 +37,10 @@ export const metadata: Metadata = {
     telephone: false,
   },
   openGraph: {
-    title: "Repetidores de Rádio Amador em Portugal",
-    description: "Diretório de repetidores de radioamadorismo em Portugal. Mapa interativo, filtros por frequência e modulação.",
-    url: "https://repetidores.jcalado.com",
-    siteName: "Repetidores",
+    title: "Radioamador.info - Ferramentas para Radioamadores",
+    description: "Repetidores, eventos, notícias e ferramentas para radioamadores em Portugal",
+    url: "https://www.radioamador.info",
+    siteName: "Radioamador.info",
     locale: "pt_PT",
     type: "website",
     images: [
@@ -48,21 +48,21 @@ export const metadata: Metadata = {
         url: "/og-default.png",
         width: 512,
         height: 512,
-        alt: "Repetidores - Diretório de Radioamadorismo",
+        alt: "Radioamador.info - Ferramentas para Radioamadores",
       },
     ],
   },
   twitter: {
     card: "summary",
-    title: "Repetidores de Rádio Amador em Portugal",
-    description: "Diretório de repetidores de radioamadorismo em Portugal. Mapa interativo, filtros por frequência e modulação.",
+    title: "Radioamador.info - Ferramentas para Radioamadores",
+    description: "Repetidores, eventos, notícias e ferramentas para radioamadores em Portugal",
     images: ["/og-default.png"],
   },
   other: {
     "mobile-web-app-capable": "yes",
     "apple-mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "default",
-    "apple-mobile-web-app-title": "Repetidores",
+    "apple-mobile-web-app-title": "Radioamador.info",
     "msapplication-TileColor": "#1e293b",
     "msapplication-config": "/browserconfig.xml",
   },

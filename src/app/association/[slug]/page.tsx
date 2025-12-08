@@ -132,7 +132,7 @@ function generateOrganizationJsonLd(association: Awaited<ReturnType<typeof fetch
     "@type": "Organization",
     name: association.name,
     alternateName: association.abbreviation,
-    url: association.website || `https://repetidores.jcalado.com/association/${association.slug}`,
+    url: association.website || `https://www.radioamador.info/association/${association.slug}`,
     ...(logoUrl && { logo: logoUrl }),
     ...(association.email && { email: association.email }),
     ...(association.address && {
