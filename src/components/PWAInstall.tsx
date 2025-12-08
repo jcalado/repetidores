@@ -107,7 +107,7 @@ export default function PWAInstall() {
           <Download className="h-5 w-5 text-ship-cove-600 dark:text-ship-cove-400" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-medium text-sm">Instalar Repetidores</p>
+          <p className="font-medium text-sm">Instalar Radioamador.info</p>
           <p className="text-xs text-muted-foreground mt-0.5">
             Acesso rápido e funciona offline
           </p>
