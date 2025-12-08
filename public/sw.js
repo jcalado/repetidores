@@ -1,6 +1,6 @@
 // Service Worker for Repetidores PWA
-const CACHE_NAME = 'repetidores-v1';
-const DATA_CACHE_NAME = 'repetidores-data-v1';
+const CACHE_NAME = 'radioamador.info-v1';
+const DATA_CACHE_NAME = 'radioamador.info-data-v1';
 
 // Static assets to cache on install
 const STATIC_ASSETS = [
