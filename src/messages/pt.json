@@ -305,6 +305,12 @@
         "owner": "Proprietário",
         "coordinates": "Coordenadas"
     },
+    "association": {
+        "backToRepeaters": "Voltar aos Repetidores",
+        "contactInfo": "Informação de Contacto",
+        "repeaters": "Repetidores",
+        "noRepeaters": "Nenhum repetidor associado a esta associação."
+    },
     "metadata": {
         "title": "Repetidores",
         "description": "Explorar repetidores de rádio com mapa e filtros"

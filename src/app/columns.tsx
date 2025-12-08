@@ -11,6 +11,7 @@ import { getVoteStats, type VoteStats } from "@/lib/votes"
 import { ColumnDef } from "@tanstack/react-table"
 import { Heart } from "lucide-react"
 import { useTranslations } from "next-intl"
+import Link from "next/link"
 import * as React from "react"
 
 export type Repeater = {
@@ -25,7 +26,14 @@ export type Repeater = {
   owner: string
   dmr: boolean
   dstar: boolean
-  // New extended fields
+  // Association (replaces owner)
+  association?: {
+    id: number
+    name: string
+    abbreviation: string
+    slug: string
+  }
+  // Extended fields
   status?: 'active' | 'maintenance' | 'offline' | 'unknown'
   power?: number
   antennaHeight?: number
@@ -283,8 +291,24 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
     {
       accessorKey: "owner",
       header: t("owner"),
-      cell: ({ getValue }) => {
-        const full = String(getValue() ?? "")
+      cell: ({ row }) => {
+        const r = row.original as Repeater
+
+        // If association is populated, link to association page
+        if (r.association) {
+          return (
+            <Link
+              href={`/association/${r.association.slug}`}
+              className="text-primary hover:underline"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {r.association.abbreviation}
+            </Link>
+          )
+        }
+
+        // Fallback to owner string with abbreviation
+        const full = String(r.owner ?? "")
         const short = getOwnerShort(full)
         if (!full) return null
         if (short === full) return <span>{full}</span>
@@ -301,10 +325,19 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
           </HoverCard>
         )
       },
-      // Match on full name or short name
+      // Match on full name, short name, or association abbreviation/name
       filterFn: (row, id, value) => {
         if (!value) return true
         const q = String(value).toLowerCase()
+        const r = row.original as Repeater
+
+        // Check association fields
+        if (r.association) {
+          if (r.association.abbreviation.toLowerCase().includes(q)) return true
+          if (r.association.name.toLowerCase().includes(q)) return true
+        }
+
+        // Fall back to owner string
         const full = String(row.getValue<string>(id) ?? "")
         const short = getOwnerShort(full)
         return (

@@ -22,6 +22,7 @@ import { getVoteStats, postVote, type VoteStats } from "@/lib/votes";
 import { toggleFavorite, isFavorite } from "@/lib/favorites";
 import {
   ArrowLeft,
+  Building2,
   Check,
   ChevronRight,
   Clipboard,
@@ -316,17 +317,26 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
         </Card>
       )}
 
-      {/* Owner Info */}
-      {r.owner && (
+      {/* Owner/Association Info */}
+      {(r.association || r.owner) && (
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-start gap-4">
               <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-muted">
-                <Radio className="h-6 w-6 text-muted-foreground" />
+                <Building2 className="h-6 w-6 text-muted-foreground" />
               </div>
-              <div>
+              <div className="flex-1 min-w-0">
                 <p className="text-sm text-muted-foreground">{t("owner")}</p>
-                <p className="font-medium">{r.owner}</p>
+                {r.association ? (
+                  <Link
+                    href={`/association/${r.association.slug}`}
+                    className="font-medium text-primary hover:underline"
+                  >
+                    {r.association.abbreviation} - {r.association.name}
+                  </Link>
+                ) : (
+                  <p className="font-medium">{r.owner}</p>
+                )}
               </div>
             </div>
           </CardContent>

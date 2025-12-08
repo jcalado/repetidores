@@ -65,6 +65,20 @@ function toOptionalString(value: unknown): string | undefined {
   return undefined;
 }
 
+function normalizeAssociation(
+  assocData: unknown
+): Repeater["association"] | undefined {
+  if (!assocData || typeof assocData !== "object") return undefined;
+  const assoc = assocData as Record<string, unknown>;
+  if (!assoc.id || !assoc.abbreviation) return undefined;
+  return {
+    id: toNumber(assoc.id),
+    name: toStringOrEmpty(assoc.name),
+    abbreviation: toStringOrEmpty(assoc.abbreviation),
+    slug: toStringOrEmpty(assoc.slug),
+  };
+}
+
 function normalizeRepeater(doc: Record<string, unknown>): Repeater {
   return {
     callsign: toStringOrEmpty(doc.callsign),
@@ -78,6 +92,7 @@ function normalizeRepeater(doc: Record<string, unknown>): Repeater {
     owner: toStringOrEmpty(doc.owner),
     dmr: toBoolean(doc.dmr),
     dstar: toBoolean(doc.dstar),
+    association: normalizeAssociation(doc.association),
     status: toOptionalString(doc.status) as Repeater['status'],
     power: toOptionalNumber(doc.power),
     antennaHeight: toOptionalNumber(doc.antennaHeight),
@@ -105,6 +120,7 @@ async function fetchRepeaters(): Promise<Repeater[]> {
     const params = new URLSearchParams({
       limit: PAGE_SIZE.toString(),
       page: page.toString(),
+      depth: "1", // Populate association relationship
     });
 
     const url = `${baseUrl}/api/repeaters?${params.toString()}`;

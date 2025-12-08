@@ -115,7 +115,25 @@ export default function RepeaterDetails({ r }: RepeaterDetailsProps) {
       {/* Location Section */}
       <SectionCard icon={Navigation} title="Localização">
         <div className="space-y-3">
-          <InfoCard label={t("owner")} value={r.owner || "–"} />
+          {r.association ? (
+            <Link
+              href={`/association/${r.association.slug}`}
+              className="rounded-lg border p-3 hover:bg-accent transition-colors block"
+            >
+              <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                {t("owner")}
+              </div>
+              <div className="mt-1 text-sm flex items-center gap-2">
+                <span className="text-primary font-medium">
+                  {r.association.abbreviation}
+                </span>
+                <span className="text-muted-foreground">-</span>
+                <span className="truncate">{r.association.name}</span>
+              </div>
+            </Link>
+          ) : (
+            <InfoCard label={t("owner")} value={r.owner || "–"} />
+          )}
           <InfoCard
             label={t("coordinates")}
             value={`${r.latitude?.toFixed(5)}, ${r.longitude?.toFixed(5)}`}
