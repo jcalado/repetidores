@@ -914,7 +914,8 @@
         "cancel": "Cancelar",
         "submit": "Submeter",
         "submitting": "A submeter...",
-        "successMessage": "Repetidor submetido com sucesso! Será visível após revisão."
+        "successMessage": "Repetidor submetido com sucesso! Será visível após revisão.",
+        "repeaterFound": "Repetidor encontrado - dados preenchidos automaticamente"
     },
     "nearest": {
         "title": "Repetidor Mais Próximo",

@@ -1,5 +1,6 @@
 'use client';
 
+import { type Repeater } from '@/app/columns';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -17,6 +18,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { AlertCircle, CheckCircle2, Loader2, MapPin, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import * as React from 'react';
+
+interface RepeaterSubmitDialogProps {
+  repeaters?: Repeater[];
+}
 
 interface FormData {
   type: 'new' | 'correction' | 'status';
@@ -55,7 +60,7 @@ const API_BASE_URL = (() => {
   return source.replace(/\/$/, '');
 })();
 
-export default function RepeaterSubmitDialog() {
+export default function RepeaterSubmitDialog({ repeaters = [] }: RepeaterSubmitDialogProps) {
   const t = useTranslations('repeaterSubmit');
   const [open, setOpen] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -63,6 +68,7 @@ export default function RepeaterSubmitDialog() {
   const [errorMessage, setErrorMessage] = React.useState('');
   const [errors, setErrors] = React.useState<FormErrors>({});
   const [isLocating, setIsLocating] = React.useState(false);
+  const [foundRepeater, setFoundRepeater] = React.useState<Repeater | null>(null);
 
   const [formData, setFormData] = React.useState<FormData>({
     type: 'new',
@@ -101,7 +107,41 @@ export default function RepeaterSubmitDialog() {
     setErrors({});
     setSubmitStatus('idle');
     setErrorMessage('');
+    setFoundRepeater(null);
   };
+
+  // Populate form with existing repeater data
+  const populateFromRepeater = React.useCallback((repeater: Repeater) => {
+    setFormData((prev) => ({
+      ...prev,
+      callsign: repeater.callsign,
+      outputFrequency: repeater.outputFrequency.toString(),
+      inputFrequency: repeater.inputFrequency.toString(),
+      tone: repeater.tone ? repeater.tone.toString() : '',
+      modulation: repeater.modulation || 'FM',
+      latitude: repeater.latitude.toString(),
+      longitude: repeater.longitude.toString(),
+      owner: repeater.owner || '',
+    }));
+    setFoundRepeater(repeater);
+  }, []);
+
+  // Look up repeater when existingCallsign changes
+  React.useEffect(() => {
+    if (formData.type === 'new' || !formData.existingCallsign.trim()) {
+      setFoundRepeater(null);
+      return;
+    }
+
+    const callsignUpper = formData.existingCallsign.trim().toUpperCase();
+    const found = repeaters.find((r) => r.callsign.toUpperCase() === callsignUpper);
+
+    if (found) {
+      populateFromRepeater(found);
+    } else {
+      setFoundRepeater(null);
+    }
+  }, [formData.existingCallsign, formData.type, repeaters, populateFromRepeater]);
 
   const handleOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);
@@ -299,13 +339,24 @@ export default function RepeaterSubmitDialog() {
                 <Label htmlFor="existingCallsign">
                   {t('fields.existingCallsign')} <span className="text-destructive">*</span>
                 </Label>
-                <Input
-                  id="existingCallsign"
-                  value={formData.existingCallsign}
-                  onChange={(e) => updateField('existingCallsign', e.target.value.toUpperCase())}
-                  placeholder={t('placeholders.existingCallsign')}
-                  aria-invalid={!!errors.existingCallsign}
-                />
+                <div className="relative">
+                  <Input
+                    id="existingCallsign"
+                    value={formData.existingCallsign}
+                    onChange={(e) => updateField('existingCallsign', e.target.value.toUpperCase())}
+                    placeholder={t('placeholders.existingCallsign')}
+                    aria-invalid={!!errors.existingCallsign}
+                    className={foundRepeater ? 'pr-8 border-green-500 focus-visible:ring-green-500' : ''}
+                  />
+                  {foundRepeater && (
+                    <CheckCircle2 className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-green-500" />
+                  )}
+                </div>
+                {foundRepeater && (
+                  <p className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
+                    <CheckCircle2 className="h-3 w-3" /> {t('repeaterFound')}
+                  </p>
+                )}
                 {errors.existingCallsign && (
                   <p className="text-sm text-destructive flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" /> {errors.existingCallsign}

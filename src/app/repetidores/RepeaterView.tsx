@@ -53,6 +53,7 @@ import * as React from "react";
 import { useRepeaters } from "./RepeatersProvider";
 import ImportantNotice from "../notice";
 import LocationTip from "@/components/LocationTip";
+import RepeaterSubmitDialog from "@/components/RepeaterSubmitDialog";
 
 type Props = {
   view: "table" | "map";
@@ -194,16 +195,19 @@ export default function RepeaterView({ view }: Props) {
                 {t("nav.map")}
               </Link>
             </div>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={refreshRepeaters}
-              disabled={isRefreshing}
-              title="Refresh repeaters"
-              className="h-9 w-9"
-            >
-              <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
-            </Button>
+            <div className="flex items-center gap-2">
+              <RepeaterSubmitDialog repeaters={data} />
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={refreshRepeaters}
+                disabled={isRefreshing}
+                title="Refresh repeaters"
+                className="h-9 w-9"
+              >
+                <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
+              </Button>
+            </div>
           </div>
 
           {view === "table" && (

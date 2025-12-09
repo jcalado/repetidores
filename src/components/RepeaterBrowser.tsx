@@ -260,7 +260,7 @@ export default function RepeaterBrowser({
                 <TabsTrigger value="map">{t('nav.map')}</TabsTrigger>
               </TabsList>
               <div className="flex items-center gap-2">
-                <RepeaterSubmitDialog />
+                <RepeaterSubmitDialog repeaters={data} />
                 {onRefresh && (
                   <Button
                     variant="outline"
