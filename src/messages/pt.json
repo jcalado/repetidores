@@ -309,7 +309,9 @@
         "backToRepeaters": "Voltar aos Repetidores",
         "contactInfo": "Informação de Contacto",
         "repeaters": "Repetidores",
-        "noRepeaters": "Nenhum repetidor associado a esta associação."
+        "noRepeaters": "Nenhum repetidor associado a esta associação.",
+        "statusOffline": "Desligado",
+        "statusMaintenance": "Em manutenção"
     },
     "metadata": {
         "title": "Repetidores",

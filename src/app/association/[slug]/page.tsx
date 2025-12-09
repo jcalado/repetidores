@@ -272,12 +272,30 @@ async function AssociationContent({
                   href={`/repeater/${encodeURIComponent(repeater.callsign)}`}
                   className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent transition-colors"
                 >
-                  <div>
-                    <p className="font-medium">{repeater.callsign}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {repeater.outputFrequency.toFixed(3)} MHz -{" "}
-                      {repeater.modulation}
-                    </p>
+                  <div className="flex items-center gap-2">
+                    {repeater.status === "offline" && (
+                      <span
+                        title={t("statusOffline")}
+                        className="inline-flex items-center justify-center h-5 w-5 rounded text-[10px] font-bold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                      >
+                        ✕
+                      </span>
+                    )}
+                    {repeater.status === "maintenance" && (
+                      <span
+                        title={t("statusMaintenance")}
+                        className="inline-flex items-center justify-center h-5 w-5 rounded text-[10px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                      >
+                        !
+                      </span>
+                    )}
+                    <div>
+                      <p className="font-medium">{repeater.callsign}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {repeater.outputFrequency.toFixed(3)} MHz -{" "}
+                        {repeater.modulation}
+                      </p>
+                    </div>
                   </div>
                   {repeater.qth_locator && (
                     <Badge variant="outline" className="text-xs">
