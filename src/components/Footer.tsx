@@ -1,11 +1,19 @@
 import { cn } from '@/lib/utils';
-import { RadioTowerIcon } from 'lucide-react';
+import { RadioTowerIcon, Rss } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface FooterProps {
   className?: string;
 }
+
+const API_URL = process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL || 'https://api.radioamador.info';
 
 export default function Footer({ className }: FooterProps) {
   const t = useTranslations('footer');
@@ -36,6 +44,29 @@ export default function Footer({ className }: FooterProps) {
             >
               {t('github')}
             </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+                <Rss className="h-4 w-4" />
+                {t('rss')}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <a href={`${API_URL}/api/feeds/repeaters.rss`} target="_blank" rel="noopener noreferrer">
+                    Repetidores (RSS)
+                  </a>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <a href={`${API_URL}/api/feeds/events.rss`} target="_blank" rel="noopener noreferrer">
+                    Eventos (RSS)
+                  </a>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <a href={`${API_URL}/api/feeds/status.rss`} target="_blank" rel="noopener noreferrer">
+                    Estado (RSS)
+                  </a>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>

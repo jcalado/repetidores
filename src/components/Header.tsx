@@ -24,6 +24,7 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import ThemeToggle from './ThemeToggle'
 import LocationPickerPopover from './LocationPickerPopover'
+import NotificationSettings from './NotificationSettings'
 
 export default function Header() {
     const t = useTranslations()
@@ -89,6 +90,9 @@ export default function Header() {
                 <div className="flex lg:hidden items-center">
                     <div className="mr-2">
                         <LocationPickerPopover compact />
+                    </div>
+                    <div className="mr-1">
+                        <NotificationSettings />
                     </div>
                     <div className="mr-2">
                         <ThemeToggle />
@@ -225,6 +229,7 @@ export default function Header() {
                 </PopoverGroup>
                 <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:items-center lg:gap-x-4">
                     <LocationPickerPopover />
+                    <NotificationSettings />
                     <ThemeToggle />
                 </div>
             </nav>

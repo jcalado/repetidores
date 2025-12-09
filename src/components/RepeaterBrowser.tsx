@@ -2,6 +2,7 @@
 
 import { getOwnerShort, useColumns, type Repeater } from "@/app/columns"
 import LocationPickerDialog from "@/components/LocationPickerDialog"
+import RepeaterSubmitDialog from "@/components/RepeaterSubmitDialog"
 import MapClient from "@/components/MapClient"
 import RepeaterDetails from "@/components/RepeaterDetails"
 import SearchAutocomplete from "@/components/SearchAutocomplete"
@@ -258,18 +259,21 @@ export default function RepeaterBrowser({
                 <TabsTrigger value="table">{t('nav.table')}</TabsTrigger>
                 <TabsTrigger value="map">{t('nav.map')}</TabsTrigger>
               </TabsList>
-              {onRefresh && (
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={onRefresh}
-                  disabled={isRefreshing}
-                  title="Refresh repeaters"
-                  className="h-9 w-9"
-                >
-                  <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                </Button>
-              )}
+              <div className="flex items-center gap-2">
+                <RepeaterSubmitDialog />
+                {onRefresh && (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={onRefresh}
+                    disabled={isRefreshing}
+                    title="Refresh repeaters"
+                    className="h-9 w-9"
+                  >
+                    <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                  </Button>
+                )}
+              </div>
             </div>
             <TabsContent value="table">
               {/* Location controls - search and geolocation */}

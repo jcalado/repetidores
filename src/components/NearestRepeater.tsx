@@ -156,17 +156,17 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
 
       {/* Location Info */}
       {userLocation && (
-        <Card className="rounded-2xl">
-          <CardContent className="py-3">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <MapPin className="h-4 w-4" />
+        <Card className="rounded-xl sm:rounded-2xl">
+          <CardContent className="py-2 sm:py-3">
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+              <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
               <span className="font-mono">
                 {userLocation.qthLocator || `${userLocation.latitude.toFixed(4)}°, ${userLocation.longitude.toFixed(4)}°`}
               </span>
               {compass.isEnabled && compass.heading !== null && (
-                <span className="ml-4 text-green-600 dark:text-green-400">
-                  <Compass className="h-4 w-4 inline mr-1" />
-                  {t('heading')}: {compass.heading}°
+                <span className="ml-auto text-green-600 dark:text-green-400 flex items-center gap-1">
+                  <Compass className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <span className="hidden sm:inline">{t('heading')}:</span> {compass.heading}°
                 </span>
               )}
             </div>
@@ -176,28 +176,28 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
 
       {/* Loading State */}
       {isLocating && !userLocation && (
-        <Card className="rounded-2xl">
-          <CardContent className="py-12 text-center">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-muted-foreground" />
-            <p className="text-muted-foreground">{t('locating')}</p>
+        <Card className="rounded-xl sm:rounded-2xl">
+          <CardContent className="py-8 sm:py-12 text-center">
+            <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin mx-auto mb-3 sm:mb-4 text-muted-foreground" />
+            <p className="text-sm sm:text-base text-muted-foreground">{t('locating')}</p>
           </CardContent>
         </Card>
       )}
 
       {/* No Location State */}
       {!userLocation && !isLocating && (
-        <Card className="rounded-2xl">
-          <CardContent className="py-12 text-center">
-            <MapPin className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-            <p className="text-muted-foreground mb-2">{t('noLocation')}</p>
-            <p className="text-sm text-muted-foreground">{t('setLocationHint')}</p>
+        <Card className="rounded-xl sm:rounded-2xl">
+          <CardContent className="py-8 sm:py-12 text-center">
+            <MapPin className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-3 sm:mb-4 text-muted-foreground" />
+            <p className="text-sm sm:text-base text-muted-foreground mb-1 sm:mb-2">{t('noLocation')}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground">{t('setLocationHint')}</p>
           </CardContent>
         </Card>
       )}
 
       {/* Repeater List */}
       {userLocation && sortedRepeaters.length > 0 && (
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           {sortedRepeaters.slice(0, 20).map((repeater, index) => {
             const relativeBearing = getRelativeBearing(repeater.bearing);
             const isFirst = index === 0;
@@ -206,15 +206,15 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
               <Card
                 key={repeater.callsign}
                 className={cn(
-                  'rounded-2xl transition-all hover:shadow-md',
+                  'rounded-xl sm:rounded-2xl transition-all hover:shadow-md',
                   isFirst && 'ring-2 ring-ship-cove-500 bg-ship-cove-50/50 dark:bg-ship-cove-950/20'
                 )}
               >
-                <CardContent className="py-4">
-                  {/* Mobile: stacked layout / Desktop: horizontal flex */}
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-                    {/* Mobile: rank + distance inline / Desktop: vertical stack */}
-                    <div className="flex items-center gap-3 sm:flex-col sm:text-center sm:min-w-[60px] sm:gap-0">
+                <CardContent className="py-3 sm:py-4">
+                  {/* Desktop: horizontal flex */}
+                  <div className="hidden sm:flex sm:items-center sm:gap-4">
+                    {/* Desktop: vertical stack for rank/distance */}
+                    <div className="flex-col text-center min-w-[60px]">
                       <div
                         className={cn(
                           'text-2xl font-bold',
@@ -226,10 +226,10 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
                       <div className="text-sm font-medium">{formatDistance(repeater.distance)}</div>
                     </div>
 
-                    {/* Bearing Indicator - smaller on mobile */}
+                    {/* Bearing Indicator */}
                     <div
                       className={cn(
-                        'flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-all',
+                        'flex-shrink-0 w-16 h-16 rounded-full flex items-center justify-center transition-all',
                         compass.isEnabled
                           ? 'bg-green-100 dark:bg-green-900/30 ring-2 ring-green-500'
                           : 'bg-muted'
@@ -237,7 +237,7 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
                     >
                       <Navigation
                         className={cn(
-                          'h-6 w-6 sm:h-8 sm:w-8 transition-transform',
+                          'h-8 w-8 transition-transform',
                           compass.isEnabled
                             ? 'text-green-600 dark:text-green-400'
                             : 'text-muted-foreground'
@@ -252,7 +252,7 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
                       />
                     </div>
 
-                    {/* Repeater Info - full width on mobile */}
+                    {/* Repeater Info */}
                     <div className="flex-grow min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <Link
@@ -275,9 +275,9 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
                       </div>
                     </div>
 
-                    {/* Bearing & Direction - inline on mobile, stacked on desktop */}
-                    <div className="flex items-center gap-2 sm:flex-col sm:items-end sm:gap-0 sm:text-right sm:min-w-[100px]">
-                      <div className="text-base sm:text-lg font-bold font-mono">
+                    {/* Bearing & Direction */}
+                    <div className="flex-col items-end text-right min-w-[100px]">
+                      <div className="text-lg font-bold font-mono">
                         {Math.round(repeater.bearing)}° {bearingToCardinal(repeater.bearing)}
                       </div>
                       {compass.isEnabled && relativeBearing !== null && (
@@ -294,13 +294,104 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
                       )}
                     </div>
 
-                    {/* Link - hidden on mobile (callsign is clickable) */}
+                    {/* Link */}
                     <Link
                       href={`/repeater/${repeater.callsign}`}
-                      className="hidden sm:flex flex-shrink-0 p-2 rounded-lg hover:bg-muted transition-colors"
+                      className="flex flex-shrink-0 p-2 rounded-lg hover:bg-muted transition-colors"
                     >
                       <ExternalLink className="h-5 w-5 text-muted-foreground" />
                     </Link>
+                  </div>
+
+                  {/* Mobile: compact layout */}
+                  <div className="sm:hidden">
+                    <div className="flex items-start gap-3">
+                      {/* Bearing Indicator - larger, with rank badge */}
+                      <div className="relative flex-shrink-0">
+                        <div
+                          className={cn(
+                            'w-14 h-14 rounded-full flex items-center justify-center',
+                            compass.isEnabled
+                              ? 'bg-green-100 dark:bg-green-900/30 ring-2 ring-green-500'
+                              : 'bg-muted'
+                          )}
+                        >
+                          <Navigation
+                            className={cn(
+                              'h-7 w-7 transition-transform',
+                              compass.isEnabled
+                                ? 'text-green-600 dark:text-green-400'
+                                : 'text-muted-foreground'
+                            )}
+                            style={{
+                              transform: `rotate(${
+                                compass.isEnabled && relativeBearing !== null
+                                  ? relativeBearing
+                                  : repeater.bearing
+                              }deg)`,
+                            }}
+                          />
+                        </div>
+                        {/* Rank badge */}
+                        <div
+                          className={cn(
+                            'absolute -top-1 -left-1 min-w-[1.25rem] h-5 px-1 rounded-full text-xs font-bold flex items-center justify-center',
+                            isFirst
+                              ? 'bg-ship-cove-500 text-white'
+                              : 'bg-muted-foreground/20 text-muted-foreground'
+                          )}
+                        >
+                          {index + 1}
+                        </div>
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        {/* Top: callsign + badges + distance */}
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <Link
+                                href={`/repeater/${repeater.callsign}`}
+                                className="font-bold font-mono hover:text-ship-cove-600 dark:hover:text-ship-cove-400 transition-colors"
+                              >
+                                {repeater.callsign}
+                              </Link>
+                              <Badge variant="secondary" className="text-xs px-1.5 py-0">{getBandFromFrequency(repeater.outputFrequency)}</Badge>
+                              {repeater.dmr && <Badge className="bg-blue-600 text-xs px-1.5 py-0">DMR</Badge>}
+                              {repeater.dstar && <Badge className="bg-purple-600 text-xs px-1.5 py-0">D-STAR</Badge>}
+                            </div>
+                          </div>
+                          <div className="text-right flex-shrink-0">
+                            <div className="text-sm font-semibold">{formatDistance(repeater.distance)}</div>
+                            <div className="text-xs text-muted-foreground font-mono">
+                              {Math.round(repeater.bearing)}° {bearingToCardinal(repeater.bearing)}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Bottom: frequency + CTCSS + QTH */}
+                        <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground">
+                          <div>
+                            <span className="font-mono">{repeater.outputFrequency.toFixed(3)}</span>
+                            {repeater.tone > 0 && <span className="ml-1.5">• {repeater.tone}Hz</span>}
+                            <span className="ml-1.5">• {repeater.qth_locator}</span>
+                          </div>
+                          {compass.isEnabled && relativeBearing !== null && (
+                            <div
+                              className={cn(
+                                'font-medium',
+                                Math.abs(relativeBearing) <= 15
+                                  ? 'text-green-600 dark:text-green-400'
+                                  : 'text-orange-600 dark:text-orange-400'
+                              )}
+                            >
+                              {getDirectionInstruction(relativeBearing)}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -317,10 +408,10 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
 
       {/* Info */}
       {userLocation && (
-        <Card className="rounded-2xl">
-          <CardContent className="py-4">
-            <div className="flex items-start gap-2 text-sm text-muted-foreground">
-              <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
+        <Card className="rounded-xl sm:rounded-2xl">
+          <CardContent className="py-3 sm:py-4">
+            <div className="flex items-start gap-2 text-xs sm:text-sm text-muted-foreground">
+              <Info className="h-3.5 w-3.5 sm:h-4 sm:w-4 mt-0.5 flex-shrink-0" />
               <p>{t('info')}</p>
             </div>
           </CardContent>

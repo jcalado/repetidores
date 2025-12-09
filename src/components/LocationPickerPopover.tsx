@@ -1,7 +1,6 @@
 'use client';
 
 import { Popover, PopoverButton, PopoverPanel, CloseButton } from '@headlessui/react';
-import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { MapPinIcon } from '@heroicons/react/24/outline';
 import { Loader2, Search, Navigation } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -129,9 +128,6 @@ export default function LocationPickerPopover({ compact = false }: LocationPicke
     setLocationAddress(null);
   };
 
-  // Display text for the button
-  const buttonText = userLocation?.qthLocator || t('locationPicker.setLocation');
-
   if (compact) {
     return (
       <Popover className="relative">
@@ -178,17 +174,12 @@ export default function LocationPickerPopover({ compact = false }: LocationPicke
     <Popover className="relative">
       <PopoverButton
         className={cn(
-          'group flex items-center gap-x-1 text-sm/6 font-semibold transition-colors focus:outline-none',
-          userLocation
-            ? 'text-ship-cove-600 dark:text-ship-cove-400'
-            : 'text-slate-700 hover:text-ship-cove-600 dark:text-slate-200 dark:hover:text-ship-cove-400'
+          'inline-flex h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground',
+          userLocation && 'text-ship-cove-600 dark:text-ship-cove-400'
         )}
+        title={userLocation?.qthLocator || t('locationPicker.setLocation')}
       >
         <MapPinIcon className="h-4 w-4" />
-        <span className="max-w-[100px] truncate">{buttonText}</span>
-        <ChevronDownIcon
-          className="size-5 flex-none text-gray-400 transition-transform group-data-[open]:rotate-180 group-hover:text-ship-cove-600 dark:text-slate-500 dark:group-hover:text-ship-cove-400"
-        />
       </PopoverButton>
 
       <PopoverPanel

@@ -14,6 +14,7 @@ export type VoteStats = {
   ratio: number; // up / total
   windowDays: number;
   category: "ok" | "prob-bad" | "bad" | "unknown";
+  lastPositiveVote: string | null; // ISO timestamp of most recent positive vote
 };
 
 const API_BASE_URL = (() => {
@@ -29,7 +30,7 @@ function localKey(repeaterId: string) {
   return `repeater-vote:${repeaterId}`;
 }
 
-function readLocalVote(repeaterId: string): { vote: VoteKind; feedback?: string } | null {
+function readLocalVote(repeaterId: string): { vote: VoteKind; feedback?: string; ts?: number } | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(localKey(repeaterId));
@@ -58,7 +59,9 @@ function statsFromLocal(repeaterId: string): VoteStats {
   if (total === 0) category = "unknown";
   else if (up === 1) category = "ok";
   else if (down === 1) category = "prob-bad";
-  return { up, down, total, net, ratio, category, windowDays: 60 };
+  // For local votes, use the stored timestamp if it was an upvote
+  const lastPositiveVote = v?.vote === "up" && v?.ts ? new Date(v.ts).toISOString() : null;
+  return { up, down, total, net, ratio, category, windowDays: 60, lastPositiveVote };
 }
 
 function toNumber(value: unknown): number {
@@ -89,7 +92,8 @@ function normalizeVoteStats(data: unknown): VoteStats {
   const ratio = ratioRaw > 0 ? ratioRaw : total > 0 ? up / total : 0;
   const windowDays = toNumber(payload.windowDays) || 60;
   const category = toCategory(payload.category);
-  return { up, down, total, net, ratio, windowDays, category };
+  const lastPositiveVote = typeof payload.lastPositiveVote === "string" ? payload.lastPositiveVote : null;
+  return { up, down, total, net, ratio, windowDays, category, lastPositiveVote };
 }
 
 export async function getVoteStats(repeaterId: string): Promise<VoteStats> {

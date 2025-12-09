@@ -20,6 +20,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const API_URL = process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL || "https://api.radioamador.info";
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.radioamador.info"),
   title: {
@@ -57,6 +59,14 @@ export const metadata: Metadata = {
     title: "Radioamador.info - Ferramentas para Radioamadores",
     description: "Repetidores, eventos, notícias e ferramentas para radioamadores em Portugal",
     images: ["/og-default.png"],
+  },
+  alternates: {
+    types: {
+      "application/rss+xml": [
+        { url: `${API_URL}/api/feeds/repeaters.rss`, title: "Repetidores - RSS" },
+        { url: `${API_URL}/api/feeds/events.rss`, title: "Eventos - RSS" },
+      ],
+    },
   },
   other: {
     "mobile-web-app-capable": "yes",

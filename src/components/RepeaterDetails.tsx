@@ -16,7 +16,7 @@ import {
 import { useUserLocation } from "@/contexts/UserLocationContext";
 import { cn } from "@/lib/utils";
 import { getVoteStats, postVote, type VoteStats } from "@/lib/votes";
-import { Check, Copy, ExternalLink, MapPin, MessageSquare, Radio, Share2, ThumbsDown, ThumbsUp, Wifi, Maximize2, Users, TrendingUp, TrendingDown, AlertCircle, CheckCircle2, XCircle, HelpCircle, Antenna, Navigation, Settings2, FileText, Globe } from "lucide-react";
+import { Check, Clock, Copy, ExternalLink, MapPin, MessageSquare, Radio, Share2, ThumbsDown, ThumbsUp, Wifi, Maximize2, Users, TrendingUp, TrendingDown, AlertCircle, CheckCircle2, XCircle, HelpCircle, Antenna, Navigation, Settings2, FileText, Globe } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -66,9 +66,9 @@ export default function RepeaterDetails({ r }: RepeaterDetailsProps) {
   const hasValidLocations = userLocation && r.latitude && r.longitude;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       {/* Header */}
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-start justify-between gap-2 sm:gap-3">
         <div>
           <h3 className="text-2xl font-semibold tracking-tight">{r.callsign}</h3>
           <div className="mt-2 flex flex-wrap items-center gap-1.5">
@@ -93,18 +93,22 @@ export default function RepeaterDetails({ r }: RepeaterDetailsProps) {
             <TooltipContent>Ver página completa</TooltipContent>
           </Tooltip>
           <ShareButton callsign={r.callsign} />
-          <Button size="sm" asChild>
-            <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
-              <MapPin className="h-4 w-4 mr-1.5" />
-              {t("maps")}
-            </a>
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="outline" size="icon" asChild>
+                <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
+                  <MapPin className="h-4 w-4" />
+                </a>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t("maps")}</TooltipContent>
+          </Tooltip>
         </div>
       </div>
 
       {/* Frequency Info Section */}
       <SectionCard icon={Antenna} title="Frequências">
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2">
           <InfoCard label={t("output")} value={fmtMHzDisplay(r.outputFrequency)} copyValue={fmtMHzCopy(r.outputFrequency)} />
           <InfoCard label={t("input")} value={fmtMHzDisplay(r.inputFrequency)} copyValue={fmtMHzCopy(r.inputFrequency)} />
           <InfoCard label={t("offset")} value={`${sign}${sign ? " " : ""}${offsetDisplay}`} copyValue={`${sign}${offsetCopy}`} />
@@ -154,9 +158,9 @@ export default function RepeaterDetails({ r }: RepeaterDetailsProps) {
           />
           {/* Bearing to Repeater */}
           {hasValidLocations && (
-            <div className="rounded-lg bg-gradient-to-r from-ship-cove-50 to-transparent dark:from-ship-cove-950/50 dark:to-transparent p-3 border border-ship-cove-200/50 dark:border-ship-cove-800/50">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">Direção para o repetidor:</span>
+            <div className="rounded-lg bg-gradient-to-r from-ship-cove-50 to-transparent dark:from-ship-cove-950/50 dark:to-transparent p-2 sm:p-3 border border-ship-cove-200/50 dark:border-ship-cove-800/50">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs sm:text-sm text-muted-foreground">Direção:</span>
                 <BearingIndicator
                   userLat={userLocation.latitude}
                   userLon={userLocation.longitude}
@@ -298,11 +302,11 @@ export default function RepeaterDetails({ r }: RepeaterDetailsProps) {
 function SectionCard({ icon: Icon, title, children }: { icon: React.ComponentType<{ className?: string }>; title: string; children: React.ReactNode }) {
   return (
     <div className="rounded-xl border bg-card overflow-hidden">
-      <div className="flex items-center gap-2 px-4 py-2.5 border-b bg-muted/30">
+      <div className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 border-b bg-muted/30">
         <Icon className="h-4 w-4 text-muted-foreground" />
         <span className="text-sm font-medium">{title}</span>
       </div>
-      <div className="p-3">
+      <div className="p-2 sm:p-3">
         {children}
       </div>
     </div>
@@ -326,15 +330,15 @@ function InfoCard({ label, value, className, copyValue, right }: { label: string
   }
 
   return (
-    <div className={cn("rounded-lg border p-3", className)}>
-      <div className="text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
-      <div className="mt-1 text-sm flex items-center justify-between gap-2">
-        <span className="truncate">{value}</span>
-        <div className="flex items-center gap-1">
+    <div className={cn("rounded-lg border p-2 sm:p-3", className)}>
+      <div className="text-[10px] sm:text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
+      <div className="mt-0.5 sm:mt-1 text-sm flex items-center justify-between gap-1 sm:gap-2">
+        <span className="font-mono">{value}</span>
+        <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
           {right}
           {isCopyable && (
-            <Button variant="ghost" size="icon" onClick={handleCopy} aria-label="Copy value">
-              {copied ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
+            <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8" onClick={handleCopy} aria-label="Copy value">
+              {copied ? <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-600" /> : <Copy className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
             </Button>
           )}
         </div>
@@ -364,6 +368,22 @@ function saveLocalVote(repeaterId: string, v: LocalVote) {
   try {
     localStorage.setItem(getVoteKey(repeaterId), JSON.stringify(v));
   } catch { }
+}
+
+function formatRelativeTime(isoTimestamp: string): string {
+  const date = new Date(isoTimestamp);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffMins < 1) return "agora mesmo";
+  if (diffMins < 60) return `há ${diffMins} minuto${diffMins !== 1 ? "s" : ""}`;
+  if (diffHours < 24) return `há ${diffHours} hora${diffHours !== 1 ? "s" : ""}`;
+  if (diffDays < 30) return `há ${diffDays} dia${diffDays !== 1 ? "s" : ""}`;
+
+  return date.toLocaleDateString("pt-PT", { day: "numeric", month: "short" });
 }
 
 function OperationalStatusCard({ status, lastVerified }: { status: 'active' | 'maintenance' | 'offline' | 'unknown'; lastVerified?: string }) {
@@ -501,6 +521,13 @@ function StatusDisplay({ status, stats, t }: { status: "ok" | "prob-bad" | "bad"
           </div>
         )}
       </div>
+      {/* Freshness indicator */}
+      {stats?.lastPositiveVote && (
+        <div className="mt-2 pt-2 border-t border-current/10 flex items-center gap-1.5 text-xs text-muted-foreground">
+          <Clock className="h-3 w-3" />
+          <span>{t("lastConfirmed", { time: formatRelativeTime(stats.lastPositiveVote) })}</span>
+        </div>
+      )}
     </div>
   );
 }

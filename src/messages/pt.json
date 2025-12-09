@@ -247,6 +247,11 @@
         "currentLocation": "Localização atual",
         "clear": "Limpar"
     },
+    "locationTip": {
+        "title": "Encontre repetidores perto de si",
+        "description": "Use o botão de localização no cabeçalho para definir a sua posição. Depois pode filtrar por distância e ver os repetidores mais próximos.",
+        "dismiss": "Entendi"
+    },
     "favorites": {
         "add": "Adicionar aos favoritos",
         "remove": "Remover dos favoritos",
@@ -535,7 +540,9 @@
     "footer": {
         "copyright": "Radioamador.info - Um projeto de CS7BLE",
         "about": "Sobre",
-        "github": "GitHub"
+        "github": "GitHub",
+        "rss": "RSS",
+        "rssFeeds": "Feeds RSS"
     },
     "export": {
         "modalTitle": "Exportar Repetidores",
@@ -812,6 +819,8 @@
         "submitFeedback": "Enviar Feedback",
         "reportsInDays": "{count} relatórios nos últimos {days} dias",
         "positive": "positivo",
+        "lastConfirmed": "Última confirmação: {time}",
+        "neverConfirmed": "Ainda sem confirmações",
         "status": {
             "ok": {
                 "label": "A Funcionar",
@@ -830,6 +839,82 @@
                 "description": "Ainda não há relatórios suficientes"
             }
         }
+    },
+    "notifications": {
+        "title": "Notificações",
+        "description": "Receba alertas sobre eventos e estado dos repetidores",
+        "enable": "Ativar Notificações",
+        "disable": "Desativar",
+        "enabled": "Notificações ativadas",
+        "disabled": "Notificações desativadas",
+        "notSupported": "Notificações não suportadas neste navegador",
+        "permissionDenied": "Permissão de notificações negada",
+        "topics": {
+            "events": "Lembretes de Eventos",
+            "eventsDesc": "Alertas 24h e 1h antes dos eventos",
+            "status": "Mudanças de Estado",
+            "statusDesc": "Quando repetidores mudam de estado",
+            "repeaters": "Novos Repetidores",
+            "repeatersDesc": "Quando novos repetidores são adicionados"
+        },
+        "settings": "Configurações",
+        "saving": "A guardar...",
+        "saved": "Guardado"
+    },
+    "repeaterSubmit": {
+        "button": "Submeter Repetidor",
+        "title": "Submeter Repetidor",
+        "description": "Submeta um novo repetidor ou correção para revisão. A informação será visível após aprovação de um administrador.",
+        "fields": {
+            "type": "Tipo de Submissão",
+            "existingCallsign": "Indicativo Existente",
+            "callsign": "Indicativo",
+            "outputFrequency": "Freq. Saída (MHz)",
+            "inputFrequency": "Freq. Entrada (MHz)",
+            "tone": "Tom CTCSS (Hz)",
+            "modulation": "Modulação",
+            "latitude": "Latitude",
+            "longitude": "Longitude",
+            "owner": "Proprietário/Clube",
+            "notes": "Notas",
+            "email": "Email (opcional)",
+            "submitterCallsign": "Seu Indicativo (opcional)"
+        },
+        "placeholders": {
+            "existingCallsign": "Ex: CT0RXY",
+            "callsign": "Ex: CT0RXY",
+            "outputFrequency": "Ex: 145.7500",
+            "inputFrequency": "Ex: 145.1500",
+            "tone": "Ex: 77.0",
+            "owner": "Nome do clube ou proprietário",
+            "notes": "Informação adicional sobre o repetidor",
+            "email": "seu@email.com",
+            "submitterCallsign": "Ex: CT1ABC"
+        },
+        "types": {
+            "new": "Novo Repetidor",
+            "correction": "Correção",
+            "status": "Atualização de Estado"
+        },
+        "errors": {
+            "callsignRequired": "Indicativo é obrigatório (mínimo 3 caracteres)",
+            "outputFrequencyRequired": "Frequência de saída inválida",
+            "inputFrequencyRequired": "Frequência de entrada inválida",
+            "latitudeRequired": "Latitude inválida",
+            "longitudeRequired": "Longitude inválida",
+            "modulationRequired": "Modulação é obrigatória",
+            "existingCallsignRequired": "Indicativo existente é obrigatório para correções",
+            "invalidTone": "Tom CTCSS inválido",
+            "invalidEmail": "Email inválido",
+            "unknown": "Ocorreu um erro. Tente novamente.",
+            "rateLimit": "Limite de submissões excedido. Tente novamente amanhã."
+        },
+        "useLocation": "Usar localização atual",
+        "emailNote": "O email é opcional e não será publicado. Pode ser usado para contacto sobre a submissão.",
+        "cancel": "Cancelar",
+        "submit": "Submeter",
+        "submitting": "A submeter...",
+        "successMessage": "Repetidor submetido com sucesso! Será visível após revisão."
     },
     "nearest": {
         "title": "Repetidor Mais Próximo",

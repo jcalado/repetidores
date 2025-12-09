@@ -52,6 +52,7 @@ import Link from "next/link";
 import * as React from "react";
 import { useRepeaters } from "./RepeatersProvider";
 import ImportantNotice from "../notice";
+import LocationTip from "@/components/LocationTip";
 
 type Props = {
   view: "table" | "map";
@@ -164,6 +165,7 @@ export default function RepeaterView({ view }: Props) {
 
   return (
     <>
+      <LocationTip />
       <Card className="w-full max-w-7xl">
         <CardContent>
           {/* View toggle tabs */}
@@ -537,7 +539,7 @@ export default function RepeaterView({ view }: Props) {
                     : t("repeater.details")}
                 </DrawerTitle>
               </VisuallyHidden>
-              <div className="flex-1 overflow-y-auto p-4">
+              <div className="flex-1 overflow-y-auto p-3 sm:p-4">
                 {selected && <RepeaterDetails r={selected} />}
               </div>
               <DrawerFooter>
