@@ -23,15 +23,15 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.radioamador.info"),
   title: {
-    default: "Repetidores de Rádio Amador em Portugal",
-    template: "%s | Repetidores",
+    default: "Ferramentas para Radioamadores em Portugal",
+    template: "%s | Radioamador.info",
   },
-  description: "Diretório de repetidores de radioamadorismo em Portugal. Mapa interativo, filtros por frequência e modulação.",
+  description: "Diretório de repetidores, eventos, notícias e ferramentas para radioamadores em Portugal",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Repetidores",
+    title: "Radioamador.info",
   },
   formatDetection: {
     telephone: false,
