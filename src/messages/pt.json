@@ -893,8 +893,7 @@
         },
         "types": {
             "new": "Novo Repetidor",
-            "correction": "Correção",
-            "status": "Atualização de Estado"
+            "correction": "Correção"
         },
         "errors": {
             "callsignRequired": "Indicativo é obrigatório (mínimo 3 caracteres)",

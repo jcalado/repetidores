@@ -24,7 +24,7 @@ interface RepeaterSubmitDialogProps {
 }
 
 interface FormData {
-  type: 'new' | 'correction' | 'status';
+  type: 'new' | 'correction';
   existingCallsign: string;
   callsign: string;
   outputFrequency: string;
@@ -188,7 +188,7 @@ export default function RepeaterSubmitDialog({ repeaters = [] }: RepeaterSubmitD
       }
     }
 
-    if ((formData.type === 'correction' || formData.type === 'status') && !formData.existingCallsign.trim()) {
+    if (formData.type === 'correction' && !formData.existingCallsign.trim()) {
       newErrors.existingCallsign = t('errors.existingCallsignRequired');
     }
 
@@ -328,13 +328,12 @@ export default function RepeaterSubmitDialog({ repeaters = [] }: RepeaterSubmitD
                 <SelectContent>
                   <SelectItem value="new">{t('types.new')}</SelectItem>
                   <SelectItem value="correction">{t('types.correction')}</SelectItem>
-                  <SelectItem value="status">{t('types.status')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Existing Callsign (for corrections/status updates) */}
-            {(formData.type === 'correction' || formData.type === 'status') && (
+            {/* Existing Callsign (for corrections) */}
+            {formData.type === 'correction' && (
               <div className="space-y-2">
                 <Label htmlFor="existingCallsign">
                   {t('fields.existingCallsign')} <span className="text-destructive">*</span>
