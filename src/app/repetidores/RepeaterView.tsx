@@ -14,23 +14,13 @@ import {
   DrawerOverlay,
   DrawerTitle,
 } from "@/components/ui/drawer";
+import { Badge } from "@/components/ui/badge";
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { useUserLocation } from "@/contexts/UserLocationContext";
@@ -40,12 +30,14 @@ import {
   ChevronDown,
   ChevronUp,
   Filter,
-  FunnelX,
   Heart,
   MapIcon,
   MapPin,
+  Radio,
   RefreshCw,
+  Signal,
   TableIcon,
+  X,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -64,6 +56,46 @@ function getBandFromFrequency(mhz: number): string {
   if (mhz >= 144 && mhz <= 148) return "2m";
   if (mhz >= 50 && mhz <= 54) return "6m";
   return "Other";
+}
+
+function getModulationColors(modulation: string): string {
+  switch (modulation.toUpperCase()) {
+    case "FM":
+      return "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border-blue-300 dark:border-blue-700";
+    case "DMR":
+      return "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 border-purple-300 dark:border-purple-700";
+    case "D-STAR":
+      return "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300 border-cyan-300 dark:border-cyan-700";
+    case "C4FM":
+      return "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 border-orange-300 dark:border-orange-700";
+    default:
+      return "bg-gray-100 text-gray-700 dark:bg-gray-900/40 dark:text-gray-300 border-gray-300 dark:border-gray-700";
+  }
+}
+
+function FilterChip({
+  isActive,
+  onClick,
+  label,
+  activeClass = "bg-primary text-primary-foreground shadow-sm border-primary"
+}: {
+  isActive: boolean;
+  onClick: () => void;
+  label: string;
+  activeClass?: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm font-medium transition-all border whitespace-nowrap ${
+        isActive
+          ? activeClass
+          : "bg-background hover:bg-muted text-muted-foreground border-border hover:border-muted-foreground/30"
+      }`}
+    >
+      {label}
+    </button>
+  );
 }
 
 export default function RepeaterView({ view }: Props) {
@@ -265,10 +297,11 @@ export default function RepeaterView({ view }: Props) {
 
           {view === "map" && (
             <>
-              <div className="mb-4 space-y-4">
-                {/* Search + Filter toggle row */}
-                <div className="flex items-center gap-2">
-                  <div className="flex-1">
+              <Collapsible open={filtersExpanded} onOpenChange={setFiltersExpanded} className="mb-4">
+                {/* Header row - always visible */}
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  {/* Search input */}
+                  <div className="flex-1 min-w-0">
                     <SearchAutocomplete
                       repeaters={data}
                       value={
@@ -290,223 +323,283 @@ export default function RepeaterView({ view }: Props) {
                       placeholder={t("filters.callsign")}
                     />
                   </div>
-                  <Button
-                    variant={activeFilterCount > 0 ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setFiltersExpanded(!filtersExpanded)}
-                    className="lg:hidden shrink-0"
-                  >
-                    <Filter className="h-4 w-4 mr-1" />
-                    {t("filters.filter")}
-                    {activeFilterCount > 0 && (
-                      <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-white/20 text-xs">
-                        {activeFilterCount}
-                      </span>
-                    )}
-                    {filtersExpanded ? (
-                      <ChevronUp className="h-4 w-4 ml-1" />
-                    ) : (
-                      <ChevronDown className="h-4 w-4 ml-1" />
-                    )}
-                  </Button>
+
+                  {/* Action buttons */}
+                  <div className="flex items-center gap-2">
+                    <CollapsibleTrigger asChild>
+                      <Button
+                        variant={activeFilterCount > 0 ? "default" : "outline"}
+                        className="h-10 gap-2"
+                      >
+                        <Filter className="h-4 w-4" />
+                        <span className="hidden sm:inline">{t("filters.filter")}</span>
+                        {activeFilterCount > 0 && (
+                          <Badge
+                            variant="secondary"
+                            className="h-5 min-w-5 px-1.5 text-xs bg-background/20"
+                          >
+                            {activeFilterCount}
+                          </Badge>
+                        )}
+                        {filtersExpanded ? (
+                          <ChevronUp className="h-4 w-4" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </CollapsibleTrigger>
+
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={refreshRepeaters}
+                      disabled={isRefreshing}
+                      className="h-10 w-10"
+                    >
+                      <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
+                    </Button>
+                  </div>
                 </div>
 
-                {/* Filter grid */}
-                <div
-                  className={`space-y-4 ${filtersExpanded ? "block" : "hidden"} lg:block`}
-                >
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <div className="space-y-2">
-                      <Label>{t("filters.owner")}</Label>
-                      <Input
-                        placeholder={t("filters.owner")}
-                        value={
-                          (columnFilters.find((f) => f.id === "owner")?.value as string) ??
-                          ""
-                        }
-                        onChange={(event) => {
-                          const v = event.target.value;
-                          setColumnFilters((prev) => {
-                            const next = prev.filter((f) => f.id !== "owner");
-                            if (v) next.push({ id: "owner", value: v });
-                            return next;
-                          });
-                        }}
-                        className="w-full"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>{t("filters.qth")}</Label>
-                      <Input
-                        placeholder={t("filters.qth")}
-                        value={
-                          (columnFilters.find((f) => f.id === "qth_locator")
-                            ?.value as string) ?? ""
-                        }
-                        onChange={(event) => {
-                          const v = event.target.value;
-                          setColumnFilters((prev) => {
-                            const next = prev.filter((f) => f.id !== "qth_locator");
-                            if (v) next.push({ id: "qth_locator", value: v });
-                            return next;
-                          });
-                        }}
-                        className="w-full"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>{t("filters.band")}</Label>
-                      <Select
-                        value={
-                          (columnFilters.find((f) => f.id === "band")?.value as string) ??
-                          "all"
-                        }
-                        onValueChange={(value) => {
-                          setColumnFilters((prev) => {
-                            const next = prev.filter((f) => f.id !== "band");
-                            if (value && value !== "all")
-                              next.push({ id: "band", value });
-                            return next;
-                          });
-                        }}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">{t("filters.all")}</SelectItem>
-                          <SelectItem value="2m">{t("filters.2m")}</SelectItem>
-                          <SelectItem value="70cm">{t("filters.70cm")}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>{t("filters.modulation")}</Label>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className="w-full justify-between font-normal"
-                          >
-                            <span className="truncate">
-                              {(() => {
-                                const selected = columnFilters.find(
-                                  (f) => f.id === "modulation"
-                                )?.value as string[] | undefined;
-                                if (!selected || selected.length === 0)
-                                  return t("filters.all");
-                                return selected.join(", ");
-                              })()}
-                            </span>
-                            <ChevronDown className="h-4 w-4 opacity-50" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-[200px]">
-                          <DropdownMenuLabel>{t("filters.modulation")}</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
+                {/* Expanded filters panel */}
+                <CollapsibleContent>
+                  <div className="pt-4 space-y-4">
+                    {/* Filter sections */}
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      {/* Band filter */}
+                      <div className="rounded-lg border bg-muted/30 p-3">
+                        <div className="flex items-center gap-2 text-sm mb-2.5">
+                          <Radio className="w-4 h-4 text-muted-foreground" />
+                          <span className="font-medium">{t("filters.band")}</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          <FilterChip
+                            isActive={!columnFilters.find((f) => f.id === "band")?.value}
+                            onClick={() => {
+                              setColumnFilters((prev) => prev.filter((f) => f.id !== "band"));
+                            }}
+                            label={t("filters.all")}
+                          />
+                          <FilterChip
+                            isActive={columnFilters.find((f) => f.id === "band")?.value === "2m"}
+                            onClick={() => {
+                              setColumnFilters((prev) => {
+                                const next = prev.filter((f) => f.id !== "band");
+                                next.push({ id: "band", value: "2m" });
+                                return next;
+                              });
+                            }}
+                            label={t("filters.2m")}
+                            activeClass="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700"
+                          />
+                          <FilterChip
+                            isActive={columnFilters.find((f) => f.id === "band")?.value === "70cm"}
+                            onClick={() => {
+                              setColumnFilters((prev) => {
+                                const next = prev.filter((f) => f.id !== "band");
+                                next.push({ id: "band", value: "70cm" });
+                                return next;
+                              });
+                            }}
+                            label={t("filters.70cm")}
+                            activeClass="bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300 border-violet-300 dark:border-violet-700"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Modulation filter */}
+                      <div className="rounded-lg border bg-muted/30 p-3">
+                        <div className="flex items-center gap-2 text-sm mb-2.5">
+                          <Signal className="w-4 h-4 text-muted-foreground" />
+                          <span className="font-medium">{t("filters.modulation")}</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
                           {modulationOptions.map((m) => {
-                            const selected =
-                              (columnFilters.find((f) => f.id === "modulation")?.value as
-                                | string[]
-                                | undefined) || [];
+                            const selectedMods = (columnFilters.find((f) => f.id === "modulation")?.value as string[] | undefined) || [];
+                            const isActive = selectedMods.includes(m);
+                            const colors = getModulationColors(m);
                             return (
-                              <DropdownMenuCheckboxItem
+                              <FilterChip
                                 key={m}
-                                checked={selected.includes(m)}
-                                onCheckedChange={(checked) => {
+                                isActive={isActive}
+                                onClick={() => {
                                   setColumnFilters((prev) => {
                                     const next = prev.filter((f) => f.id !== "modulation");
-                                    const current =
-                                      (prev.find((f) => f.id === "modulation")?.value as
-                                        | string[]
-                                        | undefined) || [];
-                                    const updated = checked
-                                      ? [...current, m]
-                                      : current.filter((v) => v !== m);
+                                    const current = (prev.find((f) => f.id === "modulation")?.value as string[] | undefined) || [];
+                                    const updated = isActive
+                                      ? current.filter((v) => v !== m)
+                                      : [...current, m];
                                     if (updated.length > 0) {
                                       next.push({ id: "modulation", value: updated });
                                     }
                                     return next;
                                   });
                                 }}
-                              >
-                                {m}
-                              </DropdownMenuCheckboxItem>
+                                label={m}
+                                activeClass={colors}
+                              />
                             );
                           })}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>{t("filters.opStatus")}</Label>
-                      <Select
-                        value={
-                          (columnFilters.find((f) => f.id === "opStatus")
-                            ?.value as string) ?? "all"
-                        }
-                        onValueChange={(value) => {
-                          setColumnFilters((prev) => {
-                            const next = prev.filter((f) => f.id !== "opStatus");
-                            if (value && value !== "all")
-                              next.push({ id: "opStatus", value });
-                            return next;
-                          });
-                        }}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">{t("filters.all")}</SelectItem>
-                          <SelectItem value="active">
-                            {t("filters.opStatusActive")}
-                          </SelectItem>
-                          <SelectItem value="maintenance">
-                            {t("filters.opStatusMaintenance")}
-                          </SelectItem>
-                          <SelectItem value="offline">
-                            {t("filters.opStatusOffline")}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label className={!userLocation ? "opacity-50" : ""}>
-                        {t("filters.distance")}:{" "}
-                        {distanceRadius ? `${distanceRadius} km` : t("filters.distanceAll")}
-                      </Label>
-                      <Slider
-                        disabled={!userLocation}
-                        value={[distanceRadius ?? 0]}
-                        min={0}
-                        max={100}
-                        step={5}
-                        onValueChange={([val]) => {
-                          setDistanceRadius(val === 0 ? null : val);
-                        }}
-                        className={!userLocation ? "opacity-50" : ""}
-                      />
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>{t("filters.distanceAll")}</span>
-                        <span>100 km</span>
+                        </div>
+                      </div>
+
+                      {/* Status filter */}
+                      <div className="rounded-lg border bg-muted/30 p-3">
+                        <div className="flex items-center gap-2 text-sm mb-2.5">
+                          <Signal className="w-4 h-4 text-muted-foreground" />
+                          <span className="font-medium">{t("filters.opStatus")}</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          <FilterChip
+                            isActive={!columnFilters.find((f) => f.id === "opStatus")?.value}
+                            onClick={() => {
+                              setColumnFilters((prev) => prev.filter((f) => f.id !== "opStatus"));
+                            }}
+                            label={t("filters.all")}
+                          />
+                          <FilterChip
+                            isActive={columnFilters.find((f) => f.id === "opStatus")?.value === "active"}
+                            onClick={() => {
+                              setColumnFilters((prev) => {
+                                const next = prev.filter((f) => f.id !== "opStatus");
+                                next.push({ id: "opStatus", value: "active" });
+                                return next;
+                              });
+                            }}
+                            label={t("filters.opStatusActive")}
+                            activeClass="bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 border-green-300 dark:border-green-700"
+                          />
+                          <FilterChip
+                            isActive={columnFilters.find((f) => f.id === "opStatus")?.value === "maintenance"}
+                            onClick={() => {
+                              setColumnFilters((prev) => {
+                                const next = prev.filter((f) => f.id !== "opStatus");
+                                next.push({ id: "opStatus", value: "maintenance" });
+                                return next;
+                              });
+                            }}
+                            label={t("filters.opStatusMaintenance")}
+                            activeClass="bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border-amber-300 dark:border-amber-700"
+                          />
+                          <FilterChip
+                            isActive={columnFilters.find((f) => f.id === "opStatus")?.value === "offline"}
+                            onClick={() => {
+                              setColumnFilters((prev) => {
+                                const next = prev.filter((f) => f.id !== "opStatus");
+                                next.push({ id: "opStatus", value: "offline" });
+                                return next;
+                              });
+                            }}
+                            label={t("filters.opStatusOffline")}
+                            activeClass="bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 border-red-300 dark:border-red-700"
+                          />
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-end sm:col-span-2 lg:col-span-1">
-                      <Button
-                        variant="outline"
-                        className="w-full"
-                        onClick={() => {
-                          setColumnFilters([]);
-                          setDistanceRadius(null);
-                        }}
-                      >
-                        <FunnelX className="mr-2 h-4 w-4" />
-                        {t("filters.clear")}
-                      </Button>
+
+                    {/* Advanced filters row */}
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      {/* Owner input */}
+                      <div className="rounded-lg border bg-muted/30 p-3">
+                        <div className="flex items-center gap-2 text-sm mb-2.5">
+                          <Filter className="w-4 h-4 text-muted-foreground" />
+                          <span className="font-medium">{t("filters.owner")}</span>
+                        </div>
+                        <Input
+                          placeholder={t("filters.owner")}
+                          value={(columnFilters.find((f) => f.id === "owner")?.value as string) ?? ""}
+                          onChange={(event) => {
+                            const v = event.target.value;
+                            setColumnFilters((prev) => {
+                              const next = prev.filter((f) => f.id !== "owner");
+                              if (v) next.push({ id: "owner", value: v });
+                              return next;
+                            });
+                          }}
+                          className="h-9 bg-background"
+                        />
+                      </div>
+
+                      {/* QTH input */}
+                      <div className="rounded-lg border bg-muted/30 p-3">
+                        <div className="flex items-center gap-2 text-sm mb-2.5">
+                          <MapPin className="w-4 h-4 text-muted-foreground" />
+                          <span className="font-medium">{t("filters.qth")}</span>
+                        </div>
+                        <Input
+                          placeholder={t("filters.qth")}
+                          value={(columnFilters.find((f) => f.id === "qth_locator")?.value as string) ?? ""}
+                          onChange={(event) => {
+                            const v = event.target.value;
+                            setColumnFilters((prev) => {
+                              const next = prev.filter((f) => f.id !== "qth_locator");
+                              if (v) next.push({ id: "qth_locator", value: v });
+                              return next;
+                            });
+                          }}
+                          className="h-9 bg-background"
+                        />
+                      </div>
+
+                      {/* Distance slider */}
+                      <div className="rounded-lg border bg-muted/30 p-3">
+                        <div className="flex items-center gap-2 text-sm mb-2.5">
+                          <MapPin className="w-4 h-4 text-muted-foreground" />
+                          <span className="font-medium">
+                            {t("filters.distance")}: {distanceRadius ? `${distanceRadius} km` : t("filters.distanceAll")}
+                          </span>
+                        </div>
+                        {userLocation ? (
+                          <>
+                            <Slider
+                              value={[distanceRadius ?? 0]}
+                              min={0}
+                              max={100}
+                              step={5}
+                              onValueChange={([val]) => {
+                                setDistanceRadius(val === 0 ? null : val);
+                              }}
+                            />
+                            <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                              <span>{t("filters.distanceAll")}</span>
+                              <span>100 km</span>
+                            </div>
+                          </>
+                        ) : (
+                          <p className="text-xs text-muted-foreground">
+                            {t("locationTip.title")}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Footer: results count and clear */}
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pt-2 border-t border-border/50">
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-muted-foreground">
+                          {filtered.length === 1
+                            ? t("filters.resultsCountSingular")
+                            : t("filters.resultsCount", { count: filtered.length })}
+                        </span>
+
+                        {activeFilterCount > 0 && (
+                          <button
+                            onClick={() => {
+                              setColumnFilters([]);
+                              setDistanceRadius(null);
+                            }}
+                            className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive transition-colors"
+                          >
+                            <X className="h-3 w-3" />
+                            {t("filters.clear")}
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
+                </CollapsibleContent>
+              </Collapsible>
+
               <div className="h-[500px]">
                 <MapClient
                   repeaters={filtered}

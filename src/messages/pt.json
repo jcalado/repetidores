@@ -211,7 +211,9 @@
         "opStatusMaintenance": "Em Manutenção",
         "opStatusOffline": "Desligado",
         "distance": "Raio",
-        "distanceAll": "Sem limite"
+        "distanceAll": "Sem limite",
+        "resultsCount": "{count} repetidores",
+        "resultsCountSingular": "1 repetidor"
     },
     "location": {
         "locateMe": "Localizar-me",
