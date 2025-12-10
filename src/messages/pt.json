@@ -379,6 +379,7 @@
         "allCategories": "Todos",
         "scope": "Âmbito",
         "type": "Tipo",
+        "filters": "Filtros",
         "international": "Internacional",
         "national": "Nacional",
         "sortBy": "Ordenar",
