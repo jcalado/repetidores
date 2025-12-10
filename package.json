@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && node scripts/version-sw.js",
     "start": "next start",
     "deploy": "gh-pages -d out --dotfiles --repo git@github.com:jcalado/repetidores.git -f",
     "lint": "eslint",
