@@ -238,12 +238,12 @@ export function formatAddress(result: ReverseGeocodingResult): string {
 
 /**
  * Get approximate location using IP geolocation
- * Uses ip-api.com (free, no API key required)
+ * Uses ipapi.co (free tier with HTTPS support, no API key required)
  * This is a fallback when browser geolocation fails (e.g., 429 from Google's network location provider)
  */
 export async function getIPLocation(): Promise<UserLocation | null> {
   try {
-    const response = await fetch('http://ip-api.com/json/?fields=status,lat,lon', {
+    const response = await fetch('https://ipapi.co/json/', {
       // Short timeout since this is a fallback
       signal: AbortSignal.timeout(5000),
     })
@@ -254,10 +254,10 @@ export async function getIPLocation(): Promise<UserLocation | null> {
 
     const data = await response.json()
 
-    if (data.status === 'success' && typeof data.lat === 'number' && typeof data.lon === 'number') {
+    if (typeof data.latitude === 'number' && typeof data.longitude === 'number') {
       return {
-        latitude: data.lat,
-        longitude: data.lon,
+        latitude: data.latitude,
+        longitude: data.longitude,
       }
     }
 
