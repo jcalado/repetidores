@@ -1,4 +1,4 @@
-import type { EventItem } from '@/components/HamRadioEventsCountdown';
+import type { EventItem } from '@/components/events/types';
 
 /**
  * Format a date for ICS files (YYYYMMDDTHHMMSSZ)
@@ -212,4 +212,76 @@ export function getLinkedInShareUrl(url: string, title: string): string {
     title,
   });
   return `https://www.linkedin.com/sharing/share-offsite/?${params.toString()}`;
+}
+
+/**
+ * Generate ICS calendar file for multiple events
+ */
+export function generateMultipleICS(events: EventItem[]): string {
+  const now = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+
+  const lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Repetidores//Events//PT',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'X-WR-CALNAME:Repetidores - Eventos de Radioamadorismo',
+  ];
+
+  for (const event of events) {
+    const endDate = event.end || new Date(new Date(event.start).getTime() + 3600000).toISOString();
+
+    lines.push(
+      'BEGIN:VEVENT',
+      `UID:${event.id}@repetidores.pt`,
+      `DTSTAMP:${now}`,
+      `DTSTART:${formatICSDate(event.start)}`,
+      `DTEND:${formatICSDate(endDate)}`,
+      `SUMMARY:${escapeICS(event.title)}`
+    );
+
+    if (event.location) {
+      lines.push(`LOCATION:${escapeICS(event.location)}`);
+    }
+
+    if (event.url) {
+      lines.push(`URL:${event.url}`);
+    }
+
+    // Add description with tag and DMR info
+    const descParts: string[] = [];
+    if (event.tag) descParts.push(`Categoria: ${event.tag}`);
+    if (event.dmr && event.talkgroup) {
+      const network = event.dmrNetwork === 'brandmeister' ? 'Brandmeister' : event.dmrNetwork === 'adn' ? 'ADN Systems' : 'DMR';
+      descParts.push(`${network} TG: ${event.talkgroup}`);
+    }
+    if (event.url) descParts.push(`Mais info: ${event.url}`);
+
+    if (descParts.length > 0) {
+      lines.push(`DESCRIPTION:${escapeICS(descParts.join('\\n'))}`);
+    }
+
+    lines.push('END:VEVENT');
+  }
+
+  lines.push('END:VCALENDAR');
+
+  return lines.join('\r\n');
+}
+
+/**
+ * Download ICS file for multiple events
+ */
+export function downloadMultipleICS(events: EventItem[], filename = 'repetidores-eventos'): void {
+  const ics = generateMultipleICS(events);
+  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${filename}.ics`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
