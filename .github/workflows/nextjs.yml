@@ -50,6 +50,11 @@ jobs:
         run: bun install --frozen-lockfile
       - name: Build with Next.js
         run: bun run build
+        env:
+          PAYLOAD_API_BASE_URL: https://api.radioamador.info
+          NEXT_PUBLIC_PAYLOAD_API_BASE_URL: https://api.radioamador.info
+          NEXT_PUBLIC_CMS_BASE_URL: https://api.radioamador.info
+          NEXT_PUBLIC_VOTES_API_BASE_URL: https://api.radioamador.info
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
