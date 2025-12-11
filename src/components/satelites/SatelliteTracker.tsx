@@ -14,6 +14,7 @@ import {
   AlertCircle,
   Radio,
   ChevronUp,
+  Waves,
 } from 'lucide-react';
 import { ObserverLocation, TLEData, ISSPass, PassFilters as PassFiltersType, SatellitePosition } from '@/lib/iss/types';
 import { predictPasses } from '@/lib/iss/pass-predictor';
@@ -34,6 +35,7 @@ import {
   getSatelliteTLE,
 } from '@/lib/satellites/satellite-catalog';
 import { fetchBulkTLE, formatBulkCacheAge, getBulkCacheAge } from '@/lib/satellites/tle-bulk-fetcher';
+import { DopplerCalculator } from './DopplerCalculator';
 
 export function SatelliteTracker() {
   // Satellite catalog state
@@ -412,7 +414,7 @@ export function SatelliteTracker() {
 
           {/* Tabs */}
           <Tabs defaultValue="list" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="list" className="flex items-center gap-1">
                 <Activity className="h-4 w-4" />
                 <span className="hidden sm:inline">Lista</span>
@@ -428,6 +430,10 @@ export function SatelliteTracker() {
               <TabsTrigger value="live" className="flex items-center gap-1">
                 <Satellite className="h-4 w-4" />
                 <span className="hidden sm:inline">Tempo Real</span>
+              </TabsTrigger>
+              <TabsTrigger value="doppler" className="flex items-center gap-1">
+                <Waves className="h-4 w-4" />
+                <span className="hidden sm:inline">Doppler</span>
               </TabsTrigger>
             </TabsList>
 
@@ -455,6 +461,14 @@ export function SatelliteTracker() {
                 currentPosition={currentPosition}
                 currentLookAngles={currentLookAngles}
                 nextPassTime={nextPassTime}
+              />
+            </TabsContent>
+
+            <TabsContent value="doppler" className="mt-6">
+              <DopplerCalculator
+                satellite={selectedSatellite}
+                rangeRate={currentLookAngles?.rangeRate ?? null}
+                isVisible={(currentLookAngles?.elevation ?? 0) > 0}
               />
             </TabsContent>
           </Tabs>

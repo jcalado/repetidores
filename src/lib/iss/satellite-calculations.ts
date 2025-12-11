@@ -64,11 +64,12 @@ export function calculateLookAngles(
     // Propagate satellite position
     const positionAndVelocity = satellite.propagate(satrec, date);
 
-    if (!positionAndVelocity || !positionAndVelocity.position) {
+    if (!positionAndVelocity || !positionAndVelocity.position || !positionAndVelocity.velocity) {
       return null;
     }
 
     const positionEci = positionAndVelocity.position as satellite.EciVec3<number>;
+    const velocityEci = positionAndVelocity.velocity as satellite.EciVec3<number>;
 
     // Observer position in geodetic coordinates
     const observerGd: satellite.GeodeticLocation = {
@@ -80,9 +81,27 @@ export function calculateLookAngles(
     // Convert ECI to ECF (Earth-Centered Fixed) using GMST
     const gmst = satellite.gstime(date);
     const positionEcf = satellite.eciToEcf(positionEci, gmst);
+    const velocityEcf = satellite.eciToEcf(velocityEci, gmst);
 
     // Calculate look angles from observer to satellite in ECF frame
     const lookAngles = satellite.ecfToLookAngles(observerGd, positionEcf);
+
+    // Calculate observer position in ECF
+    const observerEcf = satellite.geodeticToEcf(observerGd);
+
+    // Calculate range vector (satellite - observer) in ECF
+    const rangeVec = {
+      x: positionEcf.x - observerEcf.x,
+      y: positionEcf.y - observerEcf.y,
+      z: positionEcf.z - observerEcf.z,
+    };
+
+    // Range magnitude
+    const rangeMag = Math.sqrt(rangeVec.x * rangeVec.x + rangeVec.y * rangeVec.y + rangeVec.z * rangeVec.z);
+
+    // Range rate = (range_vector · velocity_vector) / |range_vector|
+    // This gives the rate of change of distance (positive = moving away, negative = approaching)
+    const rangeRate = (rangeVec.x * velocityEcf.x + rangeVec.y * velocityEcf.y + rangeVec.z * velocityEcf.z) / rangeMag;
 
     // Convert radians to degrees
     // azimuth: 0-360° (use degreesLong or manual conversion)
@@ -94,7 +113,7 @@ export function calculateLookAngles(
       azimuth: azimuthDeg < 0 ? azimuthDeg + 360 : azimuthDeg, // Normalize to 0-360°
       elevation: elevationDeg, // -90 to 90°
       range: lookAngles.rangeSat, // km
-      rangeRate: 0, // satellite.js doesn't provide this directly
+      rangeRate, // km/s (positive = moving away, negative = approaching)
     };
   } catch (error) {
     console.error('Error calculating look angles:', error);
