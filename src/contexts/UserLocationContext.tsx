@@ -159,10 +159,19 @@ export function UserLocationProvider({ children }: { children: React.ReactNode }
   );
 }
 
+// Default value for SSR or when provider isn't mounted yet
+const defaultContextValue: UserLocationContextValue = {
+  userLocation: null,
+  isLocating: false,
+  error: null,
+  requestLocation: () => {},
+  setLocation: () => {},
+  clearLocation: () => {},
+};
+
 export function useUserLocation() {
   const context = React.useContext(UserLocationContext);
-  if (!context) {
-    throw new Error('useUserLocation must be used within a UserLocationProvider');
-  }
-  return context;
+  // Return default value during SSR to avoid hydration errors
+  // The real context will be available after hydration
+  return context ?? defaultContextValue;
 }
