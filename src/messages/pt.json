@@ -33,7 +33,9 @@
         "theme": "Tema",
         "nearest": "Mais Próximo",
         "nearestDescription": "Encontre o repetidor mais próximo de si",
-        "location": "Localização"
+        "location": "Localização",
+        "associations": "Associações",
+        "associationsDescription": "Clubes e associações de radioamadores"
     },
     "qth": {
         "title": "Localizador QTH",
@@ -320,6 +322,17 @@
         "noRepeaters": "Nenhum repetidor associado a esta associação.",
         "statusOffline": "Desligado",
         "statusMaintenance": "Em manutenção"
+    },
+    "associations": {
+        "title": "Associações de Radioamadores",
+        "subtitle": "Clubes e associações de radioamadores em Portugal",
+        "count": "{count, plural, =0 {Nenhuma associação} =1 {1 associação} other {# associações}}",
+        "search": "Pesquisar associação...",
+        "repeatersCount": "{count, plural, =1 {1 repetidor} other {# repetidores}}",
+        "noRepeaters": "Sem repetidores",
+        "website": "Website",
+        "resultsCount": "A mostrar {shown} de {total}",
+        "noResults": "Nenhuma associação encontrada"
     },
     "metadata": {
         "title": "Repetidores",
