@@ -1,15 +1,13 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, MessageSquare } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { FeedbackEntryItem } from "./FeedbackEntryItem";
 import type { FeedbackEntry } from "../types";
 
 interface FeedbackListProps {
   loading: boolean;
   feedbackList: FeedbackEntry[];
-  totalCount: number;
   hasMore: boolean;
   hiddenCount: number;
   isExpanded: boolean;
@@ -18,12 +16,12 @@ interface FeedbackListProps {
 }
 
 /**
- * Feedback list section with expand/collapse functionality.
+ * Feedback entries list with expand/collapse functionality.
+ * Renders as part of the unified community section without its own header.
  */
 export function FeedbackList({
   loading,
   feedbackList,
-  totalCount,
   hasMore,
   hiddenCount,
   isExpanded,
@@ -32,15 +30,9 @@ export function FeedbackList({
 }: FeedbackListProps) {
   if (loading) {
     return (
-      <div className="border-t">
-        <div className="flex items-center gap-2 px-4 py-3 border-b bg-muted/20">
-          <MessageSquare className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium">{t("feedbackSection.title")}</span>
-        </div>
-        <div className="p-4 space-y-3 animate-pulse">
-          <div className="h-16 rounded-lg bg-muted" />
-          <div className="h-16 rounded-lg bg-muted" />
-        </div>
+      <div className="space-y-2 animate-pulse">
+        <div className="h-14 rounded-lg bg-muted" />
+        <div className="h-14 rounded-lg bg-muted" />
       </div>
     );
   }
@@ -50,40 +42,31 @@ export function FeedbackList({
   }
 
   return (
-    <div className="border-t">
-      <div className="flex items-center gap-2 px-4 py-3 border-b bg-muted/20">
-        <MessageSquare className="h-4 w-4 text-muted-foreground" />
-        <span className="text-sm font-medium">{t("feedbackSection.title")}</span>
-        <Badge variant="secondary" className="ml-auto text-xs">
-          {totalCount}
-        </Badge>
-      </div>
-      <div className="divide-y">
+    <div className="space-y-1">
+      <div className="divide-y rounded-lg border overflow-hidden">
         {feedbackList.map((entry) => (
           <FeedbackEntryItem key={entry.id} entry={entry} />
         ))}
       </div>
       {hasMore && (
-        <div className="border-t p-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full text-muted-foreground hover:text-foreground"
-            onClick={onToggleExpand}
-          >
-            {isExpanded ? (
-              <>
-                <ChevronUp className="h-4 w-4 mr-1" />
-                {t("feedbackSection.showLess")}
-              </>
-            ) : (
-              <>
-                <ChevronDown className="h-4 w-4 mr-1" />
-                {t("feedbackSection.showMore", { count: hiddenCount })}
-              </>
-            )}
-          </Button>
-        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full text-muted-foreground hover:text-foreground"
+          onClick={onToggleExpand}
+        >
+          {isExpanded ? (
+            <>
+              <ChevronUp className="h-4 w-4 mr-1" />
+              {t("feedbackSection.showLess")}
+            </>
+          ) : (
+            <>
+              <ChevronDown className="h-4 w-4 mr-1" />
+              {t("feedbackSection.showMore", { count: hiddenCount })}
+            </>
+          )}
+        </Button>
       )}
     </div>
   );

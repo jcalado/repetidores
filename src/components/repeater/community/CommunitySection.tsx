@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Users, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Users, ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCommunityVoting } from "../hooks/useCommunityVoting";
 import { StatusDisplay } from "./StatusDisplay";
@@ -17,8 +17,7 @@ interface CommunitySectionProps {
 }
 
 /**
- * Community voting and feedback section.
- * Combines vote statistics, voting buttons, and feedback list.
+ * Unified community section combining voting status and feedback.
  */
 export function CommunitySection({ repeaterId }: CommunitySectionProps) {
   const t = useTranslations("communityStatus");
@@ -36,6 +35,8 @@ export function CommunitySection({ repeaterId }: CommunitySectionProps) {
     voting.submitVote(pendingVoteType, feedback, reporterCallsign);
     setDialogOpen(false);
   };
+
+  const hasFeedback = voting.feedbackList.length > 0;
 
   return (
     <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
@@ -64,6 +65,7 @@ export function CommunitySection({ repeaterId }: CommunitySectionProps) {
       </div>
 
       <div className="p-4 space-y-4">
+        {/* Stats and voting */}
         {voting.isStatsLoading ? (
           <div className="space-y-3 animate-pulse">
             <div className="h-16 rounded-lg bg-muted" />
@@ -91,18 +93,33 @@ export function CommunitySection({ repeaterId }: CommunitySectionProps) {
             />
           </>
         )}
-      </div>
 
-      <FeedbackList
-        loading={voting.isFeedbackLoading}
-        feedbackList={voting.displayedFeedback}
-        totalCount={voting.totalCount}
-        hasMore={voting.hasMoreFeedback}
-        hiddenCount={voting.hiddenCount}
-        isExpanded={voting.isExpanded}
-        onToggleExpand={() => voting.setIsExpanded(!voting.isExpanded)}
-        t={t}
-      />
+        {/* Feedback entries */}
+        {(voting.isFeedbackLoading || hasFeedback) && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <MessageSquare className="h-3.5 w-3.5" />
+              <span className="font-medium uppercase tracking-wider">
+                {t("feedbackSection.title")}
+              </span>
+              {hasFeedback && (
+                <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0">
+                  {voting.totalCount}
+                </Badge>
+              )}
+            </div>
+            <FeedbackList
+              loading={voting.isFeedbackLoading}
+              feedbackList={voting.displayedFeedback}
+              hasMore={voting.hasMoreFeedback}
+              hiddenCount={voting.hiddenCount}
+              isExpanded={voting.isExpanded}
+              onToggleExpand={() => voting.setIsExpanded(!voting.isExpanded)}
+              t={t}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
