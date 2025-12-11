@@ -2,6 +2,7 @@
 
 /**
  * CurrentEvents component - displays events that are currently in progress
+ * Shows the first event as a hero card, with additional events listed below
  */
 
 import { useMemo } from "react";
@@ -9,16 +10,16 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import {
   Activity,
-  Clock,
+  Calendar as CalendarIcon,
   ExternalLink,
   MapPin,
   Radio,
+  Star,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { useTick } from "./hooks/useOptimizedTick";
 import { formatDateTime, formatSmartCountdown, msUntil } from "./utils/formatters";
-import { getTagIcon, getDMRNetworkLabel } from "./utils/tagColors";
+import { getTagIcon, getTagIconBg, getDMRNetworkLabel } from "./utils/tagColors";
 import type { EventItem, TranslationFunction } from "./types";
 
 interface CurrentEventsProps {
@@ -43,24 +44,136 @@ export function CurrentEvents({ events, t }: CurrentEventsProps) {
 
   if (currentEvents.length === 0) return null;
 
+  const heroEvent = currentEvents[0];
+  const additionalEvents = currentEvents.slice(1);
+  const heroTimeUntilEnd = heroEvent.end ? msUntil(heroEvent.end) : 0;
+  const HeroTagIcon = getTagIcon(heroEvent.tag);
+  const heroIconBgClass = getTagIconBg(heroEvent.tag);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       className="mb-6"
     >
-      <Card className="rounded-2xl shadow-md border-green-500/40 bg-gradient-to-br from-green-500/10 to-transparent">
-        <CardHeader className="pb-2">
-          <div className="flex items-center gap-3 text-green-600 dark:text-green-400">
-            <Activity className="w-5 h-5 animate-pulse" />
-            <CardTitle className="text-lg sm:text-xl">{t("happeningNow")}</CardTitle>
-            <Badge variant="secondary" className="ml-auto">
-              {currentEvents.length}
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {currentEvents.map((event) => {
+      {/* Hero Card - First ongoing event */}
+      <Link
+        href={`/events/${encodeURIComponent(heroEvent.id)}/`}
+        className="block group"
+      >
+        <Card
+          className="relative overflow-hidden rounded-xl shadow-md border-green-500/50 bg-gradient-to-br from-green-500/15 to-transparent hover:shadow-lg transition-all"
+        >
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3 sm:gap-4">
+              {/* Icon */}
+              <div
+                className={`flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-lg ${heroIconBgClass} text-white shadow shrink-0 relative`}
+              >
+                <HeroTagIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+                {/* Live indicator */}
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse border-2 border-white dark:border-gray-900" />
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 text-xs font-medium text-green-600 dark:text-green-400">
+                  <Activity className="w-3.5 h-3.5 animate-pulse" />
+                  {t("happeningNow")}
+                </div>
+                <h3 className="text-base sm:text-lg font-bold text-foreground leading-tight truncate flex items-center gap-1.5 group-hover:text-primary transition-colors">
+                  {heroEvent.isFeatured && (
+                    <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500 shrink-0" />
+                  )}
+                  {heroEvent.title}
+                </h3>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground mt-0.5">
+                  <span className="inline-flex items-center gap-1">
+                    <CalendarIcon className="w-3.5 h-3.5" />
+                    {t("started")} {formatDateTime(heroEvent.start, { hideCurrentYear: true })}
+                  </span>
+                  {heroEvent.location && (
+                    <span className="inline-flex items-center gap-1">
+                      <MapPin className="w-3.5 h-3.5" />
+                      {heroEvent.location}
+                    </span>
+                  )}
+                  {heroEvent.dmr && heroEvent.talkgroup && (
+                    heroEvent.dmrNetwork === "brandmeister" ? (
+                      <span
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          window.open(
+                            `https://hose.brandmeister.network/?tg=${heroEvent.talkgroup}`,
+                            "_blank"
+                          );
+                        }}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors cursor-pointer"
+                        title={t("dmr.listen")}
+                      >
+                        <Radio className="w-3 h-3" />{" "}
+                        {getDMRNetworkLabel(heroEvent.dmrNetwork, t)} TG{" "}
+                        {heroEvent.talkgroup}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800">
+                        <Radio className="w-3 h-3" />{" "}
+                        {getDMRNetworkLabel(heroEvent.dmrNetwork, t)} TG{" "}
+                        {heroEvent.talkgroup}
+                      </span>
+                    )
+                  )}
+                </div>
+              </div>
+
+              {/* Time remaining + link */}
+              <div className="shrink-0 text-right hidden sm:block">
+                {heroEvent.end && heroTimeUntilEnd > 0 && (
+                  <div className="text-lg font-bold tabular-nums text-green-600 dark:text-green-400">
+                    {formatSmartCountdown(heroTimeUntilEnd, t)}
+                  </div>
+                )}
+                <div className="text-xs text-muted-foreground">
+                  {t("endsIn").replace(/\s*$/, "")}
+                </div>
+                {heroEvent.url && (
+                  <span
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      window.open(heroEvent.url, "_blank");
+                    }}
+                    className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer mt-1"
+                  >
+                    {t("eventDetails")}
+                    <ExternalLink className="w-3 h-3" />
+                  </span>
+                )}
+              </div>
+
+              {/* Mobile countdown */}
+              <div className="shrink-0 sm:hidden text-right">
+                {heroEvent.end && heroTimeUntilEnd > 0 && (
+                  <>
+                    <div className="text-base font-bold tabular-nums text-green-600 dark:text-green-400">
+                      {formatSmartCountdown(heroTimeUntilEnd, t)}
+                    </div>
+                    <div className="text-[10px] text-muted-foreground">
+                      {t("endsIn").replace(/\s*$/, "")}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
+
+      {/* Additional ongoing events */}
+      {additionalEvents.length > 0 && (
+        <div className="mt-3 space-y-2">
+          {additionalEvents.map((event) => {
             const timeUntilEnd = event.end ? msUntil(event.end) : 0;
             const TagIcon = getTagIcon(event.tag);
 
@@ -70,95 +183,39 @@ export function CurrentEvents({ events, t }: CurrentEventsProps) {
                 href={`/events/${encodeURIComponent(event.id)}/`}
                 className="block group"
               >
-                <div className="p-3 sm:p-4 rounded-lg bg-background/60 border border-green-500/20 hover:border-green-500/40 hover:bg-background/80 transition-all">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      {/* Title row */}
-                      <div className="flex items-center gap-2">
-                        <TagIcon className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0" />
-                        <span className="font-semibold text-sm sm:text-base truncate group-hover:text-primary transition-colors">
+                <Card className="rounded-lg border-green-500/30 bg-gradient-to-br from-green-500/5 to-transparent hover:border-green-500/50 transition-all">
+                  <CardContent className="p-3">
+                    <div className="flex items-center gap-3">
+                      <TagIcon className="w-4 h-4 text-green-600 dark:text-green-400 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <span className="font-medium text-sm truncate block group-hover:text-primary transition-colors">
+                          {event.isFeatured && (
+                            <Star className="w-3 h-3 text-yellow-500 fill-yellow-500 inline mr-1" />
+                          )}
                           {event.title}
                         </span>
+                        <div className="text-xs text-muted-foreground flex items-center gap-2">
+                          {event.location && (
+                            <span className="inline-flex items-center gap-1">
+                              <MapPin className="w-3 h-3" />
+                              {event.location}
+                            </span>
+                          )}
+                        </div>
                       </div>
-
-                      {/* Meta row */}
-                      <div className="text-xs sm:text-sm text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
-                        <span className="inline-flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5" />
-                          {t("started")} {formatDateTime(event.start, { hideCurrentYear: true })}
+                      {event.end && timeUntilEnd > 0 && (
+                        <span className="text-sm font-medium text-green-600 dark:text-green-400 shrink-0">
+                          {formatSmartCountdown(timeUntilEnd, t)}
                         </span>
-                        {event.location && (
-                          <span className="inline-flex items-center gap-1">
-                            <MapPin className="w-3.5 h-3.5" />
-                            {event.location}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* DMR and time remaining */}
-                      <div className="flex flex-wrap items-center gap-2 mt-2">
-                        {event.dmr && event.talkgroup && (
-                          event.dmrNetwork === "brandmeister" ? (
-                            <span
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                window.open(
-                                  `https://hose.brandmeister.network/?tg=${event.talkgroup}`,
-                                  "_blank"
-                                );
-                              }}
-                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors cursor-pointer"
-                              title={t("dmr.listen")}
-                            >
-                              <Radio className="w-3 h-3" />{" "}
-                              {getDMRNetworkLabel(event.dmrNetwork, t)} TG{" "}
-                              {event.talkgroup}
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800">
-                              <Radio className="w-3 h-3" />{" "}
-                              {getDMRNetworkLabel(event.dmrNetwork, t)} TG{" "}
-                              {event.talkgroup}
-                            </span>
-                          )
-                        )}
-
-                        {event.end && timeUntilEnd > 0 && (
-                          <span className="text-xs sm:text-sm font-medium text-green-600 dark:text-green-400">
-                            {t("endsIn")} {formatSmartCountdown(timeUntilEnd, t)}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Tag badge */}
-                      {event.tag && (
-                        <Badge variant="outline" className="mt-2 text-xs">
-                          {event.tag}
-                        </Badge>
                       )}
                     </div>
-
-                    {/* External link */}
-                    {event.url && (
-                      <span
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          window.open(event.url, "_blank");
-                        }}
-                        className="text-primary hover:underline flex items-center gap-1 text-xs shrink-0 cursor-pointer"
-                      >
-                        {t("details")} <ExternalLink className="w-3 h-3" />
-                      </span>
-                    )}
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               </Link>
             );
           })}
-        </CardContent>
-      </Card>
+        </div>
+      )}
     </motion.div>
   );
 }
