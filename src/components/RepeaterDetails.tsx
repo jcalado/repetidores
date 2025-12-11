@@ -210,7 +210,7 @@ export default function RepeaterDetails({ r }: RepeaterDetailsProps) {
       )}
 
       {/* Digital Modes Section */}
-      {(r.dmr || r.dstar || r.echolinkNode || r.allstarNode) && (
+      {((r.dmr && (r.dmrColorCode || r.dmrTalkgroups)) || (r.dstar && (r.dstarReflector || r.dstarModule)) || r.echolinkNode || r.allstarNode) && (
         <SectionCard icon={Radio} title="Modos Digitais & Linking">
           <div className="space-y-2">
             {/* DMR Details */}
