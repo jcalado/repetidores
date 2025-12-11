@@ -4,6 +4,7 @@ export type VoteInput = {
   repeaterId: string;
   vote: VoteKind;
   feedback?: string;
+  reporterCallsign?: string;
 };
 
 export type VoteStats = {
@@ -15,6 +16,22 @@ export type VoteStats = {
   windowDays: number;
   category: "ok" | "prob-bad" | "bad" | "unknown";
   lastPositiveVote: string | null; // ISO timestamp of most recent positive vote
+};
+
+export type FeedbackEntry = {
+  id: string;
+  vote: VoteKind;
+  feedback: string | null;
+  reporterCallsign: string | null;
+  createdAt: string; // ISO timestamp
+};
+
+export type FeedbackListResponse = {
+  docs: FeedbackEntry[];
+  totalDocs: number;
+  totalPages: number;
+  page: number;
+  hasNextPage: boolean;
 };
 
 const API_BASE_URL = (() => {
@@ -122,6 +139,7 @@ export async function postVote(input: VoteInput): Promise<VoteStats> {
           repeaterId: input.repeaterId,
           vote: input.vote,
           feedback: input.feedback,
+          reporterCallsign: input.reporterCallsign,
         }),
       }
     );
@@ -132,5 +150,36 @@ export async function postVote(input: VoteInput): Promise<VoteStats> {
     // Don't lose the user's action: save locally as a fallback
     writeLocalVote(input);
     return statsFromLocal(input.repeaterId);
+  }
+}
+
+export async function getFeedbackList(
+  repeaterId: string,
+  options?: { limit?: number; page?: number }
+): Promise<FeedbackListResponse> {
+  const { limit = 20, page = 1 } = options ?? {};
+  try {
+    const url = new URL(
+      `${API_BASE_URL}/api/repeaters/feedback/${encodeURIComponent(repeaterId)}`
+    );
+    url.searchParams.set("limit", String(limit));
+    url.searchParams.set("page", String(page));
+
+    const res = await fetch(url.toString(), {
+      method: "GET",
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch {
+    // Return empty list on error
+    return {
+      docs: [],
+      totalDocs: 0,
+      totalPages: 0,
+      page: 1,
+      hasNextPage: false,
+    };
   }
 }

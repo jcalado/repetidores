@@ -835,6 +835,17 @@
         "positive": "positivo",
         "lastConfirmed": "Última confirmação: {time}",
         "neverConfirmed": "Ainda sem confirmações",
+        "callsignLabel": "Indicativo (opcional)",
+        "callsignPlaceholder": "Ex: CT1ABC",
+        "feedbackLabel": "Comentário (opcional)",
+        "feedbackSection": {
+            "title": "Feedback da Comunidade",
+            "showMore": "Mostrar mais ({count})",
+            "showLess": "Mostrar menos",
+            "noFeedback": "Ainda não há feedback para este repetidor",
+            "anonymous": "Anónimo",
+            "noComment": "Sem comentário"
+        },
         "status": {
             "ok": {
                 "label": "A Funcionar",

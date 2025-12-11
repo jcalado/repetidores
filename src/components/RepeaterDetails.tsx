@@ -15,8 +15,8 @@ import {
 } from "@/components/ui/dialog";
 import { useUserLocation } from "@/contexts/UserLocationContext";
 import { cn } from "@/lib/utils";
-import { getVoteStats, postVote, type VoteStats } from "@/lib/votes";
-import { Check, Clock, Copy, ExternalLink, MapPin, MessageSquare, Radio, Share2, ThumbsDown, ThumbsUp, Wifi, Maximize2, Users, TrendingUp, TrendingDown, AlertCircle, CheckCircle2, XCircle, HelpCircle, Antenna, Navigation, Settings2, FileText, Globe } from "lucide-react";
+import { getVoteStats, postVote, getFeedbackList, type VoteStats, type FeedbackEntry } from "@/lib/votes";
+import { Check, ChevronDown, ChevronUp, Clock, Copy, ExternalLink, MapPin, MessageSquare, Radio, Share2, ThumbsDown, ThumbsUp, Wifi, Maximize2, Users, TrendingUp, TrendingDown, AlertCircle, CheckCircle2, XCircle, HelpCircle, Antenna, Navigation, Settings2, FileText, Globe } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -295,6 +295,9 @@ export default function RepeaterDetails({ r }: RepeaterDetailsProps) {
 
       {/* Community Voting */}
       <VoteSection repeaterId={r.callsign} />
+
+      {/* Community Feedback */}
+      <CommunityFeedbackSection repeaterId={r.callsign} />
     </div>
   );
 }
@@ -348,11 +351,13 @@ function InfoCard({ label, value, className, copyValue, right }: { label: string
 }
 
 // --- Voting (client-only placeholder) ---
-type LocalVote = { vote: "up" | "down"; feedback?: string; ts: number };
+type LocalVote = { vote: "up" | "down"; feedback?: string; reporterCallsign?: string; ts: number };
 
 function getVoteKey(repeaterId: string) {
   return `repeater-vote:${repeaterId}`;
 }
+
+const USER_CALLSIGN_KEY = "user-callsign";
 
 function loadLocalVote(repeaterId: string): LocalVote | null {
   if (typeof window === "undefined") return null;
@@ -367,6 +372,24 @@ function loadLocalVote(repeaterId: string): LocalVote | null {
 function saveLocalVote(repeaterId: string, v: LocalVote) {
   try {
     localStorage.setItem(getVoteKey(repeaterId), JSON.stringify(v));
+  } catch { }
+}
+
+function loadUserCallsign(): string {
+  if (typeof window === "undefined") return "";
+  try {
+    return localStorage.getItem(USER_CALLSIGN_KEY) || "";
+  } catch {
+    return "";
+  }
+}
+
+function saveUserCallsign(callsign: string) {
+  if (typeof window === "undefined") return;
+  try {
+    if (callsign.trim()) {
+      localStorage.setItem(USER_CALLSIGN_KEY, callsign.trim());
+    }
   } catch { }
 }
 
@@ -574,12 +597,14 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
   const [vote, setVote] = React.useState<LocalVote | null>(null);
   const [open, setOpen] = React.useState(false);
   const [feedback, setFeedback] = React.useState("");
+  const [reporterCallsign, setReporterCallsign] = React.useState("");
   const [stats, setStats] = React.useState<VoteStats | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
     setVote(loadLocalVote(repeaterId));
+    setReporterCallsign(loadUserCallsign());
     setIsLoading(true);
     let alive = true;
     getVoteStats(repeaterId)
@@ -597,21 +622,25 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
   const status = stats?.category ?? "unknown";
 
   function handleVote(type: "up" | "down") {
-    const v: LocalVote = { vote: type, ts: Date.now(), feedback: vote?.feedback };
+    const callsign = reporterCallsign.trim() || undefined;
+    const v: LocalVote = { vote: type, ts: Date.now(), feedback: vote?.feedback, reporterCallsign: callsign };
     setVote(v);
     saveLocalVote(repeaterId, v);
+    if (callsign) saveUserCallsign(callsign);
     setSubmitting(true);
-    postVote({ repeaterId, vote: type, feedback: v.feedback })
+    postVote({ repeaterId, vote: type, feedback: v.feedback, reporterCallsign: callsign })
       .then((s) => setStats(s))
       .finally(() => setSubmitting(false));
   }
 
   function handleSubmitFeedback() {
-    const v: LocalVote = { vote: vote?.vote ?? "up", ts: Date.now(), feedback: feedback.trim() || undefined };
+    const callsign = reporterCallsign.trim() || undefined;
+    const v: LocalVote = { vote: vote?.vote ?? "up", ts: Date.now(), feedback: feedback.trim() || undefined, reporterCallsign: callsign };
     setVote(v);
     saveLocalVote(repeaterId, v);
+    if (callsign) saveUserCallsign(callsign);
     setSubmitting(true);
-    postVote({ repeaterId, vote: v.vote, feedback: v.feedback })
+    postVote({ repeaterId, vote: v.vote, feedback: v.feedback, reporterCallsign: callsign })
       .then((s) => setStats(s))
       .finally(() => setSubmitting(false));
     setOpen(false);
@@ -715,15 +744,33 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-3">
-                    <textarea
-                      className="w-full rounded-lg border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-ring min-h-[120px] resize-none"
-                      placeholder={t("feedbackPlaceholder")}
-                      maxLength={500}
-                      value={feedback}
-                      onChange={(e) => setFeedback(e.target.value)}
-                    />
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">{t("characters", { count: feedback.length })}</span>
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+                        {t("callsignLabel")}
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring uppercase"
+                        placeholder={t("callsignPlaceholder")}
+                        maxLength={20}
+                        value={reporterCallsign}
+                        onChange={(e) => setReporterCallsign(e.target.value.toUpperCase())}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+                        {t("feedbackLabel")}
+                      </label>
+                      <textarea
+                        className="w-full rounded-lg border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-ring min-h-[120px] resize-none"
+                        placeholder={t("feedbackPlaceholder")}
+                        maxLength={500}
+                        value={feedback}
+                        onChange={(e) => setFeedback(e.target.value)}
+                      />
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-xs text-muted-foreground">{t("characters", { count: feedback.length })}</span>
+                      </div>
                     </div>
                   </div>
                   <DialogFooter>
@@ -737,6 +784,161 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
             </div>
           </>
         )}
+      </div>
+    </div>
+  );
+}
+
+// --- Community Feedback Section ---
+const INITIAL_DISPLAY_COUNT = 5;
+
+function CommunityFeedbackSection({ repeaterId }: { repeaterId: string }) {
+  const t = useTranslations("communityStatus");
+  const [feedbackList, setFeedbackList] = React.useState<FeedbackEntry[]>([]);
+  const [totalCount, setTotalCount] = React.useState(0);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [isExpanded, setIsExpanded] = React.useState(false);
+
+  React.useEffect(() => {
+    let alive = true;
+    setIsLoading(true);
+    getFeedbackList(repeaterId, { limit: 50 })
+      .then((res) => {
+        if (alive) {
+          setFeedbackList(res.docs);
+          setTotalCount(res.totalDocs);
+        }
+      })
+      .finally(() => {
+        if (alive) setIsLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [repeaterId]);
+
+  const displayedFeedback = isExpanded
+    ? feedbackList
+    : feedbackList.slice(0, INITIAL_DISPLAY_COUNT);
+  const hiddenCount = feedbackList.length - INITIAL_DISPLAY_COUNT;
+  const hasMore = feedbackList.length > INITIAL_DISPLAY_COUNT;
+
+  if (isLoading) {
+    return (
+      <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div className="flex items-center gap-2 px-4 py-3 border-b bg-muted/30">
+          <MessageSquare className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm font-medium">{t("feedbackSection.title")}</span>
+        </div>
+        <div className="p-4 space-y-3 animate-pulse">
+          <div className="h-16 rounded-lg bg-muted" />
+          <div className="h-16 rounded-lg bg-muted" />
+          <div className="h-16 rounded-lg bg-muted" />
+        </div>
+      </div>
+    );
+  }
+
+  if (feedbackList.length === 0) {
+    return (
+      <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div className="flex items-center gap-2 px-4 py-3 border-b bg-muted/30">
+          <MessageSquare className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm font-medium">{t("feedbackSection.title")}</span>
+        </div>
+        <div className="p-4 text-center text-sm text-muted-foreground">
+          {t("feedbackSection.noFeedback")}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center gap-2 px-4 py-3 border-b bg-muted/30">
+        <MessageSquare className="h-4 w-4 text-muted-foreground" />
+        <span className="text-sm font-medium">{t("feedbackSection.title")}</span>
+        <Badge variant="secondary" className="ml-auto text-xs">
+          {totalCount}
+        </Badge>
+      </div>
+
+      {/* Feedback List */}
+      <div className="divide-y">
+        {displayedFeedback.map((entry) => (
+          <FeedbackEntryItem key={entry.id} entry={entry} />
+        ))}
+      </div>
+
+      {/* Show More/Less Button */}
+      {hasMore && (
+        <div className="border-t p-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full text-muted-foreground hover:text-foreground"
+            onClick={() => setIsExpanded(!isExpanded)}
+          >
+            {isExpanded ? (
+              <>
+                <ChevronUp className="h-4 w-4 mr-1" />
+                {t("feedbackSection.showLess")}
+              </>
+            ) : (
+              <>
+                <ChevronDown className="h-4 w-4 mr-1" />
+                {t("feedbackSection.showMore", { count: hiddenCount })}
+              </>
+            )}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FeedbackEntryItem({ entry }: { entry: FeedbackEntry }) {
+  const t = useTranslations("communityStatus");
+
+  return (
+    <div className="px-4 py-3">
+      <div className="flex items-start gap-3">
+        {/* Vote indicator */}
+        <div
+          className={cn(
+            "rounded-full p-1.5 shrink-0",
+            entry.vote === "up"
+              ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400"
+              : "bg-red-100 text-red-600 dark:bg-red-950/50 dark:text-red-400"
+          )}
+        >
+          {entry.vote === "up" ? (
+            <ThumbsUp className="h-3.5 w-3.5" />
+          ) : (
+            <ThumbsDown className="h-3.5 w-3.5" />
+          )}
+        </div>
+
+        <div className="flex-1 min-w-0">
+          {/* Reporter and time */}
+          <div className="flex items-center gap-2 text-xs">
+            <span className="font-medium text-foreground">
+              {entry.reporterCallsign || t("feedbackSection.anonymous")}
+            </span>
+            <span className="text-muted-foreground">·</span>
+            <span className="text-muted-foreground">
+              {formatRelativeTime(entry.createdAt)}
+            </span>
+          </div>
+
+          {/* Feedback text */}
+          <p className="text-sm text-muted-foreground mt-1">
+            {entry.feedback || (
+              <span className="italic">{t("feedbackSection.noComment")}</span>
+            )}
+          </p>
+        </div>
       </div>
     </div>
   );
