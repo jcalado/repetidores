@@ -292,11 +292,8 @@ export default function RepeaterDetails({ r }: RepeaterDetailsProps) {
         </a>
       )}
 
-      {/* Community Voting */}
-      <VoteSection repeaterId={r.callsign} />
-
-      {/* Community Feedback */}
-      <CommunityFeedbackSection repeaterId={r.callsign} />
+      {/* Community Status & Feedback */}
+      <CommunitySection repeaterId={r.callsign} />
     </div>
   );
 }
@@ -591,8 +588,13 @@ function VoteDistributionBar({ stats, t }: { stats: VoteStats | null; t: ReturnT
   );
 }
 
-function VoteSection({ repeaterId }: { repeaterId: string }) {
+// --- Community Section (combined voting + feedback) ---
+const INITIAL_DISPLAY_COUNT = 5;
+
+function CommunitySection({ repeaterId }: { repeaterId: string }) {
   const t = useTranslations("communityStatus");
+
+  // Vote state
   const [vote, setVote] = React.useState<LocalVote | null>(null);
   const [open, setOpen] = React.useState(false);
   const [pendingVoteType, setPendingVoteType] = React.useState<"up" | "down">("up");
@@ -600,20 +602,42 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
   const [reporterCallsign, setReporterCallsign] = React.useState("");
   const [stats, setStats] = React.useState<VoteStats | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [isStatsLoading, setIsStatsLoading] = React.useState(true);
+
+  // Feedback list state
+  const [feedbackList, setFeedbackList] = React.useState<FeedbackEntry[]>([]);
+  const [totalCount, setTotalCount] = React.useState(0);
+  const [isFeedbackLoading, setIsFeedbackLoading] = React.useState(true);
+  const [isExpanded, setIsExpanded] = React.useState(false);
 
   React.useEffect(() => {
     setVote(loadLocalVote(repeaterId));
     setReporterCallsign(loadUserCallsign());
-    setIsLoading(true);
+    setIsStatsLoading(true);
+    setIsFeedbackLoading(true);
     let alive = true;
+
+    // Fetch stats
     getVoteStats(repeaterId)
       .then((s) => {
         if (alive) setStats(s);
       })
       .finally(() => {
-        if (alive) setIsLoading(false);
+        if (alive) setIsStatsLoading(false);
       });
+
+    // Fetch feedback list
+    getFeedbackList(repeaterId, { limit: 50 })
+      .then((res) => {
+        if (alive) {
+          setFeedbackList(res.docs);
+          setTotalCount(res.totalDocs);
+        }
+      })
+      .finally(() => {
+        if (alive) setIsFeedbackLoading(false);
+      });
+
     return () => {
       alive = false;
     };
@@ -634,11 +658,31 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
     if (callsign) saveUserCallsign(callsign);
     setSubmitting(true);
     postVote({ repeaterId, vote: pendingVoteType, feedback: v.feedback, reporterCallsign: callsign })
-      .then((s) => setStats(s))
+      .then((s) => {
+        setStats(s);
+        // Add to feedback list if there's feedback text
+        if (v.feedback) {
+          const newEntry: FeedbackEntry = {
+            id: `local-${Date.now()}`,
+            vote: pendingVoteType,
+            feedback: v.feedback,
+            reporterCallsign: callsign ?? null,
+            createdAt: new Date().toISOString(),
+          };
+          setFeedbackList(prev => [newEntry, ...prev]);
+          setTotalCount(prev => prev + 1);
+        }
+      })
       .finally(() => setSubmitting(false));
     setOpen(false);
     setFeedback("");
   }
+
+  const displayedFeedback = isExpanded
+    ? feedbackList
+    : feedbackList.slice(0, INITIAL_DISPLAY_COUNT);
+  const hiddenCount = feedbackList.length - INITIAL_DISPLAY_COUNT;
+  const hasMore = feedbackList.length > INITIAL_DISPLAY_COUNT;
 
   return (
     <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
@@ -663,8 +707,8 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
       </div>
 
       <div className="p-4 space-y-4">
-        {/* Loading State */}
-        {isLoading ? (
+        {/* Loading State for Stats */}
+        {isStatsLoading ? (
           <div className="space-y-3 animate-pulse">
             <div className="h-16 rounded-lg bg-muted" />
             <div className="h-2 rounded-full bg-muted" />
@@ -779,115 +823,57 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
           </>
         )}
       </div>
-    </div>
-  );
-}
 
-// --- Community Feedback Section ---
-const INITIAL_DISPLAY_COUNT = 5;
-
-function CommunityFeedbackSection({ repeaterId }: { repeaterId: string }) {
-  const t = useTranslations("communityStatus");
-  const [feedbackList, setFeedbackList] = React.useState<FeedbackEntry[]>([]);
-  const [totalCount, setTotalCount] = React.useState(0);
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [isExpanded, setIsExpanded] = React.useState(false);
-
-  React.useEffect(() => {
-    let alive = true;
-    setIsLoading(true);
-    getFeedbackList(repeaterId, { limit: 50 })
-      .then((res) => {
-        if (alive) {
-          setFeedbackList(res.docs);
-          setTotalCount(res.totalDocs);
-        }
-      })
-      .finally(() => {
-        if (alive) setIsLoading(false);
-      });
-    return () => {
-      alive = false;
-    };
-  }, [repeaterId]);
-
-  const displayedFeedback = isExpanded
-    ? feedbackList
-    : feedbackList.slice(0, INITIAL_DISPLAY_COUNT);
-  const hiddenCount = feedbackList.length - INITIAL_DISPLAY_COUNT;
-  const hasMore = feedbackList.length > INITIAL_DISPLAY_COUNT;
-
-  if (isLoading) {
-    return (
-      <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
-        <div className="flex items-center gap-2 px-4 py-3 border-b bg-muted/30">
-          <MessageSquare className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium">{t("feedbackSection.title")}</span>
+      {/* Feedback List Section */}
+      {isFeedbackLoading ? (
+        <div className="border-t">
+          <div className="flex items-center gap-2 px-4 py-3 border-b bg-muted/20">
+            <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium">{t("feedbackSection.title")}</span>
+          </div>
+          <div className="p-4 space-y-3 animate-pulse">
+            <div className="h-16 rounded-lg bg-muted" />
+            <div className="h-16 rounded-lg bg-muted" />
+          </div>
         </div>
-        <div className="p-4 space-y-3 animate-pulse">
-          <div className="h-16 rounded-lg bg-muted" />
-          <div className="h-16 rounded-lg bg-muted" />
-          <div className="h-16 rounded-lg bg-muted" />
+      ) : feedbackList.length > 0 ? (
+        <div className="border-t">
+          <div className="flex items-center gap-2 px-4 py-3 border-b bg-muted/20">
+            <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium">{t("feedbackSection.title")}</span>
+            <Badge variant="secondary" className="ml-auto text-xs">
+              {totalCount}
+            </Badge>
+          </div>
+          <div className="divide-y">
+            {displayedFeedback.map((entry) => (
+              <FeedbackEntryItem key={entry.id} entry={entry} />
+            ))}
+          </div>
+          {hasMore && (
+            <div className="border-t p-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full text-muted-foreground hover:text-foreground"
+                onClick={() => setIsExpanded(!isExpanded)}
+              >
+                {isExpanded ? (
+                  <>
+                    <ChevronUp className="h-4 w-4 mr-1" />
+                    {t("feedbackSection.showLess")}
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="h-4 w-4 mr-1" />
+                    {t("feedbackSection.showMore", { count: hiddenCount })}
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
         </div>
-      </div>
-    );
-  }
-
-  if (feedbackList.length === 0) {
-    return (
-      <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
-        <div className="flex items-center gap-2 px-4 py-3 border-b bg-muted/30">
-          <MessageSquare className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium">{t("feedbackSection.title")}</span>
-        </div>
-        <div className="p-4 text-center text-sm text-muted-foreground">
-          {t("feedbackSection.noFeedback")}
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center gap-2 px-4 py-3 border-b bg-muted/30">
-        <MessageSquare className="h-4 w-4 text-muted-foreground" />
-        <span className="text-sm font-medium">{t("feedbackSection.title")}</span>
-        <Badge variant="secondary" className="ml-auto text-xs">
-          {totalCount}
-        </Badge>
-      </div>
-
-      {/* Feedback List */}
-      <div className="divide-y">
-        {displayedFeedback.map((entry) => (
-          <FeedbackEntryItem key={entry.id} entry={entry} />
-        ))}
-      </div>
-
-      {/* Show More/Less Button */}
-      {hasMore && (
-        <div className="border-t p-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full text-muted-foreground hover:text-foreground"
-            onClick={() => setIsExpanded(!isExpanded)}
-          >
-            {isExpanded ? (
-              <>
-                <ChevronUp className="h-4 w-4 mr-1" />
-                {t("feedbackSection.showLess")}
-              </>
-            ) : (
-              <>
-                <ChevronDown className="h-4 w-4 mr-1" />
-                {t("feedbackSection.showMore", { count: hiddenCount })}
-              </>
-            )}
-          </Button>
-        </div>
-      )}
+      ) : null}
     </div>
   );
 }
