@@ -6,39 +6,24 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { useUserLocation } from "@/contexts/UserLocationContext";
 import { useDeviceCompass } from "@/hooks/useDeviceCompass";
 import { cn } from "@/lib/utils";
-import { getVoteStats, postVote, getFeedbackList, type VoteStats, type FeedbackEntry } from "@/lib/votes";
 import { toggleFavorite, isFavorite } from "@/lib/favorites";
 import {
   ArrowLeft,
   Building2,
   Check,
-  ChevronDown,
   ChevronRight,
-  ChevronUp,
   Clipboard,
   Compass,
   Copy,
   ExternalLink,
   Heart,
   MapPin,
-  MessageSquare,
   Navigation,
   Radio,
   Share2,
-  ThumbsDown,
-  ThumbsUp,
   Wifi,
   Zap,
 } from "lucide-react";
@@ -46,6 +31,16 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import * as React from "react";
+
+// Import from refactored repeater module
+import {
+  getBandFromFrequency,
+  fmtMHzDisplay,
+  fmtMHzCopy,
+  duplex,
+} from "@/components/repeater/utils/formatters";
+import { CommunitySection } from "@/components/repeater/community/CommunitySection";
+import { operationalStatusConfig } from "@/components/repeater/utils/statusConfig";
 
 // Dynamic import for the mini map (SSR disabled)
 const MiniMap = dynamic(() => import("./MiniMap"), {
@@ -56,29 +51,6 @@ const MiniMap = dynamic(() => import("./MiniMap"), {
     </div>
   ),
 });
-
-function getBandFromFrequency(mhz: number): string {
-  if (mhz >= 430 && mhz <= 450) return "70cm";
-  if (mhz >= 144 && mhz <= 148) return "2m";
-  if (mhz >= 50 && mhz <= 54) return "6m";
-  return "Other";
-}
-
-function fmtMHzDisplay(n?: number) {
-  return typeof n === "number" && Number.isFinite(n) ? `${n.toFixed(4)} MHz` : "–";
-}
-
-function fmtMHzCopy(n?: number) {
-  return typeof n === "number" && Number.isFinite(n) ? n.toFixed(4) : "";
-}
-
-function duplex(rx?: number, tx?: number) {
-  if (typeof rx !== "number" || typeof tx !== "number")
-    return { sign: "", offsetDisplay: "–", offsetCopy: "" };
-  const sign = tx > rx ? "+" : tx < rx ? "-" : "";
-  const diff = Math.abs(tx - rx);
-  return { sign, offsetDisplay: `${diff.toFixed(4)} MHz`, offsetCopy: diff.toFixed(4) };
-}
 
 // Haversine distance calculation
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -177,8 +149,16 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
             <Badge variant="secondary">{band}</Badge>
             {r.modulation && <Badge variant="outline">{r.modulation.toUpperCase()}</Badge>}
             {r.qth_locator && <Badge variant="outline">QTH {r.qth_locator}</Badge>}
-            {r.dmr && <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">DMR</Badge>}
-            {r.dstar && <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">D-STAR</Badge>}
+            {r.dmr && (
+              <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+                DMR
+              </Badge>
+            )}
+            {r.dstar && (
+              <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                D-STAR
+              </Badge>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -212,10 +192,26 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <InfoItem label={t("output")} value={fmtMHzDisplay(r.outputFrequency)} copyValue={fmtMHzCopy(r.outputFrequency)} />
-              <InfoItem label={t("input")} value={fmtMHzDisplay(r.inputFrequency)} copyValue={fmtMHzCopy(r.inputFrequency)} />
-              <InfoItem label={t("offset")} value={`${sign}${sign ? " " : ""}${offsetDisplay}`} copyValue={`${sign}${offsetCopy}`} />
-              <InfoItem label={t("tone")} value={r.tone ? `${Number(r.tone.toFixed(1))} Hz` : "None"} copyValue={r.tone ? `${Number(r.tone.toFixed(1))}` : undefined} />
+              <InfoItem
+                label={t("output")}
+                value={fmtMHzDisplay(r.outputFrequency)}
+                copyValue={fmtMHzCopy(r.outputFrequency)}
+              />
+              <InfoItem
+                label={t("input")}
+                value={fmtMHzDisplay(r.inputFrequency)}
+                copyValue={fmtMHzCopy(r.inputFrequency)}
+              />
+              <InfoItem
+                label={t("offset")}
+                value={`${sign}${sign ? " " : ""}${offsetDisplay}`}
+                copyValue={`${sign}${offsetCopy}`}
+              />
+              <InfoItem
+                label={t("tone")}
+                value={r.tone ? `${Number(r.tone.toFixed(1))} Hz` : "None"}
+                copyValue={r.tone ? `${Number(r.tone.toFixed(1))}` : undefined}
+              />
             </div>
           </CardContent>
         </Card>
@@ -255,12 +251,14 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
 
       {/* Bearing Compass - shows when user location is available */}
       {hasValidLocations ? (
-        <Card className={cn(
-          "bg-gradient-to-br border-ship-cove-200 dark:border-ship-cove-800",
-          compass.isEnabled
-            ? "from-green-50 to-green-100/50 dark:from-green-950 dark:to-green-900/50 border-green-300 dark:border-green-700"
-            : "from-ship-cove-50 to-ship-cove-100/50 dark:from-ship-cove-950 dark:to-ship-cove-900/50"
-        )}>
+        <Card
+          className={cn(
+            "bg-gradient-to-br border-ship-cove-200 dark:border-ship-cove-800",
+            compass.isEnabled
+              ? "from-green-50 to-green-100/50 dark:from-green-950 dark:to-green-900/50 border-green-300 dark:border-green-700"
+              : "from-ship-cove-50 to-ship-cove-100/50 dark:from-ship-cove-950 dark:to-ship-cove-900/50"
+          )}
+        >
           <CardContent className="pt-6">
             <div className="flex items-center justify-between gap-4">
               <div className="space-y-2">
@@ -275,10 +273,7 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
                     variant={compass.isEnabled ? "default" : "outline"}
                     size="sm"
                     onClick={() => compass.toggle()}
-                    className={cn(
-                      "gap-2",
-                      compass.isEnabled && "bg-green-600 hover:bg-green-700"
-                    )}
+                    className={cn("gap-2", compass.isEnabled && "bg-green-600 hover:bg-green-700")}
                   >
                     <Compass className="h-4 w-4" />
                     {compass.isEnabled ? "Desativar bússola" : "Ativar bússola"}
@@ -515,16 +510,13 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
 
       <Separator />
 
-      {/* Community Voting Section */}
-      <VoteSection repeaterId={r.callsign} />
-
-      {/* Community Feedback Section */}
-      <CommunityFeedbackSection repeaterId={r.callsign} />
+      {/* Community Section (unified voting + feedback) */}
+      <CommunitySection repeaterId={r.callsign} />
     </div>
   );
 }
 
-// --- Components ---
+// --- Page-specific Components ---
 
 function InfoItem({
   label,
@@ -579,38 +571,16 @@ function OperationalStatusBanner({
   status: "active" | "maintenance" | "offline" | "unknown";
   lastVerified?: string;
 }) {
-  const config = {
-    active: {
-      label: "Activo",
-      className: "bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-300",
-      icon: "✓",
-    },
-    maintenance: {
-      label: "Em Manutenção",
-      className: "bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-300",
-      icon: "⚠",
-    },
-    offline: {
-      label: "Desligado",
-      className: "bg-red-50 border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-300",
-      icon: "✕",
-    },
-    unknown: {
-      label: "Desconhecido",
-      className: "bg-muted border-border",
-      icon: "?",
-    },
-  } as const;
-
-  const cfg = config[status];
+  const cfg = operationalStatusConfig[status];
+  const Icon = cfg.icon;
 
   return (
-    <div className={cn("rounded-lg border p-4 flex items-center gap-3", cfg.className)}>
-      <span className="text-xl">{cfg.icon}</span>
+    <div className={cn("rounded-lg border p-4 flex items-center gap-3", cfg.bgClass, cfg.borderClass)}>
+      <Icon className={cn("h-5 w-5", cfg.iconClass)} />
       <div>
-        <p className="font-medium">Estado: {cfg.label}</p>
+        <p className={cn("font-medium", cfg.textClass)}>Estado: {cfg.label}</p>
         {lastVerified && (
-          <p className="text-xs opacity-80">
+          <p className="text-xs text-muted-foreground">
             Verificado em {new Date(lastVerified).toLocaleDateString("pt-PT")}
           </p>
         )}
@@ -649,166 +619,13 @@ function ShareButton({ callsign }: { callsign: string }) {
 
   return (
     <Button variant="outline" onClick={handleShare} aria-label={t("share")}>
-      {copied ? <Check className="mr-2 h-4 w-4 text-emerald-600" /> : <Share2 className="mr-2 h-4 w-4" />}
+      {copied ? (
+        <Check className="mr-2 h-4 w-4 text-emerald-600" />
+      ) : (
+        <Share2 className="mr-2 h-4 w-4" />
+      )}
       {t("share")}
     </Button>
-  );
-}
-
-// --- Voting Section ---
-type LocalVote = { vote: "up" | "down"; feedback?: string; ts: number };
-
-function getVoteKey(repeaterId: string) {
-  return `repeater-vote:${repeaterId}`;
-}
-
-function loadLocalVote(repeaterId: string): LocalVote | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = localStorage.getItem(getVoteKey(repeaterId));
-    return raw ? (JSON.parse(raw) as LocalVote) : null;
-  } catch {
-    return null;
-  }
-}
-
-function saveLocalVote(repeaterId: string, v: LocalVote) {
-  try {
-    localStorage.setItem(getVoteKey(repeaterId), JSON.stringify(v));
-  } catch {}
-}
-
-function StatusPill({ status }: { status: "ok" | "prob-bad" | "bad" | "unknown" }) {
-  const map = {
-    ok: { label: "A funcionar", className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300" },
-    "prob-bad": { label: "Provavelmente com problemas", className: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300" },
-    bad: { label: "Não funciona", className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300" },
-    unknown: { label: "Estado desconhecido", className: "bg-muted text-muted-foreground" },
-  } as const;
-  const cfg = map[status];
-  return (
-    <span className={cn("inline-flex items-center rounded-full px-3 py-1 text-sm font-medium", cfg.className)}>
-      {cfg.label}
-    </span>
-  );
-}
-
-function VoteSection({ repeaterId }: { repeaterId: string }) {
-  const [vote, setVote] = React.useState<LocalVote | null>(null);
-  const [open, setOpen] = React.useState(false);
-  const [feedback, setFeedback] = React.useState("");
-  const [stats, setStats] = React.useState<VoteStats | null>(null);
-  const [submitting, setSubmitting] = React.useState(false);
-
-  React.useEffect(() => {
-    setVote(loadLocalVote(repeaterId));
-    let alive = true;
-    getVoteStats(repeaterId).then((s) => {
-      if (alive) setStats(s);
-    });
-    return () => {
-      alive = false;
-    };
-  }, [repeaterId]);
-
-  const status = stats?.category ?? "unknown";
-
-  function handleVote(type: "up" | "down") {
-    const v: LocalVote = { vote: type, ts: Date.now(), feedback: vote?.feedback };
-    setVote(v);
-    saveLocalVote(repeaterId, v);
-    setSubmitting(true);
-    postVote({ repeaterId, vote: type, feedback: v.feedback })
-      .then((s) => setStats(s))
-      .finally(() => setSubmitting(false));
-  }
-
-  function handleSubmitFeedback() {
-    const v: LocalVote = { vote: vote?.vote ?? "up", ts: Date.now(), feedback: feedback.trim() || undefined };
-    setVote(v);
-    saveLocalVote(repeaterId, v);
-    setSubmitting(true);
-    postVote({ repeaterId, vote: v.vote, feedback: v.feedback })
-      .then((s) => setStats(s))
-      .finally(() => setSubmitting(false));
-    setOpen(false);
-    setFeedback("");
-  }
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">Estado Comunitário</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <StatusPill status={status} />
-            {vote?.vote && (
-              <Badge variant="secondary" className="text-xs">
-                Votaste {vote.vote === "up" ? "Up" : "Down"}
-              </Badge>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant={vote?.vote === "up" ? "default" : "outline"}
-              size="sm"
-              onClick={() => handleVote("up")}
-              disabled={submitting}
-            >
-              <ThumbsUp className="mr-1 h-4 w-4" /> Up
-            </Button>
-            <Button
-              variant={vote?.vote === "down" ? "default" : "outline"}
-              size="sm"
-              onClick={() => handleVote("down")}
-              disabled={submitting}
-            >
-              <ThumbsDown className="mr-1 h-4 w-4" /> Down
-            </Button>
-            <Dialog open={open} onOpenChange={setOpen}>
-              <DialogTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-1">
-                  <MessageSquare className="h-4 w-4" /> Feedback
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Feedback</DialogTitle>
-                  <DialogDescription>
-                    Partilhe mais informações sobre o estado do repetidor (opcional, máx. 500 caracteres).
-                  </DialogDescription>
-                </DialogHeader>
-                <div>
-                  <textarea
-                    className="w-full rounded-md border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-ring min-h-[120px]"
-                    placeholder="Ex: sem portadora, áudio fraco, tom errado, funciona bem, etc."
-                    maxLength={500}
-                    value={feedback}
-                    onChange={(e) => setFeedback(e.target.value)}
-                  />
-                  <div className="mt-1 text-xs text-muted-foreground">{feedback.length}/500</div>
-                </div>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setOpen(false)}>
-                    Cancelar
-                  </Button>
-                  <Button onClick={handleSubmitFeedback}>Guardar</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
-        </div>
-        <div className="text-sm text-muted-foreground">
-          {stats ? (
-            <>Últimos {stats.windowDays} dias — Up {stats.up} · Down {stats.down}</>
-          ) : (
-            "A carregar estatísticas..."
-          )}
-        </div>
-      </CardContent>
-    </Card>
   );
 }
 
@@ -854,12 +671,7 @@ function QuickProgramCard({ repeater: r }: { repeater: Repeater }) {
             <Clipboard className="h-5 w-5" />
             Programação Rápida
           </span>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={handleCopyAll}
-            className="gap-2"
-          >
+          <Button variant="secondary" size="sm" onClick={handleCopyAll} className="gap-2">
             {copied ? (
               <>
                 <Check className="h-4 w-4 text-emerald-600" />
@@ -887,12 +699,8 @@ function QuickProgramCard({ repeater: r }: { repeater: Repeater }) {
         </div>
         {(r.dmr || r.dstar) && (
           <div className="mt-4 pt-4 border-t border-ship-cove-200 dark:border-ship-cove-700 grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {r.dmrColorCode && (
-              <ProgramField label="DMR CC" value={String(r.dmrColorCode)} />
-            )}
-            {r.dstarModule && (
-              <ProgramField label="D-STAR Module" value={r.dstarModule} />
-            )}
+            {r.dmrColorCode && <ProgramField label="DMR CC" value={String(r.dmrColorCode)} />}
+            {r.dstarModule && <ProgramField label="D-STAR Module" value={r.dstarModule} />}
           </div>
         )}
         <div className="mt-4 p-3 rounded-lg bg-white/50 dark:bg-black/20 font-mono text-xs overflow-x-auto">
@@ -903,15 +711,7 @@ function QuickProgramCard({ repeater: r }: { repeater: Repeater }) {
   );
 }
 
-function ProgramField({
-  label,
-  value,
-  unit,
-}: {
-  label: string;
-  value: string;
-  unit?: string;
-}) {
+function ProgramField({ label, value, unit }: { label: string; value: string; unit?: string }) {
   const [copied, setCopied] = React.useState(false);
 
   async function handleCopy() {
@@ -933,188 +733,7 @@ function ProgramField({
       <div className="flex items-baseline gap-1">
         <span className="font-mono text-lg font-semibold">{value}</span>
         {unit && <span className="text-xs text-muted-foreground">{unit}</span>}
-        {copied && (
-          <Check className="h-3 w-3 text-emerald-600 ml-1" />
-        )}
-      </div>
-    </div>
-  );
-}
-
-// --- Community Feedback Section ---
-const INITIAL_DISPLAY_COUNT = 5;
-
-function formatRelativeTime(isoTimestamp: string): string {
-  const date = new Date(isoTimestamp);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / (1000 * 60));
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-  if (diffMins < 1) return "agora mesmo";
-  if (diffMins < 60) return `há ${diffMins} minuto${diffMins !== 1 ? "s" : ""}`;
-  if (diffHours < 24) return `há ${diffHours} hora${diffHours !== 1 ? "s" : ""}`;
-  if (diffDays < 30) return `há ${diffDays} dia${diffDays !== 1 ? "s" : ""}`;
-
-  return date.toLocaleDateString("pt-PT", { day: "numeric", month: "short" });
-}
-
-function CommunityFeedbackSection({ repeaterId }: { repeaterId: string }) {
-  const t = useTranslations("communityStatus");
-  const [feedbackList, setFeedbackList] = React.useState<FeedbackEntry[]>([]);
-  const [totalCount, setTotalCount] = React.useState(0);
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [isExpanded, setIsExpanded] = React.useState(false);
-
-  React.useEffect(() => {
-    let alive = true;
-    setIsLoading(true);
-    getFeedbackList(repeaterId, { limit: 50 })
-      .then((res) => {
-        if (alive) {
-          setFeedbackList(res.docs);
-          setTotalCount(res.totalDocs);
-        }
-      })
-      .finally(() => {
-        if (alive) setIsLoading(false);
-      });
-    return () => {
-      alive = false;
-    };
-  }, [repeaterId]);
-
-  const displayedFeedback = isExpanded
-    ? feedbackList
-    : feedbackList.slice(0, INITIAL_DISPLAY_COUNT);
-  const hiddenCount = feedbackList.length - INITIAL_DISPLAY_COUNT;
-  const hasMore = feedbackList.length > INITIAL_DISPLAY_COUNT;
-
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <MessageSquare className="h-5 w-5" />
-            {t("feedbackSection.title")}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3 animate-pulse">
-          <div className="h-16 rounded-lg bg-muted" />
-          <div className="h-16 rounded-lg bg-muted" />
-          <div className="h-16 rounded-lg bg-muted" />
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (feedbackList.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <MessageSquare className="h-5 w-5" />
-            {t("feedbackSection.title")}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-center text-sm text-muted-foreground">
-            {t("feedbackSection.noFeedback")}
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <MessageSquare className="h-5 w-5" />
-          {t("feedbackSection.title")}
-          <Badge variant="secondary" className="ml-auto text-xs">
-            {totalCount}
-          </Badge>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-0">
-        {/* Feedback List */}
-        <div className="divide-y">
-          {displayedFeedback.map((entry) => (
-            <FeedbackEntryItem key={entry.id} entry={entry} />
-          ))}
-        </div>
-
-        {/* Show More/Less Button */}
-        {hasMore && (
-          <div className="border-t p-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full text-muted-foreground hover:text-foreground"
-              onClick={() => setIsExpanded(!isExpanded)}
-            >
-              {isExpanded ? (
-                <>
-                  <ChevronUp className="h-4 w-4 mr-1" />
-                  {t("feedbackSection.showLess")}
-                </>
-              ) : (
-                <>
-                  <ChevronDown className="h-4 w-4 mr-1" />
-                  {t("feedbackSection.showMore", { count: hiddenCount })}
-                </>
-              )}
-            </Button>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-function FeedbackEntryItem({ entry }: { entry: FeedbackEntry }) {
-  const t = useTranslations("communityStatus");
-
-  return (
-    <div className="px-4 py-3">
-      <div className="flex items-start gap-3">
-        {/* Vote indicator */}
-        <div
-          className={cn(
-            "rounded-full p-1.5 shrink-0",
-            entry.vote === "up"
-              ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400"
-              : "bg-red-100 text-red-600 dark:bg-red-950/50 dark:text-red-400"
-          )}
-        >
-          {entry.vote === "up" ? (
-            <ThumbsUp className="h-3.5 w-3.5" />
-          ) : (
-            <ThumbsDown className="h-3.5 w-3.5" />
-          )}
-        </div>
-
-        <div className="flex-1 min-w-0">
-          {/* Reporter and time */}
-          <div className="flex items-center gap-2 text-xs">
-            <span className="font-medium text-foreground">
-              {entry.reporterCallsign || t("feedbackSection.anonymous")}
-            </span>
-            <span className="text-muted-foreground">·</span>
-            <span className="text-muted-foreground">
-              {formatRelativeTime(entry.createdAt)}
-            </span>
-          </div>
-
-          {/* Feedback text */}
-          <p className="text-sm text-muted-foreground mt-1">
-            {entry.feedback || (
-              <span className="italic">{t("feedbackSection.noComment")}</span>
-            )}
-          </p>
-        </div>
+        {copied && <Check className="h-3 w-3 text-emerald-600 ml-1" />}
       </div>
     </div>
   );
