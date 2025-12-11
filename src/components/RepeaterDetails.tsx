@@ -11,7 +11,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { useUserLocation } from "@/contexts/UserLocationContext";
 import { cn } from "@/lib/utils";
@@ -596,6 +595,7 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
   const t = useTranslations("communityStatus");
   const [vote, setVote] = React.useState<LocalVote | null>(null);
   const [open, setOpen] = React.useState(false);
+  const [pendingVoteType, setPendingVoteType] = React.useState<"up" | "down">("up");
   const [feedback, setFeedback] = React.useState("");
   const [reporterCallsign, setReporterCallsign] = React.useState("");
   const [stats, setStats] = React.useState<VoteStats | null>(null);
@@ -621,27 +621,19 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
 
   const status = stats?.category ?? "unknown";
 
-  function handleVote(type: "up" | "down") {
-    const callsign = reporterCallsign.trim() || undefined;
-    const v: LocalVote = { vote: type, ts: Date.now(), feedback: vote?.feedback, reporterCallsign: callsign };
-    setVote(v);
-    saveLocalVote(repeaterId, v);
-    if (callsign) saveUserCallsign(callsign);
-    setSubmitting(true);
-    postVote({ repeaterId, vote: type, feedback: v.feedback, reporterCallsign: callsign })
-      .then((s) => setStats(s))
-      .finally(() => setSubmitting(false));
+  function handleOpenFeedback(type: "up" | "down") {
+    setPendingVoteType(type);
+    setOpen(true);
   }
 
   function handleSubmitFeedback() {
     const callsign = reporterCallsign.trim() || undefined;
-    // Always use "down" vote since this dialog is for reporting issues
-    const v: LocalVote = { vote: "down", ts: Date.now(), feedback: feedback.trim() || undefined, reporterCallsign: callsign };
+    const v: LocalVote = { vote: pendingVoteType, ts: Date.now(), feedback: feedback.trim() || undefined, reporterCallsign: callsign };
     setVote(v);
     saveLocalVote(repeaterId, v);
     if (callsign) saveUserCallsign(callsign);
     setSubmitting(true);
-    postVote({ repeaterId, vote: "down", feedback: v.feedback, reporterCallsign: callsign })
+    postVote({ repeaterId, vote: pendingVoteType, feedback: v.feedback, reporterCallsign: callsign })
       .then((s) => setStats(s))
       .finally(() => setSubmitting(false));
     setOpen(false);
@@ -697,7 +689,7 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
                       "flex-1 gap-2 transition-all",
                       vote?.vote === "up" && "bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-700"
                     )}
-                    onClick={() => handleVote("up")}
+                    onClick={() => handleOpenFeedback("up")}
                     disabled={submitting}
                   >
                     <ThumbsUp className="h-4 w-4" />
@@ -707,72 +699,83 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
                 <TooltipContent>{t("reportWorking")}</TooltipContent>
               </Tooltip>
 
-              <Dialog open={open} onOpenChange={setOpen}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant={vote?.vote === "down" ? "default" : "outline"}
-                        size="sm"
-                        className={cn(
-                          "flex-1 gap-2 transition-all",
-                          vote?.vote === "down" && "bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
-                        )}
-                        disabled={submitting}
-                      >
-                        <ThumbsDown className="h-4 w-4" />
-                        <span>{t("issuesButton")}</span>
-                      </Button>
-                    </DialogTrigger>
-                  </TooltipTrigger>
-                  <TooltipContent>{t("reportIssues")}</TooltipContent>
-                </Tooltip>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>{t("feedbackTitle")}</DialogTitle>
-                    <DialogDescription>
-                      {t("feedbackDescription")}
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
-                        {t("callsignLabel")}
-                      </label>
-                      <input
-                        type="text"
-                        className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring uppercase"
-                        placeholder={t("callsignPlaceholder")}
-                        maxLength={20}
-                        value={reporterCallsign}
-                        onChange={(e) => setReporterCallsign(e.target.value.toUpperCase())}
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
-                        {t("feedbackLabel")}
-                      </label>
-                      <textarea
-                        className="w-full rounded-lg border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-ring min-h-[120px] resize-none"
-                        placeholder={t("feedbackPlaceholder")}
-                        maxLength={500}
-                        value={feedback}
-                        onChange={(e) => setFeedback(e.target.value)}
-                      />
-                      <div className="flex items-center justify-between mt-1">
-                        <span className="text-xs text-muted-foreground">{t("characters", { count: feedback.length })}</span>
-                      </div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={vote?.vote === "down" ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                      "flex-1 gap-2 transition-all",
+                      vote?.vote === "down" && "bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
+                    )}
+                    onClick={() => handleOpenFeedback("down")}
+                    disabled={submitting}
+                  >
+                    <ThumbsDown className="h-4 w-4" />
+                    <span>{t("issuesButton")}</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{t("reportIssues")}</TooltipContent>
+              </Tooltip>
+            </div>
+
+            {/* Feedback Dialog */}
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    {pendingVoteType === "up" ? t("feedbackTitleWorking") : t("feedbackTitleIssues")}
+                  </DialogTitle>
+                  <DialogDescription>
+                    {t("feedbackDescription")}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+                      {t("callsignLabel")}
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring uppercase"
+                      placeholder={t("callsignPlaceholder")}
+                      maxLength={20}
+                      value={reporterCallsign}
+                      onChange={(e) => setReporterCallsign(e.target.value.toUpperCase())}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+                      {t("feedbackLabel")}
+                    </label>
+                    <textarea
+                      className="w-full rounded-lg border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-ring min-h-[120px] resize-none"
+                      placeholder={pendingVoteType === "up" ? t("feedbackPlaceholderWorking") : t("feedbackPlaceholder")}
+                      maxLength={500}
+                      value={feedback}
+                      onChange={(e) => setFeedback(e.target.value)}
+                    />
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-xs text-muted-foreground">{t("characters", { count: feedback.length })}</span>
                     </div>
                   </div>
-                  <DialogFooter>
-                    <Button variant="outline" onClick={() => setOpen(false)}>{t("cancel")}</Button>
-                    <Button onClick={handleSubmitFeedback} disabled={submitting}>
-                      {t("submitFeedback")}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setOpen(false)}>{t("cancel")}</Button>
+                  <Button
+                    onClick={handleSubmitFeedback}
+                    disabled={submitting}
+                    className={cn(
+                      pendingVoteType === "up"
+                        ? "bg-emerald-600 hover:bg-emerald-700"
+                        : "bg-red-600 hover:bg-red-700"
+                    )}
+                  >
+                    {pendingVoteType === "up" ? t("submitWorking") : t("submitIssues")}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </>
         )}
       </div>
