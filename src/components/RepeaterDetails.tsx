@@ -172,11 +172,6 @@ export default function RepeaterDetails({ r }: RepeaterDetailsProps) {
         </div>
       </SectionCard>
 
-      {/* Operational Status */}
-      {r.status && r.status !== 'unknown' && (
-        <OperationalStatusCard status={r.status} lastVerified={r.lastVerified} />
-      )}
-
       {/* Technical Specs Section */}
       {(r.power || r.antennaHeight || r.coverage || r.operatingHours) && (
         <SectionCard icon={Settings2} title="Especificações Técnicas">
@@ -290,6 +285,11 @@ export default function RepeaterDetails({ r }: RepeaterDetailsProps) {
           Visitar website
           <ExternalLink className="h-3.5 w-3.5 ml-auto opacity-50" />
         </a>
+      )}
+
+      {/* Operational Status */}
+      {r.status && r.status !== 'unknown' && (
+        <OperationalStatusCard status={r.status} lastVerified={r.lastVerified} />
       )}
 
       {/* Community Status & Feedback */}
