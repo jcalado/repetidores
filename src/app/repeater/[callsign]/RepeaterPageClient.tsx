@@ -18,13 +18,15 @@ import {
 import { useUserLocation } from "@/contexts/UserLocationContext";
 import { useDeviceCompass } from "@/hooks/useDeviceCompass";
 import { cn } from "@/lib/utils";
-import { getVoteStats, postVote, type VoteStats } from "@/lib/votes";
+import { getVoteStats, postVote, getFeedbackList, type VoteStats, type FeedbackEntry } from "@/lib/votes";
 import { toggleFavorite, isFavorite } from "@/lib/favorites";
 import {
   ArrowLeft,
   Building2,
   Check,
+  ChevronDown,
   ChevronRight,
+  ChevronUp,
   Clipboard,
   Compass,
   Copy,
@@ -515,6 +517,9 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
 
       {/* Community Voting Section */}
       <VoteSection repeaterId={r.callsign} />
+
+      {/* Community Feedback Section */}
+      <CommunityFeedbackSection repeaterId={r.callsign} />
     </div>
   );
 }
@@ -931,6 +936,185 @@ function ProgramField({
         {copied && (
           <Check className="h-3 w-3 text-emerald-600 ml-1" />
         )}
+      </div>
+    </div>
+  );
+}
+
+// --- Community Feedback Section ---
+const INITIAL_DISPLAY_COUNT = 5;
+
+function formatRelativeTime(isoTimestamp: string): string {
+  const date = new Date(isoTimestamp);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffMins < 1) return "agora mesmo";
+  if (diffMins < 60) return `há ${diffMins} minuto${diffMins !== 1 ? "s" : ""}`;
+  if (diffHours < 24) return `há ${diffHours} hora${diffHours !== 1 ? "s" : ""}`;
+  if (diffDays < 30) return `há ${diffDays} dia${diffDays !== 1 ? "s" : ""}`;
+
+  return date.toLocaleDateString("pt-PT", { day: "numeric", month: "short" });
+}
+
+function CommunityFeedbackSection({ repeaterId }: { repeaterId: string }) {
+  const t = useTranslations("communityStatus");
+  const [feedbackList, setFeedbackList] = React.useState<FeedbackEntry[]>([]);
+  const [totalCount, setTotalCount] = React.useState(0);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [isExpanded, setIsExpanded] = React.useState(false);
+
+  React.useEffect(() => {
+    let alive = true;
+    setIsLoading(true);
+    getFeedbackList(repeaterId, { limit: 50 })
+      .then((res) => {
+        if (alive) {
+          setFeedbackList(res.docs);
+          setTotalCount(res.totalDocs);
+        }
+      })
+      .finally(() => {
+        if (alive) setIsLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [repeaterId]);
+
+  const displayedFeedback = isExpanded
+    ? feedbackList
+    : feedbackList.slice(0, INITIAL_DISPLAY_COUNT);
+  const hiddenCount = feedbackList.length - INITIAL_DISPLAY_COUNT;
+  const hasMore = feedbackList.length > INITIAL_DISPLAY_COUNT;
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <MessageSquare className="h-5 w-5" />
+            {t("feedbackSection.title")}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3 animate-pulse">
+          <div className="h-16 rounded-lg bg-muted" />
+          <div className="h-16 rounded-lg bg-muted" />
+          <div className="h-16 rounded-lg bg-muted" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (feedbackList.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <MessageSquare className="h-5 w-5" />
+            {t("feedbackSection.title")}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-center text-sm text-muted-foreground">
+            {t("feedbackSection.noFeedback")}
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <MessageSquare className="h-5 w-5" />
+          {t("feedbackSection.title")}
+          <Badge variant="secondary" className="ml-auto text-xs">
+            {totalCount}
+          </Badge>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-0">
+        {/* Feedback List */}
+        <div className="divide-y">
+          {displayedFeedback.map((entry) => (
+            <FeedbackEntryItem key={entry.id} entry={entry} />
+          ))}
+        </div>
+
+        {/* Show More/Less Button */}
+        {hasMore && (
+          <div className="border-t p-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full text-muted-foreground hover:text-foreground"
+              onClick={() => setIsExpanded(!isExpanded)}
+            >
+              {isExpanded ? (
+                <>
+                  <ChevronUp className="h-4 w-4 mr-1" />
+                  {t("feedbackSection.showLess")}
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="h-4 w-4 mr-1" />
+                  {t("feedbackSection.showMore", { count: hiddenCount })}
+                </>
+              )}
+            </Button>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function FeedbackEntryItem({ entry }: { entry: FeedbackEntry }) {
+  const t = useTranslations("communityStatus");
+
+  return (
+    <div className="px-4 py-3">
+      <div className="flex items-start gap-3">
+        {/* Vote indicator */}
+        <div
+          className={cn(
+            "rounded-full p-1.5 shrink-0",
+            entry.vote === "up"
+              ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400"
+              : "bg-red-100 text-red-600 dark:bg-red-950/50 dark:text-red-400"
+          )}
+        >
+          {entry.vote === "up" ? (
+            <ThumbsUp className="h-3.5 w-3.5" />
+          ) : (
+            <ThumbsDown className="h-3.5 w-3.5" />
+          )}
+        </div>
+
+        <div className="flex-1 min-w-0">
+          {/* Reporter and time */}
+          <div className="flex items-center gap-2 text-xs">
+            <span className="font-medium text-foreground">
+              {entry.reporterCallsign || t("feedbackSection.anonymous")}
+            </span>
+            <span className="text-muted-foreground">·</span>
+            <span className="text-muted-foreground">
+              {formatRelativeTime(entry.createdAt)}
+            </span>
+          </div>
+
+          {/* Feedback text */}
+          <p className="text-sm text-muted-foreground mt-1">
+            {entry.feedback || (
+              <span className="italic">{t("feedbackSection.noComment")}</span>
+            )}
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -635,12 +635,13 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
 
   function handleSubmitFeedback() {
     const callsign = reporterCallsign.trim() || undefined;
-    const v: LocalVote = { vote: vote?.vote ?? "up", ts: Date.now(), feedback: feedback.trim() || undefined, reporterCallsign: callsign };
+    // Always use "down" vote since this dialog is for reporting issues
+    const v: LocalVote = { vote: "down", ts: Date.now(), feedback: feedback.trim() || undefined, reporterCallsign: callsign };
     setVote(v);
     saveLocalVote(repeaterId, v);
     if (callsign) saveUserCallsign(callsign);
     setSubmitting(true);
-    postVote({ repeaterId, vote: v.vote, feedback: v.feedback, reporterCallsign: callsign })
+    postVote({ repeaterId, vote: "down", feedback: v.feedback, reporterCallsign: callsign })
       .then((s) => setStats(s))
       .finally(() => setSubmitting(false));
     setOpen(false);
@@ -706,35 +707,25 @@ function VoteSection({ repeaterId }: { repeaterId: string }) {
                 <TooltipContent>{t("reportWorking")}</TooltipContent>
               </Tooltip>
 
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant={vote?.vote === "down" ? "default" : "outline"}
-                    size="sm"
-                    className={cn(
-                      "flex-1 gap-2 transition-all",
-                      vote?.vote === "down" && "bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
-                    )}
-                    onClick={() => handleVote("down")}
-                    disabled={submitting}
-                  >
-                    <ThumbsDown className="h-4 w-4" />
-                    <span>{t("issuesButton")}</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>{t("reportIssues")}</TooltipContent>
-              </Tooltip>
-
               <Dialog open={open} onOpenChange={setOpen}>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <DialogTrigger asChild>
-                      <Button variant="ghost" size="sm" className="gap-1.5 px-3">
-                        <MessageSquare className="h-4 w-4" />
+                      <Button
+                        variant={vote?.vote === "down" ? "default" : "outline"}
+                        size="sm"
+                        className={cn(
+                          "flex-1 gap-2 transition-all",
+                          vote?.vote === "down" && "bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
+                        )}
+                        disabled={submitting}
+                      >
+                        <ThumbsDown className="h-4 w-4" />
+                        <span>{t("issuesButton")}</span>
                       </Button>
                     </DialogTrigger>
                   </TooltipTrigger>
-                  <TooltipContent>{t("addFeedback")}</TooltipContent>
+                  <TooltipContent>{t("reportIssues")}</TooltipContent>
                 </Tooltip>
                 <DialogContent>
                   <DialogHeader>
