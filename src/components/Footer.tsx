@@ -14,6 +14,8 @@ interface FooterProps {
 }
 
 const API_URL = process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL || 'https://api.radioamador.info';
+const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION || '0.0.0';
+const GIT_HASH = process.env.NEXT_PUBLIC_GIT_HASH || 'dev';
 
 export default function Footer({ className }: FooterProps) {
   const t = useTranslations('footer');
@@ -26,6 +28,9 @@ export default function Footer({ className }: FooterProps) {
             <RadioTowerIcon className="h-5 w-5" />
             <span className="text-sm font-medium">
               © {new Date().getFullYear()} {t('copyright')}
+            </span>
+            <span className="text-xs text-slate-400 dark:text-slate-500">
+              v{APP_VERSION} ({GIT_HASH})
             </span>
           </div>
 
