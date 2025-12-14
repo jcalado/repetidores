@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Calculator, Gauge, Cable, Waves, Zap, MapPin } from "lucide-react";
+import { Calculator, Gauge, Cable, Waves, Zap, MapPin, Eye } from "lucide-react";
 
 const calculators = [
   {
@@ -41,6 +41,12 @@ const calculators = [
     href: "/calculadoras/distance",
     icon: MapPin,
     gradient: "from-teal-500 to-emerald-600",
+  },
+  {
+    id: "los",
+    href: "/calculadoras/los",
+    icon: Eye,
+    gradient: "from-cyan-500 to-blue-600",
   },
 ];
 
