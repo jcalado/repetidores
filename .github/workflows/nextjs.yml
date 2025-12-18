@@ -48,6 +48,8 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/bun.lockb') }}-
       - name: Install dependencies
         run: bun install --frozen-lockfile
+      - name: Clear fetch cache
+        run: rm -rf .next/cache/fetch-cache
       - name: Build with Next.js
         run: bun run build
         env:

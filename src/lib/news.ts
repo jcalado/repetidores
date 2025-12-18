@@ -68,7 +68,7 @@ export async function fetchNews(options: FetchNewsOptions = {}): Promise<NewsLis
   const response = await fetch(`${getApiBaseUrl()}/api/news/list?${params}`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
-    next: { revalidate: 3600 }, // ISR cache for 1 hour
+    next: { revalidate: 3600 },
   })
 
   if (!response.ok) {
@@ -82,7 +82,7 @@ export async function fetchFeaturedNews(): Promise<FeaturedNewsResponse> {
   const response = await fetch(`${getApiBaseUrl()}/api/news/featured`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
-    next: { revalidate: 3600 }, // ISR cache for 1 hour
+    next: { revalidate: 3600 },
   })
 
   if (!response.ok) {
@@ -103,7 +103,7 @@ export async function fetchNewsBySlug(slug: string): Promise<NewsItem | null> {
   const response = await fetch(`${getApiBaseUrl()}/api/news?${params}`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
-    next: { revalidate: 3600 }, // ISR cache for 1 hour
+    next: { revalidate: 3600 },
   })
 
   if (!response.ok) {
