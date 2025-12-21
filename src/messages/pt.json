@@ -537,6 +537,20 @@
     "about": {
         "title": "Sobre o Radioamador.info",
         "subtitle": "Ferramentas e informação para radioamadores.",
+        "highlights": {
+            "directory": {
+                "title": "Diretório vivo",
+                "description": "Repetidores atualizados e pesquisáveis por banda, indicativo e localização."
+            },
+            "tools": {
+                "title": "Ferramentas rápidas",
+                "description": "Mapas, filtros e utilitários que simplificam o planeamento e a operação."
+            },
+            "community": {
+                "title": "Feito para a comunidade",
+                "description": "Projeto aberto, mantido por radioamadores e focado na partilha de conhecimento."
+            }
+        },
         "project": {
             "title": "O que é este projeto?",
             "description": "Este projeto é uma ferramenta para descobrir ferramentas e recursos úteis para radioamadores em Portugal. Inclui um diretório de repetidores, eventos, notícias e várias ferramentas online para auxiliar na prática do radioamadorismo."
@@ -547,7 +561,22 @@
             "table": "Visualização de repetidores em tabela com filtros avançados",
             "map": "Mapa interativo com localização geográfica",
             "responsive": "Interface responsiva otimizada para desktop e mobile",
-            "filters": "Filtros por indicativo, proprietário, banda e modulação"
+            "filters": "Filtros por indicativo, proprietário, banda e modulação",
+            "events": "Calendário de eventos, contests e nets",
+            "news": "Notícias e anúncios de radioamadorismo",
+            "associations": "Diretório de associações e clubes",
+            "calculators": "Calculadoras RF: dB, SWR, perdas em cabos",
+            "propagation": "Condições de propagação em tempo real",
+            "satellites": "Passagens da ISS e satélites",
+            "qth": "Calculadora de localizador QTH Maidenhead",
+            "nato": "Alfabeto fonético NATO",
+            "utc": "Relógio UTC para logging",
+            "morse": "Treinador de código Morse/CW",
+            "antenna": "Calculadora de antenas",
+            "qcodes": "Referência de códigos Q",
+            "los": "Calculadora de linha de vista",
+            "nearest": "Encontrar repetidor mais próximo",
+            "voting": "Sistema de votação comunitária"
         },
         "hamRadio": {
             "title": "Sobre ser Radioamador",
@@ -556,7 +585,13 @@
         },
         "contact": {
             "title": "Contacto",
-            "description": "Este projeto é mantido por CS7BLE, Joel Calado. Para sugestões, correções ou colaborações, visite o repositório no GitHub."
+            "description": "Este projeto é mantido por CS7BLE, Joel Calado. Sugestões e correções são bem-vindas.",
+            "githubTitle": "Contribuir no GitHub",
+            "githubDescription": "Partilhe sugestões, correções ou melhorias diretamente no repositório.",
+            "githubAction": "Abrir repositório",
+            "emailTitle": "Contacto por email",
+            "emailDescription": "Para contactos gerais ou pedidos específicos, pode enviar um email para",
+            "emailAction": "Enviar email"
         },
         "radioSchool": {
             "title": "Interessado em ser Radioamador?",
