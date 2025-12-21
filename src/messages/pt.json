@@ -475,7 +475,9 @@
             "cancel": "Cancelar",
             "submit": "Submeter",
             "submitting": "A submeter...",
-            "successMessage": "Evento submetido com sucesso! Será visível após revisão."
+            "successMessage": "Evento submetido com sucesso! Será visível após revisão.",
+            "national": "Nacional",
+            "international": "Internacional"
         },
         "dmr": {
             "listen": "Ouvir no Brandmeister",
