@@ -7,6 +7,7 @@ import { Repeater } from '@/app/columns';
 import { calculateDistance, formatDistance } from '@/lib/geolocation';
 import { useDeviceCompass } from '@/hooks/useDeviceCompass';
 import { useUserLocation } from '@/contexts/UserLocationContext';
+import { PageHeader, PageHeaderIcon } from '@/components/ui/PageHeader';
 import { cn } from '@/lib/utils';
 import {
   MapPin,
@@ -113,78 +114,58 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-ship-cove-600 via-ship-cove-700 to-ship-cove-800 dark:from-ship-cove-800 dark:via-ship-cove-900 dark:to-ship-cove-950 p-4 sm:p-6 shadow-lg shadow-ship-cove-500/20">
-        {/* Grid pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id="grid-nearest" width="24" height="24" patternUnits="userSpaceOnUse">
-                <path d="M 24 0 L 0 0 0 24" fill="none" stroke="currentColor" strokeWidth="0.5"/>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid-nearest)" className="text-white" />
-          </svg>
-        </div>
-
-        {/* Decorative blur */}
-        <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-ship-cove-500/20 blur-2xl" />
-        <div className="absolute -left-4 -bottom-4 w-24 h-24 rounded-full bg-emerald-500/10 blur-xl" />
-
-        <div className="relative">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm">
-                  <Crosshair className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                    {t('title')}
-                  </h1>
-                  <p className="text-sm text-ship-cove-200">
-                    {t('description')}
-                  </p>
-                </div>
+      <PageHeader compact noMargin className="relative">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-3 mb-2">
+              <PageHeaderIcon icon={<Crosshair />} size="sm" />
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                  {t('title')}
+                </h1>
+                <p className="text-sm text-ship-cove-200">
+                  {t('description')}
+                </p>
               </div>
-            </div>
-
-            {/* Action buttons */}
-            <div className="flex items-center gap-2 flex-shrink-0">
-              {compass.isSupported && userLocation && (
-                <button
-                  onClick={() => compass.toggle()}
-                  className={cn(
-                    'flex h-9 sm:h-10 items-center gap-2 px-3 sm:px-4 rounded-lg transition-all text-sm font-medium',
-                    compass.isEnabled
-                      ? 'bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-400/50'
-                      : 'bg-white/10 text-white hover:bg-white/20'
-                  )}
-                >
-                  <Compass className={cn('h-4 w-4', compass.isEnabled && 'animate-pulse')} />
-                  <span className="hidden sm:inline">
-                    {compass.isEnabled ? tCompass('disable') : tCompass('enable')}
-                  </span>
-                </button>
-              )}
-              <button
-                onClick={() => requestLocation(true)}
-                disabled={isLocating}
-                className="flex h-9 sm:h-10 items-center gap-2 px-3 sm:px-4 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors text-sm font-medium disabled:opacity-50"
-              >
-                {isLocating ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <RefreshCw className="h-4 w-4" />
-                )}
-                <span className="hidden sm:inline">{t('refreshLocation')}</span>
-              </button>
             </div>
           </div>
 
-          {/* Status LED */}
-          <div className="absolute top-2 right-2 h-2 w-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50 animate-pulse" />
+          {/* Action buttons */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {compass.isSupported && userLocation && (
+              <button
+                onClick={() => compass.toggle()}
+                className={cn(
+                  'flex h-9 sm:h-10 items-center gap-2 px-3 sm:px-4 rounded-lg transition-all text-sm font-medium',
+                  compass.isEnabled
+                    ? 'bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-400/50'
+                    : 'bg-white/10 text-white hover:bg-white/20'
+                )}
+              >
+                <Compass className={cn('h-4 w-4', compass.isEnabled && 'animate-pulse')} />
+                <span className="hidden sm:inline">
+                  {compass.isEnabled ? tCompass('disable') : tCompass('enable')}
+                </span>
+              </button>
+            )}
+            <button
+              onClick={() => requestLocation(true)}
+              disabled={isLocating}
+              className="flex h-9 sm:h-10 items-center gap-2 px-3 sm:px-4 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors text-sm font-medium disabled:opacity-50"
+            >
+              {isLocating ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
+              <span className="hidden sm:inline">{t('refreshLocation')}</span>
+            </button>
+          </div>
         </div>
-      </div>
+
+        {/* Status LED */}
+        <div className="absolute top-4 right-4 h-2 w-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50 animate-pulse" />
+      </PageHeader>
 
       {/* Location Status Panel */}
       {userLocation && (

@@ -6,6 +6,7 @@ import {
   fetchAssociationBySlug,
   fetchAllAssociationSlugs,
 } from "@/lib/associations"
+import { PageHeader, PageHeaderIcon } from "@/components/ui/PageHeader"
 import {
   ArrowLeft,
   Building2,
@@ -259,45 +260,13 @@ async function AssociationContent({
       </Link>
 
       {/* Hero Header */}
-      <header className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-ship-cove-600 via-ship-cove-700 to-ship-cove-800 dark:from-ship-cove-800 dark:via-ship-cove-900 dark:to-ship-cove-950 p-8 mb-8 shadow-xl shadow-ship-cove-500/20">
-        {/* Background pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern
-                id="grid-detail"
-                width="32"
-                height="32"
-                patternUnits="userSpaceOnUse"
-              >
-                <path
-                  d="M 32 0 L 0 0 0 32"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1"
-                />
-              </pattern>
-            </defs>
-            <rect
-              width="100%"
-              height="100%"
-              fill="url(#grid-detail)"
-              className="text-white"
-            />
-          </svg>
-        </div>
-
-        {/* Decorative elements */}
-        <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-ship-cove-500/20 blur-2xl" />
-        <div className="absolute -left-4 -bottom-4 w-24 h-24 rounded-full bg-ship-cove-400/20 blur-xl" />
-
-        {/* Floating icons */}
-        <div className="absolute right-8 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-4 opacity-20">
-          <Radio className="h-12 w-12 text-white" />
-          <Antenna className="h-10 w-10 text-white" />
-        </div>
-
-        <div className="relative flex flex-col sm:flex-row items-start gap-6">
+      <PageHeader
+        floatingIcons={[
+          <Radio key="radio" className="h-12 w-12 text-white" />,
+          <Antenna key="antenna" className="h-10 w-10 text-white" />,
+        ]}
+      >
+        <div className="flex flex-col sm:flex-row items-start gap-6">
           {/* Logo */}
           <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm ring-1 ring-white/20 overflow-hidden">
             {logoUrl ? (
@@ -365,7 +334,7 @@ async function AssociationContent({
             </div>
           </div>
         </div>
-      </header>
+      </PageHeader>
 
       {/* Content Grid */}
       <div className="grid gap-6 lg:grid-cols-3">

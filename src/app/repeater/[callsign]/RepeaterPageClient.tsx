@@ -3,6 +3,7 @@
 import { Repeater } from "@/app/columns";
 import BearingCompass from "@/components/BearingCompass";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { useUserLocation } from "@/contexts/UserLocationContext";
 import { useDeviceCompass } from "@/hooks/useDeviceCompass";
 import { cn } from "@/lib/utils";
@@ -129,118 +130,100 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
       </Link>
 
       {/* Hero Header */}
-      <header className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-ship-cove-600 via-ship-cove-700 to-ship-cove-800 dark:from-ship-cove-800 dark:via-ship-cove-900 dark:to-ship-cove-950 p-6 sm:p-8 shadow-xl shadow-ship-cove-500/20">
-        {/* Background pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id="grid-repeater" width="32" height="32" patternUnits="userSpaceOnUse">
-                <path d="M 32 0 L 0 0 0 32" fill="none" stroke="currentColor" strokeWidth="1"/>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid-repeater)" className="text-white" />
-          </svg>
-        </div>
-
-        {/* Decorative elements */}
-        <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-ship-cove-500/20 blur-2xl" />
-        <div className="absolute -left-4 -bottom-4 w-24 h-24 rounded-full bg-ship-cove-400/20 blur-xl" />
-
-        {/* Floating icons */}
-        <div className="absolute right-6 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-4 opacity-20">
-          <Radio className="h-12 w-12 text-white" />
-          <Antenna className="h-10 w-10 text-white" />
-        </div>
-
-        <div className="relative">
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-            <div>
-              {/* Callsign and favorite */}
-              <div className="flex items-center gap-3 mb-3">
-                <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight font-mono">
-                  {r.callsign}
-                </h1>
-                <button
-                  onClick={handleFavoriteToggle}
-                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-                  aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
-                >
-                  <Heart
-                    className={cn(
-                      "h-5 w-5 transition-colors",
-                      favorite ? "fill-red-400 text-red-400" : "text-white/70 hover:text-red-300"
-                    )}
-                  />
-                </button>
-              </div>
-
-              {/* Badges */}
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="px-3 py-1 rounded-md bg-white/10 text-white text-sm font-medium backdrop-blur-sm">
-                  {band}
-                </span>
-                {r.modulation && (
-                  <span className="px-3 py-1 rounded-md bg-ship-cove-500/30 text-ship-cove-100 text-sm font-medium">
-                    {r.modulation.toUpperCase()}
-                  </span>
-                )}
-                {r.qth_locator && (
-                  <span className="px-3 py-1 rounded-md bg-white/10 text-white text-sm font-mono backdrop-blur-sm">
-                    {r.qth_locator}
-                  </span>
-                )}
-                {r.dmr && (
-                  <span className="px-3 py-1 rounded-md bg-purple-500/30 text-purple-100 text-sm font-medium">
-                    DMR
-                  </span>
-                )}
-                {r.dstar && (
-                  <span className="px-3 py-1 rounded-md bg-blue-500/30 text-blue-100 text-sm font-medium">
-                    D-STAR
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Action buttons */}
-            <div className="flex items-center gap-2">
-              <ShareButton callsign={r.callsign} />
-              <a
-                href={mapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-ship-cove-900 font-medium text-sm hover:bg-ship-cove-50 transition-colors"
+      <PageHeader
+        noMargin
+        floatingIcons={[
+          <Radio key="radio" className="h-12 w-12 text-white" />,
+          <Antenna key="antenna" className="h-10 w-10 text-white" />,
+        ]}
+      >
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          <div>
+            {/* Callsign and favorite */}
+            <div className="flex items-center gap-3 mb-3">
+              <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight font-mono">
+                {r.callsign}
+              </h1>
+              <button
+                onClick={handleFavoriteToggle}
+                className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
               >
-                <MapPin className="h-4 w-4" />
-                {t("maps")}
-              </a>
+                <Heart
+                  className={cn(
+                    "h-5 w-5 transition-colors",
+                    favorite ? "fill-red-400 text-red-400" : "text-white/70 hover:text-red-300"
+                  )}
+                />
+              </button>
             </div>
-          </div>
 
-          {/* Status badge in header */}
-          {statusConfig && r.status !== "unknown" && (
-            <div className={cn(
-              "mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium",
-              r.status === "active" && "bg-emerald-500/20 text-emerald-100",
-              r.status === "maintenance" && "bg-amber-500/20 text-amber-100",
-              r.status === "offline" && "bg-red-500/20 text-red-100"
-            )}>
-              <div className={cn(
-                "h-2 w-2 rounded-full",
-                r.status === "active" && "bg-emerald-400 animate-pulse",
-                r.status === "maintenance" && "bg-amber-400",
-                r.status === "offline" && "bg-red-400"
-              )} />
-              {statusConfig.label}
-              {r.lastVerified && (
-                <span className="text-white/60 text-xs">
-                  · Verificado {new Date(r.lastVerified).toLocaleDateString("pt-PT")}
+            {/* Badges */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-3 py-1 rounded-md bg-white/10 text-white text-sm font-medium backdrop-blur-sm">
+                {band}
+              </span>
+              {r.modulation && (
+                <span className="px-3 py-1 rounded-md bg-ship-cove-500/30 text-ship-cove-100 text-sm font-medium">
+                  {r.modulation.toUpperCase()}
+                </span>
+              )}
+              {r.qth_locator && (
+                <span className="px-3 py-1 rounded-md bg-white/10 text-white text-sm font-mono backdrop-blur-sm">
+                  {r.qth_locator}
+                </span>
+              )}
+              {r.dmr && (
+                <span className="px-3 py-1 rounded-md bg-purple-500/30 text-purple-100 text-sm font-medium">
+                  DMR
+                </span>
+              )}
+              {r.dstar && (
+                <span className="px-3 py-1 rounded-md bg-blue-500/30 text-blue-100 text-sm font-medium">
+                  D-STAR
                 </span>
               )}
             </div>
-          )}
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex items-center gap-2">
+            <ShareButton callsign={r.callsign} />
+            <a
+              href={mapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-ship-cove-900 font-medium text-sm hover:bg-ship-cove-50 transition-colors"
+            >
+              <MapPin className="h-4 w-4" />
+              {t("maps")}
+            </a>
+          </div>
         </div>
-      </header>
+
+        {/* Status badge in header */}
+        {statusConfig && r.status !== "unknown" && (
+          <div className={cn(
+            "mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium",
+            r.status === "active" && "bg-emerald-500/20 text-emerald-100",
+            r.status === "maintenance" && "bg-amber-500/20 text-amber-100",
+            r.status === "offline" && "bg-red-500/20 text-red-100"
+          )}>
+            <div className={cn(
+              "h-2 w-2 rounded-full",
+              r.status === "active" && "bg-emerald-400 animate-pulse",
+              r.status === "maintenance" && "bg-amber-400",
+              r.status === "offline" && "bg-red-400"
+            )} />
+            {statusConfig.label}
+            {r.lastVerified && (
+              <span className="text-white/60 text-xs">
+                · Verificado {new Date(r.lastVerified).toLocaleDateString("pt-PT")}
+              </span>
+            )}
+          </div>
+        )}
+      </PageHeader>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

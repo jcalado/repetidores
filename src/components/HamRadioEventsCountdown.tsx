@@ -21,6 +21,7 @@ import {
   Trophy,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { StandardPageHeader } from "@/components/ui/PageHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslations } from "next-intl";
 import { fetchEvents } from "@/lib/events";
@@ -330,61 +331,28 @@ export default function HamRadioEventsCountdown({
     <TickProvider interval={1000}>
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-6">
         {/* Hero Header - Radio Station Dashboard style */}
-        <header className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-ship-cove-600 via-ship-cove-700 to-ship-cove-800 dark:from-ship-cove-800 dark:via-ship-cove-900 dark:to-ship-cove-950 p-8 mb-8 shadow-xl shadow-ship-cove-500/20">
-          {/* Background pattern */}
-          <div className="absolute inset-0 opacity-10">
-            <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <pattern id="grid-events" width="32" height="32" patternUnits="userSpaceOnUse">
-                  <path d="M 32 0 L 0 0 0 32" fill="none" stroke="currentColor" strokeWidth="1"/>
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#grid-events)" className="text-white" />
-            </svg>
-          </div>
-
-          {/* Decorative elements */}
-          <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-ship-cove-500/20 blur-2xl" />
-          <div className="absolute -left-4 -bottom-4 w-24 h-24 rounded-full bg-ship-cove-400/20 blur-xl" />
-
-          {/* Floating icons */}
-          <div className="absolute right-8 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-4 opacity-20">
-            <Trophy className="h-12 w-12 text-white" />
-            <Radio className="h-10 w-10 text-white" />
-          </div>
-
-          <div className="relative">
-            {/* Icon and title */}
-            <div className="flex items-center gap-4 mb-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm ring-1 ring-white/20">
-                <CalendarDays className="h-7 w-7 text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
-                  {t("title") || "Eventos"}
-                </h1>
-              </div>
-            </div>
-
-            <p className="text-ship-cove-100 text-lg max-w-2xl mb-6">
-              {t("description") || "Calendário de eventos, contests e nets de radioamadorismo"}
-            </p>
-
-            {/* Stats row */}
-            <div className="flex flex-wrap gap-4">
-              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm text-white">
-                <CalendarDays className="h-4 w-4" />
-                <span className="font-mono font-bold tabular-nums">{totalEvents}</span>
-                <span className="text-ship-cove-200 text-sm">{t("totalEvents") || "eventos"}</span>
-              </div>
-              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500/20 backdrop-blur-sm text-emerald-100">
-                <Trophy className="h-4 w-4" />
-                <span className="font-mono font-bold tabular-nums">{upcomingCount}</span>
-                <span className="text-emerald-200/80 text-sm">{t("upcoming") || "próximos"}</span>
-              </div>
-            </div>
-          </div>
-        </header>
+        <StandardPageHeader
+          icon={<CalendarDays className="h-7 w-7" />}
+          title={t("title") || "Eventos"}
+          description={t("description") || "Calendário de eventos, contests e nets de radioamadorismo"}
+          stats={[
+            {
+              icon: <CalendarDays className="h-4 w-4" />,
+              value: totalEvents,
+              label: t("totalEvents") || "eventos",
+            },
+            {
+              icon: <Trophy className="h-4 w-4" />,
+              value: upcomingCount,
+              label: t("upcoming") || "próximos",
+              variant: "success",
+            },
+          ]}
+          floatingIcons={[
+            <Trophy key="trophy" className="h-12 w-12 text-white" />,
+            <Radio key="radio" className="h-10 w-10 text-white" />,
+          ]}
+        />
 
         {/* Filter Section */}
         <EventFilters
