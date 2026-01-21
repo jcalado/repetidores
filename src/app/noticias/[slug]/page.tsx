@@ -1,5 +1,5 @@
 import { fetchAllNewsSlugs, fetchNewsBySlug } from "@/lib/news"
-import { ArrowLeft, Calendar, ExternalLink, Newspaper, Star, User } from "lucide-react"
+import { ArrowLeft, Calendar, ExternalLink, Star, User } from "lucide-react"
 import { getTranslations } from "next-intl/server"
 import Image from "next/image"
 import Link from "next/link"
@@ -123,133 +123,125 @@ export default async function NewsDetailPage({ params }: PageProps) {
   const jsonLd = generateNewsJsonLd(news)
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-ship-cove-50/50 via-background to-background dark:from-ship-cove-950/30 dark:via-background dark:to-background">
+    <div className="min-h-screen bg-white dark:bg-ship-cove-950">
       {jsonLd && (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      <div className="container mx-auto px-4 py-6 sm:py-8 max-w-4xl">
+
+      <div className="container mx-auto px-4 py-8 sm:py-12">
         {/* Back Link */}
         <Link
           href="/noticias"
-          className="inline-flex items-center gap-2 text-ship-cove-600 dark:text-ship-cove-400 hover:text-ship-cove-800 dark:hover:text-ship-cove-200 mb-6 transition-colors text-sm font-medium"
+          className="inline-flex items-center gap-2 text-ship-cove-500 hover:text-ship-cove-700 dark:text-ship-cove-400 dark:hover:text-ship-cove-200 mb-8 transition-colors text-sm font-medium"
         >
           <ArrowLeft className="h-4 w-4" />
           {t("backToNews")}
         </Link>
 
-        <article>
-          {/* Hero Header */}
-          <header className="relative overflow-hidden rounded-xl bg-gradient-to-br from-ship-cove-600 via-ship-cove-700 to-ship-cove-800 dark:from-ship-cove-800 dark:via-ship-cove-900 dark:to-ship-cove-950 p-4 sm:p-6 mb-6 shadow-lg shadow-ship-cove-500/20">
-            {/* Grid pattern */}
-            <div className="absolute inset-0 opacity-10">
-              <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <pattern id="grid-news-detail" width="24" height="24" patternUnits="userSpaceOnUse">
-                    <path d="M 24 0 L 0 0 0 24" fill="none" stroke="currentColor" strokeWidth="0.5"/>
-                  </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#grid-news-detail)" className="text-white" />
-              </svg>
-            </div>
-
-            {/* Decorative blur */}
-            <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-ship-cove-500/20 blur-2xl" />
-
-            <div className="relative">
-              {/* Badges */}
-              <div className="flex items-center gap-2 mb-3">
-                {categoryLabel && (
-                  <span className="px-2.5 py-1 rounded-lg bg-white/10 backdrop-blur-sm text-white text-xs font-medium">
-                    {categoryLabel}
-                  </span>
-                )}
-                {news.featured && (
-                  <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/80 backdrop-blur-sm text-white text-xs font-medium">
-                    <Star className="h-3 w-3" />
+        <article className="max-w-3xl mx-auto">
+          {/* Header */}
+          <header className="mb-8">
+            {/* Meta line */}
+            <div className="flex items-center gap-3 text-sm mb-4">
+              {categoryLabel && (
+                <span className="font-semibold text-ship-cove-600 dark:text-ship-cove-400 uppercase tracking-wide text-xs">
+                  {categoryLabel}
+                </span>
+              )}
+              {categoryLabel && <span className="text-ship-cove-300 dark:text-ship-cove-600">•</span>}
+              <time className="text-ship-cove-500 dark:text-ship-cove-400">
+                {formattedDate}
+              </time>
+              {news.featured && (
+                <>
+                  <span className="text-ship-cove-300 dark:text-ship-cove-600">•</span>
+                  <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-medium">
+                    <Star className="h-3.5 w-3.5" />
                     {t("featured")}
                   </span>
-                )}
-              </div>
-
-              {/* Title */}
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-4 leading-tight">
-                {news.title}
-              </h1>
-
-              {/* Meta */}
-              <div className="flex flex-wrap items-center gap-4 text-ship-cove-200 text-sm">
-                <span className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  {formattedDate}
-                </span>
-                {news.author && (
-                  <span className="flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    {news.author}
-                  </span>
-                )}
-              </div>
-
-              {/* Status LED */}
-              <div className="absolute top-2 right-2 h-2 w-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50 animate-pulse" />
+                </>
+              )}
             </div>
+
+            {/* Title */}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-ship-cove-900 dark:text-ship-cove-50 leading-tight tracking-tight mb-6">
+              {news.title}
+            </h1>
+
+            {/* Author */}
+            {news.author && (
+              <p className="text-base text-ship-cove-600 dark:text-ship-cove-400">
+                Por <span className="font-semibold text-ship-cove-800 dark:text-ship-cove-200">{news.author}</span>
+              </p>
+            )}
           </header>
 
           {/* Featured Image */}
           {imageUrl && (
-            <div className="relative aspect-video w-full mb-6 rounded-xl overflow-hidden shadow-lg">
-              <Image
-                src={imageUrl}
-                alt={news.featuredImage?.alt || news.title}
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
+            <figure className="mb-10">
+              <div className="relative aspect-[16/9] rounded-2xl overflow-hidden">
+                <Image
+                  src={imageUrl}
+                  alt={news.featuredImage?.alt || news.title}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              {news.featuredImage?.alt && (
+                <figcaption className="mt-3 text-sm text-ship-cove-500 dark:text-ship-cove-400 text-center italic">
+                  {news.featuredImage.alt}
+                </figcaption>
+              )}
+            </figure>
           )}
 
-          {/* Content Card */}
-          <div className="relative overflow-hidden rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-gradient-to-br from-white via-white to-ship-cove-50/50 dark:from-ship-cove-950 dark:via-ship-cove-950 dark:to-ship-cove-900/30 shadow-sm mb-6">
-            <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-ship-cove-500 to-transparent opacity-60" />
+          {/* Lead / Excerpt */}
+          <p className="text-xl sm:text-2xl text-ship-cove-700 dark:text-ship-cove-300 leading-relaxed mb-8 font-serif italic">
+            {news.excerpt}
+          </p>
 
-            <div className="p-4 sm:p-6">
-              {/* Excerpt as lead */}
-              <p className="text-lg text-ship-cove-600 dark:text-ship-cove-400 mb-6 pb-6 border-b border-ship-cove-200 dark:border-ship-cove-800/50 leading-relaxed">
-                {news.excerpt}
-              </p>
+          {/* Divider */}
+          <div className="h-px bg-ship-cove-200 dark:bg-ship-cove-800 mb-8" />
 
-              {/* Rich Text Content */}
-              <div className="prose prose-ship-cove dark:prose-invert max-w-none prose-headings:text-ship-cove-900 dark:prose-headings:text-ship-cove-100 prose-p:text-ship-cove-700 dark:prose-p:text-ship-cove-300 prose-a:text-ship-cove-600 dark:prose-a:text-ship-cove-400 prose-strong:text-ship-cove-900 dark:prose-strong:text-ship-cove-100">
-                <RichTextContent content={news.content} />
-              </div>
-            </div>
-
-            {/* Corner LED */}
-            <div className="absolute top-3 right-3 h-1.5 w-1.5 rounded-full bg-emerald-500/80 shadow-sm shadow-emerald-500/50 animate-pulse" />
+          {/* Content */}
+          <div className="prose prose-lg prose-ship-cove dark:prose-invert max-w-none
+            prose-headings:font-bold prose-headings:tracking-tight
+            prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
+            prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
+            prose-p:text-ship-cove-700 prose-p:dark:text-ship-cove-300 prose-p:leading-relaxed
+            prose-a:text-ship-cove-600 prose-a:dark:text-ship-cove-400 prose-a:underline prose-a:underline-offset-2
+            prose-strong:text-ship-cove-900 prose-strong:dark:text-ship-cove-100
+            prose-blockquote:border-l-ship-cove-300 prose-blockquote:dark:border-l-ship-cove-700 prose-blockquote:italic prose-blockquote:text-ship-cove-600 prose-blockquote:dark:text-ship-cove-400
+            prose-ul:text-ship-cove-700 prose-ul:dark:text-ship-cove-300
+            prose-ol:text-ship-cove-700 prose-ol:dark:text-ship-cove-300
+            prose-li:marker:text-ship-cove-400
+          ">
+            <RichTextContent content={news.content} />
           </div>
 
           {/* External Link */}
           {news.externalLink && (
-            <div className="relative overflow-hidden rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-gradient-to-r from-ship-cove-50 to-white dark:from-ship-cove-900/50 dark:to-ship-cove-950 mb-6">
-              <div className="p-4">
-                <a
-                  href={news.externalLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-ship-cove-600 dark:text-ship-cove-400 hover:text-ship-cove-800 dark:hover:text-ship-cove-200 transition-colors font-medium"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  {t("externalLink")}
-                </a>
-              </div>
+            <div className="mt-10 pt-6 border-t border-ship-cove-200 dark:border-ship-cove-800">
+              <a
+                href={news.externalLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-ship-cove-600 dark:text-ship-cove-400 hover:text-ship-cove-800 dark:hover:text-ship-cove-200 transition-colors font-medium"
+              >
+                <ExternalLink className="h-4 w-4" />
+                {t("externalLink")}
+              </a>
             </div>
           )}
 
           {/* Share */}
-          <NewsDetailClient title={news.title} slug={news.slug} />
+          <div className="mt-10 pt-6 border-t border-ship-cove-200 dark:border-ship-cove-800">
+            <NewsDetailClient title={news.title} slug={news.slug} />
+          </div>
         </article>
       </div>
     </div>

@@ -40,36 +40,32 @@ export default function NewsDetailClient({ title, slug }: NewsDetailClientProps)
   }
 
   return (
-    <div className="relative overflow-hidden rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-gradient-to-r from-white to-ship-cove-50/30 dark:from-ship-cove-950 dark:to-ship-cove-900/20">
-      <div className="p-4">
-        <div className="flex items-center justify-between gap-4">
-          <span className="text-sm text-ship-cove-600 dark:text-ship-cove-400 font-medium">
-            {t("share")}
-          </span>
-          <button
-            onClick={handleShare}
-            className={`
-              flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all
-              ${copied
-                ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-200 dark:ring-emerald-800"
-                : "bg-ship-cove-100 dark:bg-ship-cove-800 text-ship-cove-600 dark:text-ship-cove-400 hover:bg-ship-cove-200 dark:hover:bg-ship-cove-700"
-              }
-            `}
-          >
-            {copied ? (
-              <>
-                <Check className="h-4 w-4" />
-                {t("copied")}
-              </>
-            ) : (
-              <>
-                <Share2 className="h-4 w-4" />
-                {t("copyLink")}
-              </>
-            )}
-          </button>
-        </div>
-      </div>
+    <div className="flex items-center justify-between">
+      <span className="text-sm text-ship-cove-500 dark:text-ship-cove-400">
+        {t("share")}
+      </span>
+      <button
+        onClick={handleShare}
+        className={`
+          inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all
+          ${copied
+            ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
+            : "bg-ship-cove-100 dark:bg-ship-cove-800 text-ship-cove-700 dark:text-ship-cove-300 hover:bg-ship-cove-200 dark:hover:bg-ship-cove-700"
+          }
+        `}
+      >
+        {copied ? (
+          <>
+            <Check className="h-4 w-4" />
+            {t("copied")}
+          </>
+        ) : (
+          <>
+            <Share2 className="h-4 w-4" />
+            {t("copyLink")}
+          </>
+        )}
+      </button>
     </div>
   )
 }
