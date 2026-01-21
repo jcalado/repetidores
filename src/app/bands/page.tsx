@@ -3,9 +3,19 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { StandardPageHeader } from "@/components/ui/PageHeader";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMemo, useState } from "react";
+import {
+  Radio,
+  Antenna,
+  Waves,
+  Zap,
+  Search,
+  X,
+  AlertTriangle,
+} from "lucide-react";
 
 type Segment = { label: string; startMHz: number; endMHz: number };
 
@@ -201,6 +211,20 @@ function modeColor(mode: string) {
     return "bg-sky-500/80";
 }
 
+// Pastel colors for each spectrum band
+const bandColors: Record<string, { bg: string; bgHover: string; icon: string; iconText: string; accent: string; border: string; dot: string }> = {
+    LF: { bg: "bg-violet-300 dark:bg-violet-400/70", bgHover: "bg-violet-400 dark:bg-violet-300", icon: "bg-violet-100 dark:bg-violet-900/50", iconText: "text-violet-600 dark:text-violet-400", accent: "via-violet-400", border: "border-violet-200 dark:border-violet-800", dot: "bg-violet-400 dark:bg-violet-400" },
+    MF: { bg: "bg-fuchsia-300 dark:bg-fuchsia-400/70", bgHover: "bg-fuchsia-400 dark:bg-fuchsia-300", icon: "bg-fuchsia-100 dark:bg-fuchsia-900/50", iconText: "text-fuchsia-600 dark:text-fuchsia-400", accent: "via-fuchsia-400", border: "border-fuchsia-200 dark:border-fuchsia-800", dot: "bg-fuchsia-400 dark:bg-fuchsia-400" },
+    HF: { bg: "bg-sky-300 dark:bg-sky-400/70", bgHover: "bg-sky-400 dark:bg-sky-300", icon: "bg-sky-100 dark:bg-sky-900/50", iconText: "text-sky-600 dark:text-sky-400", accent: "via-sky-400", border: "border-sky-200 dark:border-sky-800", dot: "bg-sky-400 dark:bg-sky-400" },
+    VHF: { bg: "bg-teal-300 dark:bg-teal-400/70", bgHover: "bg-teal-400 dark:bg-teal-300", icon: "bg-teal-100 dark:bg-teal-900/50", iconText: "text-teal-600 dark:text-teal-400", accent: "via-teal-400", border: "border-teal-200 dark:border-teal-800", dot: "bg-teal-400 dark:bg-teal-400" },
+    UHF: { bg: "bg-amber-300 dark:bg-amber-400/70", bgHover: "bg-amber-400 dark:bg-amber-300", icon: "bg-amber-100 dark:bg-amber-900/50", iconText: "text-amber-600 dark:text-amber-400", accent: "via-amber-400", border: "border-amber-200 dark:border-amber-800", dot: "bg-amber-400 dark:bg-amber-400" },
+    SHF: { bg: "bg-rose-300 dark:bg-rose-400/70", bgHover: "bg-rose-400 dark:bg-rose-300", icon: "bg-rose-100 dark:bg-rose-900/50", iconText: "text-rose-600 dark:text-rose-400", accent: "via-rose-400", border: "border-rose-200 dark:border-rose-800", dot: "bg-rose-400 dark:bg-rose-400" },
+};
+
+function getBandColor(bandId: string) {
+    return bandColors[bandId] || bandColors.HF;
+}
+
 function powerValue(power: string) {
     const n = parseFloat(power.replace(",", "."));
     return isNaN(n) ? null : n;
@@ -229,6 +253,8 @@ function fmtRangeMHz(a: number, b: number) {
 export default function QNAFPortugalHamBands() {
     const [view, setView] = useState<"spectrum" | "named" | "iaru" | "power">("spectrum");
     const [query, setQuery] = useState("");
+    // Track hovered segment: "bandId-segmentIndex"
+    const [hoveredSegment, setHoveredSegment] = useState<string | null>(null);
 
     const filteredSpectrum = useMemo(() => {
         if (!query) return spectrumBands;
@@ -256,12 +282,12 @@ export default function QNAFPortugalHamBands() {
     }, [query]);
 
     const renderPowerBars = (powerList: PowerEntry[]) => (
-        <div className="mt-4 space-y-4">
+        <div className="space-y-4">
             {filteredSpectrum.map((band) => (
-                <div key={band.id} className="rounded-xl border p-3">
-                    <div className="mb-2 flex items-center gap-2 text-sm">
-                        <span className="font-medium">{band.title}</span>
-                        <span className="text-xs text-muted-foreground">{band.rangeLabel}</span>
+                <div key={band.id} className="rounded-xl border border-ship-cove-200 dark:border-ship-cove-800 bg-ship-cove-50/50 dark:bg-ship-cove-900/30 p-4">
+                    <div className="mb-3 flex items-center gap-2 text-sm">
+                        <span className="font-semibold text-ship-cove-900 dark:text-ship-cove-100">{band.title}</span>
+                        <span className="text-xs font-mono text-ship-cove-500 dark:text-ship-cove-400">{band.rangeLabel}</span>
                     </div>
                     <div className="space-y-3">
                         {band.segments.map((seg, idx) => {
@@ -275,18 +301,18 @@ export default function QNAFPortugalHamBands() {
                                 .sort((a, b) => a.start - b.start);
                             return (
                                 <div key={idx}>
-                                    <div className="mb-1 text-xs text-muted-foreground">{seg.label}</div>
-                                    <div className="relative h-10 rounded-xl bg-muted overflow-hidden">
+                                    <div className="mb-1 text-xs text-ship-cove-600 dark:text-ship-cove-400">{seg.label}</div>
+                                    <div className="relative h-12 rounded-xl bg-ship-cove-100 dark:bg-ship-cove-900/50 overflow-hidden">
                                         <div className="absolute inset-0">
-                                            <div className="absolute left-1 top-1 text-[10px] text-muted-foreground">{seg.startMHz.toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
-                                            <div className="absolute right-1 bottom-1 text-[10px] text-muted-foreground">{seg.endMHz.toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
+                                            <div className="absolute left-2 top-1 text-[10px] font-mono text-ship-cove-500 dark:text-ship-cove-400">{seg.startMHz.toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
+                                            <div className="absolute right-2 bottom-1 text-[10px] font-mono text-ship-cove-500 dark:text-ship-cove-400">{seg.endMHz.toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
                                         </div>
                                         {pOver.map((o, j) => {
                                             const left = percentPos(o.start, seg.startMHz, seg.endMHz);
                                             const width = percentPos(o.end, seg.startMHz, seg.endMHz) - left;
                                             return (
-                                                <div key={j} className={`absolute h-full rounded-md border border-white/40 shadow-sm transition ${powerColor(o.label)}`} style={{ left: `${left}%`, width: `${Math.max(width, 0.5)}%` }} title={`${o.label} • ${o.start.toFixed(3)}–${o.end.toFixed(3)} MHz`}>
-                                                    <div className="flex h-full items-center px-2">
+                                                <div key={j} className={`absolute h-full rounded-lg border border-white/40 shadow-sm transition ${powerColor(o.label)}`} style={{ left: `${left}%`, width: `${Math.max(width, 0.5)}%` }} title={`${o.label} • ${o.start.toFixed(3)}–${o.end.toFixed(3)} MHz`}>
+                                                    <div className="flex h-full items-center justify-center px-2">
                                                         <span className="text-[11px] font-medium text-white drop-shadow-sm truncate">{o.label}</span>
                                                     </div>
                                                 </div>
@@ -299,8 +325,8 @@ export default function QNAFPortugalHamBands() {
                     </div>
                 </div>
             ))}
-            <div className="flex flex-wrap items-center gap-3 text-xs">
-                <span className="text-muted-foreground">Legenda:</span>
+            <div className="flex flex-wrap items-center gap-3 text-xs mt-4 p-3 rounded-lg bg-ship-cove-50 dark:bg-ship-cove-900/30">
+                <span className="font-medium text-ship-cove-700 dark:text-ship-cove-300">Legenda:</span>
                 {[
                     "1500W",
                     "300W",
@@ -313,8 +339,8 @@ export default function QNAFPortugalHamBands() {
                     "1W",
                     "Sob pedido",
                 ].map((p) => (
-                    <span key={p} className="inline-flex items-center gap-1">
-                        <span className={`h-2 w-4 rounded ${powerColor(p)}`}></span>
+                    <span key={p} className="inline-flex items-center gap-1.5 text-ship-cove-600 dark:text-ship-cove-400">
+                        <span className={`h-2.5 w-4 rounded ${powerColor(p)}`}></span>
                         {p}
                     </span>
                 ))}
@@ -322,104 +348,206 @@ export default function QNAFPortugalHamBands() {
         </div>
     );
 
+    // Calculate stats
+    const totalSpectrumBands = spectrumBands.length;
+    const totalSegments = spectrumBands.reduce((sum, b) => sum + b.segments.length, 0);
+    const totalIARUBands = IARU_R1.length;
+
     return (
-        <div className="w-full max-w-7xl mx-auto p-4 sm:p-6">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                    <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">Frequências de Amador</h1>                </div>
-                <div className="flex items-center gap-2">
-                    <Tabs value={view} onValueChange={(v) => setView(v as typeof view)} className="w-fit">
-                        <TabsList>
-                            <TabsTrigger value="spectrum">QNAF</TabsTrigger>
-                            <TabsTrigger value="named">Bandas</TabsTrigger>
-                            <TabsTrigger value="iaru">Plano IARU</TabsTrigger>
-                            <TabsTrigger value="power">Potências</TabsTrigger>
-                        </TabsList>
-                    </Tabs>
-                    <div className="relative">
-                        <Input placeholder="Procurar… (ex.: 144, CW, 1500W)" className="w-56 sm:w-72 pr-8" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Pesquisar" />
-                        <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground/60 text-xs">⌘K</span>
-                    </div>
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            {/* Hero Header */}
+            <StandardPageHeader
+                icon={<Waves className="h-7 w-7" />}
+                title="Frequências de Amador"
+                description="Plano de bandas QNAF, IARU Região 1 e potências máximas para radioamadores em Portugal"
+                stats={[
+                    {
+                        icon: <Radio className="h-4 w-4" />,
+                        value: totalSpectrumBands,
+                        label: "bandas",
+                    },
+                    {
+                        icon: <Antenna className="h-4 w-4" />,
+                        value: totalSegments,
+                        label: "segmentos",
+                        variant: "success",
+                    },
+                    {
+                        icon: <Zap className="h-4 w-4" />,
+                        value: totalIARUBands,
+                        label: "IARU",
+                    },
+                ]}
+                floatingIcons={[
+                    <Radio key="radio" className="h-12 w-12 text-white" />,
+                    <Antenna key="antenna" className="h-10 w-10 text-white" />,
+                ]}
+            />
+
+            {/* Filters Row */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                <Tabs value={view} onValueChange={(v) => setView(v as typeof view)} className="w-full sm:w-auto">
+                    <TabsList className="grid grid-cols-4 w-full sm:w-auto bg-ship-cove-100 dark:bg-ship-cove-800/50">
+                        <TabsTrigger value="spectrum" className="text-xs sm:text-sm">QNAF</TabsTrigger>
+                        <TabsTrigger value="named" className="text-xs sm:text-sm">Bandas</TabsTrigger>
+                        <TabsTrigger value="iaru" className="text-xs sm:text-sm">IARU</TabsTrigger>
+                        <TabsTrigger value="power" className="text-xs sm:text-sm">Potências</TabsTrigger>
+                    </TabsList>
+                </Tabs>
+                <div className="relative w-full sm:w-auto">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ship-cove-400 pointer-events-none" />
+                    <Input
+                        placeholder="Procurar… (ex.: 144, CW, 1500W)"
+                        className="w-full sm:w-72 pl-10 pr-10 h-10 rounded-lg border-ship-cove-200 dark:border-ship-cove-800 bg-white dark:bg-ship-cove-950/50"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        aria-label="Pesquisar"
+                    />
+                    {query && (
+                        <button
+                            onClick={() => setQuery("")}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center rounded-full bg-ship-cove-100 dark:bg-ship-cove-800 text-ship-cove-500 hover:bg-ship-cove-200 dark:hover:bg-ship-cove-700 transition-colors"
+                        >
+                            <X className="h-3 w-3" />
+                        </button>
+                    )}
                 </div>
             </div>
 
-            <Tabs value={view} onValueChange={(v) => setView(v as typeof view)} className="mt-6">
+            <Tabs value={view} onValueChange={(v) => setView(v as typeof view)}>
                 <TabsContent value="spectrum" className="space-y-5">
                     {filteredSpectrum.map((band) => {
                         const min = Math.min(...band.segments.map((s) => s.startMHz));
                         const max = Math.max(...band.segments.map((s) => s.endMHz));
+                        const colors = getBandColor(band.id);
                         return (
-                            <Card key={band.id} className="bg-card">
-                                <CardHeader className="pb-2">
-                                    <CardTitle className="text-lg">{band.title}</CardTitle>
-                                    <CardDescription className="flex items-center gap-2">
-                                        <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">{band.rangeLabel}</span>
-                                        <span className="text-xs text-muted-foreground">Subfaixas QNAF</span>
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="relative h-10 rounded-xl bg-muted overflow-hidden">
-                                        <div className="absolute inset-0">
-                                            <div className="absolute left-1 top-1 text-[10px] text-muted-foreground">{min.toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
-                                            <div className="absolute right-1 bottom-1 text-[10px] text-muted-foreground">{max.toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
+                            <div key={band.id} className={`relative overflow-hidden rounded-xl border ${colors.border} bg-white dark:bg-ship-cove-950/50 shadow-sm`}>
+                                <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent ${colors.accent} to-transparent`} />
+                                <div className="p-5">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${colors.icon}`}>
+                                            <Radio className={`h-5 w-5 ${colors.iconText}`} />
+                                        </div>
+                                        <div className="flex-1">
+                                            <h3 className="text-lg font-semibold text-ship-cove-900 dark:text-ship-cove-100">{band.title}</h3>
+                                            <div className="flex items-center gap-2">
+                                                <span className={`inline-flex items-center rounded-md ${colors.icon} ${colors.iconText} px-2 py-0.5 text-xs font-medium`}>{band.rangeLabel}</span>
+                                                <span className="text-xs text-ship-cove-500 dark:text-ship-cove-400">{band.segments.length} subfaixa{band.segments.length > 1 ? 's' : ''} QNAF</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Visualization bar */}
+                                    <div className="relative h-14 rounded-xl bg-ship-cove-100 dark:bg-ship-cove-900/50 overflow-hidden mb-4">
+                                        <div className="absolute inset-0 pointer-events-none">
+                                            <div className="absolute left-2 top-1 text-[10px] font-mono text-ship-cove-500 dark:text-ship-cove-400">{min.toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
+                                            <div className="absolute right-2 bottom-1 text-[10px] font-mono text-ship-cove-500 dark:text-ship-cove-400">{max.toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
                                         </div>
                                         {band.segments.map((seg, idx) => {
+                                            const segmentId = `${band.id}-${idx}`;
+                                            const isHovered = hoveredSegment === segmentId;
                                             const left = percentPos(seg.startMHz, min, max);
                                             const width = percentPos(seg.endMHz, min, max) - left;
+                                            // Only show label if segment is wide enough (> 8%)
+                                            const showLabel = width > 8;
                                             return (
-                                                <div key={idx} className="absolute h-full rounded-md border border-white/40 shadow-sm transition bg-primary/80" style={{ left: `${left}%`, width: `${Math.max(width, 0.5)}%` }} title={`${seg.label}`} aria-label={seg.label}>
-                                                    <div className="flex h-full items-center px-2">
-                                                        <span className="text-[11px] font-medium text-white drop-shadow-sm truncate">{seg.label}</span>
+                                                <div
+                                                    key={idx}
+                                                    className={`absolute h-full rounded-lg border shadow-sm transition-all duration-200 cursor-pointer ${
+                                                        isHovered
+                                                            ? `${colors.bgHover} border-white scale-y-110 z-20 ring-2 ring-white/50`
+                                                            : `${colors.bg} border-white/40`
+                                                    }`}
+                                                    style={{ left: `${left}%`, width: `${Math.max(width, 1.5)}%` }}
+                                                    title={`${seg.label}\n${seg.startMHz.toLocaleString("pt-PT", { maximumFractionDigits: 4 })}–${seg.endMHz.toLocaleString("pt-PT", { maximumFractionDigits: 4 })} MHz`}
+                                                    aria-label={seg.label}
+                                                    onMouseEnter={() => setHoveredSegment(segmentId)}
+                                                    onMouseLeave={() => setHoveredSegment(null)}
+                                                >
+                                                    {showLabel && (
+                                                        <div className="flex h-full items-center justify-center px-1">
+                                                            <span className={`text-[10px] font-medium drop-shadow-sm truncate ${isHovered ? 'text-white' : 'text-ship-cove-900 dark:text-white'}`}>{seg.label}</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+
+                                    {/* Segment list */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                                        {band.segments.map((seg, idx) => {
+                                            const segmentId = `${band.id}-${idx}`;
+                                            const isHovered = hoveredSegment === segmentId;
+                                            return (
+                                                <div
+                                                    key={idx}
+                                                    className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer ${
+                                                        isHovered
+                                                            ? `${colors.icon} ring-2 ring-offset-1 ${colors.border}`
+                                                            : 'bg-ship-cove-50 dark:bg-ship-cove-900/30 hover:bg-ship-cove-100 dark:hover:bg-ship-cove-900/50'
+                                                    }`}
+                                                    onMouseEnter={() => setHoveredSegment(segmentId)}
+                                                    onMouseLeave={() => setHoveredSegment(null)}
+                                                >
+                                                    <div className={`h-3 w-3 rounded-sm shrink-0 transition-transform duration-200 ${colors.dot} ${isHovered ? 'scale-125' : ''}`} />
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className={`text-sm font-medium truncate ${isHovered ? colors.iconText : 'text-ship-cove-900 dark:text-ship-cove-100'}`}>{seg.label}</div>
+                                                        <div className="text-xs font-mono text-ship-cove-500 dark:text-ship-cove-400">
+                                                            {seg.startMHz.toLocaleString("pt-PT", { maximumFractionDigits: 4 })}–{seg.endMHz.toLocaleString("pt-PT", { maximumFractionDigits: 4 })} MHz
+                                                        </div>
                                                     </div>
                                                 </div>
                                             );
                                         })}
                                     </div>
-                                    <div className="mt-3 flex flex-wrap gap-2">
-                                        {band.segments.map((seg, idx) => (
-                                            <Badge key={idx} variant="secondary" className="text-xs">{seg.label}</Badge>
-                                        ))}
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                </div>
+                            </div>
                         );
                     })}
-                    {filteredSpectrum.length === 0 && <p className="text-sm text-muted-foreground">Sem resultados para &quot;{query}&quot;.</p>}
+                    {filteredSpectrum.length === 0 && <p className="text-sm text-ship-cove-500 dark:text-ship-cove-400">Sem resultados para &quot;{query}&quot;.</p>}
                 </TabsContent>
 
                 <TabsContent value="named">
-                    <Card>
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-lg">Nomes das bandas</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="w-full overflow-x-auto rounded-xl border">
+                    <div className="relative overflow-hidden rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-white dark:bg-ship-cove-950/50 shadow-sm">
+                        <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-ship-cove-500 to-transparent opacity-60" />
+                        <div className="p-5">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800">
+                                    <Antenna className="h-5 w-5 text-ship-cove-600 dark:text-ship-cove-400" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-semibold text-ship-cove-900 dark:text-ship-cove-100">Nomes das bandas</h3>
+                                    <p className="text-sm text-ship-cove-500 dark:text-ship-cove-400">Designações comuns das bandas de radioamador</p>
+                                </div>
+                            </div>
+                            <div className="w-full overflow-x-auto rounded-xl border border-ship-cove-200 dark:border-ship-cove-800">
                                 <Table>
                                     <TableHeader>
-                                        <TableRow>
-                                            <TableHead className="w-[180px]">Banda</TableHead>
-                                            <TableHead>Intervalo (texto)</TableHead>
-                                            <TableHead className="w-[220px]">Intervalo (MHz)</TableHead>
+                                        <TableRow className="bg-ship-cove-50 dark:bg-ship-cove-900/50">
+                                            <TableHead className="w-[180px] font-semibold text-ship-cove-700 dark:text-ship-cove-300">Banda</TableHead>
+                                            <TableHead className="font-semibold text-ship-cove-700 dark:text-ship-cove-300">Intervalo (texto)</TableHead>
+                                            <TableHead className="w-[220px] font-semibold text-ship-cove-700 dark:text-ship-cove-300">Intervalo (MHz)</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {filteredNamed.slice().sort((a, b) => (a.startMHz ?? Infinity) - (b.startMHz ?? Infinity)).map((b, idx) => (
-                                            <TableRow key={idx}>
-                                                <TableCell className="font-medium">{b.name}</TableCell>
-                                                <TableCell>{b.rangeLabel}</TableCell>
-                                                <TableCell className="text-muted-foreground">{b.startMHz !== undefined && b.endMHz !== undefined ? `${b.startMHz.toLocaleString("pt-PT", { maximumFractionDigits: 3 })}–${b.endMHz.toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz` : "—"}</TableCell>
+                                            <TableRow key={idx} className="hover:bg-ship-cove-50 dark:hover:bg-ship-cove-900/30">
+                                                <TableCell className="font-medium text-ship-cove-900 dark:text-ship-cove-100">{b.name}</TableCell>
+                                                <TableCell className="text-ship-cove-700 dark:text-ship-cove-300">{b.rangeLabel}</TableCell>
+                                                <TableCell className="font-mono text-sm text-ship-cove-500 dark:text-ship-cove-400">{b.startMHz !== undefined && b.endMHz !== undefined ? `${b.startMHz.toLocaleString("pt-PT", { maximumFractionDigits: 3 })}–${b.endMHz.toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz` : "—"}</TableCell>
                                             </TableRow>
                                         ))}
                                         {filteredNamed.length === 0 && (
                                             <TableRow>
-                                                <TableCell colSpan={3} className="text-sm text-muted-foreground">Sem resultados para &quot;{query}&quot;.</TableCell>
+                                                <TableCell colSpan={3} className="text-sm text-ship-cove-500 dark:text-ship-cove-400">Sem resultados para &quot;{query}&quot;.</TableCell>
                                             </TableRow>
                                         )}
                                     </TableBody>
                                 </Table>
                             </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
                 </TabsContent>
 
                 <TabsContent value="iaru" className="space-y-5">
@@ -427,93 +555,115 @@ export default function QNAFPortugalHamBands() {
                         const min = band.minKHz;
                         const max = band.maxKHz;
                         return (
-                            <Card key={band.label + i} className="bg-card">
-                                <CardHeader className="pb-2">
-                                    <CardTitle className="text-lg">{band.label}</CardTitle>
-                                    <CardDescription className="text-xs">Plano IARU R1 — {toMHz(min).toLocaleString("pt-PT", { maximumFractionDigits: 4 })}–{toMHz(max).toLocaleString("pt-PT", { maximumFractionDigits: 4 })} MHz</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="relative h-10 rounded-xl bg-muted overflow-hidden">
+                            <div key={band.label + i} className="relative overflow-hidden rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-white dark:bg-ship-cove-950/50 shadow-sm">
+                                <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-60" />
+                                <div className="p-5">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/50">
+                                            <Waves className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-ship-cove-900 dark:text-ship-cove-100">{band.label}</h3>
+                                            <p className="text-sm text-ship-cove-500 dark:text-ship-cove-400">Plano IARU R1 — {toMHz(min).toLocaleString("pt-PT", { maximumFractionDigits: 4 })}–{toMHz(max).toLocaleString("pt-PT", { maximumFractionDigits: 4 })} MHz</p>
+                                        </div>
+                                    </div>
+                                    <div className="relative h-12 rounded-xl bg-ship-cove-100 dark:bg-ship-cove-900/50 overflow-hidden">
                                         <div className="absolute inset-0">
-                                            <div className="absolute left-1 top-1 text-[10px] text-muted-foreground">{toMHz(min).toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
-                                            <div className="absolute right-1 bottom-1 text-[10px] text-muted-foreground">{toMHz(max).toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
+                                            <div className="absolute left-2 top-1 text-[10px] font-mono text-ship-cove-500 dark:text-ship-cove-400">{toMHz(min).toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
+                                            <div className="absolute right-2 bottom-1 text-[10px] font-mono text-ship-cove-500 dark:text-ship-cove-400">{toMHz(max).toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
                                         </div>
                                         {band.segments.map((s, idx) => {
                                             const left = percentPos(s.fromKHz, min, max);
                                             const width = percentPos(s.toKHz, min, max) - left;
                                             return (
-                                                <div key={idx} className={`absolute h-full rounded-md border border-white/40 shadow-sm transition ${modeColor(s.mode)}`} style={{ left: `${left}%`, width: `${Math.max(width, 0.5)}%` }} title={`${(s.fromKHz / 1000).toFixed(3)}–${(s.toKHz / 1000).toFixed(3)} MHz • ${s.mode}${s.maxBWHz ? ` • ≤${s.maxBWHz} Hz` : ""}${s.notes && s.notes.length ? ` • ${s.notes.join("; ")}` : ""}`}></div>
+                                                <div key={idx} className={`absolute h-full rounded-lg border border-white/40 shadow-sm transition ${modeColor(s.mode)}`} style={{ left: `${left}%`, width: `${Math.max(width, 0.5)}%` }} title={`${(s.fromKHz / 1000).toFixed(3)}–${(s.toKHz / 1000).toFixed(3)} MHz • ${s.mode}${s.maxBWHz ? ` • ≤${s.maxBWHz} Hz` : ""}${s.notes && s.notes.length ? ` • ${s.notes.join("; ")}` : ""}`}></div>
                                             );
                                         })}
                                     </div>
                                     <div className="mt-3 flex flex-wrap gap-2">
-                                        <Badge variant="secondary" className="text-xs">CW</Badge>
-                                        <Badge variant="secondary" className="text-xs">Narrow band modes</Badge>
-                                        <Badge variant="secondary" className="text-xs">All modes</Badge>
-                                        <Badge variant="secondary" className="text-xs">Beacons</Badge>
-                                        <Badge variant="secondary" className="text-xs">Weak-signal</Badge>
+                                        <span className="inline-flex items-center gap-1.5 text-xs text-ship-cove-600 dark:text-ship-cove-400">
+                                            <span className="h-2.5 w-4 rounded bg-emerald-500/80"></span>CW
+                                        </span>
+                                        <span className="inline-flex items-center gap-1.5 text-xs text-ship-cove-600 dark:text-ship-cove-400">
+                                            <span className="h-2.5 w-4 rounded bg-indigo-500/80"></span>Narrow band
+                                        </span>
+                                        <span className="inline-flex items-center gap-1.5 text-xs text-ship-cove-600 dark:text-ship-cove-400">
+                                            <span className="h-2.5 w-4 rounded bg-sky-500/80"></span>All modes
+                                        </span>
+                                        <span className="inline-flex items-center gap-1.5 text-xs text-ship-cove-600 dark:text-ship-cove-400">
+                                            <span className="h-2.5 w-4 rounded bg-amber-500/80"></span>Beacons
+                                        </span>
+                                        <span className="inline-flex items-center gap-1.5 text-xs text-ship-cove-600 dark:text-ship-cove-400">
+                                            <span className="h-2.5 w-4 rounded bg-purple-500/80"></span>Weak-signal
+                                        </span>
                                     </div>
-                                    <div className="mt-4 w-full overflow-x-auto rounded-xl border">
+                                    <div className="mt-4 w-full overflow-x-auto rounded-xl border border-ship-cove-200 dark:border-ship-cove-800">
                                         <Table>
                                             <TableHeader>
-                                                <TableRow>
-                                                    <TableHead>Intervalo (kHz)</TableHead>
-                                                    <TableHead>Modo recomendado</TableHead>
-                                                    <TableHead>Larg. máx. (Hz)</TableHead>
-                                                    <TableHead>Notas</TableHead>
+                                                <TableRow className="bg-ship-cove-50 dark:bg-ship-cove-900/50">
+                                                    <TableHead className="font-semibold text-ship-cove-700 dark:text-ship-cove-300">Intervalo (kHz)</TableHead>
+                                                    <TableHead className="font-semibold text-ship-cove-700 dark:text-ship-cove-300">Modo recomendado</TableHead>
+                                                    <TableHead className="font-semibold text-ship-cove-700 dark:text-ship-cove-300">Larg. máx. (Hz)</TableHead>
+                                                    <TableHead className="font-semibold text-ship-cove-700 dark:text-ship-cove-300">Notas</TableHead>
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
                                                 {band.segments.map((s, idx) => (
-                                                    <TableRow key={idx}>
-                                                        <TableCell>{s.fromKHz}–{s.toKHz}</TableCell>
-                                                        <TableCell>{s.mode}</TableCell>
-                                                        <TableCell>{s.maxBWHz ? s.maxBWHz.toLocaleString("pt-PT") : "—"}</TableCell>
-                                                        <TableCell>{s.notes && s.notes.length ? s.notes.join("; ") : "—"}</TableCell>
+                                                    <TableRow key={idx} className="hover:bg-ship-cove-50 dark:hover:bg-ship-cove-900/30">
+                                                        <TableCell className="font-mono text-sm text-ship-cove-700 dark:text-ship-cove-300">{s.fromKHz}–{s.toKHz}</TableCell>
+                                                        <TableCell className="text-ship-cove-700 dark:text-ship-cove-300">{s.mode}</TableCell>
+                                                        <TableCell className="font-mono text-sm text-ship-cove-500 dark:text-ship-cove-400">{s.maxBWHz ? s.maxBWHz.toLocaleString("pt-PT") : "—"}</TableCell>
+                                                        <TableCell className="text-sm text-ship-cove-500 dark:text-ship-cove-400">{s.notes && s.notes.length ? s.notes.join("; ") : "—"}</TableCell>
                                                     </TableRow>
                                                 ))}
                                             </TableBody>
                                         </Table>
                                     </div>
-                                </CardContent>
-                            </Card>
+                                </div>
+                            </div>
                         );
                     })}
-                    {filteredIARU.length === 0 && <p className="text-sm text-muted-foreground">Sem resultados para &quot;{query}&quot;.</p>}
+                    {filteredIARU.length === 0 && <p className="text-sm text-ship-cove-500 dark:text-ship-cove-400">Sem resultados para &quot;{query}&quot;.</p>}
                 </TabsContent>
 
                 <TabsContent value="power">
-                    <Card>
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-lg">Potências máximas permitidas (Portugal)</CardTitle>
-                            <CardDescription className="text-xs">Anexo 6 QNAF</CardDescription>
-                        </CardHeader>
-                        <CardContent>
+                    <div className="relative overflow-hidden rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-white dark:bg-ship-cove-950/50 shadow-sm">
+                        <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-60" />
+                        <div className="p-5">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-900/50">
+                                    <Zap className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-semibold text-ship-cove-900 dark:text-ship-cove-100">Potências máximas permitidas (Portugal)</h3>
+                                    <p className="text-sm text-ship-cove-500 dark:text-ship-cove-400">Anexo 6 QNAF — Limites de potência por banda e categoria</p>
+                                </div>
+                            </div>
                             <Tabs defaultValue="cat1" className="w-full">
-                                <TabsList>
+                                <TabsList className="bg-ship-cove-100 dark:bg-ship-cove-800/50 mb-4">
                                     <TabsTrigger value="cat1">Categoria 1</TabsTrigger>
                                     <TabsTrigger value="cat2">Categoria 2</TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="cat1">
                                     {renderPowerBars(filteredPower1)}
-                                    <div className="w-full overflow-x-auto rounded-xl border mt-6">
+                                    <div className="w-full overflow-x-auto rounded-xl border border-ship-cove-200 dark:border-ship-cove-800 mt-6">
                                         <Table>
                                             <TableHeader>
-                                                <TableRow>
-                                                    <TableHead>Intervalo (MHz)</TableHead>
-                                                    <TableHead>Potência máx.</TableHead>
+                                                <TableRow className="bg-ship-cove-50 dark:bg-ship-cove-900/50">
+                                                    <TableHead className="font-semibold text-ship-cove-700 dark:text-ship-cove-300">Intervalo (MHz)</TableHead>
+                                                    <TableHead className="font-semibold text-ship-cove-700 dark:text-ship-cove-300">Potência máx.</TableHead>
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
                                                 {filteredPower1.slice().sort((a, b) => a.fromMHz - b.fromMHz).map((p, idx) => (
-                                                    <TableRow key={idx}>
-                                                        <TableCell>{fmtRangeMHz(p.fromMHz, p.toMHz)}</TableCell>
-                                                        <TableCell>{p.power}</TableCell>
+                                                    <TableRow key={idx} className="hover:bg-ship-cove-50 dark:hover:bg-ship-cove-900/30">
+                                                        <TableCell className="font-mono text-sm text-ship-cove-700 dark:text-ship-cove-300">{fmtRangeMHz(p.fromMHz, p.toMHz)}</TableCell>
+                                                        <TableCell className="font-semibold text-ship-cove-900 dark:text-ship-cove-100">{p.power}</TableCell>
                                                     </TableRow>
                                                 ))}
                                                 {filteredPower1.length === 0 && (
                                                     <TableRow>
-                                                        <TableCell colSpan={2} className="text-sm text-muted-foreground">Sem resultados para &quot;{query}&quot;.</TableCell>
+                                                        <TableCell colSpan={2} className="text-sm text-ship-cove-500 dark:text-ship-cove-400">Sem resultados para &quot;{query}&quot;.</TableCell>
                                                     </TableRow>
                                                 )}
                                             </TableBody>
@@ -522,24 +672,24 @@ export default function QNAFPortugalHamBands() {
                                 </TabsContent>
                                 <TabsContent value="cat2">
                                     {renderPowerBars(filteredPower2)}
-                                    <div className="w-full overflow-x-auto rounded-xl border mt-6">
+                                    <div className="w-full overflow-x-auto rounded-xl border border-ship-cove-200 dark:border-ship-cove-800 mt-6">
                                         <Table>
                                             <TableHeader>
-                                                <TableRow>
-                                                    <TableHead>Intervalo (MHz)</TableHead>
-                                                    <TableHead>Potência máx.</TableHead>
+                                                <TableRow className="bg-ship-cove-50 dark:bg-ship-cove-900/50">
+                                                    <TableHead className="font-semibold text-ship-cove-700 dark:text-ship-cove-300">Intervalo (MHz)</TableHead>
+                                                    <TableHead className="font-semibold text-ship-cove-700 dark:text-ship-cove-300">Potência máx.</TableHead>
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
                                                 {filteredPower2.slice().sort((a, b) => a.fromMHz - b.fromMHz).map((p, idx) => (
-                                                    <TableRow key={idx}>
-                                                        <TableCell>{fmtRangeMHz(p.fromMHz, p.toMHz)}</TableCell>
-                                                        <TableCell>{p.power}</TableCell>
+                                                    <TableRow key={idx} className="hover:bg-ship-cove-50 dark:hover:bg-ship-cove-900/30">
+                                                        <TableCell className="font-mono text-sm text-ship-cove-700 dark:text-ship-cove-300">{fmtRangeMHz(p.fromMHz, p.toMHz)}</TableCell>
+                                                        <TableCell className="font-semibold text-ship-cove-900 dark:text-ship-cove-100">{p.power}</TableCell>
                                                     </TableRow>
                                                 ))}
                                                 {filteredPower2.length === 0 && (
                                                     <TableRow>
-                                                        <TableCell colSpan={2} className="text-sm text-muted-foreground">Sem resultados para &quot;{query}&quot;.</TableCell>
+                                                        <TableCell colSpan={2} className="text-sm text-ship-cove-500 dark:text-ship-cove-400">Sem resultados para &quot;{query}&quot;.</TableCell>
                                                     </TableRow>
                                                 )}
                                             </TableBody>
@@ -547,13 +697,17 @@ export default function QNAFPortugalHamBands() {
                                     </div>
                                 </TabsContent>
                             </Tabs>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
                 </TabsContent>
             </Tabs>
 
-            <div className="mt-8 text-xs text-muted-foreground">
-                <p>⚠️ Esta visualização é meramente informativa. Verifique sempre o QNAF/ANACOM, o plano IARU e as condições da sua licença.</p>
+            {/* Disclaimer */}
+            <div className="mt-8 flex items-start gap-3 p-4 rounded-xl border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/20">
+                <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-500 shrink-0 mt-0.5" />
+                <p className="text-sm text-amber-800 dark:text-amber-200">
+                    Esta visualização é meramente informativa. Verifique sempre o QNAF/ANACOM, o plano IARU e as condições da sua licença antes de operar.
+                </p>
             </div>
         </div>
     );
