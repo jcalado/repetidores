@@ -60,6 +60,21 @@ export async function generateMetadata({ params }: PageProps) {
         : `${process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL || ""}${association.logo.url}`
       : null
 
+    // Create image object with dimensions (logo dimensions not available, use defaults)
+    const ogImage = logoUrl
+      ? {
+          url: logoUrl,
+          width: 400,
+          height: 400,
+          alt: association.logo?.alt || `Logo ${association.abbreviation}`,
+        }
+      : {
+          url: "/og-default.png",
+          width: 512,
+          height: 512,
+          alt: "Radioamador.info",
+        };
+
     return {
       title,
       description,
@@ -71,22 +86,15 @@ export async function generateMetadata({ params }: PageProps) {
         description,
         type: "website",
         url: `/association/${slug}`,
-        siteName: "Repetidores",
+        siteName: "Radioamador.info",
         locale: "pt_PT",
-        ...(logoUrl && {
-          images: [
-            {
-              url: logoUrl,
-              alt: association.logo?.alt || `Logo ${association.abbreviation}`,
-            },
-          ],
-        }),
+        images: [ogImage],
       },
       twitter: {
         card: logoUrl ? "summary_large_image" : "summary",
         title,
         description,
-        ...(logoUrl && { images: [logoUrl] }),
+        images: [ogImage.url],
       },
       keywords: [
         association.name,

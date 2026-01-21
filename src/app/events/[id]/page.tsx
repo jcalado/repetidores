@@ -68,6 +68,27 @@ export async function generateMetadata({ params }: PageProps) {
     const title = event.title;
     const description = `${event.title} - ${formattedDate}${event.location ? ` em ${event.location}` : ""}. Evento de radioamadorismo.`;
 
+    // Handle event featured image
+    const imageUrl = event.featuredImage?.url
+      ? event.featuredImage.url.startsWith("http")
+        ? event.featuredImage.url
+        : `${process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL || ""}${event.featuredImage.url}`
+      : null;
+
+    const ogImage = imageUrl
+      ? {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: event.featuredImage?.alt || title,
+        }
+      : {
+          url: "/og-default.png",
+          width: 512,
+          height: 512,
+          alt: "Radioamador.info",
+        };
+
     return {
       title,
       description,
@@ -79,13 +100,15 @@ export async function generateMetadata({ params }: PageProps) {
         description,
         type: "website",
         url: `/events/${encodeURIComponent(event.id)}`,
-        siteName: "Repetidores",
+        siteName: "Radioamador.info",
         locale: "pt_PT",
+        images: [ogImage],
       },
       twitter: {
-        card: "summary",
+        card: imageUrl ? "summary_large_image" : "summary",
         title,
         description,
+        images: [ogImage.url],
       },
     };
   } catch {

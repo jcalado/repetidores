@@ -32,6 +32,21 @@ export async function generateMetadata({ params }: PageProps) {
       : `${process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL || ""}${news.featuredImage.url}`
     : null
 
+  // Create image object with dimensions when available
+  const ogImage = imageUrl
+    ? {
+        url: imageUrl,
+        width: news.featuredImage?.width || 1200,
+        height: news.featuredImage?.height || 630,
+        alt: news.featuredImage?.alt || news.title,
+      }
+    : {
+        url: "/og-default.png",
+        width: 512,
+        height: 512,
+        alt: "Radioamador.info",
+      };
+
   return {
     title: news.title,
     description: news.excerpt,
@@ -43,16 +58,16 @@ export async function generateMetadata({ params }: PageProps) {
       description: news.excerpt,
       type: "article",
       url: `/noticias/${slug}`,
-      siteName: "Repetidores",
+      siteName: "Radioamador.info",
       locale: "pt_PT",
       publishedTime: news.publishedDate,
-      ...(imageUrl && { images: [imageUrl] }),
+      images: [ogImage],
     },
     twitter: {
       card: imageUrl ? "summary_large_image" : "summary",
       title: news.title,
       description: news.excerpt,
-      ...(imageUrl && { images: [imageUrl] }),
+      images: [ogImage.url],
     },
   }
 }

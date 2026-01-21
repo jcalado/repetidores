@@ -47,6 +47,7 @@ export async function generateMetadata() {
   return {
     title,
     description,
+    keywords: ["notícias", "radioamador", "ham radio", "Portugal", "novidades"],
     alternates: {
       canonical: "/noticias",
     },
@@ -55,13 +56,15 @@ export async function generateMetadata() {
       description,
       type: "website",
       url: "/noticias",
-      siteName: "Repetidores",
+      siteName: "Radioamador.info",
       locale: "pt_PT",
+      images: [{ url: "/og-default.png", width: 512, height: 512, alt: title }],
     },
     twitter: {
       card: "summary",
       title,
       description,
+      images: ["/og-default.png"],
     },
   }
 }

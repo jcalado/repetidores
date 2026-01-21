@@ -10,6 +10,7 @@ export async function generateMetadata() {
   return {
     title: t("title"),
     description: t("subtitle"),
+    keywords: ["associações", "radioamador", "ham radio", "Portugal", "clubes", "repetidores"],
     alternates: {
       canonical: "/associations",
     },
@@ -18,8 +19,15 @@ export async function generateMetadata() {
       description: t("subtitle"),
       type: "website",
       url: "/associations",
-      siteName: "Repetidores",
+      siteName: "Radioamador.info",
       locale: "pt_PT",
+      images: [{ url: "/og-default.png", width: 512, height: 512, alt: t("title") }],
+    },
+    twitter: {
+      card: "summary",
+      title: t("title"),
+      description: t("subtitle"),
+      images: ["/og-default.png"],
     },
   }
 }

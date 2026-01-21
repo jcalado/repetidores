@@ -5,6 +5,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: "Eventos de Radioamadorismo",
   description: "Calendário de eventos, contests e nets de radioamadorismo em Portugal e internacional.",
+  keywords: ["eventos", "contests", "nets", "radioamador", "ham radio", "Portugal", "calendário"],
   alternates: {
     canonical: "/events",
   },
@@ -13,13 +14,15 @@ export const metadata: Metadata = {
     description: "Calendário de eventos, contests e nets de radioamadorismo em Portugal e internacional.",
     type: "website",
     url: "/events",
-    siteName: "Repetidores",
+    siteName: "Radioamador.info",
     locale: "pt_PT",
+    images: [{ url: "/og-default.png", width: 512, height: 512, alt: "Eventos de Radioamadorismo" }],
   },
   twitter: {
     card: "summary",
     title: "Eventos de Radioamadorismo",
     description: "Calendário de eventos, contests e nets de radioamadorismo em Portugal e internacional.",
+    images: ["/og-default.png"],
   },
 }
 

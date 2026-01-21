@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Lista de Repetidores",
   description: "Pesquise e filtre repetidores de rádio amador em Portugal. Visualize em tabela ou mapa interativo.",
+  keywords: ["repetidores", "rádio amador", "ham radio", "Portugal", "VHF", "UHF", "DMR", "D-STAR"],
   alternates: {
     canonical: "/repetidores",
   },
@@ -12,13 +13,15 @@ export const metadata: Metadata = {
     description: "Pesquise e filtre repetidores de rádio amador em Portugal. Visualize em tabela ou mapa interativo.",
     type: "website",
     url: "/repetidores",
-    siteName: "Repetidores",
+    siteName: "Radioamador.info",
     locale: "pt_PT",
+    images: [{ url: "/og-default.png", width: 512, height: 512, alt: "Lista de Repetidores" }],
   },
   twitter: {
     card: "summary",
     title: "Lista de Repetidores",
     description: "Pesquise e filtre repetidores de rádio amador em Portugal. Visualize em tabela ou mapa interativo.",
+    images: ["/og-default.png"],
   },
 };
 

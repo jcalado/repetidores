@@ -215,13 +215,15 @@ export async function generateMetadata({ params }: { params: Promise<{ callsign:
         description,
         type: "website",
         url: `/repeater/${encodeURIComponent(repeater.callsign)}`,
-        siteName: "Repetidores",
+        siteName: "Radioamador.info",
         locale: "pt_PT",
+        images: [{ url: "/og-default.png", width: 512, height: 512, alt: title }],
       },
       twitter: {
         card: "summary",
         title,
         description,
+        images: ["/og-default.png"],
       },
       keywords,
     };
