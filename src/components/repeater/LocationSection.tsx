@@ -1,9 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { BearingIndicator } from "@/components/BearingCompass";
-import { MapPin, Navigation } from "lucide-react";
+import { MapPin, Navigation, ChevronRight, Building2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { SectionCard } from "./SectionCard";
@@ -30,20 +29,30 @@ export function LocationSection({ repeater: r, userLocation }: LocationSectionPr
 
   return (
     <SectionCard icon={Navigation} title="Localização">
-      <div className="space-y-3">
+      <div className="space-y-2">
         {r.association ? (
           <Link
             href={`/association/${r.association.slug}`}
-            className="rounded-lg border p-3 hover:bg-accent transition-colors block"
+            className="group flex items-center gap-3 rounded-lg p-2.5 sm:p-3 bg-ship-cove-50 dark:bg-ship-cove-900/50 hover:bg-ship-cove-100 dark:hover:bg-ship-cove-800/50 transition-colors"
           >
-            <div className="text-xs uppercase tracking-wider text-muted-foreground">
-              {t("owner")}
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800">
+              <Building2 className="h-4 w-4 text-ship-cove-600 dark:text-ship-cove-400" />
             </div>
-            <div className="mt-1 text-sm flex items-center gap-2">
-              <span className="text-primary font-medium">{r.association.abbreviation}</span>
-              <span className="text-muted-foreground">-</span>
-              <span className="truncate">{r.association.name}</span>
+            <div className="flex-1 min-w-0">
+              <div className="text-[10px] sm:text-xs uppercase tracking-wider text-ship-cove-500 mb-0.5">
+                {t("owner")}
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <span className="font-medium text-ship-cove-900 dark:text-ship-cove-100">
+                  {r.association.abbreviation}
+                </span>
+                <span className="text-ship-cove-400">-</span>
+                <span className="truncate text-ship-cove-600 dark:text-ship-cove-400">
+                  {r.association.name}
+                </span>
+              </div>
             </div>
+            <ChevronRight className="h-4 w-4 text-ship-cove-400 opacity-0 group-hover:opacity-100 transition-opacity" />
           </Link>
         ) : (
           <InfoCard label={t("owner")} value={r.owner || "–"} />
@@ -55,11 +64,15 @@ export function LocationSection({ repeater: r, userLocation }: LocationSectionPr
             osmUrl ? (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" asChild>
-                    <a href={osmUrl} target="_blank" rel="noopener noreferrer">
-                      <MapPin className="h-4 w-4" />
-                    </a>
-                  </Button>
+                  <a
+                    href={osmUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-7 w-7 items-center justify-center rounded-md bg-ship-cove-100 dark:bg-ship-cove-800 text-ship-cove-600 dark:text-ship-cove-400 hover:bg-ship-cove-200 dark:hover:bg-ship-cove-700 transition-colors"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <MapPin className="h-3.5 w-3.5" />
+                  </a>
                 </TooltipTrigger>
                 <TooltipContent>Abrir no OpenStreetMap</TooltipContent>
               </Tooltip>
@@ -67,9 +80,11 @@ export function LocationSection({ repeater: r, userLocation }: LocationSectionPr
           }
         />
         {hasValidLocations && (
-          <div className="rounded-lg bg-gradient-to-r from-ship-cove-50 to-transparent dark:from-ship-cove-950/50 dark:to-transparent p-2 sm:p-3 border border-ship-cove-200/50 dark:border-ship-cove-800/50">
+          <div className="rounded-lg bg-gradient-to-r from-ship-cove-100 to-ship-cove-50 dark:from-ship-cove-800/50 dark:to-ship-cove-900/30 p-2.5 sm:p-3 border border-ship-cove-200/50 dark:border-ship-cove-700/50">
             <div className="flex items-center justify-between gap-2">
-              <span className="text-xs sm:text-sm text-muted-foreground">Direção:</span>
+              <span className="text-xs sm:text-sm text-ship-cove-600 dark:text-ship-cove-400">
+                Direção:
+              </span>
               <BearingIndicator
                 userLat={userLocation.latitude}
                 userLon={userLocation.longitude}

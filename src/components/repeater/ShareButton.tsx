@@ -5,15 +5,17 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Check, Share2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 
 interface ShareButtonProps {
   callsign: string;
+  variant?: "default" | "header";
 }
 
 /**
  * Share button with native share API support and clipboard fallback.
  */
-export function ShareButton({ callsign }: ShareButtonProps) {
+export function ShareButton({ callsign, variant = "default" }: ShareButtonProps) {
   const [copied, setCopied] = React.useState(false);
   const t = useTranslations("repeater");
 
@@ -37,6 +39,27 @@ export function ShareButton({ callsign }: ShareButtonProps) {
       // Clipboard failed
     }
   };
+
+  if (variant === "header") {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            onClick={handleShare}
+            className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors"
+            aria-label={t("share")}
+          >
+            {copied ? (
+              <Check className="h-4 w-4 text-emerald-300" />
+            ) : (
+              <Share2 className="h-4 w-4" />
+            )}
+          </button>
+        </TooltipTrigger>
+        <TooltipContent>{t("share")}</TooltipContent>
+      </Tooltip>
+    );
+  }
 
   return (
     <Tooltip>
