@@ -21,7 +21,7 @@ export async function generateMetadata() {
       url: "/associations",
       siteName: "Radioamador.info",
       locale: "pt_PT",
-      images: [{ url: "/og-default.png", width: 512, height: 512, alt: t("title") }],
+      images: [{ url: "/og-default.png", width: 1536, height: 1024, alt: t("title") }],
     },
     twitter: {
       card: "summary",

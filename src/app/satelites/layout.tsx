@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     url: "/satelites",
     siteName: "Radioamador.info",
     locale: "pt_PT",
-    images: [{ url: "/og-default.png", width: 512, height: 512, alt: "Satélites de Radioamador" }],
+    images: [{ url: "/og-default.png", width: 1536, height: 1024, alt: "Satélites de Radioamador" }],
   },
   twitter: {
     card: "summary",

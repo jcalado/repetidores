@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     url: "/qcodes",
     siteName: "Radioamador.info",
     locale: "pt_PT",
-    images: [{ url: "/og-default.png", width: 512, height: 512, alt: "Códigos Q" }],
+    images: [{ url: "/og-default.png", width: 1536, height: 1024, alt: "Códigos Q" }],
   },
   twitter: {
     card: "summary",

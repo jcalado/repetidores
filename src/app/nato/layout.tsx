@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     url: "/nato",
     siteName: "Radioamador.info",
     locale: "pt_PT",
-    images: [{ url: "/og-default.png", width: 512, height: 512, alt: "Alfabeto Fonético NATO" }],
+    images: [{ url: "/og-default.png", width: 1536, height: 1024, alt: "Alfabeto Fonético NATO" }],
   },
   twitter: {
     card: "summary",

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     url: "/antenna",
     siteName: "Radioamador.info",
     locale: "pt_PT",
-    images: [{ url: "/og-default.png", width: 512, height: 512, alt: "Calculadora de Antenas" }],
+    images: [{ url: "/og-default.png", width: 1536, height: 1024, alt: "Calculadora de Antenas" }],
   },
   twitter: {
     card: "summary",

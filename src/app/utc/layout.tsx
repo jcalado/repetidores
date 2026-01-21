@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     url: "/utc",
     siteName: "Radioamador.info",
     locale: "pt_PT",
-    images: [{ url: "/og-default.png", width: 512, height: 512, alt: "Relógio UTC" }],
+    images: [{ url: "/og-default.png", width: 1536, height: 1024, alt: "Relógio UTC" }],
   },
   twitter: {
     card: "summary",

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     url: "/bands",
     siteName: "Radioamador.info",
     locale: "pt_PT",
-    images: [{ url: "/og-default.png", width: 512, height: 512, alt: "Plano de Bandas" }],
+    images: [{ url: "/og-default.png", width: 1536, height: 1024, alt: "Plano de Bandas" }],
   },
   twitter: {
     card: "summary",
