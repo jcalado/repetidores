@@ -1,25 +1,22 @@
 "use client";
 
 /**
- * CalendarView component - calendar with month and week views
+ * CalendarView component - Full-width calendar with month and week views
+ * Inspired by Google Calendar / Apple Calendar design patterns
  */
 
 import { useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { EventCard } from "./EventCard";
-import { EventCardCompact } from "./EventCardCompact";
 import {
   dateKeyLocal,
   eventOccursOnDay,
   getWeekStart,
   getWeekDays,
-  formatWeekRange,
   formatTime,
 } from "./utils/formatters";
+import { getTagIconBg } from "./utils/tagColors";
 import type { EventItem, TranslationFunction } from "./types";
 
 interface CalendarViewProps {
@@ -29,35 +26,74 @@ interface CalendarViewProps {
 
 // Week day names in Portuguese
 const WEEK_DAYS_PT = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+const WEEK_DAYS_FULL_PT = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
+const MONTHS_PT = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
 export function CalendarView({ events, t }: CalendarViewProps) {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
-  const [calendarTab, setCalendarTab] = useState<string>("month");
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [viewMode, setViewMode] = useState<"month" | "week">("month");
   const [weekStart, setWeekStart] = useState<Date>(() => getWeekStart(new Date()));
 
-  // Count events per day for calendar badges
-  const countsByDay = useMemo(() => {
-    const map = new Map<string, number>();
+  // Get all days for the current month view (including padding days)
+  const monthDays = useMemo(() => {
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth();
+
+    // First day of the month
+    const firstDay = new Date(year, month, 1);
+    // Last day of the month
+    const lastDay = new Date(year, month + 1, 0);
+
+    // Get the day of week for the first day (0 = Sunday, adjust for Monday start)
+    let startPadding = firstDay.getDay() - 1;
+    if (startPadding < 0) startPadding = 6; // Sunday becomes 6
+
+    const days: Array<{ date: Date; isCurrentMonth: boolean }> = [];
+
+    // Add padding days from previous month
+    for (let i = startPadding - 1; i >= 0; i--) {
+      const date = new Date(year, month, -i);
+      days.push({ date, isCurrentMonth: false });
+    }
+
+    // Add days of current month
+    for (let i = 1; i <= lastDay.getDate(); i++) {
+      days.push({ date: new Date(year, month, i), isCurrentMonth: true });
+    }
+
+    // Add padding days for next month to complete the grid
+    const remainingDays = 42 - days.length; // 6 rows * 7 days
+    for (let i = 1; i <= remainingDays; i++) {
+      days.push({ date: new Date(year, month + 1, i), isCurrentMonth: false });
+    }
+
+    return days;
+  }, [currentMonth]);
+
+  // Group events by day
+  const eventsByDay = useMemo(() => {
+    const map = new Map<string, EventItem[]>();
 
     for (const event of events) {
       const startDate = new Date(event.start);
       const endDate = event.end ? new Date(event.end) : startDate;
 
-      // Iterate through each day from start to end
-      const currentDay = new Date(
-        startDate.getFullYear(),
-        startDate.getMonth(),
-        startDate.getDate()
-      );
-      const lastDay = new Date(
-        endDate.getFullYear(),
-        endDate.getMonth(),
-        endDate.getDate()
-      );
+      const currentDay = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+      const lastDay = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
 
       while (currentDay <= lastDay) {
         const k = dateKeyLocal(currentDay);
-        map.set(k, (map.get(k) ?? 0) + 1);
+        const existing = map.get(k) || [];
+        if (!existing.find(e => e.id === event.id)) {
+          existing.push(event);
+          existing.sort((a, b) => {
+            if (a.isFeatured && !b.isFeatured) return -1;
+            if (!a.isFeatured && b.isFeatured) return 1;
+            return new Date(a.start).getTime() - new Date(b.start).getTime();
+          });
+          map.set(k, existing);
+        }
         currentDay.setDate(currentDay.getDate() + 1);
       }
     }
@@ -67,16 +103,8 @@ export function CalendarView({ events, t }: CalendarViewProps) {
   // Events for selected date
   const selectedEvents = useMemo(() => {
     if (!selectedDate) return [];
-    return events
-      .filter((e) => eventOccursOnDay(e.start, e.end, selectedDate))
-      .sort((a, b) => {
-        // Featured events come first
-        if (a.isFeatured && !b.isFeatured) return -1;
-        if (!a.isFeatured && b.isFeatured) return 1;
-        // Then sort by start time
-        return new Date(a.start).getTime() - new Date(b.start).getTime();
-      });
-  }, [events, selectedDate]);
+    return eventsByDay.get(dateKeyLocal(selectedDate)) || [];
+  }, [eventsByDay, selectedDate]);
 
   // Week days array
   const weekDays = useMemo(() => getWeekDays(weekStart), [weekStart]);
@@ -84,23 +112,29 @@ export function CalendarView({ events, t }: CalendarViewProps) {
   // Events grouped by week day
   const eventsByWeekDay = useMemo(() => {
     const result: Map<string, EventItem[]> = new Map();
-
     for (const day of weekDays) {
       const key = dateKeyLocal(day);
-      const dayEvents = events
-        .filter((e) => eventOccursOnDay(e.start, e.end, day))
-        .sort((a, b) => {
-          if (a.isFeatured && !b.isFeatured) return -1;
-          if (!a.isFeatured && b.isFeatured) return 1;
-          return new Date(a.start).getTime() - new Date(b.start).getTime();
-        });
-      result.set(key, dayEvents);
+      result.set(key, eventsByDay.get(key) || []);
     }
-
     return result;
-  }, [events, weekDays]);
+  }, [eventsByDay, weekDays]);
 
-  // Navigation for week view
+  // Navigation
+  const goToPreviousMonth = () => {
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
+  };
+
+  const goToNextMonth = () => {
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
+  };
+
+  const goToToday = () => {
+    const today = new Date();
+    setCurrentMonth(new Date(today.getFullYear(), today.getMonth(), 1));
+    setWeekStart(getWeekStart(today));
+    setSelectedDate(today);
+  };
+
   const goToPreviousWeek = () => {
     const newWeekStart = new Date(weekStart);
     newWeekStart.setDate(weekStart.getDate() - 7);
@@ -113,258 +147,296 @@ export function CalendarView({ events, t }: CalendarViewProps) {
     setWeekStart(newWeekStart);
   };
 
-  const goToCurrentWeek = () => {
-    setWeekStart(getWeekStart(new Date()));
-  };
-
-  // Custom day component for calendar with event count badge
-  const CustomDay = ({
-    day,
-    ...props
-  }: {
-    day: { date: Date };
-    className?: string;
-    children?: React.ReactNode;
-  } & React.TdHTMLAttributes<HTMLTableCellElement>) => {
-    const count = countsByDay.get(dateKeyLocal(day.date)) ?? 0;
-    return (
-      <td {...props} className={`${props.className} relative`}>
-        {props.children}
-        {count > 0 && (
-          <span className="absolute top-1 right-1 text-[8px] leading-none bg-primary text-primary-foreground font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center pointer-events-none">
-            {count > 9 ? "9+" : count}
-          </span>
-        )}
-      </td>
-    );
-  };
+  const todayKey = dateKeyLocal(new Date());
 
   return (
-    <Tabs value={calendarTab} onValueChange={setCalendarTab} className="w-full">
-      <TabsList className="grid grid-cols-2 w-full max-w-xs mb-4">
-        <TabsTrigger value="month">{t("monthView") || "Mês"}</TabsTrigger>
-        <TabsTrigger value="week">{t("weekView") || "Semana"}</TabsTrigger>
-      </TabsList>
+    <div className="w-full">
+      {/* Calendar Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          {/* View mode toggle */}
+          <div className="flex rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800/50 p-1">
+            <button
+              onClick={() => setViewMode("month")}
+              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                viewMode === "month"
+                  ? "bg-white dark:bg-ship-cove-900 text-ship-cove-900 dark:text-ship-cove-100 shadow-sm"
+                  : "text-ship-cove-600 dark:text-ship-cove-400 hover:text-ship-cove-900 dark:hover:text-ship-cove-200"
+              }`}
+            >
+              {t("monthView") || "Mês"}
+            </button>
+            <button
+              onClick={() => setViewMode("week")}
+              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                viewMode === "week"
+                  ? "bg-white dark:bg-ship-cove-900 text-ship-cove-900 dark:text-ship-cove-100 shadow-sm"
+                  : "text-ship-cove-600 dark:text-ship-cove-400 hover:text-ship-cove-900 dark:hover:text-ship-cove-200"
+              }`}
+            >
+              {t("weekView") || "Semana"}
+            </button>
+          </div>
+
+          {/* Navigation */}
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={viewMode === "month" ? goToPreviousMonth : goToPreviousWeek}
+              className="h-9 w-9"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={viewMode === "month" ? goToNextMonth : goToNextWeek}
+              className="h-9 w-9"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </Button>
+          </div>
+
+          {/* Current period */}
+          <h2 className="text-xl font-bold text-ship-cove-900 dark:text-ship-cove-100">
+            {viewMode === "month" ? (
+              `${MONTHS_PT[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`
+            ) : (
+              `${weekDays[0].getDate()} - ${weekDays[6].getDate()} ${MONTHS_PT[weekDays[6].getMonth()]} ${weekDays[6].getFullYear()}`
+            )}
+          </h2>
+        </div>
+
+        <Button variant="outline" size="sm" onClick={goToToday} className="gap-2">
+          <CalendarIcon className="h-4 w-4" />
+          {t("today") || "Hoje"}
+        </Button>
+      </div>
 
       {/* Month View */}
-      <TabsContent value="month" className="mt-0">
-        <div className="grid md:grid-cols-3 gap-6">
-          <div className="md:col-span-1">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
-              className="rounded-md border"
-              classNames={{
-                root: "w-full",
-              }}
-              components={{
-                Day: CustomDay,
-              }}
-            />
-          </div>
-
-          <div className="md:col-span-2">
-            <Card className="rounded-2xl">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">
-                  {t("eventsOn")}{" "}
-                  {selectedDate
-                    ? selectedDate.toLocaleDateString("pt-PT", {
-                        weekday: "long",
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })
-                    : "—"}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {selectedEvents.length === 0 && (
-                  <div className="text-sm text-muted-foreground py-4">
-                    {t("noEventsOnDate")}
-                  </div>
-                )}
-                {selectedEvents.map((evt) => (
-                  <EventCard key={evt.id} event={evt} t={t} />
-                ))}
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </TabsContent>
-
-      {/* Week View */}
-      <TabsContent value="week" className="mt-0">
-        <Card className="rounded-2xl">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={goToPreviousWeek}
-                  className="h-8 w-8"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <CardTitle className="text-base sm:text-lg">
-                  {formatWeekRange(weekStart)}
-                </CardTitle>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={goToNextWeek}
-                  className="h-8 w-8"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={goToCurrentWeek}
-                className="text-xs"
+      {viewMode === "month" && (
+        <div className="rounded-xl border border-ship-cove-200 dark:border-ship-cove-800 overflow-hidden bg-white dark:bg-ship-cove-950/50">
+          {/* Week day headers */}
+          <div className="grid grid-cols-7 bg-ship-cove-50 dark:bg-ship-cove-900/50 border-b border-ship-cove-200 dark:border-ship-cove-800">
+            {WEEK_DAYS_PT.map((day) => (
+              <div
+                key={day}
+                className="px-2 py-3 text-center text-xs font-semibold text-ship-cove-600 dark:text-ship-cove-400 uppercase tracking-wider"
               >
-                {t("today") || "Hoje"}
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {/* Week grid */}
-            <div className="grid grid-cols-7 gap-1 sm:gap-2">
-              {/* Header row */}
-              {weekDays.map((day, idx) => {
-                const isToday =
-                  dateKeyLocal(day) === dateKeyLocal(new Date());
-                return (
-                  <div
-                    key={dateKeyLocal(day)}
-                    className={`text-center py-2 rounded-lg ${
-                      isToday
-                        ? "bg-primary/10 text-primary font-semibold"
-                        : "text-muted-foreground"
-                    }`}
-                  >
-                    <div className="text-xs font-medium">
-                      {WEEK_DAYS_PT[idx]}
-                    </div>
-                    <div className="text-lg sm:text-xl font-bold">
-                      {day.getDate()}
-                    </div>
-                  </div>
-                );
-              })}
+                {day}
+              </div>
+            ))}
+          </div>
 
-              {/* Events row */}
-              {weekDays.map((day) => {
-                const dayKey = dateKeyLocal(day);
-                const dayEvents = eventsByWeekDay.get(dayKey) || [];
-                const isToday = dayKey === dateKeyLocal(new Date());
+          {/* Calendar grid */}
+          <div className="grid grid-cols-7">
+            {monthDays.map(({ date, isCurrentMonth }, index) => {
+              const dayKey = dateKeyLocal(date);
+              const dayEvents = eventsByDay.get(dayKey) || [];
+              const isToday = dayKey === todayKey;
+              const isSelected = selectedDate && dayKey === dateKeyLocal(selectedDate);
 
-                return (
-                  <div
-                    key={`events-${dayKey}`}
-                    className={`min-h-[120px] sm:min-h-[150px] p-1 sm:p-2 rounded-lg border ${
-                      isToday
-                        ? "border-primary/30 bg-primary/5"
-                        : "border-border/50"
-                    }`}
-                  >
-                    {dayEvents.length === 0 ? (
-                      <div className="h-full flex items-center justify-center text-xs text-muted-foreground">
-                        —
-                      </div>
-                    ) : (
-                      <div className="space-y-1">
-                        {dayEvents.slice(0, 3).map((event) => (
-                          <WeekEventItem
-                            key={event.id}
-                            event={event}
-                            t={t}
-                          />
-                        ))}
-                        {dayEvents.length > 3 && (
-                          <div className="text-xs text-muted-foreground text-center pt-1">
-                            +{dayEvents.length - 3} {t("more") || "mais"}
-                          </div>
-                        )}
-                      </div>
+              return (
+                <div
+                  key={index}
+                  onClick={() => setSelectedDate(date)}
+                  className={`min-h-[100px] sm:min-h-[120px] p-1.5 border-b border-r border-ship-cove-100 dark:border-ship-cove-800/50 cursor-pointer transition-colors ${
+                    !isCurrentMonth ? "bg-ship-cove-50/50 dark:bg-ship-cove-900/20" : ""
+                  } ${isSelected ? "bg-ship-cove-100 dark:bg-ship-cove-800/50" : "hover:bg-ship-cove-50 dark:hover:bg-ship-cove-900/30"}`}
+                >
+                  {/* Day number */}
+                  <div className="flex items-center justify-between mb-1">
+                    <span
+                      className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-sm font-medium ${
+                        isToday
+                          ? "bg-ship-cove-600 text-white"
+                          : isCurrentMonth
+                            ? "text-ship-cove-900 dark:text-ship-cove-100"
+                            : "text-ship-cove-400 dark:text-ship-cove-600"
+                      }`}
+                    >
+                      {date.getDate()}
+                    </span>
+                    {dayEvents.length > 3 && (
+                      <span className="text-[10px] text-ship-cove-500 dark:text-ship-cove-400 font-medium">
+                        +{dayEvents.length - 3}
+                      </span>
                     )}
                   </div>
-                );
-              })}
-            </div>
 
-            {/* Selected day events (mobile-friendly detail) */}
-            <div className="mt-6 sm:hidden">
-              <h3 className="font-semibold mb-3">
-                {t("eventsThisWeek") || "Eventos esta semana"}
-              </h3>
-              <div className="space-y-2">
-                {weekDays.map((day) => {
-                  const dayKey = dateKeyLocal(day);
-                  const dayEvents = eventsByWeekDay.get(dayKey) || [];
-                  if (dayEvents.length === 0) return null;
+                  {/* Events */}
+                  <div className="space-y-0.5">
+                    {dayEvents.slice(0, 3).map((event) => (
+                      <CalendarEventPill key={event.id} event={event} />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
-                  return (
-                    <div key={dayKey} className="space-y-2">
-                      <h4 className="text-sm font-medium text-muted-foreground">
-                        {day.toLocaleDateString("pt-PT", {
-                          weekday: "long",
-                          day: "numeric",
-                        })}
-                      </h4>
+      {/* Week View */}
+      {viewMode === "week" && (
+        <div className="rounded-xl border border-ship-cove-200 dark:border-ship-cove-800 overflow-hidden bg-white dark:bg-ship-cove-950/50">
+          {/* Week header */}
+          <div className="grid grid-cols-7 bg-ship-cove-50 dark:bg-ship-cove-900/50 border-b border-ship-cove-200 dark:border-ship-cove-800">
+            {weekDays.map((day, idx) => {
+              const isToday = dateKeyLocal(day) === todayKey;
+              return (
+                <div
+                  key={dateKeyLocal(day)}
+                  className={`px-2 py-3 text-center border-r last:border-r-0 border-ship-cove-200 dark:border-ship-cove-800 ${
+                    isToday ? "bg-ship-cove-100 dark:bg-ship-cove-800/50" : ""
+                  }`}
+                >
+                  <div className="text-xs font-medium text-ship-cove-500 dark:text-ship-cove-400 uppercase tracking-wider">
+                    {WEEK_DAYS_PT[idx]}
+                  </div>
+                  <div
+                    className={`text-2xl font-bold mt-1 ${
+                      isToday
+                        ? "text-ship-cove-600 dark:text-ship-cove-300"
+                        : "text-ship-cove-900 dark:text-ship-cove-100"
+                    }`}
+                  >
+                    {day.getDate()}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Week events grid */}
+          <div className="grid grid-cols-7 min-h-[400px]">
+            {weekDays.map((day) => {
+              const dayKey = dateKeyLocal(day);
+              const dayEvents = eventsByWeekDay.get(dayKey) || [];
+              const isToday = dayKey === todayKey;
+
+              return (
+                <div
+                  key={`events-${dayKey}`}
+                  className={`p-2 border-r last:border-r-0 border-ship-cove-100 dark:border-ship-cove-800/50 ${
+                    isToday ? "bg-ship-cove-50/50 dark:bg-ship-cove-900/20" : ""
+                  }`}
+                >
+                  {dayEvents.length === 0 ? (
+                    <div className="h-full flex items-center justify-center text-sm text-ship-cove-400 dark:text-ship-cove-600">
+                      —
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
                       {dayEvents.map((event) => (
-                        <EventCardCompact
-                          key={event.id}
-                          event={event}
-                          t={t}
-                          showCountdown={false}
-                        />
+                        <WeekEventCard key={event.id} event={event} />
                       ))}
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </TabsContent>
-    </Tabs>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Selected date events panel */}
+      {selectedDate && selectedEvents.length > 0 && viewMode === "month" && (
+        <div className="mt-6 rounded-xl border border-ship-cove-200 dark:border-ship-cove-800 bg-white dark:bg-ship-cove-950/50 p-4">
+          <h3 className="text-lg font-bold text-ship-cove-900 dark:text-ship-cove-100 mb-4">
+            {t("eventsOn") || "Eventos em"}{" "}
+            {selectedDate.toLocaleDateString("pt-PT", {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+            })}
+          </h3>
+          <div className="space-y-3">
+            {selectedEvents.map((event) => (
+              <SelectedDayEventCard key={event.id} event={event} />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
-// Compact event item for week grid cells
-function WeekEventItem({
-  event,
-  t,
-}: {
-  event: EventItem;
-  t: (key: string) => string;
-}) {
-  const tagColors =
-    event.tag === "Net"
-      ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800"
-      : event.tag === "Contest"
-        ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800"
-        : event.tag === "Meetup"
-          ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800"
-          : event.tag === "Satellite"
-            ? "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800"
-            : event.tag === "DX"
-              ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
-              : "bg-slate-100 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700";
+// Small event pill for month view cells
+function CalendarEventPill({ event }: { event: EventItem }) {
+  const iconBgClass = getTagIconBg(event.tag);
 
   return (
-    <a
+    <Link
       href={`/events/${encodeURIComponent(event.id)}/`}
-      className={`block p-1.5 rounded text-[10px] sm:text-xs border truncate hover:opacity-80 transition-opacity ${tagColors}`}
+      onClick={(e) => e.stopPropagation()}
+      className={`block px-1.5 py-0.5 rounded text-[10px] sm:text-xs font-medium text-white truncate hover:opacity-90 transition-opacity ${iconBgClass}`}
       title={event.title}
     >
-      <div className="font-medium truncate">{formatTime(event.start)}</div>
-      <div className="truncate opacity-80">{event.title}</div>
-    </a>
+      {event.title}
+    </Link>
+  );
+}
+
+// Event card for week view
+function WeekEventCard({ event }: { event: EventItem }) {
+  const iconBgClass = getTagIconBg(event.tag);
+  const time = formatTime(event.start);
+
+  return (
+    <Link
+      href={`/events/${encodeURIComponent(event.id)}/`}
+      className="block rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+    >
+      <div className={`${iconBgClass} px-2 py-1`}>
+        <span className="text-[10px] font-bold text-white/90">{time}</span>
+      </div>
+      <div className="bg-ship-cove-50 dark:bg-ship-cove-900/50 px-2 py-1.5">
+        <span className="text-xs font-medium text-ship-cove-900 dark:text-ship-cove-100 line-clamp-2">
+          {event.title}
+        </span>
+        {event.location && (
+          <span className="text-[10px] text-ship-cove-500 dark:text-ship-cove-400 truncate block mt-0.5">
+            {event.location}
+          </span>
+        )}
+      </div>
+    </Link>
+  );
+}
+
+// Event card for selected date panel
+function SelectedDayEventCard({ event }: { event: EventItem }) {
+  const iconBgClass = getTagIconBg(event.tag);
+  const time = formatTime(event.start);
+
+  return (
+    <Link
+      href={`/events/${encodeURIComponent(event.id)}/`}
+      className="flex gap-3 p-3 rounded-lg bg-ship-cove-50 dark:bg-ship-cove-900/30 hover:bg-ship-cove-100 dark:hover:bg-ship-cove-800/50 transition-colors group"
+    >
+      {/* Time badge */}
+      <div className={`${iconBgClass} px-3 py-2 rounded-lg text-center shrink-0`}>
+        <span className="text-sm font-bold text-white">{time}</span>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        <h4 className="font-semibold text-ship-cove-900 dark:text-ship-cove-100 group-hover:text-ship-cove-600 dark:group-hover:text-ship-cove-300 transition-colors">
+          {event.title}
+        </h4>
+        <div className="flex items-center gap-3 mt-1 text-sm text-ship-cove-500 dark:text-ship-cove-400">
+          <span className="font-medium">{event.tag}</span>
+          {event.location && (
+            <>
+              <span>•</span>
+              <span className="truncate">{event.location}</span>
+            </>
+          )}
+        </div>
+      </div>
+    </Link>
   );
 }
 
