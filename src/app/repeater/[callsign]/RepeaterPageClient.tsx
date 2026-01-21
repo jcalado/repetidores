@@ -2,10 +2,7 @@
 
 import { Repeater } from "@/app/columns";
 import BearingCompass from "@/components/BearingCompass";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { useUserLocation } from "@/contexts/UserLocationContext";
 import { useDeviceCompass } from "@/hooks/useDeviceCompass";
 import { cn } from "@/lib/utils";
@@ -15,10 +12,10 @@ import {
   Building2,
   Check,
   ChevronRight,
-  Clipboard,
   Compass,
   Copy,
   ExternalLink,
+  FileText,
   Heart,
   MapPin,
   Navigation,
@@ -26,6 +23,8 @@ import {
   Share2,
   Wifi,
   Zap,
+  Antenna,
+  Globe,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -46,15 +45,15 @@ import { operationalStatusConfig } from "@/components/repeater/utils/statusConfi
 const MiniMap = dynamic(() => import("./MiniMap"), {
   ssr: false,
   loading: () => (
-    <div className="h-64 bg-muted animate-pulse rounded-lg flex items-center justify-center">
-      <span className="text-muted-foreground text-sm">A carregar mapa...</span>
+    <div className="h-64 bg-ship-cove-100 dark:bg-ship-cove-900/50 animate-pulse rounded-lg flex items-center justify-center">
+      <span className="text-ship-cove-500 text-sm">A carregar mapa...</span>
     </div>
   ),
 });
 
 // Haversine distance calculation
 function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const R = 6371; // Earth's radius in km
+  const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLon = ((lon2 - lon1) * Math.PI) / 180;
   const a =
@@ -115,307 +114,345 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
       .slice(0, 5);
   }, [allRepeaters, r.callsign, r.latitude, r.longitude]);
 
+  // Status configuration
+  const statusConfig = r.status ? operationalStatusConfig[r.status] : null;
+
   return (
     <div className="space-y-6">
       {/* Back Navigation */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/#tabela">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            {tNav("repeaters")}
-          </Link>
-        </Button>
-      </div>
+      <Link
+        href="/repetidores"
+        className="inline-flex items-center gap-2 text-ship-cove-600 dark:text-ship-cove-400 hover:text-ship-cove-900 dark:hover:text-ship-cove-100 transition-colors group"
+      >
+        <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+        <span>{tNav("repeaters")}</span>
+      </Link>
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-bold tracking-tight">{r.callsign}</h1>
-            <button
-              onClick={handleFavoriteToggle}
-              className="p-2 rounded-full hover:bg-accent transition-colors"
-              aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
-            >
-              <Heart
-                className={cn(
-                  "h-6 w-6 transition-colors",
-                  favorite ? "fill-red-500 text-red-500" : "text-muted-foreground hover:text-red-400"
+      {/* Hero Header */}
+      <header className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-ship-cove-600 via-ship-cove-700 to-ship-cove-800 dark:from-ship-cove-800 dark:via-ship-cove-900 dark:to-ship-cove-950 p-6 sm:p-8 shadow-xl shadow-ship-cove-500/20">
+        {/* Background pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="grid-repeater" width="32" height="32" patternUnits="userSpaceOnUse">
+                <path d="M 32 0 L 0 0 0 32" fill="none" stroke="currentColor" strokeWidth="1"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid-repeater)" className="text-white" />
+          </svg>
+        </div>
+
+        {/* Decorative elements */}
+        <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-ship-cove-500/20 blur-2xl" />
+        <div className="absolute -left-4 -bottom-4 w-24 h-24 rounded-full bg-ship-cove-400/20 blur-xl" />
+
+        {/* Floating icons */}
+        <div className="absolute right-6 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-4 opacity-20">
+          <Radio className="h-12 w-12 text-white" />
+          <Antenna className="h-10 w-10 text-white" />
+        </div>
+
+        <div className="relative">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div>
+              {/* Callsign and favorite */}
+              <div className="flex items-center gap-3 mb-3">
+                <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight font-mono">
+                  {r.callsign}
+                </h1>
+                <button
+                  onClick={handleFavoriteToggle}
+                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                  aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
+                >
+                  <Heart
+                    className={cn(
+                      "h-5 w-5 transition-colors",
+                      favorite ? "fill-red-400 text-red-400" : "text-white/70 hover:text-red-300"
+                    )}
+                  />
+                </button>
+              </div>
+
+              {/* Badges */}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="px-3 py-1 rounded-md bg-white/10 text-white text-sm font-medium backdrop-blur-sm">
+                  {band}
+                </span>
+                {r.modulation && (
+                  <span className="px-3 py-1 rounded-md bg-ship-cove-500/30 text-ship-cove-100 text-sm font-medium">
+                    {r.modulation.toUpperCase()}
+                  </span>
                 )}
-              />
-            </button>
-          </div>
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">{band}</Badge>
-            {r.modulation && <Badge variant="outline">{r.modulation.toUpperCase()}</Badge>}
-            {r.qth_locator && <Badge variant="outline">QTH {r.qth_locator}</Badge>}
-            {r.dmr && (
-              <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
-                DMR
-              </Badge>
-            )}
-            {r.dstar && (
-              <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-                D-STAR
-              </Badge>
-            )}
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <ShareButton callsign={r.callsign} />
-          <Button asChild>
-            <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
-              <MapPin className="mr-2 h-4 w-4" />
-              {t("maps")}
-            </a>
-          </Button>
-        </div>
-      </div>
+                {r.qth_locator && (
+                  <span className="px-3 py-1 rounded-md bg-white/10 text-white text-sm font-mono backdrop-blur-sm">
+                    {r.qth_locator}
+                  </span>
+                )}
+                {r.dmr && (
+                  <span className="px-3 py-1 rounded-md bg-purple-500/30 text-purple-100 text-sm font-medium">
+                    DMR
+                  </span>
+                )}
+                {r.dstar && (
+                  <span className="px-3 py-1 rounded-md bg-blue-500/30 text-blue-100 text-sm font-medium">
+                    D-STAR
+                  </span>
+                )}
+              </div>
+            </div>
 
-      {/* Operational Status */}
-      {r.status && r.status !== "unknown" && (
-        <OperationalStatusBanner status={r.status} lastVerified={r.lastVerified} />
-      )}
+            {/* Action buttons */}
+            <div className="flex items-center gap-2">
+              <ShareButton callsign={r.callsign} />
+              <a
+                href={mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-ship-cove-900 font-medium text-sm hover:bg-ship-cove-50 transition-colors"
+              >
+                <MapPin className="h-4 w-4" />
+                {t("maps")}
+              </a>
+            </div>
+          </div>
 
-      {/* Quick Program Card */}
-      <QuickProgramCard repeater={r} />
+          {/* Status badge in header */}
+          {statusConfig && r.status !== "unknown" && (
+            <div className={cn(
+              "mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium",
+              r.status === "active" && "bg-emerald-500/20 text-emerald-100",
+              r.status === "maintenance" && "bg-amber-500/20 text-amber-100",
+              r.status === "offline" && "bg-red-500/20 text-red-100"
+            )}>
+              <div className={cn(
+                "h-2 w-2 rounded-full",
+                r.status === "active" && "bg-emerald-400 animate-pulse",
+                r.status === "maintenance" && "bg-amber-400",
+                r.status === "offline" && "bg-red-400"
+              )} />
+              {statusConfig.label}
+              {r.lastVerified && (
+                <span className="text-white/60 text-xs">
+                  · Verificado {new Date(r.lastVerified).toLocaleDateString("pt-PT")}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      </header>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Frequency Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Radio className="h-5 w-5" />
-              Frequências
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <InfoItem
-                label={t("output")}
-                value={fmtMHzDisplay(r.outputFrequency)}
-                copyValue={fmtMHzCopy(r.outputFrequency)}
-              />
-              <InfoItem
-                label={t("input")}
-                value={fmtMHzDisplay(r.inputFrequency)}
-                copyValue={fmtMHzCopy(r.inputFrequency)}
-              />
-              <InfoItem
-                label={t("offset")}
-                value={`${sign}${sign ? " " : ""}${offsetDisplay}`}
-                copyValue={`${sign}${offsetCopy}`}
-              />
-              <InfoItem
-                label={t("tone")}
-                value={r.tone ? `${Number(r.tone.toFixed(1))} Hz` : "None"}
-                copyValue={r.tone ? `${Number(r.tone.toFixed(1))}` : undefined}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Map Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <MapPin className="h-5 w-5" />
-              Localização
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <MiniMap
-              latitude={r.latitude}
-              longitude={r.longitude}
-              callsign={r.callsign}
-              userLatitude={userLocation?.latitude}
-              userLongitude={userLocation?.longitude}
+        {/* Frequency Info Panel */}
+        <EquipmentPanel title="Frequências" icon={Radio}>
+          <div className="grid grid-cols-2 gap-4">
+            <FrequencyDisplay
+              label={t("output")}
+              value={fmtMHzDisplay(r.outputFrequency)}
+              copyValue={fmtMHzCopy(r.outputFrequency)}
             />
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">
-                {r.latitude?.toFixed(5)}, {r.longitude?.toFixed(5)}
-              </span>
-              {osmUrl && (
-                <Button variant="ghost" size="sm" asChild>
-                  <a href={osmUrl} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="mr-1 h-3 w-3" />
-                    OpenStreetMap
-                  </a>
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+            <FrequencyDisplay
+              label={t("input")}
+              value={fmtMHzDisplay(r.inputFrequency)}
+              copyValue={fmtMHzCopy(r.inputFrequency)}
+            />
+            <FrequencyDisplay
+              label={t("offset")}
+              value={`${sign}${sign ? " " : ""}${offsetDisplay}`}
+              copyValue={`${sign}${offsetCopy}`}
+            />
+            <FrequencyDisplay
+              label={t("tone")}
+              value={r.tone ? `${Number(r.tone.toFixed(1))} Hz` : "—"}
+              copyValue={r.tone ? `${Number(r.tone.toFixed(1))}` : undefined}
+            />
+          </div>
+        </EquipmentPanel>
+
+        {/* Map Panel */}
+        <EquipmentPanel title="Localização" icon={MapPin}>
+          <MiniMap
+            latitude={r.latitude}
+            longitude={r.longitude}
+            callsign={r.callsign}
+            userLatitude={userLocation?.latitude}
+            userLongitude={userLocation?.longitude}
+          />
+          <div className="flex items-center justify-between text-sm mt-3">
+            <span className="font-mono text-ship-cove-600 dark:text-ship-cove-400 text-xs">
+              {r.latitude?.toFixed(5)}, {r.longitude?.toFixed(5)}
+            </span>
+            {osmUrl && (
+              <a
+                href={osmUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs text-ship-cove-600 dark:text-ship-cove-400 hover:text-ship-cove-900 dark:hover:text-ship-cove-100 transition-colors"
+              >
+                <ExternalLink className="h-3 w-3" />
+                OpenStreetMap
+              </a>
+            )}
+          </div>
+        </EquipmentPanel>
       </div>
 
-      {/* Bearing Compass - shows when user location is available */}
+      {/* Bearing Compass */}
       {hasValidLocations ? (
-        <Card
-          className={cn(
-            "bg-gradient-to-br border-ship-cove-200 dark:border-ship-cove-800",
-            compass.isEnabled
-              ? "from-green-50 to-green-100/50 dark:from-green-950 dark:to-green-900/50 border-green-300 dark:border-green-700"
-              : "from-ship-cove-50 to-ship-cove-100/50 dark:from-ship-cove-950 dark:to-ship-cove-900/50"
-          )}
+        <EquipmentPanel
+          title="Direção para o Repetidor"
+          icon={Compass}
+          accentColor={compass.isEnabled ? "emerald" : undefined}
         >
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between gap-4">
-              <div className="space-y-2">
-                <h3 className="font-medium">Direção para o Repetidor</h3>
-                <p className="text-sm text-muted-foreground">
-                  {compass.isEnabled
-                    ? "Aponte o dispositivo para a direção indicada"
-                    : "Baseado na sua localização atual"}
-                </p>
-                {compass.isSupported && (
-                  <Button
-                    variant={compass.isEnabled ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => compass.toggle()}
-                    className={cn("gap-2", compass.isEnabled && "bg-green-600 hover:bg-green-700")}
-                  >
-                    <Compass className="h-4 w-4" />
-                    {compass.isEnabled ? "Desativar bússola" : "Ativar bússola"}
-                  </Button>
-                )}
-                {compass.error && (
-                  <p className="text-xs text-red-600 dark:text-red-400">{compass.error}</p>
-                )}
-              </div>
-              <BearingCompass
-                userLat={userLocation.latitude}
-                userLon={userLocation.longitude}
-                targetLat={r.latitude}
-                targetLon={r.longitude}
-                size="lg"
-                deviceHeading={compass.heading}
-                isCompassActive={compass.isEnabled}
-              />
+          <div className="flex items-center justify-between gap-4">
+            <div className="space-y-2">
+              <p className="text-sm text-ship-cove-600 dark:text-ship-cove-400">
+                {compass.isEnabled
+                  ? "Aponte o dispositivo para a direção indicada"
+                  : "Baseado na sua localização atual"}
+              </p>
+              {compass.isSupported && (
+                <button
+                  onClick={() => compass.toggle()}
+                  className={cn(
+                    "inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
+                    compass.isEnabled
+                      ? "bg-emerald-500 text-white hover:bg-emerald-600"
+                      : "bg-ship-cove-100 dark:bg-ship-cove-800 text-ship-cove-700 dark:text-ship-cove-300 hover:bg-ship-cove-200 dark:hover:bg-ship-cove-700"
+                  )}
+                >
+                  <Compass className="h-4 w-4" />
+                  {compass.isEnabled ? "Desativar bússola" : "Ativar bússola"}
+                </button>
+              )}
+              {compass.error && (
+                <p className="text-xs text-red-600 dark:text-red-400">{compass.error}</p>
+              )}
             </div>
-          </CardContent>
-        </Card>
+            <BearingCompass
+              userLat={userLocation.latitude}
+              userLon={userLocation.longitude}
+              targetLat={r.latitude}
+              targetLon={r.longitude}
+              size="lg"
+              deviceHeading={compass.heading}
+              isCompassActive={compass.isEnabled}
+            />
+          </div>
+        </EquipmentPanel>
       ) : (
-        <Card className="border-dashed">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <h3 className="font-medium text-muted-foreground">Direção para o Repetidor</h3>
-                <p className="text-sm text-muted-foreground">
-                  Partilhe a sua localização para ver a direção
-                </p>
-              </div>
-              <Button variant="outline" onClick={() => requestLocation()} disabled={isLocating}>
-                <MapPin className="mr-2 h-4 w-4" />
-                {isLocating ? "A localizar..." : "Obter localização"}
-              </Button>
+        <div className="relative overflow-hidden rounded-xl border border-dashed border-ship-cove-300 dark:border-ship-cove-700 bg-ship-cove-50/50 dark:bg-ship-cove-900/20 p-5">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <h3 className="font-medium text-ship-cove-700 dark:text-ship-cove-300">
+                Direção para o Repetidor
+              </h3>
+              <p className="text-sm text-ship-cove-500">
+                Partilhe a sua localização para ver a direção
+              </p>
             </div>
-          </CardContent>
-        </Card>
+            <button
+              onClick={() => requestLocation()}
+              disabled={isLocating}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800 text-ship-cove-700 dark:text-ship-cove-300 font-medium text-sm hover:bg-ship-cove-200 dark:hover:bg-ship-cove-700 transition-colors disabled:opacity-50"
+            >
+              <MapPin className="h-4 w-4" />
+              {isLocating ? "A localizar..." : "Obter localização"}
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Owner/Association Info */}
       {(r.association || r.owner) && (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-muted">
-                <Building2 className="h-6 w-6 text-muted-foreground" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm text-muted-foreground">{t("owner")}</p>
-                {r.association ? (
-                  <Link
-                    href={`/association/${r.association.slug}`}
-                    className="font-medium text-primary hover:underline"
-                  >
-                    {r.association.abbreviation} - {r.association.name}
-                  </Link>
-                ) : (
-                  <p className="font-medium">{r.owner}</p>
-                )}
-              </div>
+        <EquipmentPanel title="Proprietário" icon={Building2}>
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800">
+              <Building2 className="h-6 w-6 text-ship-cove-600 dark:text-ship-cove-400" />
             </div>
-          </CardContent>
-        </Card>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-ship-cove-500 mb-1">{t("owner")}</p>
+              {r.association ? (
+                <Link
+                  href={`/association/${r.association.slug}`}
+                  className="font-medium text-ship-cove-900 dark:text-ship-cove-100 hover:text-ship-cove-600 dark:hover:text-ship-cove-300 transition-colors"
+                >
+                  {r.association.abbreviation} - {r.association.name}
+                </Link>
+              ) : (
+                <p className="font-medium text-ship-cove-900 dark:text-ship-cove-100">{r.owner}</p>
+              )}
+            </div>
+            {r.association && (
+              <ChevronRight className="h-5 w-5 text-ship-cove-400" />
+            )}
+          </div>
+        </EquipmentPanel>
       )}
 
       {/* Technical Specs */}
       {(r.power || r.antennaHeight || r.coverage || r.operatingHours) && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Zap className="h-5 w-5" />
-              Especificações Técnicas
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {r.power && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Potência</p>
-                  <p className="font-medium">{r.power}W</p>
-                </div>
-              )}
-              {r.antennaHeight && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Altura Antena</p>
-                  <p className="font-medium">{r.antennaHeight}m AGL</p>
-                </div>
-              )}
-              {r.coverage && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Cobertura</p>
-                  <p className="font-medium capitalize">{r.coverage}</p>
-                </div>
-              )}
-              {r.operatingHours && (
-                <div>
-                  <p className="text-sm text-muted-foreground">Horário</p>
-                  <p className="font-medium">{r.operatingHours}</p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <EquipmentPanel title="Especificações Técnicas" icon={Zap}>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {r.power && (
+              <TechSpec label="Potência" value={`${r.power}W`} />
+            )}
+            {r.antennaHeight && (
+              <TechSpec label="Altura Antena" value={`${r.antennaHeight}m AGL`} />
+            )}
+            {r.coverage && (
+              <TechSpec label="Cobertura" value={r.coverage} capitalize />
+            )}
+            {r.operatingHours && (
+              <TechSpec label="Horário" value={r.operatingHours} />
+            )}
+          </div>
+        </EquipmentPanel>
       )}
 
       {/* Digital Modes */}
       {(r.dmr || r.dstar || r.echolinkNode || r.allstarNode) && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Wifi className="h-5 w-5" />
-              Modos Digitais & Linking
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <EquipmentPanel title="Modos Digitais & Linking" icon={Wifi}>
+          <div className="space-y-4">
             {/* DMR Details */}
             {r.dmr && (
-              <div className="rounded-lg border p-4 space-y-2">
-                <div className="flex items-center gap-2">
-                  <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+              <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800/50">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="px-2 py-0.5 rounded text-xs font-bold bg-purple-500 text-white">
                     DMR
-                  </Badge>
-                  {r.dmrColorCode && <span className="text-sm">Color Code {r.dmrColorCode}</span>}
+                  </span>
+                  {r.dmrColorCode && (
+                    <span className="text-sm text-purple-700 dark:text-purple-300 font-mono">
+                      Color Code {r.dmrColorCode}
+                    </span>
+                  )}
                 </div>
                 {r.dmrTalkgroups && (
-                  <p className="text-sm text-muted-foreground">Talkgroups: {r.dmrTalkgroups}</p>
+                  <p className="text-sm text-purple-600 dark:text-purple-400">
+                    Talkgroups: {r.dmrTalkgroups}
+                  </p>
                 )}
               </div>
             )}
 
             {/* D-STAR Details */}
             {r.dstar && (
-              <div className="rounded-lg border p-4 space-y-2">
-                <div className="flex items-center gap-2">
-                  <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+              <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="px-2 py-0.5 rounded text-xs font-bold bg-blue-500 text-white">
                     D-STAR
-                  </Badge>
-                  {r.dstarModule && <span className="text-sm">Module {r.dstarModule}</span>}
+                  </span>
+                  {r.dstarModule && (
+                    <span className="text-sm text-blue-700 dark:text-blue-300 font-mono">
+                      Module {r.dstarModule}
+                    </span>
+                  )}
                 </div>
                 {r.dstarReflector && (
-                  <p className="text-sm text-muted-foreground">Reflector: {r.dstarReflector}</p>
+                  <p className="text-sm text-blue-600 dark:text-blue-400">
+                    Reflector: {r.dstarReflector}
+                  </p>
                 )}
               </div>
             )}
@@ -426,34 +463,31 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
                 {r.echolinkNode && (
                   <a
                     href={`echolink://${r.echolinkNode}`}
-                    className="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium hover:bg-accent transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-ship-cove-200 dark:border-ship-cove-700 text-sm font-medium text-ship-cove-700 dark:text-ship-cove-300 hover:bg-ship-cove-50 dark:hover:bg-ship-cove-800 transition-colors"
                   >
                     <Wifi className="h-4 w-4" />
                     EchoLink #{r.echolinkNode}
                   </a>
                 )}
                 {r.allstarNode && (
-                  <div className="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-ship-cove-200 dark:border-ship-cove-700 text-sm font-medium text-ship-cove-700 dark:text-ship-cove-300">
                     <Radio className="h-4 w-4" />
                     AllStar #{r.allstarNode}
                   </div>
                 )}
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </EquipmentPanel>
       )}
 
       {/* Notes */}
       {r.notes && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Notas</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground whitespace-pre-wrap">{r.notes}</p>
-          </CardContent>
-        </Card>
+        <EquipmentPanel title="Notas" icon={FileText}>
+          <p className="text-sm text-ship-cove-700 dark:text-ship-cove-300 whitespace-pre-wrap">
+            {r.notes}
+          </p>
+        </EquipmentPanel>
       )}
 
       {/* Website Link */}
@@ -462,63 +496,113 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
           href={r.website}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+          className="inline-flex items-center gap-2 text-sm text-ship-cove-600 dark:text-ship-cove-400 hover:text-ship-cove-900 dark:hover:text-ship-cove-100 transition-colors"
         >
-          <ExternalLink className="h-4 w-4" />
+          <Globe className="h-4 w-4" />
           Visitar website
+          <ExternalLink className="h-3 w-3 opacity-50" />
         </a>
       )}
 
       {/* Nearby Repeaters */}
       {nearbyRepeaters.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Navigation className="h-5 w-5" />
-              Repetidores Próximos
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {nearbyRepeaters.map((nearby) => (
-                <Link
-                  key={nearby.callsign}
-                  href={`/repeater/${encodeURIComponent(nearby.callsign)}`}
-                  className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent transition-colors group"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-muted group-hover:bg-background transition-colors">
-                      <Radio className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                    <div>
-                      <p className="font-medium">{nearby.callsign}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {nearby.outputFrequency.toFixed(3)} MHz · {nearby.modulation}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <span>{formatDistance(nearby.distance)}</span>
-                    <ChevronRight className="h-4 w-4" />
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <EquipmentPanel title="Repetidores Próximos" icon={Navigation}>
+          <div className="space-y-2">
+            {nearbyRepeaters.map((nearby, index) => (
+              <Link
+                key={nearby.callsign}
+                href={`/repeater/${encodeURIComponent(nearby.callsign)}`}
+                className="flex items-center gap-4 p-3 rounded-lg border border-ship-cove-100 dark:border-ship-cove-800/50 hover:border-ship-cove-300 dark:hover:border-ship-cove-700 bg-white dark:bg-ship-cove-900/30 hover:bg-ship-cove-50 dark:hover:bg-ship-cove-900/50 transition-all group animate-in fade-in slide-in-from-bottom-1 fill-mode-both"
+                style={{ animationDelay: `${index * 30}ms` }}
+              >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800 group-hover:bg-ship-cove-200 dark:group-hover:bg-ship-cove-700 transition-colors">
+                  <Radio className="h-5 w-5 text-ship-cove-600 dark:text-ship-cove-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-mono font-bold text-ship-cove-900 dark:text-ship-cove-100">
+                    {nearby.callsign}
+                  </p>
+                  <p className="text-xs text-ship-cove-500 font-mono">
+                    {nearby.outputFrequency.toFixed(3)} MHz · {nearby.modulation}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-ship-cove-500">
+                  <span className="font-mono tabular-nums">{formatDistance(nearby.distance)}</span>
+                  <ChevronRight className="h-4 w-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                </div>
+              </Link>
+            ))}
+          </div>
+        </EquipmentPanel>
       )}
 
-      <Separator />
+      {/* Separator */}
+      <div className="border-t border-ship-cove-200 dark:border-ship-cove-800" />
 
-      {/* Community Section (unified voting + feedback) */}
+      {/* Community Section */}
       <CommunitySection repeaterId={r.callsign} />
     </div>
   );
 }
 
-// --- Page-specific Components ---
+// --- Reusable Components ---
 
-function InfoItem({
+function EquipmentPanel({
+  title,
+  icon: Icon,
+  children,
+  accentColor,
+}: {
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  children: React.ReactNode;
+  accentColor?: "emerald" | "purple" | "blue";
+}) {
+  return (
+    <div className={cn(
+      "relative overflow-hidden rounded-xl border shadow-sm",
+      accentColor === "emerald"
+        ? "border-emerald-300 dark:border-emerald-700 bg-gradient-to-br from-emerald-50 via-white to-emerald-50/50 dark:from-emerald-950/50 dark:via-ship-cove-950 dark:to-emerald-900/20"
+        : "border-ship-cove-200 dark:border-ship-cove-800/50 bg-gradient-to-br from-white via-white to-ship-cove-50/50 dark:from-ship-cove-950 dark:via-ship-cove-950 dark:to-ship-cove-900/30"
+    )}>
+      {/* Top accent */}
+      <div className={cn(
+        "absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent to-transparent opacity-60",
+        accentColor === "emerald" ? "via-emerald-500" : "via-ship-cove-500"
+      )} />
+
+      <div className="p-5">
+        <h3 className="flex items-center gap-2 text-lg font-semibold text-ship-cove-900 dark:text-ship-cove-100 mb-4">
+          <div className={cn(
+            "flex h-8 w-8 items-center justify-center rounded-lg",
+            accentColor === "emerald"
+              ? "bg-emerald-100 dark:bg-emerald-800"
+              : "bg-ship-cove-100 dark:bg-ship-cove-800"
+          )}>
+            <Icon className={cn(
+              "h-4 w-4",
+              accentColor === "emerald"
+                ? "text-emerald-600 dark:text-emerald-400"
+                : "text-ship-cove-600 dark:text-ship-cove-400"
+            )} />
+          </div>
+          {title}
+        </h3>
+        {children}
+      </div>
+
+      {/* Corner LED */}
+      <div className={cn(
+        "absolute top-3 right-3 h-2 w-2 rounded-full shadow-sm animate-pulse",
+        accentColor === "emerald"
+          ? "bg-emerald-500/80 shadow-emerald-500/50"
+          : "bg-emerald-500/80 shadow-emerald-500/50"
+      )} />
+    </div>
+  );
+}
+
+function FrequencyDisplay({
   label,
   value,
   copyValue,
@@ -542,49 +626,48 @@ function InfoItem({
   }
 
   return (
-    <div>
-      <p className="text-xs uppercase tracking-wider text-muted-foreground">{label}</p>
-      <div className="mt-1 flex items-center gap-2">
-        <span className="font-medium">{value}</span>
+    <div
+      onClick={handleCopy}
+      className={cn(
+        "group p-3 rounded-lg bg-ship-cove-50 dark:bg-ship-cove-900/50 transition-all",
+        isCopyable && "cursor-pointer hover:bg-ship-cove-100 dark:hover:bg-ship-cove-800/50 active:scale-[0.98]"
+      )}
+    >
+      <p className="text-xs uppercase tracking-wider text-ship-cove-500 mb-1">{label}</p>
+      <div className="flex items-center gap-2">
+        <span className="font-mono text-lg font-bold text-ship-cove-900 dark:text-ship-cove-100 tabular-nums">
+          {value}
+        </span>
         {isCopyable && (
-          <button
-            onClick={handleCopy}
-            className="p-1 rounded hover:bg-accent transition-colors"
-            aria-label="Copy"
-          >
-            {copied ? (
-              <Check className="h-3 w-3 text-emerald-600" />
-            ) : (
-              <Copy className="h-3 w-3 text-muted-foreground" />
-            )}
-          </button>
+          copied ? (
+            <Check className="h-4 w-4 text-emerald-500" />
+          ) : (
+            <Copy className="h-4 w-4 text-ship-cove-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+          )
         )}
       </div>
     </div>
   );
 }
 
-function OperationalStatusBanner({
-  status,
-  lastVerified,
+function TechSpec({
+  label,
+  value,
+  capitalize,
 }: {
-  status: "active" | "maintenance" | "offline" | "unknown";
-  lastVerified?: string;
+  label: string;
+  value: string;
+  capitalize?: boolean;
 }) {
-  const cfg = operationalStatusConfig[status];
-  const Icon = cfg.icon;
-
   return (
-    <div className={cn("rounded-lg border p-4 flex items-center gap-3", cfg.bgClass, cfg.borderClass)}>
-      <Icon className={cn("h-5 w-5", cfg.iconClass)} />
-      <div>
-        <p className={cn("font-medium", cfg.textClass)}>Estado: {cfg.label}</p>
-        {lastVerified && (
-          <p className="text-xs text-muted-foreground">
-            Verificado em {new Date(lastVerified).toLocaleDateString("pt-PT")}
-          </p>
-        )}
-      </div>
+    <div className="p-3 rounded-lg bg-ship-cove-50 dark:bg-ship-cove-900/50">
+      <p className="text-xs text-ship-cove-500 mb-1">{label}</p>
+      <p className={cn(
+        "font-medium text-ship-cove-900 dark:text-ship-cove-100",
+        capitalize && "capitalize"
+      )}>
+        {value}
+      </p>
     </div>
   );
 }
@@ -618,123 +701,18 @@ function ShareButton({ callsign }: { callsign: string }) {
   };
 
   return (
-    <Button variant="outline" onClick={handleShare} aria-label={t("share")}>
+    <button
+      onClick={handleShare}
+      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 text-white font-medium text-sm hover:bg-white/20 transition-colors backdrop-blur-sm"
+      aria-label={t("share")}
+    >
       {copied ? (
-        <Check className="mr-2 h-4 w-4 text-emerald-600" />
+        <Check className="h-4 w-4 text-emerald-300" />
       ) : (
-        <Share2 className="mr-2 h-4 w-4" />
+        <Share2 className="h-4 w-4" />
       )}
       {t("share")}
-    </Button>
+    </button>
   );
 }
 
-// --- Quick Program Card ---
-function QuickProgramCard({ repeater: r }: { repeater: Repeater }) {
-  const [copied, setCopied] = React.useState(false);
-
-  // Build programming info text
-  const offset = r.inputFrequency - r.outputFrequency;
-  const offsetSign = offset > 0 ? "+" : offset < 0 ? "-" : "";
-  const offsetMHz = Math.abs(offset).toFixed(3);
-
-  const programText = [
-    `${r.callsign}`,
-    `RX: ${r.outputFrequency.toFixed(4)} MHz`,
-    `TX: ${r.inputFrequency.toFixed(4)} MHz`,
-    `Offset: ${offsetSign}${offsetMHz} MHz`,
-    r.tone ? `CTCSS: ${r.tone.toFixed(1)} Hz` : null,
-    r.modulation ? `Mode: ${r.modulation}` : null,
-    r.dmrColorCode ? `DMR CC: ${r.dmrColorCode}` : null,
-  ]
-    .filter(Boolean)
-    .join("\n");
-
-  // CHIRP-style one-liner for quick copy
-  const chirpLine = `${r.outputFrequency.toFixed(4)},${offsetSign},${offsetMHz},${r.tone ? r.tone.toFixed(1) : ""},${r.modulation || "FM"}`;
-
-  async function handleCopyAll() {
-    try {
-      await navigator.clipboard.writeText(programText);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // noop
-    }
-  }
-
-  return (
-    <Card className="bg-gradient-to-br from-ship-cove-50 to-ship-cove-100/50 dark:from-ship-cove-950 dark:to-ship-cove-900/50 border-ship-cove-200 dark:border-ship-cove-800">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center justify-between">
-          <span className="flex items-center gap-2 text-lg">
-            <Clipboard className="h-5 w-5" />
-            Programação Rápida
-          </span>
-          <Button variant="secondary" size="sm" onClick={handleCopyAll} className="gap-2">
-            {copied ? (
-              <>
-                <Check className="h-4 w-4 text-emerald-600" />
-                Copiado!
-              </>
-            ) : (
-              <>
-                <Copy className="h-4 w-4" />
-                Copiar Tudo
-              </>
-            )}
-          </Button>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <ProgramField label="RX (Saída)" value={`${r.outputFrequency.toFixed(4)}`} unit="MHz" />
-          <ProgramField label="TX (Entrada)" value={`${r.inputFrequency.toFixed(4)}`} unit="MHz" />
-          <ProgramField label="Offset" value={`${offsetSign}${offsetMHz}`} unit="MHz" />
-          <ProgramField
-            label="CTCSS"
-            value={r.tone ? r.tone.toFixed(1) : "—"}
-            unit={r.tone ? "Hz" : ""}
-          />
-        </div>
-        {(r.dmr || r.dstar) && (
-          <div className="mt-4 pt-4 border-t border-ship-cove-200 dark:border-ship-cove-700 grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {r.dmrColorCode && <ProgramField label="DMR CC" value={String(r.dmrColorCode)} />}
-            {r.dstarModule && <ProgramField label="D-STAR Module" value={r.dstarModule} />}
-          </div>
-        )}
-        <div className="mt-4 p-3 rounded-lg bg-white/50 dark:bg-black/20 font-mono text-xs overflow-x-auto">
-          <code className="text-muted-foreground whitespace-pre">{chirpLine}</code>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function ProgramField({ label, value, unit }: { label: string; value: string; unit?: string }) {
-  const [copied, setCopied] = React.useState(false);
-
-  async function handleCopy() {
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1000);
-    } catch {
-      // noop
-    }
-  }
-
-  return (
-    <div
-      onClick={handleCopy}
-      className="cursor-pointer p-2 rounded-lg hover:bg-white/50 dark:hover:bg-black/20 transition-colors group"
-    >
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <div className="flex items-baseline gap-1">
-        <span className="font-mono text-lg font-semibold">{value}</span>
-        {unit && <span className="text-xs text-muted-foreground">{unit}</span>}
-        {copied && <Check className="h-3 w-3 text-emerald-600 ml-1" />}
-      </div>
-    </div>
-  );
-}
