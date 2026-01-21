@@ -3,6 +3,7 @@
 /**
  * Ham Radio Events Countdown & Mini-Calendar (with Payload CMS API)
  * - Refactored to use modular components for better performance and maintainability
+ * - Clean editorial design matching the news pages
  * - Next-up countdown + Cards + Table + Calendar tabs
  * - Fetches events from Payload CMS API
  * - Supports filtering, sorting, and searching
@@ -11,16 +12,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  CalendarDays,
   Calendar as CalendarIcon,
+  CalendarDays,
   LayoutGrid,
   Loader2,
+  Radio,
   Table as TableIcon,
+  Trophy,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import PageHeader from "@/components/PageHeader";
 import { useTranslations } from "next-intl";
 import { fetchEvents } from "@/lib/events";
 
@@ -47,43 +48,27 @@ const ITEMS_PER_PAGE = 12;
 // Skeleton components for loading states
 function EventCardSkeleton() {
   return (
-    <Card className="rounded-2xl overflow-hidden">
-      <Skeleton className="h-36 w-full" />
-      <div className="p-4 space-y-3">
-        <div className="flex items-start gap-3">
-          <Skeleton className="h-9 w-9 rounded-full shrink-0" />
-          <div className="flex-1 space-y-2">
-            <Skeleton className="h-5 w-3/4" />
-            <Skeleton className="h-4 w-1/2" />
-          </div>
-        </div>
-        <Skeleton className="h-4 w-2/3" />
-        <Skeleton className="h-4 w-1/2" />
+    <div className="space-y-4">
+      <Skeleton className="aspect-[16/10] w-full rounded-xl" />
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-6 w-full" />
+        <Skeleton className="h-4 w-3/4" />
       </div>
-    </Card>
+    </div>
   );
 }
 
 function FilterSkeleton() {
   return (
-    <Card className="rounded-2xl mb-6">
-      <CardContent className="p-4 space-y-4">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Skeleton className="h-10 flex-1" />
-          <Skeleton className="h-10 w-full sm:w-[160px]" />
-          <Skeleton className="h-10 w-10" />
-          <Skeleton className="h-10 w-10" />
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-8 w-20 rounded-full" />
-          ))}
-        </div>
-        <div className="flex items-center justify-between pt-2 border-t border-border/50">
-          <Skeleton className="h-4 w-24" />
-        </div>
-      </CardContent>
-    </Card>
+    <div className="mb-8 space-y-4">
+      <Skeleton className="h-10 w-full max-w-md" />
+      <div className="flex flex-wrap gap-2">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Skeleton key={i} className="h-8 w-20 rounded-full" />
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -315,15 +300,24 @@ export default function HamRadioEventsCountdown({
     },
   });
 
+  // Calculate stats for header
+  const totalEvents = events.length;
+  const upcomingCount = useMemo(() => {
+    const now = Date.now();
+    return events.filter((e) => new Date(e.start).getTime() > now).length;
+  }, [events]);
+
   // Don't render time-sensitive content until client is mounted
   if (!mounted) {
     return (
-      <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
-        <FilterSkeleton />
-        <div className="mb-6">
-          <Skeleton className="h-10 w-full max-w-md rounded-lg" />
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-6">
+        {/* Header skeleton */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-ship-cove-100 to-ship-cove-50 dark:from-ship-cove-900 dark:to-ship-cove-950 p-8 mb-8 animate-pulse">
+          <div className="h-8 w-64 bg-ship-cove-200 dark:bg-ship-cove-800 rounded mb-3" />
+          <div className="h-5 w-96 bg-ship-cove-200 dark:bg-ship-cove-800 rounded" />
         </div>
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <FilterSkeleton />
+        <div className="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <EventCardSkeleton key={i} />
           ))}
@@ -334,12 +328,63 @@ export default function HamRadioEventsCountdown({
 
   return (
     <TickProvider interval={1000}>
-      <div className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
-        <PageHeader
-          title={t("title") || "Eventos"}
-          description={t("description") || "Eventos de radioamador"}
-          icon={CalendarDays}
-        />
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-6">
+        {/* Hero Header - Radio Station Dashboard style */}
+        <header className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-ship-cove-600 via-ship-cove-700 to-ship-cove-800 dark:from-ship-cove-800 dark:via-ship-cove-900 dark:to-ship-cove-950 p-8 mb-8 shadow-xl shadow-ship-cove-500/20">
+          {/* Background pattern */}
+          <div className="absolute inset-0 opacity-10">
+            <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <pattern id="grid-events" width="32" height="32" patternUnits="userSpaceOnUse">
+                  <path d="M 32 0 L 0 0 0 32" fill="none" stroke="currentColor" strokeWidth="1"/>
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#grid-events)" className="text-white" />
+            </svg>
+          </div>
+
+          {/* Decorative elements */}
+          <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-ship-cove-500/20 blur-2xl" />
+          <div className="absolute -left-4 -bottom-4 w-24 h-24 rounded-full bg-ship-cove-400/20 blur-xl" />
+
+          {/* Floating icons */}
+          <div className="absolute right-8 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-4 opacity-20">
+            <Trophy className="h-12 w-12 text-white" />
+            <Radio className="h-10 w-10 text-white" />
+          </div>
+
+          <div className="relative">
+            {/* Icon and title */}
+            <div className="flex items-center gap-4 mb-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm ring-1 ring-white/20">
+                <CalendarDays className="h-7 w-7 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+                  {t("title") || "Eventos"}
+                </h1>
+              </div>
+            </div>
+
+            <p className="text-ship-cove-100 text-lg max-w-2xl mb-6">
+              {t("description") || "Calendário de eventos, contests e nets de radioamadorismo"}
+            </p>
+
+            {/* Stats row */}
+            <div className="flex flex-wrap gap-4">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm text-white">
+                <CalendarDays className="h-4 w-4" />
+                <span className="font-mono font-bold tabular-nums">{totalEvents}</span>
+                <span className="text-ship-cove-200 text-sm">{t("totalEvents") || "eventos"}</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500/20 backdrop-blur-sm text-emerald-100">
+                <Trophy className="h-4 w-4" />
+                <span className="font-mono font-bold tabular-nums">{upcomingCount}</span>
+                <span className="text-emerald-200/80 text-sm">{t("upcoming") || "próximos"}</span>
+              </div>
+            </div>
+          </div>
+        </header>
 
         {/* Filter Section */}
         <EventFilters
@@ -355,7 +400,7 @@ export default function HamRadioEventsCountdown({
         />
 
         {fetchError && (
-          <div className="text-xs text-amber-600 dark:text-amber-400 mb-4">
+          <div className="text-sm text-amber-600 dark:text-amber-400 mb-6">
             {t("refreshError")}
           </div>
         )}
@@ -367,18 +412,18 @@ export default function HamRadioEventsCountdown({
           }
           className="w-full"
         >
-          <TabsList className="grid grid-cols-3 w-full max-w-md mb-6">
+          <TabsList className="grid grid-cols-3 w-full max-w-sm mb-6 bg-ship-cove-100 dark:bg-ship-cove-800/50">
             <TabsTrigger value="cards" className="inline-flex items-center gap-2">
-              <LayoutGrid className="w-4 h-4" /> {t("tabs.cards")}
+              <LayoutGrid className="w-4 h-4" />
+              <span className="hidden sm:inline">{t("tabs.cards")}</span>
             </TabsTrigger>
             <TabsTrigger value="table" className="inline-flex items-center gap-2">
-              <TableIcon className="w-4 h-4" /> {t("tabs.table")}
+              <TableIcon className="w-4 h-4" />
+              <span className="hidden sm:inline">{t("tabs.table")}</span>
             </TabsTrigger>
-            <TabsTrigger
-              value="calendar"
-              className="inline-flex items-center gap-2"
-            >
-              <CalendarIcon className="w-4 h-4" /> {t("tabs.calendar")}
+            <TabsTrigger value="calendar" className="inline-flex items-center gap-2">
+              <CalendarIcon className="w-4 h-4" />
+              <span className="hidden sm:inline">{t("tabs.calendar")}</span>
             </TabsTrigger>
           </TabsList>
 
@@ -387,7 +432,12 @@ export default function HamRadioEventsCountdown({
             <CurrentEvents events={filtered} t={t} />
             <NextUpCard events={filtered} t={t} />
 
-            <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {/* Section divider */}
+            {visibleEvents.length > 0 && (
+              <div className="border-t border-ship-cove-200 dark:border-ship-cove-800 my-8" />
+            )}
+
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
               <AnimatePresence mode="popLayout">
                 {visibleEvents.map((evt) => (
                   <motion.div
@@ -427,7 +477,7 @@ export default function HamRadioEventsCountdown({
             )}
 
             {filtered.length === 0 && (
-              <div className="text-center text-muted-foreground mt-12">
+              <div className="text-center text-muted-foreground py-12">
                 {t("noMatching")}
               </div>
             )}

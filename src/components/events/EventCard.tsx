@@ -1,42 +1,26 @@
 "use client";
 
 /**
- * Redesigned EventCard component with cleaner, less cluttered layout
- *
- * Layout hierarchy:
- * +----------------------------------+
- * | [Featured Image with overlay]    |
- * +----------------------------------+
- * | [Tag Icon] Title [Star]          |
- * +----------------------------------+
- * | [Calendar] Date & Time           |
- * | [Clock] Countdown                |
- * +----------------------------------+
- * | [Location] Place  [DMR badge]    |
- * +----------------------------------+
+ * EventCard component - Calendar-style event card
+ * Features prominent date badge, clear title hierarchy, and color-coded event types
  */
 
 import { memo } from "react";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import Link from "next/link";
 import {
   Activity,
-  Calendar as CalendarIcon,
   ChevronRight,
   Clock,
-  Globe2,
   MapPin,
   Radio,
   Star,
 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { useEventCountdown } from "./hooks/useEventCountdown";
-import { formatDateTime } from "./utils/formatters";
 import {
   getTagColors,
   getTagIcon,
-  getCategoryColors,
+  getTagIconBg,
   getDMRNetworkLabel,
 } from "./utils/tagColors";
 import type { EventItem, TranslationFunction } from "./types";
@@ -44,13 +28,6 @@ import type { EventItem, TranslationFunction } from "./types";
 interface EventCardProps {
   event: EventItem;
   t: TranslationFunction;
-}
-
-function getImageUrl(url: string | undefined): string | null {
-  if (!url) return null;
-  if (url.startsWith("http")) return url;
-  const baseUrl = process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL || "";
-  return `${baseUrl}${url}`;
 }
 
 function DMRBadge({
@@ -67,7 +44,6 @@ function DMRBadge({
   if (!dmr || !talkgroup) return null;
 
   const isBrandmeister = dmrNetwork === "brandmeister";
-  const networkLabel = getDMRNetworkLabel(dmrNetwork, t);
 
   const handleClick = (e: React.MouseEvent) => {
     if (isBrandmeister) {
@@ -80,14 +56,12 @@ function DMRBadge({
   return (
     <span
       onClick={handleClick}
-      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] sm:text-xs
-        bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400
-        border border-red-200 dark:border-red-800
-        ${isBrandmeister ? "hover:bg-red-100 dark:hover:bg-red-900/30 cursor-pointer" : ""}
-        transition-colors`}
-      title={isBrandmeister ? t("dmr.listen") : `${networkLabel} TG ${talkgroup}`}
+      className={`inline-flex items-center gap-1 text-[11px] text-red-600 dark:text-red-400 font-medium
+        ${isBrandmeister ? "hover:text-red-700 dark:hover:text-red-300 cursor-pointer" : ""}`}
+      title={isBrandmeister ? t("dmr.listen") : `TG ${talkgroup}`}
     >
-      <Radio className="w-3 h-3" /> TG {talkgroup}
+      <Radio className="w-3 h-3" />
+      TG {talkgroup}
     </span>
   );
 }
@@ -95,137 +69,100 @@ function DMRBadge({
 function EventCardComponent({ event, t }: EventCardProps) {
   const countdown = useEventCountdown(event.start, event.end, t);
   const tagColors = getTagColors(event.tag);
-  const categoryColors = getCategoryColors(event.category);
   const TagIcon = getTagIcon(event.tag);
-  const imageUrl = getImageUrl(event.featuredImage?.url);
+  const iconBgClass = getTagIconBg(event.tag);
+
+  // Parse date for the date badge
+  const eventDate = new Date(event.start);
+  const day = eventDate.getDate();
+  const month = eventDate.toLocaleDateString("pt-PT", { month: "short" }).replace(".", "");
+  const time = eventDate.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" });
 
   return (
     <Link href={`/events/${encodeURIComponent(event.id)}/`} className="block group">
-      <Card className="relative rounded-2xl shadow-sm transition-all duration-200 hover:shadow-md hover:border-primary/30 focus-within:ring-2 focus-within:ring-ring cursor-pointer overflow-hidden h-full">
-        {/* Featured Image */}
-        {imageUrl && (
-          <div className="relative w-full h-36 overflow-hidden">
-            <Image
-              src={imageUrl}
-              alt={event.featuredImage?.alt || event.title}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-300"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            />
-            {/* Category overlay badge */}
-            {categoryColors && (
-              <div className="absolute top-2 right-2">
-                <span
-                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium backdrop-blur-sm ${categoryColors.overlay}`}
-                >
-                  {event.category === "international" ? (
-                    <Globe2 className="w-3 h-3" />
-                  ) : (
-                    <MapPin className="w-3 h-3" />
-                  )}
-                  {event.category === "international"
-                    ? t("international") || "Internacional"
-                    : t("national") || "Nacional"}
-                </span>
-              </div>
-            )}
-          </div>
-        )}
+      <article className="relative flex gap-4 p-4 rounded-xl bg-white dark:bg-ship-cove-950/50 border border-ship-cove-200/80 dark:border-ship-cove-800/80 hover:border-ship-cove-300 dark:hover:border-ship-cove-700 hover:shadow-lg hover:shadow-ship-cove-200/50 dark:hover:shadow-ship-cove-950/50 transition-all duration-200 h-full">
 
-        <CardContent className={`p-4 space-y-3 ${imageUrl ? "" : "pt-4"}`}>
-          {/* Title Row */}
-          <div className="flex items-start gap-3">
-            <div
-              className={`shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full ${tagColors.bg} ${tagColors.icon}`}
-            >
-              <TagIcon className="w-4 h-4" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="text-base font-semibold leading-tight line-clamp-2 group-hover:text-primary transition-colors flex items-center gap-1.5">
-                {event.isFeatured && (
-                  <Star className="w-4 h-4 text-yellow-500 fill-yellow-500 shrink-0" />
-                )}
-                {event.title}
-              </h3>
-              {/* Category badge when no image */}
-              {!imageUrl && categoryColors && (
-                <span
-                  className={`inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full text-[10px] font-medium border ${categoryColors.bg} ${categoryColors.text} ${categoryColors.border}`}
-                >
-                  {event.category === "international" ? (
-                    <Globe2 className="w-3 h-3" />
-                  ) : (
-                    <MapPin className="w-3 h-3" />
-                  )}
-                  {event.category === "international"
-                    ? t("international") || "Internacional"
-                    : t("national") || "Nacional"}
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Date & Countdown Row */}
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <CalendarIcon className="w-4 h-4 shrink-0" />
-              <span className="truncate">
-                {formatDateTime(event.start, { hideCurrentYear: true })}
+        {/* Left: Date badge */}
+        <div className="flex flex-col items-center shrink-0">
+          <div className={`w-14 rounded-lg overflow-hidden shadow-sm ${countdown.isInProgress ? 'ring-2 ring-emerald-500 ring-offset-2 dark:ring-offset-ship-cove-950' : ''}`}>
+            {/* Month header */}
+            <div className={`${iconBgClass} px-2 py-1 text-center`}>
+              <span className="text-[10px] font-bold text-white uppercase tracking-wider">
+                {month}
               </span>
             </div>
-            <div className="flex items-center gap-1.5">
-              {countdown.isInProgress ? (
-                <span className="inline-flex items-center gap-1.5 text-sm font-medium text-green-600 dark:text-green-400">
-                  <Activity className="w-4 h-4 animate-pulse" />
-                  {t("endsIn")} {countdown.formatted}
-                </span>
-              ) : countdown.hasEnded ? (
-                <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-                  <Clock className="w-4 h-4" />
-                  {t("ended")}
-                </span>
-              ) : (
-                <span
-                  className={`inline-flex items-center gap-1.5 text-sm font-medium ${tagColors.text}`}
-                >
-                  <Clock className="w-4 h-4" />
-                  {t("startsIn")} {countdown.formatted}
-                </span>
-              )}
+            {/* Day */}
+            <div className="bg-ship-cove-50 dark:bg-ship-cove-900 px-2 py-2 text-center">
+              <span className="text-2xl font-bold text-ship-cove-900 dark:text-ship-cove-100 leading-none">
+                {day}
+              </span>
             </div>
           </div>
 
-          {/* Footer Row: Location & DMR */}
-          {(event.location || (event.dmr && event.talkgroup)) && (
-            <div className="flex items-center justify-between gap-2 pt-2 border-t border-border/50">
-              {event.location ? (
-                <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground truncate">
-                  <MapPin className="w-3.5 h-3.5 shrink-0" />
+          {/* Time below date */}
+          <span className="mt-2 text-xs font-medium text-ship-cove-500 dark:text-ship-cove-400 tabular-nums">
+            {time}
+          </span>
+        </div>
+
+        {/* Right: Content */}
+        <div className="flex-1 min-w-0 flex flex-col">
+          {/* Top row: Tag + Status */}
+          <div className="flex items-center gap-2 mb-2">
+            <span className={`inline-flex items-center gap-1 text-xs font-semibold ${tagColors.text}`}>
+              <TagIcon className="w-3.5 h-3.5" />
+              {event.tag}
+            </span>
+
+            {event.isFeatured && (
+              <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+            )}
+
+            {countdown.isInProgress && (
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-400">
+                <Activity className="w-3 h-3 animate-pulse" />
+                {t("live") || "LIVE"}
+              </span>
+            )}
+          </div>
+
+          {/* Title */}
+          <h3 className="text-base font-semibold text-ship-cove-900 dark:text-ship-cove-100 leading-snug line-clamp-2 group-hover:text-ship-cove-600 dark:group-hover:text-ship-cove-300 transition-colors mb-2">
+            {event.title}
+          </h3>
+
+          {/* Spacer */}
+          <div className="flex-1" />
+
+          {/* Bottom row: Location, DMR, Countdown */}
+          <div className="flex items-center justify-between gap-3 mt-auto pt-2 border-t border-ship-cove-100 dark:border-ship-cove-800/50">
+            <div className="flex items-center gap-3 min-w-0 text-ship-cove-500 dark:text-ship-cove-400">
+              {event.location && (
+                <span className="inline-flex items-center gap-1 text-xs truncate">
+                  <MapPin className="w-3 h-3 shrink-0" />
                   <span className="truncate">{event.location}</span>
                 </span>
-              ) : (
-                <span />
               )}
-              <div className="flex items-center gap-2 shrink-0">
-                <DMRBadge
-                  dmr={event.dmr}
-                  dmrNetwork={event.dmrNetwork}
-                  talkgroup={event.talkgroup}
-                  t={t}
-                />
-                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
-              </div>
+              <DMRBadge
+                dmr={event.dmr}
+                dmrNetwork={event.dmrNetwork}
+                talkgroup={event.talkgroup}
+                t={t}
+              />
             </div>
-          )}
 
-          {/* Minimal footer when no location/DMR */}
-          {!event.location && !(event.dmr && event.talkgroup) && (
-            <div className="flex justify-end pt-2 border-t border-border/50">
-              <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+            {/* Countdown or Arrow */}
+            <div className="flex items-center gap-2 shrink-0">
+              {!countdown.isInProgress && !countdown.hasEnded && (
+                <span className="text-xs font-semibold text-ship-cove-600 dark:text-ship-cove-300 font-mono tabular-nums">
+                  {countdown.formatted}
+                </span>
+              )}
+              <ChevronRight className="w-4 h-4 text-ship-cove-400 group-hover:text-ship-cove-600 dark:group-hover:text-ship-cove-300 group-hover:translate-x-0.5 transition-all" />
             </div>
-          )}
-        </CardContent>
-      </Card>
+          </div>
+        </div>
+      </article>
     </Link>
   );
 }
