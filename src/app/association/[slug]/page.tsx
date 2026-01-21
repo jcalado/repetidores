@@ -6,8 +6,6 @@ import {
   fetchAssociationBySlug,
   fetchAllAssociationSlugs,
 } from "@/lib/associations"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   ArrowLeft,
   Building2,
@@ -16,6 +14,9 @@ import {
   Mail,
   MapPin,
   Radio,
+  Signal,
+  Antenna,
+  ChevronRight,
 } from "lucide-react"
 
 interface PageProps {
@@ -103,22 +104,33 @@ export async function generateMetadata({ params }: PageProps) {
 
 function AssociationPageSkeleton() {
   return (
-    <div className="space-y-6 animate-pulse">
-      <div className="h-6 w-32 bg-muted rounded" />
-      <div className="flex items-center gap-4 mb-4">
-        <div className="h-16 w-16 bg-muted rounded-xl" />
-        <div className="space-y-2">
-          <div className="h-6 w-20 bg-muted rounded" />
-          <div className="h-8 w-64 bg-muted rounded" />
+    <div className="space-y-6">
+      {/* Back link skeleton */}
+      <div className="h-5 w-40 bg-ship-cove-100 dark:bg-ship-cove-900 rounded animate-pulse" />
+
+      {/* Hero skeleton */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-ship-cove-100 to-ship-cove-50 dark:from-ship-cove-900 dark:to-ship-cove-950 p-8 animate-pulse">
+        <div className="flex items-center gap-6">
+          <div className="h-20 w-20 bg-ship-cove-200 dark:bg-ship-cove-800 rounded-xl" />
+          <div className="space-y-3">
+            <div className="h-6 w-24 bg-ship-cove-200 dark:bg-ship-cove-800 rounded" />
+            <div className="h-8 w-64 bg-ship-cove-200 dark:bg-ship-cove-800 rounded" />
+          </div>
         </div>
       </div>
-      <div className="h-40 bg-muted rounded-lg" />
-      <div className="h-60 bg-muted rounded-lg" />
+
+      {/* Cards skeleton */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="h-48 bg-ship-cove-100 dark:bg-ship-cove-900 rounded-xl animate-pulse" />
+        <div className="lg:col-span-2 h-64 bg-ship-cove-100 dark:bg-ship-cove-900 rounded-xl animate-pulse" />
+      </div>
     </div>
   )
 }
 
-function generateOrganizationJsonLd(association: Awaited<ReturnType<typeof fetchAssociationBySlug>>) {
+function generateOrganizationJsonLd(
+  association: Awaited<ReturnType<typeof fetchAssociationBySlug>>
+) {
   if (!association) return null
 
   const logoUrl = association.logo?.url
@@ -132,7 +144,9 @@ function generateOrganizationJsonLd(association: Awaited<ReturnType<typeof fetch
     "@type": "Organization",
     name: association.name,
     alternateName: association.abbreviation,
-    url: association.website || `https://www.radioamador.info/association/${association.slug}`,
+    url:
+      association.website ||
+      `https://www.radioamador.info/association/${association.slug}`,
     ...(logoUrl && { logo: logoUrl }),
     ...(association.email && { email: association.email }),
     ...(association.address && {
@@ -147,15 +161,43 @@ function generateOrganizationJsonLd(association: Awaited<ReturnType<typeof fetch
         "@type": "Thing",
         name: repeater.callsign,
         description: `Repetidor ${repeater.modulation} - ${repeater.outputFrequency.toFixed(3)} MHz`,
-        ...(repeater.latitude && repeater.longitude && {
-          geo: {
-            "@type": "GeoCoordinates",
-            latitude: repeater.latitude,
-            longitude: repeater.longitude,
-          },
-        }),
+        ...(repeater.latitude &&
+          repeater.longitude && {
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: repeater.latitude,
+              longitude: repeater.longitude,
+            },
+          }),
       })),
     }),
+  }
+}
+
+// Helper to get status color classes
+function getStatusClasses(status?: string) {
+  switch (status) {
+    case "offline":
+      return {
+        bg: "bg-red-500",
+        ring: "ring-red-500/30",
+        text: "text-red-600 dark:text-red-400",
+        label: "Offline",
+      }
+    case "maintenance":
+      return {
+        bg: "bg-amber-500",
+        ring: "ring-amber-500/30",
+        text: "text-amber-600 dark:text-amber-400",
+        label: "Manutenção",
+      }
+    default:
+      return {
+        bg: "bg-emerald-500",
+        ring: "ring-emerald-500/30",
+        text: "text-emerald-600 dark:text-emerald-400",
+        label: "Online",
+      }
   }
 }
 
@@ -172,10 +214,30 @@ async function AssociationContent({
     notFound()
   }
 
+  const apiBaseUrl = process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL || ""
+  const logoUrl = association.logo?.url
+    ? association.logo.url.startsWith("http")
+      ? association.logo.url
+      : `${apiBaseUrl}${association.logo.url}`
+    : null
+
   const hasContactInfo =
     association.address || association.website || association.email
 
   const jsonLd = generateOrganizationJsonLd(association)
+
+  // Group repeaters by modulation for stats
+  const modulationCounts = association.repeaters.reduce(
+    (acc, r) => {
+      const mod = r.modulation || "Other"
+      acc[mod] = (acc[mod] || 0) + 1
+      return acc
+    },
+    {} as Record<string, number>
+  )
+
+  // Signal strength for visualization
+  const signalBars = Math.min(5, Math.ceil(association.repeaters.length / 2))
 
   return (
     <>
@@ -189,125 +251,273 @@ async function AssociationContent({
 
       {/* Back Link */}
       <Link
-        href="/repetidores"
-        className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
+        href="/associations"
+        className="inline-flex items-center gap-2 text-ship-cove-600 dark:text-ship-cove-400 hover:text-ship-cove-900 dark:hover:text-ship-cove-100 mb-6 transition-colors group"
       >
-        <ArrowLeft className="h-4 w-4" />
-        {t("backToRepeaters")}
+        <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+        <span>Voltar às associações</span>
       </Link>
 
-      {/* Header */}
-      <header className="mb-8">
-        <div className="flex items-center gap-4 mb-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary/10">
-            <Building2 className="h-8 w-8 text-primary" />
+      {/* Hero Header */}
+      <header className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-ship-cove-600 via-ship-cove-700 to-ship-cove-800 dark:from-ship-cove-800 dark:via-ship-cove-900 dark:to-ship-cove-950 p-8 mb-8 shadow-xl shadow-ship-cove-500/20">
+        {/* Background pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern
+                id="grid-detail"
+                width="32"
+                height="32"
+                patternUnits="userSpaceOnUse"
+              >
+                <path
+                  d="M 32 0 L 0 0 0 32"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                />
+              </pattern>
+            </defs>
+            <rect
+              width="100%"
+              height="100%"
+              fill="url(#grid-detail)"
+              className="text-white"
+            />
+          </svg>
+        </div>
+
+        {/* Decorative elements */}
+        <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-ship-cove-500/20 blur-2xl" />
+        <div className="absolute -left-4 -bottom-4 w-24 h-24 rounded-full bg-ship-cove-400/20 blur-xl" />
+
+        {/* Floating icons */}
+        <div className="absolute right-8 top-1/2 -translate-y-1/2 hidden lg:flex flex-col gap-4 opacity-20">
+          <Radio className="h-12 w-12 text-white" />
+          <Antenna className="h-10 w-10 text-white" />
+        </div>
+
+        <div className="relative flex flex-col sm:flex-row items-start gap-6">
+          {/* Logo */}
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm ring-1 ring-white/20 overflow-hidden">
+            {logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={logoUrl}
+                alt={association.logo?.alt || association.abbreviation}
+                className="h-full w-full object-contain p-2"
+              />
+            ) : (
+              <Building2 className="h-10 w-10 text-white" />
+            )}
           </div>
-          <div>
-            <Badge variant="secondary" className="mb-2">
+
+          <div className="flex-1">
+            {/* Abbreviation badge */}
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/10 backdrop-blur-sm text-white font-mono text-sm font-bold tracking-wider mb-3 ring-1 ring-white/20">
+              <Radio className="h-3.5 w-3.5" />
               {association.abbreviation}
-            </Badge>
-            <h1 className="text-2xl md:text-3xl font-bold">
+            </div>
+
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-4">
               {association.name}
             </h1>
+
+            {/* Stats row */}
+            <div className="flex flex-wrap items-center gap-4">
+              {/* Signal meter */}
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm">
+                <Signal className="h-4 w-4 text-white/70" />
+                <div
+                  className="flex items-end gap-0.5 h-4"
+                  title={`${association.repeaters.length} repetidores`}
+                >
+                  {[1, 2, 3, 4, 5].map((bar) => (
+                    <div
+                      key={bar}
+                      className={`w-1 rounded-sm transition-all ${
+                        bar <= signalBars
+                          ? "bg-emerald-400"
+                          : "bg-white/20"
+                      }`}
+                      style={{ height: `${bar * 3 + 2}px` }}
+                    />
+                  ))}
+                </div>
+                <span className="font-mono font-bold text-white tabular-nums">
+                  {association.repeaters.length}
+                </span>
+                <span className="text-ship-cove-200 text-sm">repetidores</span>
+              </div>
+
+              {/* Modulation badges */}
+              {Object.entries(modulationCounts).map(([mod, count]) => (
+                <div
+                  key={mod}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-ship-cove-500/30 text-ship-cove-100 text-sm"
+                >
+                  <span className="font-mono font-bold tabular-nums">
+                    {count}
+                  </span>
+                  <span className="text-ship-cove-200">{mod}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Contact Info */}
-      {hasContactInfo && (
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>{t("contactInfo")}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {association.address && (
-              <div className="flex items-start gap-3">
-                <MapPin className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
-                <p className="text-sm whitespace-pre-wrap">
-                  {association.address}
+      {/* Content Grid */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* Contact Info Panel */}
+        {hasContactInfo && (
+          <div className="relative overflow-hidden rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-gradient-to-br from-white via-white to-ship-cove-50/50 dark:from-ship-cove-950 dark:via-ship-cove-950 dark:to-ship-cove-900/30 shadow-sm">
+            {/* Top accent */}
+            <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-ship-cove-500 to-transparent opacity-60" />
+
+            <div className="p-5">
+              <h2 className="flex items-center gap-2 text-lg font-semibold text-ship-cove-900 dark:text-ship-cove-100 mb-4">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800">
+                  <MapPin className="h-4 w-4 text-ship-cove-600 dark:text-ship-cove-400" />
+                </div>
+                {t("contactInfo")}
+              </h2>
+
+              <div className="space-y-4">
+                {association.address && (
+                  <div className="flex items-start gap-3 p-3 rounded-lg bg-ship-cove-50 dark:bg-ship-cove-900/50">
+                    <MapPin className="h-4 w-4 text-ship-cove-500 shrink-0 mt-0.5" />
+                    <p className="text-sm text-ship-cove-700 dark:text-ship-cove-300 whitespace-pre-wrap">
+                      {association.address}
+                    </p>
+                  </div>
+                )}
+
+                {association.website && (
+                  <a
+                    href={association.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 p-3 rounded-lg bg-ship-cove-50 dark:bg-ship-cove-900/50 hover:bg-ship-cove-100 dark:hover:bg-ship-cove-800/50 transition-colors group"
+                  >
+                    <Globe className="h-4 w-4 text-ship-cove-500" />
+                    <span className="text-sm text-ship-cove-700 dark:text-ship-cove-300 group-hover:text-ship-cove-900 dark:group-hover:text-ship-cove-100 truncate flex-1">
+                      {association.website.replace(/^https?:\/\//, "")}
+                    </span>
+                    <ExternalLink className="h-3.5 w-3.5 text-ship-cove-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </a>
+                )}
+
+                {association.email && (
+                  <a
+                    href={`mailto:${association.email}`}
+                    className="flex items-center gap-3 p-3 rounded-lg bg-ship-cove-50 dark:bg-ship-cove-900/50 hover:bg-ship-cove-100 dark:hover:bg-ship-cove-800/50 transition-colors group"
+                  >
+                    <Mail className="h-4 w-4 text-ship-cove-500" />
+                    <span className="text-sm text-ship-cove-700 dark:text-ship-cove-300 group-hover:text-ship-cove-900 dark:group-hover:text-ship-cove-100 truncate">
+                      {association.email}
+                    </span>
+                  </a>
+                )}
+              </div>
+            </div>
+
+            {/* Corner LED */}
+            <div className="absolute top-3 right-3 h-2 w-2 rounded-full bg-emerald-500/80 shadow-sm shadow-emerald-500/50 animate-pulse" />
+          </div>
+        )}
+
+        {/* Repeaters Panel */}
+        <div
+          className={`relative overflow-hidden rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-gradient-to-br from-white via-white to-ship-cove-50/50 dark:from-ship-cove-950 dark:via-ship-cove-950 dark:to-ship-cove-900/30 shadow-sm ${hasContactInfo ? "lg:col-span-2" : "lg:col-span-3"}`}
+        >
+          {/* Top accent */}
+          <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-ship-cove-500 to-transparent opacity-60" />
+
+          <div className="p-5">
+            <h2 className="flex items-center gap-2 text-lg font-semibold text-ship-cove-900 dark:text-ship-cove-100 mb-4">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800">
+                <Radio className="h-4 w-4 text-ship-cove-600 dark:text-ship-cove-400" />
+              </div>
+              {t("repeaters")}
+              <span className="ml-auto text-sm font-mono font-normal text-ship-cove-500 tabular-nums">
+                {association.repeaters.length}
+              </span>
+            </h2>
+
+            {association.repeaters.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="w-12 h-12 rounded-full bg-ship-cove-100 dark:bg-ship-cove-900/50 flex items-center justify-center mb-3">
+                  <Radio className="h-6 w-6 text-ship-cove-400" />
+                </div>
+                <p className="text-ship-cove-600 dark:text-ship-cove-400">
+                  {t("noRepeaters")}
                 </p>
               </div>
-            )}
-            {association.website && (
-              <a
-                href={association.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 text-primary hover:underline"
-              >
-                <Globe className="h-5 w-5" />
-                <span className="text-sm">{association.website}</span>
-                <ExternalLink className="h-4 w-4 opacity-50" />
-              </a>
-            )}
-            {association.email && (
-              <a
-                href={`mailto:${association.email}`}
-                className="flex items-center gap-3 text-primary hover:underline"
-              >
-                <Mail className="h-5 w-5" />
-                <span className="text-sm">{association.email}</span>
-              </a>
-            )}
-          </CardContent>
-        </Card>
-      )}
+            ) : (
+              <div className="space-y-2">
+                {association.repeaters.map((repeater, index) => {
+                  const status = getStatusClasses(repeater.status)
+                  return (
+                    <Link
+                      key={repeater.callsign}
+                      href={`/repeater/${encodeURIComponent(repeater.callsign)}`}
+                      className="flex items-center gap-4 p-4 rounded-lg border border-ship-cove-100 dark:border-ship-cove-800/50 hover:border-ship-cove-300 dark:hover:border-ship-cove-700 bg-white dark:bg-ship-cove-900/30 hover:bg-ship-cove-50 dark:hover:bg-ship-cove-900/50 transition-all group animate-in fade-in slide-in-from-bottom-1 fill-mode-both"
+                      style={{ animationDelay: `${index * 30}ms` }}
+                    >
+                      {/* Status indicator */}
+                      <div
+                        className={`h-2.5 w-2.5 rounded-full ${status.bg} ring-2 ${status.ring}`}
+                        title={status.label}
+                      />
 
-      {/* Associated Repeaters */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Radio className="h-5 w-5" />
-            {t("repeaters")} ({association.repeaters.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {association.repeaters.length === 0 ? (
-            <p className="text-muted-foreground text-sm">{t("noRepeaters")}</p>
-          ) : (
-            <div className="space-y-2">
-              {association.repeaters.map((repeater) => (
-                <Link
-                  key={repeater.callsign}
-                  href={`/repeater/${encodeURIComponent(repeater.callsign)}`}
-                  className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent transition-colors"
-                >
-                  <div className="flex items-center gap-2">
-                    {repeater.status === "offline" && (
-                      <span
-                        title={t("statusOffline")}
-                        className="inline-flex items-center justify-center h-5 w-5 rounded text-[10px] font-bold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                      >
-                        ✕
-                      </span>
-                    )}
-                    {repeater.status === "maintenance" && (
-                      <span
-                        title={t("statusMaintenance")}
-                        className="inline-flex items-center justify-center h-5 w-5 rounded text-[10px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-                      >
-                        !
-                      </span>
-                    )}
-                    <div>
-                      <p className="font-medium">{repeater.callsign}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {repeater.outputFrequency.toFixed(3)} MHz -{" "}
-                        {repeater.modulation}
-                      </p>
-                    </div>
-                  </div>
-                  {repeater.qth_locator && (
-                    <Badge variant="outline" className="text-xs">
-                      {repeater.qth_locator}
-                    </Badge>
-                  )}
-                </Link>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                      {/* Main info */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-mono font-bold text-ship-cove-900 dark:text-ship-cove-100">
+                            {repeater.callsign}
+                          </span>
+                          <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-ship-cove-100 dark:bg-ship-cove-800 text-ship-cove-600 dark:text-ship-cove-400">
+                            {repeater.modulation}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm text-ship-cove-600 dark:text-ship-cove-400">
+                          <span className="font-mono tabular-nums">
+                            {repeater.outputFrequency.toFixed(3)} MHz
+                          </span>
+                          {repeater.tone && (
+                            <>
+                              <span className="text-ship-cove-300 dark:text-ship-cove-700">
+                                •
+                              </span>
+                              <span className="font-mono tabular-nums">
+                                {repeater.tone} Hz
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* QTH Locator */}
+                      {repeater.qth_locator && (
+                        <span className="hidden sm:inline-flex px-2.5 py-1 rounded-md text-xs font-mono font-medium bg-ship-cove-900 dark:bg-ship-cove-100 text-ship-cove-100 dark:text-ship-cove-900">
+                          {repeater.qth_locator}
+                        </span>
+                      )}
+
+                      {/* Arrow */}
+                      <ChevronRight className="h-4 w-4 text-ship-cove-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                    </Link>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Corner LED */}
+          <div className="absolute top-3 right-3 h-2 w-2 rounded-full bg-emerald-500/80 shadow-sm shadow-emerald-500/50 animate-pulse" />
+        </div>
+      </div>
     </>
   )
 }
@@ -317,7 +527,7 @@ export default async function AssociationDetailPage({ params }: PageProps) {
   const t = await getTranslations("association")
 
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8 py-6">
+    <main className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8 py-6">
       <Suspense fallback={<AssociationPageSkeleton />}>
         <AssociationContent slug={slug} t={t} />
       </Suspense>
