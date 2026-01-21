@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     url: "/qth",
     siteName: "Radioamador.info",
     locale: "pt_PT",
-    images: [{ url: "/og-default.png", width: 1536, height: 1024, alt: "Calculadora QTH Locator" }],
+    images: [{ url: "/og-default.jpg", width: 1200, height: 630, alt: "Calculadora QTH Locator" }],
   },
   twitter: {
     card: "summary",

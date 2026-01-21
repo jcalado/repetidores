@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     url: "/repetidores",
     siteName: "Radioamador.info",
     locale: "pt_PT",
-    images: [{ url: "/og-default.png", width: 1536, height: 1024, alt: "Lista de Repetidores" }],
+    images: [{ url: "/og-default.jpg", width: 1200, height: 630, alt: "Lista de Repetidores" }],
   },
   twitter: {
     card: "summary",

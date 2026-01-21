@@ -58,7 +58,7 @@ export async function generateMetadata() {
       url: "/noticias",
       siteName: "Radioamador.info",
       locale: "pt_PT",
-      images: [{ url: "/og-default.png", width: 1536, height: 1024, alt: title }],
+      images: [{ url: "/og-default.jpg", width: 1200, height: 630, alt: title }],
     },
     twitter: {
       card: "summary",

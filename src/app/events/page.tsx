@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     url: "/events",
     siteName: "Radioamador.info",
     locale: "pt_PT",
-    images: [{ url: "/og-default.png", width: 1536, height: 1024, alt: "Eventos de Radioamadorismo" }],
+    images: [{ url: "/og-default.jpg", width: 1200, height: 630, alt: "Eventos de Radioamadorismo" }],
   },
   twitter: {
     card: "summary",
