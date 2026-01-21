@@ -3,6 +3,7 @@ import GoogleAnalytics from "@/components/GoogleAnalytics";
 import Header from "@/components/Header";
 import OfflineIndicator from "@/components/OfflineIndicator";
 import PWAInstall from "@/components/PWAInstall";
+import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/seo";
 import { UserLocationProvider } from "@/contexts/UserLocationContext";
 import "leaflet/dist/leaflet.css";
 import type { Metadata } from "next";
@@ -96,6 +97,11 @@ export default async function RootLayout({
 
   return (
     <html lang="pt">
+      <head>
+        {/* Global JSON-LD Structured Data */}
+        <OrganizationJsonLd />
+        <WebSiteJsonLd />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <GoogleAnalytics />
         <NextIntlClientProvider messages={messages}>

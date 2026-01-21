@@ -54,6 +54,7 @@
         "eslint-config-next": "16.0.8",
         "gh-pages": "^6.3.0",
         "jest": "^30.1.3",
+        "schema-dts": "^1.1.5",
         "shadcn": "^3.2.1",
         "sharp": "^0.34.3",
         "tailwindcss": "^4",
@@ -1606,6 +1607,8 @@
     "satellite.js": ["satellite.js@6.0.1", "", {}, "sha512-T0qpKYSlNIH9L0yY1SRF2J6XfV9TToZuDNBXSeTW9K6fN5kwf4uidzk3+q6Rg4KVHibcLaire910C47yai0W9A=="],
 
     "scheduler": ["scheduler@0.26.0", "", {}, "sha512-NlHwttCI/l5gCPR3D1nNXtWABUmBwvZpEQiD4IXSbIDq8BzLIK/7Ir5gTFSGZDUu37K5cMNp0hFtzO38sC7gWA=="],
+
+    "schema-dts": ["schema-dts@1.1.5", "", {}, "sha512-RJr9EaCmsLzBX2NDiO5Z3ux2BVosNZN5jo0gWgsyKvxKIUL5R3swNvoorulAeL9kLB0iTSX7V6aokhla2m7xbg=="],
 
     "semver": ["semver@7.7.3", "", { "bin": "bin/semver.js" }, "sha512-SdsKMrI9TdgjdweUSR9MweHA4EJ8YxHn8DFaDisvhVlUOe4BF1tLD7GAj0lIqWVl+dPb/rExr0Btby5loQm20Q=="],
 
