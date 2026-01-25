@@ -1,6 +1,7 @@
 
 "use client";
 
+import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import type { UserLocation } from "@/lib/geolocation";
