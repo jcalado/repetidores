@@ -50,7 +50,15 @@ function getBandFromFrequency(mhz: number): string {
   if (mhz >= 430 && mhz <= 450) return '70cm';
   if (mhz >= 144 && mhz <= 148) return '2m';
   if (mhz >= 50 && mhz <= 54) return '6m';
+  if (mhz >= 1240 && mhz <= 1300) return '23cm';
+  if (mhz >= 2300 && mhz <= 2450) return '13cm';
   return 'Other';
+}
+
+// Helper to get primary frequency from repeater
+function getPrimaryFrequency(r: Repeater) {
+  if (!r.frequencies || r.frequencies.length === 0) return null;
+  return r.frequencies.find(f => f.isPrimary) || r.frequencies[0];
 }
 
 interface NearestRepeaterProps {
@@ -378,29 +386,43 @@ function RepeaterCard({
               <span className="text-lg font-bold font-mono text-ship-cove-900 dark:text-ship-cove-100 group-hover:text-ship-cove-600 dark:group-hover:text-ship-cove-300 transition-colors">
                 {repeater.callsign}
               </span>
-              <span className="px-2 py-0.5 rounded-md bg-ship-cove-100 dark:bg-ship-cove-800 text-ship-cove-600 dark:text-ship-cove-400 text-xs font-medium">
-                {getBandFromFrequency(repeater.outputFrequency)}
-              </span>
-              <span className="px-2 py-0.5 rounded-md bg-ship-cove-50 dark:bg-ship-cove-800/50 text-ship-cove-500 dark:text-ship-cove-500 text-xs font-medium ring-1 ring-ship-cove-200 dark:ring-ship-cove-700">
-                {repeater.modulation}
-              </span>
-              {repeater.dmr && (
-                <span className="px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-600 dark:text-purple-400 text-xs font-medium">
-                  DMR
+              {(() => {
+                const primary = getPrimaryFrequency(repeater);
+                return primary ? (
+                  <span className="px-2 py-0.5 rounded-md bg-ship-cove-100 dark:bg-ship-cove-800 text-ship-cove-600 dark:text-ship-cove-400 text-xs font-medium">
+                    {getBandFromFrequency(primary.outputFrequency)}
+                  </span>
+                ) : null;
+              })()}
+              {repeater.modes?.map(mode => (
+                <span
+                  key={mode}
+                  className={cn(
+                    "px-2 py-0.5 rounded-md text-xs font-medium",
+                    mode === 'DMR' && "bg-purple-500/20 text-purple-600 dark:text-purple-400",
+                    mode === 'DSTAR' && "bg-blue-500/20 text-blue-600 dark:text-blue-400",
+                    mode === 'FM' && "bg-ship-cove-50 dark:bg-ship-cove-800/50 text-ship-cove-500 ring-1 ring-ship-cove-200 dark:ring-ship-cove-700",
+                    mode === 'C4FM' && "bg-orange-500/20 text-orange-600 dark:text-orange-400",
+                    mode === 'TETRA' && "bg-red-500/20 text-red-600 dark:text-red-400"
+                  )}
+                >
+                  {mode === 'DSTAR' ? 'D-STAR' : mode}
                 </span>
-              )}
-              {repeater.dstar && (
-                <span className="px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-medium">
-                  D-STAR
-                </span>
-              )}
+              ))}
             </div>
             <div className="text-sm text-ship-cove-600 dark:text-ship-cove-400">
-              <span className="font-mono">{repeater.outputFrequency.toFixed(4)} MHz</span>
-              {repeater.tone > 0 && <span className="ml-2">CTCSS: {repeater.tone} Hz</span>}
+              {(() => {
+                const primary = getPrimaryFrequency(repeater);
+                return primary ? (
+                  <>
+                    <span className="font-mono">{primary.outputFrequency.toFixed(4)} MHz</span>
+                    {primary.tone && primary.tone > 0 && <span className="ml-2">CTCSS: {primary.tone} Hz</span>}
+                  </>
+                ) : null;
+              })()}
             </div>
             <div className="text-sm text-ship-cove-500">
-              {repeater.owner} • <span className="font-mono">{repeater.qth_locator}</span>
+              {repeater.owner ?? ''} • <span className="font-mono">{repeater.qthLocator}</span>
             </div>
           </div>
 
@@ -472,15 +494,20 @@ function RepeaterCard({
                     <span className="font-bold font-mono text-ship-cove-900 dark:text-ship-cove-100">
                       {repeater.callsign}
                     </span>
-                    <span className="px-1.5 py-0.5 rounded bg-ship-cove-100 dark:bg-ship-cove-800 text-ship-cove-600 dark:text-ship-cove-400 text-xs">
-                      {getBandFromFrequency(repeater.outputFrequency)}
-                    </span>
-                    {repeater.dmr && (
+                    {(() => {
+                      const primary = getPrimaryFrequency(repeater);
+                      return primary ? (
+                        <span className="px-1.5 py-0.5 rounded bg-ship-cove-100 dark:bg-ship-cove-800 text-ship-cove-600 dark:text-ship-cove-400 text-xs">
+                          {getBandFromFrequency(primary.outputFrequency)}
+                        </span>
+                      ) : null;
+                    })()}
+                    {repeater.modes?.includes('DMR') && (
                       <span className="px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-600 dark:text-purple-400 text-xs">
                         DMR
                       </span>
                     )}
-                    {repeater.dstar && (
+                    {repeater.modes?.includes('DSTAR') && (
                       <span className="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs">
                         D-STAR
                       </span>
@@ -497,8 +524,15 @@ function RepeaterCard({
               {/* Middle row */}
               <div className="mt-1 flex items-center justify-between text-xs text-ship-cove-600 dark:text-ship-cove-400">
                 <div className="font-mono">
-                  {repeater.outputFrequency.toFixed(3)} MHz
-                  {repeater.tone > 0 && <span className="ml-1.5">• {repeater.tone}Hz</span>}
+                  {(() => {
+                    const primary = getPrimaryFrequency(repeater);
+                    return primary ? (
+                      <>
+                        {primary.outputFrequency.toFixed(3)} MHz
+                        {primary.tone && primary.tone > 0 && <span className="ml-1.5">• {primary.tone}Hz</span>}
+                      </>
+                    ) : null;
+                  })()}
                 </div>
                 <div className="font-mono font-medium">
                   {Math.round(repeater.bearing)}° {bearingToCardinal(repeater.bearing)}
@@ -507,7 +541,7 @@ function RepeaterCard({
 
               {/* Bottom row */}
               <div className="mt-1 flex items-center justify-between">
-                <span className="text-xs text-ship-cove-500 font-mono">{repeater.qth_locator}</span>
+                <span className="text-xs text-ship-cove-500 font-mono">{repeater.qthLocator}</span>
                 {compassEnabled && relativeBearing !== null && (
                   <span className={cn(
                     'text-xs font-medium px-1.5 py-0.5 rounded',

@@ -55,24 +55,35 @@ function getBandFromFrequency(mhz: number): string {
   if (mhz >= 430 && mhz <= 450) return "70cm";
   if (mhz >= 144 && mhz <= 148) return "2m";
   if (mhz >= 50 && mhz <= 54) return "6m";
+  if (mhz >= 1240 && mhz <= 1300) return "23cm";
+  if (mhz >= 2300 && mhz <= 2450) return "13cm";
   return "Other";
 }
 
-function getModulationColors(modulation: string): string {
-  switch (modulation.toUpperCase()) {
+function getModeColors(mode: string): string {
+  switch (mode.toUpperCase()) {
     case "FM":
       return "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border-blue-300 dark:border-blue-700";
     case "DMR":
       return "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 border-purple-300 dark:border-purple-700";
+    case "DSTAR":
     case "D-STAR":
       return "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300 border-cyan-300 dark:border-cyan-700";
     case "C4FM":
       return "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 border-orange-300 dark:border-orange-700";
-    case "TVA":
-      return "bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300 border-pink-300 dark:border-pink-700";
+    case "TETRA":
+      return "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 border-red-300 dark:border-red-700";
+    case "DIGIPEATER":
+      return "bg-gray-100 text-gray-700 dark:bg-gray-900/40 dark:text-gray-300 border-gray-300 dark:border-gray-700";
     default:
       return "bg-gray-100 text-gray-700 dark:bg-gray-900/40 dark:text-gray-300 border-gray-300 dark:border-gray-700";
   }
+}
+
+// Helper to get primary frequency from repeater
+function getPrimaryFrequency(r: Repeater) {
+  if (!r.frequencies || r.frequencies.length === 0) return null;
+  return r.frequencies.find(f => f.isPrimary) || r.frequencies[0];
 }
 
 function FilterChip({
@@ -118,19 +129,20 @@ export default function RepeaterView({ view }: Props) {
     if (columnFilters.find((f) => f.id === "band")?.value) count++;
     if (columnFilters.find((f) => f.id === "owner")?.value) count++;
     if (
-      (columnFilters.find((f) => f.id === "modulation")?.value as string[] | undefined)
+      (columnFilters.find((f) => f.id === "modes")?.value as string[] | undefined)
         ?.length
     )
       count++;
-    if (columnFilters.find((f) => f.id === "qth_locator")?.value) count++;
+    if (columnFilters.find((f) => f.id === "qthLocator")?.value) count++;
     if (columnFilters.find((f) => f.id === "opStatus")?.value) count++;
     if (distanceRadius !== null) count++;
     return count;
   }, [columnFilters, distanceRadius]);
 
-  const modulationOptions = React.useMemo(() => {
+  // Collect unique modes from all repeaters
+  const modeOptions = React.useMemo(() => {
     const set = new Set<string>();
-    data.forEach((d) => d.modulation && set.add(d.modulation));
+    data.forEach((d) => d.modes?.forEach((m) => set.add(m === 'DSTAR' ? 'D-STAR' : m)));
     return Array.from(set).sort();
   }, [data]);
 
@@ -143,10 +155,10 @@ export default function RepeaterView({ view }: Props) {
     const owner = columnFilters.find((f) => f.id === "owner")?.value as
       | string
       | undefined;
-    const modulation = columnFilters.find((f) => f.id === "modulation")?.value as
+    const modes = columnFilters.find((f) => f.id === "modes")?.value as
       | string[]
       | undefined;
-    const qth = columnFilters.find((f) => f.id === "qth_locator")?.value as
+    const qth = columnFilters.find((f) => f.id === "qthLocator")?.value as
       | string
       | undefined;
     const opStatus = columnFilters.find((f) => f.id === "opStatus")?.value as
@@ -158,28 +170,29 @@ export default function RepeaterView({ view }: Props) {
       result = result.filter((r) => r.callsign.toLowerCase().includes(q));
     }
     if (band) {
-      result = result.filter((r) => getBandFromFrequency(r.outputFrequency) === band);
+      result = result.filter((r) => {
+        const primary = getPrimaryFrequency(r);
+        return primary ? getBandFromFrequency(primary.outputFrequency) === band : false;
+      });
     }
     if (owner && owner.trim()) {
       const q = owner.trim().toLowerCase();
-      result = result.filter(
-        (r) =>
-          r.owner.toLowerCase().includes(q) ||
-          getOwnerShort(r.owner).toLowerCase().includes(q)
-      );
+      result = result.filter((r) => {
+        const ownerStr = r.owner ?? '';
+        return ownerStr.toLowerCase().includes(q) || getOwnerShort(ownerStr).toLowerCase().includes(q);
+      });
     }
-    if (modulation && modulation.length > 0) {
+    if (modes && modes.length > 0) {
       result = result.filter((r) =>
-        modulation.some((m) => {
-          if (m === "DMR" && r.dmr) return true;
-          if (m === "D-STAR" && r.dstar) return true;
-          return r.modulation && m.toLowerCase() === r.modulation.toLowerCase();
+        modes.some((m) => {
+          const normalizedFilter = m === "D-STAR" ? "DSTAR" : m;
+          return r.modes?.includes(normalizedFilter as typeof r.modes[number]);
         })
       );
     }
     if (qth && qth.trim()) {
       const q = qth.trim().toLowerCase();
-      result = result.filter((r) => r.qth_locator?.toLowerCase().includes(q));
+      result = result.filter((r) => r.qthLocator?.toLowerCase().includes(q));
     }
     if (opStatus) {
       result = result.filter((r) => r.status === opStatus);
@@ -409,30 +422,30 @@ export default function RepeaterView({ view }: Props) {
                         </div>
                       </div>
 
-                      {/* Modulation filter */}
+                      {/* Modes filter */}
                       <div className="rounded-lg border bg-muted/30 p-3">
                         <div className="flex items-center gap-2 text-sm mb-2.5">
                           <Signal className="w-4 h-4 text-muted-foreground" />
                           <span className="font-medium">{t("filters.modulation")}</span>
                         </div>
                         <div className="flex flex-wrap gap-1.5">
-                          {modulationOptions.map((m) => {
-                            const selectedMods = (columnFilters.find((f) => f.id === "modulation")?.value as string[] | undefined) || [];
+                          {modeOptions.map((m) => {
+                            const selectedMods = (columnFilters.find((f) => f.id === "modes")?.value as string[] | undefined) || [];
                             const isActive = selectedMods.includes(m);
-                            const colors = getModulationColors(m);
+                            const colors = getModeColors(m);
                             return (
                               <FilterChip
                                 key={m}
                                 isActive={isActive}
                                 onClick={() => {
                                   setColumnFilters((prev) => {
-                                    const next = prev.filter((f) => f.id !== "modulation");
-                                    const current = (prev.find((f) => f.id === "modulation")?.value as string[] | undefined) || [];
+                                    const next = prev.filter((f) => f.id !== "modes");
+                                    const current = (prev.find((f) => f.id === "modes")?.value as string[] | undefined) || [];
                                     const updated = isActive
                                       ? current.filter((v) => v !== m)
                                       : [...current, m];
                                     if (updated.length > 0) {
-                                      next.push({ id: "modulation", value: updated });
+                                      next.push({ id: "modes", value: updated });
                                     }
                                     return next;
                                   });
@@ -530,12 +543,12 @@ export default function RepeaterView({ view }: Props) {
                         </div>
                         <Input
                           placeholder={t("filters.qth")}
-                          value={(columnFilters.find((f) => f.id === "qth_locator")?.value as string) ?? ""}
+                          value={(columnFilters.find((f) => f.id === "qthLocator")?.value as string) ?? ""}
                           onChange={(event) => {
                             const v = event.target.value;
                             setColumnFilters((prev) => {
-                              const next = prev.filter((f) => f.id !== "qth_locator");
-                              if (v) next.push({ id: "qth_locator", value: v });
+                              const next = prev.filter((f) => f.id !== "qthLocator");
+                              if (v) next.push({ id: "qthLocator", value: v });
                               return next;
                             });
                           }}

@@ -8,6 +8,7 @@ import {
 } from "@/lib/associations"
 import { PageHeader, PageHeaderIcon } from "@/components/ui/PageHeader"
 import { BreadcrumbJsonLd } from "@/components/seo"
+import { getPrimaryFrequency } from "@/types/repeater-helpers"
 import {
   ArrowLeft,
   Building2,
@@ -46,8 +47,8 @@ export async function generateMetadata({ params }: PageProps) {
 
     const repeaterCount = association.repeaters.length
     const modulations = [
-      ...new Set(association.repeaters.map((r) => r.modulation)),
-    ].filter(Boolean)
+      ...new Set(association.repeaters.flatMap((r) => r.modes || [])),
+    ].filter(Boolean).map(m => m === 'DSTAR' ? 'D-STAR' : m)
 
     const title = `${association.abbreviation} - ${association.name}`
     const description =
@@ -167,19 +168,23 @@ function generateOrganizationJsonLd(
       },
     }),
     ...(association.repeaters.length > 0 && {
-      owns: association.repeaters.map((repeater) => ({
-        "@type": "Thing",
-        name: repeater.callsign,
-        description: `Repetidor ${repeater.modulation} - ${repeater.outputFrequency.toFixed(3)} MHz`,
-        ...(repeater.latitude &&
-          repeater.longitude && {
-            geo: {
-              "@type": "GeoCoordinates",
-              latitude: repeater.latitude,
-              longitude: repeater.longitude,
-            },
-          }),
-      })),
+      owns: association.repeaters.map((repeater) => {
+        const primary = getPrimaryFrequency(repeater);
+        const modesStr = repeater.modes?.map(m => m === 'DSTAR' ? 'D-STAR' : m).join('/') || 'FM';
+        return {
+          "@type": "Thing",
+          name: repeater.callsign,
+          description: `Repetidor ${modesStr}${primary ? ` - ${primary.outputFrequency.toFixed(3)} MHz` : ''}`,
+          ...(repeater.latitude &&
+            repeater.longitude && {
+              geo: {
+                "@type": "GeoCoordinates",
+                latitude: repeater.latitude,
+                longitude: repeater.longitude,
+              },
+            }),
+        };
+      }),
     }),
   }
 }
@@ -247,11 +252,14 @@ async function AssociationContent({
   const jsonLd = generateOrganizationJsonLd(association)
   const breadcrumbs = generateBreadcrumbs(association)
 
-  // Group repeaters by modulation for stats
+  // Group repeaters by mode for stats
   const modulationCounts = association.repeaters.reduce(
     (acc, r) => {
-      const mod = r.modulation || "Other"
-      acc[mod] = (acc[mod] || 0) + 1
+      const modes = r.modes?.length ? r.modes : ['FM'];
+      for (const mode of modes) {
+        const displayMode = mode === 'DSTAR' ? 'D-STAR' : mode;
+        acc[displayMode] = (acc[displayMode] || 0) + 1;
+      }
       return acc
     },
     {} as Record<string, number>
@@ -448,6 +456,8 @@ async function AssociationContent({
               <div className="space-y-2">
                 {association.repeaters.map((repeater, index) => {
                   const status = getStatusClasses(repeater.status)
+                  const primary = getPrimaryFrequency(repeater);
+                  const modesStr = repeater.modes?.map(m => m === 'DSTAR' ? 'D-STAR' : m).join('/') || 'FM';
                   return (
                     <Link
                       key={repeater.callsign}
@@ -468,20 +478,22 @@ async function AssociationContent({
                             {repeater.callsign}
                           </span>
                           <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-ship-cove-100 dark:bg-ship-cove-800 text-ship-cove-600 dark:text-ship-cove-400">
-                            {repeater.modulation}
+                            {modesStr}
                           </span>
                         </div>
                         <div className="flex items-center gap-3 text-sm text-ship-cove-600 dark:text-ship-cove-400">
-                          <span className="font-mono tabular-nums">
-                            {repeater.outputFrequency.toFixed(3)} MHz
-                          </span>
-                          {repeater.tone && (
+                          {primary && (
+                            <span className="font-mono tabular-nums">
+                              {primary.outputFrequency.toFixed(3)} MHz
+                            </span>
+                          )}
+                          {primary?.tone && (
                             <>
                               <span className="text-ship-cove-300 dark:text-ship-cove-700">
                                 •
                               </span>
                               <span className="font-mono tabular-nums">
-                                {repeater.tone} Hz
+                                {primary.tone} Hz
                               </span>
                             </>
                           )}
@@ -489,9 +501,9 @@ async function AssociationContent({
                       </div>
 
                       {/* QTH Locator */}
-                      {repeater.qth_locator && (
+                      {repeater.qthLocator && (
                         <span className="hidden sm:inline-flex px-2.5 py-1 rounded-md text-xs font-mono font-medium bg-ship-cove-900 dark:bg-ship-cove-100 text-ship-cove-100 dark:text-ship-cove-900">
-                          {repeater.qth_locator}
+                          {repeater.qthLocator}
                         </span>
                       )}
 

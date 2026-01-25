@@ -14,46 +14,22 @@ import { useTranslations } from "next-intl"
 import Link from "next/link"
 import * as React from "react"
 
-export type Repeater = {
-  callsign: string
-  outputFrequency: number
-  inputFrequency: number
-  tone: number
-  modulation: string
-  latitude: number
-  longitude: number
-  qth_locator: string
-  owner: string
-  dmr: boolean
-  dstar: boolean
-  // Association (replaces owner)
-  association?: {
-    id: number
-    name: string
-    abbreviation: string
-    slug: string
-  }
-  // Extended fields
-  status?: 'active' | 'maintenance' | 'offline' | 'unknown'
-  power?: number
-  antennaHeight?: number
-  coverage?: 'local' | 'regional' | 'wide'
-  dmrColorCode?: number
-  dmrTalkgroups?: string
-  dstarReflector?: string
-  dstarModule?: 'A' | 'B' | 'C' | 'D'
-  echolinkNode?: number
-  allstarNode?: number
-  operatingHours?: string
-  lastVerified?: string
-  notes?: string
-  website?: string
+// Re-export RepeaterV2 as Repeater for backward compatibility
+import type { RepeaterV2 } from "@/types/repeater"
+export type Repeater = RepeaterV2
+
+// Helper to get primary frequency from repeater
+function getPrimaryFrequency(r: Repeater) {
+  if (!r.frequencies || r.frequencies.length === 0) return null
+  return r.frequencies.find(f => f.isPrimary) || r.frequencies[0]
 }
 
 function getBandFromFrequency(mhz: number): string {
   if (mhz >= 430 && mhz <= 450) return "70cm"
   if (mhz >= 144 && mhz <= 148) return "2m"
   if (mhz >= 50 && mhz <= 54) return "6m"
+  if (mhz >= 1240 && mhz <= 1300) return "23cm"
+  if (mhz >= 2300 && mhz <= 2450) return "13cm"
   return "Other"
 }
 
@@ -166,7 +142,10 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
     {
       id: "band",
       header: t("band"),
-      accessorFn: (row) => getBandFromFrequency(row.outputFrequency),
+      accessorFn: (row) => {
+        const primary = getPrimaryFrequency(row)
+        return primary ? getBandFromFrequency(primary.outputFrequency) : "Other"
+      },
       // Simple equality filter for exact band match
       filterFn: (row, id, value) => {
         if (!value) return true
@@ -175,11 +154,15 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
       enableSorting: false,
     },
     {
-      accessorKey: "outputFrequency",
+      id: "outputFrequency",
       header: t("outputFrequency"),
+      accessorFn: (row) => {
+        const primary = getPrimaryFrequency(row)
+        return primary?.outputFrequency ?? 0
+      },
       cell: ({ getValue }) => {
         const value = getValue() as number
-        return value?.toFixed(3) ?? ""
+        return value ? value.toFixed(3) : ""
       },
       filterFn: (row, id, value) => {
         if (!value) return true
@@ -191,11 +174,15 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
       },
     },
     {
-      accessorKey: "inputFrequency",
+      id: "inputFrequency",
       header: t("inputFrequency"),
+      accessorFn: (row) => {
+        const primary = getPrimaryFrequency(row)
+        return primary?.inputFrequency ?? 0
+      },
       cell: ({ getValue }) => {
         const value = getValue() as number
-        return value?.toFixed(3) ?? ""
+        return value ? value.toFixed(3) : ""
       },
       filterFn: (row, id, value) => {
         if (!value) return true
@@ -207,69 +194,55 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
       },
     },
     {
-      accessorKey: "tone",
+      id: "tone",
       header: t("tone"),
+      accessorFn: (row) => {
+        const primary = getPrimaryFrequency(row)
+        return primary?.tone ?? 0
+      },
       cell: ({ getValue }) => {
         const value = getValue() as number
-        return value?.toFixed(1) ?? ""
+        return value ? value.toFixed(1) : ""
       },
       filterFn: (row, id, value) => {
         if (!value) return true
         const numValue = row.getValue<number>(id)
-        if (numValue == null) return false
+        if (numValue == null || numValue === 0) return false
         const formattedValue = numValue.toFixed(1)
         const rawValue = numValue.toString()
         return formattedValue.includes(value) || rawValue.includes(value)
       },
     },
     {
-      accessorKey: "modulation",
+      id: "modes",
       header: t("modulation"),
-      // Supports both single value and array of values (case-insensitive)
-      filterFn: (row, id, value) => {
-        if (!value) return true
-        const cell = String(row.getValue<string>(id) ?? "").toLowerCase()
+      accessorFn: (row) => row.modes.join(', '),
+      cell: ({ row }) => {
         const r = row.original as Repeater
+        return <ModesCell modes={r.modes} />
+      },
+      // Filter by modes array - supports multi-select
+      filterFn: (row, _id, value) => {
+        if (!value) return true
+        const r = row.original as Repeater
+        const modes = r.modes || []
 
         // Handle array of values (multi-select)
         if (Array.isArray(value)) {
           return value.some(v => {
-            const filterVal = String(v).toLowerCase()
-            if (filterVal === 'dmr' && r.dmr) return true
-            if (filterVal === 'd-star' && r.dstar) return true
-            return filterVal === cell
+            const filterVal = String(v).toUpperCase()
+            // Normalize filter values to match modes array
+            if (filterVal === 'D-STAR') return modes.includes('DSTAR')
+            return modes.includes(filterVal as typeof modes[number])
           })
         }
 
-        // Handle single value (backward compatibility)
-        const v = String(value).toLowerCase()
-        if (v === 'dmr' && r.dmr) return true
-        if (v === 'd-star' && r.dstar) return true
-        return cell === v
+        // Handle single value
+        const v = String(value).toUpperCase()
+        if (v === 'D-STAR') return modes.includes('DSTAR')
+        return modes.includes(v as typeof modes[number])
       },
     },
-    // {
-    //   accessorKey: "dmr",
-    //   header: t("dmr"),
-    //   cell: ({ getValue }) => (Boolean(getValue()) ? "✓" : "—"),
-    //   filterFn: (row, id, value) => {
-    //     if (value === undefined || value === null) return true
-    //     const expected = Boolean(value)
-    //     return Boolean(row.getValue(id)) === expected
-    //   },
-    //   enableSorting: false,
-    // },
-    // {
-    //   accessorKey: "dstar",
-    //   header: t("dstar"),
-    //   cell: ({ getValue }) => (Boolean(getValue()) ? "✓" : "—"),
-    //   filterFn: (row, id, value) => {
-    //     if (value === undefined || value === null) return true
-    //     const expected = Boolean(value)
-    //     return Boolean(row.getValue(id)) === expected
-    //   },
-    //   enableSorting: false,
-    // },
     {
       accessorKey: "latitude",
       header: t("latitude"),
@@ -279,7 +252,8 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
       header: t("longitude"),
     },
     {
-      accessorKey: "qth_locator",
+      id: "qthLocator",
+      accessorKey: "qthLocator",
       header: t("qthLocator"),
       // Substring match, case-insensitive
       filterFn: (row, id, value) => {
@@ -383,6 +357,33 @@ function normalizeOwner(name: string) {
 export function getOwnerShort(name: string): string {
   const key = normalizeOwner(name)
   return OWNER_SHORTNAMES[key] ?? name
+}
+
+// ---- Modes Cell ----
+function ModesCell({ modes }: { modes: Repeater['modes'] }) {
+  if (!modes || modes.length === 0) return null
+
+  // Display mode badges
+  return (
+    <div className="flex flex-wrap gap-1">
+      {modes.map(mode => (
+        <span
+          key={mode}
+          className={cn(
+            "inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium",
+            mode === 'FM' && "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+            mode === 'DMR' && "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+            mode === 'DSTAR' && "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+            mode === 'C4FM' && "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
+            mode === 'TETRA' && "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+            mode === 'Digipeater' && "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400"
+          )}
+        >
+          {mode === 'DSTAR' ? 'D-STAR' : mode}
+        </span>
+      ))}
+    </div>
+  )
 }
 
 // ---- Status Icon (community votes) ----

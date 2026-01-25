@@ -1,6 +1,7 @@
 'use client';
 
 import { Repeater } from '@/app/columns';
+import { getPrimaryFrequency } from '@/types/repeater-helpers';
 import { cn } from '@/lib/utils';
 import { Radio, Search, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -46,7 +47,7 @@ export default function SearchAutocomplete({
         (r) =>
           r.callsign.toLowerCase().includes(query) ||
           r.owner?.toLowerCase().includes(query) ||
-          r.qth_locator?.toLowerCase().includes(query)
+          r.qthLocator?.toLowerCase().includes(query)
       )
       .slice(0, 8); // Limit to 8 results
   }, [repeaters, value]);
@@ -164,19 +165,29 @@ export default function SearchAutocomplete({
                     <Radio className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{repeater.callsign}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {getBandFromFrequency(repeater.outputFrequency)}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {repeater.modulation}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {repeater.outputFrequency.toFixed(3)} MHz
-                      {repeater.owner && ` · ${repeater.owner}`}
-                    </p>
+                    {(() => {
+                      const primary = getPrimaryFrequency(repeater);
+                      const modesStr = repeater.modes?.map(m => m === 'DSTAR' ? 'D-STAR' : m).join('/') || 'FM';
+                      return (
+                        <>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">{repeater.callsign}</span>
+                            {primary && (
+                              <span className="text-xs text-muted-foreground">
+                                {getBandFromFrequency(primary.outputFrequency)}
+                              </span>
+                            )}
+                            <span className="text-xs text-muted-foreground">
+                              {modesStr}
+                            </span>
+                          </div>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {primary ? `${primary.outputFrequency.toFixed(3)} MHz` : ''}
+                            {repeater.owner && ` · ${repeater.owner}`}
+                          </p>
+                        </>
+                      );
+                    })()}
                   </div>
                 </button>
               </li>

@@ -584,18 +584,24 @@ const MapView = ({ repeaters, onRepeaterClick, userLocation: externalUserLocatio
                 <div className="min-w-[180px]">
                   <div className="font-bold text-base">{repeater.callsign}</div>
                   <div className="text-sm text-gray-600 mt-1">
-                    {repeater.outputFrequency.toFixed(3)} MHz
-                    {repeater.modulation && (
+                    {(() => {
+                      const primary = repeater.frequencies?.find(f => f.isPrimary) || repeater.frequencies?.[0];
+                      return primary ? `${primary.outputFrequency.toFixed(3)} MHz` : '';
+                    })()}
+                    {repeater.modes?.length > 0 && (
                       <span className="ml-2 inline-block rounded bg-blue-100 px-1.5 py-0.5 text-xs text-blue-800">
-                        {repeater.modulation}
+                        {repeater.modes.map(m => m === 'DSTAR' ? 'D-STAR' : m).join(', ')}
                       </span>
                     )}
                   </div>
-                  {repeater.tone && (
-                    <div className="text-xs text-gray-500 mt-0.5">
-                      Tom: {repeater.tone} Hz
-                    </div>
-                  )}
+                  {(() => {
+                    const primary = repeater.frequencies?.find(f => f.isPrimary) || repeater.frequencies?.[0];
+                    return primary?.tone ? (
+                      <div className="text-xs text-gray-500 mt-0.5">
+                        Tom: {primary.tone} Hz
+                      </div>
+                    ) : null;
+                  })()}
                   {onRepeaterClick && (
                     <button
                       type="button"

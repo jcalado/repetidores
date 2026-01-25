@@ -39,6 +39,7 @@ import {
   fmtMHzCopy,
   duplex,
 } from "@/components/repeater/utils/formatters";
+import { getPrimaryFrequency } from "@/types/repeater-helpers";
 import { CommunitySection } from "@/components/repeater/community/CommunitySection";
 import { operationalStatusConfig } from "@/components/repeater/utils/statusConfig";
 
@@ -78,8 +79,11 @@ interface RepeaterPageClientProps {
 }
 
 export default function RepeaterPageClient({ repeater: r, allRepeaters }: RepeaterPageClientProps) {
-  const band = getBandFromFrequency(r.outputFrequency);
-  const { sign, offsetDisplay, offsetCopy } = duplex(r.outputFrequency, r.inputFrequency);
+  const primary = getPrimaryFrequency(r);
+  const band = primary ? getBandFromFrequency(primary.outputFrequency) : 'unknown';
+  const { sign, offsetDisplay, offsetCopy } = primary
+    ? duplex(primary.outputFrequency, primary.inputFrequency)
+    : { sign: '', offsetDisplay: '—', offsetCopy: '' };
   const [favorite, setFavorite] = React.useState(() => isFavorite(r.callsign));
   const { userLocation, requestLocation, isLocating } = useUserLocation();
   const compass = useDeviceCompass();
@@ -163,24 +167,25 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
               <span className="px-3 py-1 rounded-md bg-white/10 text-white text-sm font-medium backdrop-blur-sm">
                 {band}
               </span>
-              {r.modulation && (
-                <span className="px-3 py-1 rounded-md bg-ship-cove-500/30 text-ship-cove-100 text-sm font-medium">
-                  {r.modulation.toUpperCase()}
+              {r.modes?.map((mode) => (
+                <span
+                  key={mode}
+                  className={cn(
+                    "px-3 py-1 rounded-md text-sm font-medium",
+                    mode === 'DMR' && "bg-purple-500/30 text-purple-100",
+                    mode === 'DSTAR' && "bg-blue-500/30 text-blue-100",
+                    mode === 'C4FM' && "bg-orange-500/30 text-orange-100",
+                    mode === 'TETRA' && "bg-cyan-500/30 text-cyan-100",
+                    mode === 'FM' && "bg-ship-cove-500/30 text-ship-cove-100",
+                    mode === 'Digipeater' && "bg-green-500/30 text-green-100"
+                  )}
+                >
+                  {mode === 'DSTAR' ? 'D-STAR' : mode}
                 </span>
-              )}
-              {r.qth_locator && (
+              ))}
+              {r.qthLocator && (
                 <span className="px-3 py-1 rounded-md bg-white/10 text-white text-sm font-mono backdrop-blur-sm">
-                  {r.qth_locator}
-                </span>
-              )}
-              {r.dmr && (
-                <span className="px-3 py-1 rounded-md bg-purple-500/30 text-purple-100 text-sm font-medium">
-                  DMR
-                </span>
-              )}
-              {r.dstar && (
-                <span className="px-3 py-1 rounded-md bg-blue-500/30 text-blue-100 text-sm font-medium">
-                  D-STAR
+                  {r.qthLocator}
                 </span>
               )}
             </div>
@@ -232,13 +237,13 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
           <div className="grid grid-cols-2 gap-4">
             <FrequencyDisplay
               label={t("output")}
-              value={fmtMHzDisplay(r.outputFrequency)}
-              copyValue={fmtMHzCopy(r.outputFrequency)}
+              value={primary ? fmtMHzDisplay(primary.outputFrequency) : "—"}
+              copyValue={primary ? fmtMHzCopy(primary.outputFrequency) : undefined}
             />
             <FrequencyDisplay
               label={t("input")}
-              value={fmtMHzDisplay(r.inputFrequency)}
-              copyValue={fmtMHzCopy(r.inputFrequency)}
+              value={primary ? fmtMHzDisplay(primary.inputFrequency) : "—"}
+              copyValue={primary ? fmtMHzCopy(primary.inputFrequency) : undefined}
             />
             <FrequencyDisplay
               label={t("offset")}
@@ -247,8 +252,8 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
             />
             <FrequencyDisplay
               label={t("tone")}
-              value={r.tone ? `${Number(r.tone.toFixed(1))} Hz` : "—"}
-              copyValue={r.tone ? `${Number(r.tone.toFixed(1))}` : undefined}
+              value={primary?.tone ? `${Number(primary.tone.toFixed(1))} Hz` : "—"}
+              copyValue={primary?.tone ? `${Number(primary.tone.toFixed(1))}` : undefined}
             />
           </div>
         </EquipmentPanel>
@@ -395,61 +400,175 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
       )}
 
       {/* Digital Modes */}
-      {(r.dmr || r.dstar || r.echolinkNode || r.allstarNode) && (
+      {(r.modes?.includes('DMR') || r.modes?.includes('DSTAR') || r.modes?.includes('C4FM') || r.modes?.includes('TETRA') || r.echolink?.enabled || r.allstarNode) && (
         <EquipmentPanel title="Modos Digitais & Linking" icon={Wifi}>
           <div className="space-y-4">
             {/* DMR Details */}
-            {r.dmr && (
+            {r.modes?.includes('DMR') && (
               <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800/50">
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2 mb-3">
                   <span className="px-2 py-0.5 rounded text-xs font-bold bg-purple-500 text-white">
                     DMR
                   </span>
-                  {r.dmrColorCode && (
+                  {r.dmr?.colorCode && (
                     <span className="text-sm text-purple-700 dark:text-purple-300 font-mono">
-                      Color Code {r.dmrColorCode}
+                      Color Code {r.dmr.colorCode}
+                    </span>
+                  )}
+                  {r.dmr?.network && (
+                    <span className="text-xs text-purple-600 dark:text-purple-400 ml-auto">
+                      {r.dmr.network}
                     </span>
                   )}
                 </div>
-                {r.dmrTalkgroups && (
-                  <p className="text-sm text-purple-600 dark:text-purple-400">
-                    Talkgroups: {r.dmrTalkgroups}
-                  </p>
-                )}
+
+                {/* Timeslot Talkgroups */}
+                <div className="space-y-3">
+                  {r.dmr?.ts1StaticTalkgroups && r.dmr.ts1StaticTalkgroups.length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-xs font-semibold text-purple-700 dark:text-purple-300 uppercase tracking-wide">
+                          Timeslot 1
+                        </span>
+                        <div className="flex-1 h-px bg-purple-200 dark:bg-purple-700/50" />
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {r.dmr.ts1StaticTalkgroups.map((tg, idx) => (
+                          <span
+                            key={idx}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-purple-100 dark:bg-purple-800/40 border border-purple-200 dark:border-purple-700/50 text-purple-800 dark:text-purple-200"
+                          >
+                            <span className="font-mono text-sm font-semibold">{tg.tgId}</span>
+                            {tg.name && (
+                              <span className="text-xs text-purple-600 dark:text-purple-400">
+                                {tg.name}
+                              </span>
+                            )}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {r.dmr?.ts2StaticTalkgroups && r.dmr.ts2StaticTalkgroups.length > 0 && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-xs font-semibold text-purple-700 dark:text-purple-300 uppercase tracking-wide">
+                          Timeslot 2
+                        </span>
+                        <div className="flex-1 h-px bg-purple-200 dark:bg-purple-700/50" />
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {r.dmr.ts2StaticTalkgroups.map((tg, idx) => (
+                          <span
+                            key={idx}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-purple-100 dark:bg-purple-800/40 border border-purple-200 dark:border-purple-700/50 text-purple-800 dark:text-purple-200"
+                          >
+                            <span className="font-mono text-sm font-semibold">{tg.tgId}</span>
+                            {tg.name && (
+                              <span className="text-xs text-purple-600 dark:text-purple-400">
+                                {tg.name}
+                              </span>
+                            )}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {r.dmr?.ts2DynamicAllowed && (
+                    <p className="text-xs text-purple-500 dark:text-purple-400 italic">
+                      Talkgroups dinâmicos permitidos em TS2
+                    </p>
+                  )}
+                </div>
               </div>
             )}
 
             {/* D-STAR Details */}
-            {r.dstar && (
+            {r.modes?.includes('DSTAR') && (
               <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="px-2 py-0.5 rounded text-xs font-bold bg-blue-500 text-white">
                     D-STAR
                   </span>
-                  {r.dstarModule && (
+                  {r.dstar?.module && (
                     <span className="text-sm text-blue-700 dark:text-blue-300 font-mono">
-                      Module {r.dstarModule}
+                      Module {r.dstar.module}
                     </span>
                   )}
                 </div>
-                {r.dstarReflector && (
+                {r.dstar?.reflector && (
                   <p className="text-sm text-blue-600 dark:text-blue-400">
-                    Reflector: {r.dstarReflector}
+                    Reflector: {r.dstar.reflector}
+                  </p>
+                )}
+                {r.dstar?.gateway && (
+                  <p className="text-sm text-blue-600 dark:text-blue-400">
+                    Gateway: {r.dstar.gateway}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* C4FM Details */}
+            {r.modes?.includes('C4FM') && (
+              <div className="p-4 rounded-lg bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800/50">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="px-2 py-0.5 rounded text-xs font-bold bg-orange-500 text-white">
+                    C4FM
+                  </span>
+                  {r.c4fm?.network && (
+                    <span className="text-sm text-orange-700 dark:text-orange-300 font-mono uppercase">
+                      {r.c4fm.network}
+                    </span>
+                  )}
+                </div>
+                {r.c4fm?.room && (
+                  <p className="text-sm text-orange-600 dark:text-orange-400">
+                    Sala: {r.c4fm.room}
+                  </p>
+                )}
+                {r.c4fm?.node && (
+                  <p className="text-sm text-orange-600 dark:text-orange-400">
+                    Node: {r.c4fm.node}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* TETRA Details */}
+            {r.modes?.includes('TETRA') && r.tetra && (
+              <div className="p-4 rounded-lg bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800/50">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="px-2 py-0.5 rounded text-xs font-bold bg-cyan-500 text-white">
+                    TETRA
+                  </span>
+                </div>
+                {r.tetra.talkgroups && r.tetra.talkgroups.length > 0 && (
+                  <p className="text-sm text-cyan-600 dark:text-cyan-400">
+                    Talkgroups: {r.tetra.talkgroups.join(', ')}
+                  </p>
+                )}
+                {r.tetra.network && (
+                  <p className="text-sm text-cyan-600 dark:text-cyan-400">
+                    Rede: {r.tetra.network}
                   </p>
                 )}
               </div>
             )}
 
             {/* EchoLink & AllStar */}
-            {(r.echolinkNode || r.allstarNode) && (
+            {(r.echolink?.enabled || r.allstarNode) && (
               <div className="flex flex-wrap gap-3">
-                {r.echolinkNode && (
+                {r.echolink?.enabled && r.echolink.nodeNumber && (
                   <a
-                    href={`echolink://${r.echolinkNode}`}
+                    href={`echolink://${r.echolink.nodeNumber}`}
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-ship-cove-200 dark:border-ship-cove-700 text-sm font-medium text-ship-cove-700 dark:text-ship-cove-300 hover:bg-ship-cove-50 dark:hover:bg-ship-cove-800 transition-colors"
                   >
                     <Wifi className="h-4 w-4" />
-                    EchoLink #{r.echolinkNode}
+                    EchoLink #{r.echolink.nodeNumber}
+                    {r.echolink.conference && ` (${r.echolink.conference})`}
                   </a>
                 )}
                 {r.allstarNode && (
@@ -506,7 +625,11 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
                     {nearby.callsign}
                   </p>
                   <p className="text-xs text-ship-cove-500 font-mono">
-                    {nearby.outputFrequency.toFixed(3)} MHz · {nearby.modulation}
+                    {(() => {
+                      const nearbyPrimary = getPrimaryFrequency(nearby);
+                      return nearbyPrimary ? `${nearbyPrimary.outputFrequency.toFixed(3)} MHz` : '';
+                    })()}
+                    {nearby.modes?.length ? ` · ${nearby.modes.map(m => m === 'DSTAR' ? 'D-STAR' : m).join(', ')}` : ''}
                   </p>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-ship-cove-500">

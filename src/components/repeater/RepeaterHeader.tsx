@@ -6,6 +6,8 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { ShareButton } from "./ShareButton";
 import { getBandFromFrequency } from "./utils/formatters";
+import { getPrimaryFrequency } from "@/types/repeater-helpers";
+import { cn } from "@/lib/utils";
 import type { Repeater } from "./types";
 
 interface RepeaterHeaderProps {
@@ -18,7 +20,8 @@ interface RepeaterHeaderProps {
  */
 export function RepeaterHeader({ repeater: r }: RepeaterHeaderProps) {
   const t = useTranslations("repeater");
-  const band = getBandFromFrequency(r.outputFrequency);
+  const primary = getPrimaryFrequency(r);
+  const band = primary ? getBandFromFrequency(primary.outputFrequency) : 'unknown';
   const mapsUrl = `https://www.google.com/maps?q=${encodeURIComponent(r.latitude + "," + r.longitude)}`;
 
   return (
@@ -55,24 +58,25 @@ export function RepeaterHeader({ repeater: r }: RepeaterHeaderProps) {
             <span className="px-2 py-0.5 rounded-md bg-white/10 text-white text-xs font-medium backdrop-blur-sm">
               {band}
             </span>
-            {r.modulation && (
-              <span className="px-2 py-0.5 rounded-md bg-ship-cove-500/30 text-ship-cove-100 text-xs font-medium">
-                {r.modulation.toUpperCase()}
+            {r.modes?.map((mode) => (
+              <span
+                key={mode}
+                className={cn(
+                  "px-2 py-0.5 rounded-md text-xs font-medium",
+                  mode === 'DMR' && "bg-purple-500/30 text-purple-100",
+                  mode === 'DSTAR' && "bg-blue-500/30 text-blue-100",
+                  mode === 'C4FM' && "bg-orange-500/30 text-orange-100",
+                  mode === 'TETRA' && "bg-cyan-500/30 text-cyan-100",
+                  mode === 'FM' && "bg-ship-cove-500/30 text-ship-cove-100",
+                  mode === 'Digipeater' && "bg-green-500/30 text-green-100"
+                )}
+              >
+                {mode === 'DSTAR' ? 'D-STAR' : mode}
               </span>
-            )}
-            {r.qth_locator && (
+            ))}
+            {r.qthLocator && (
               <span className="px-2 py-0.5 rounded-md bg-white/10 text-white text-xs font-mono backdrop-blur-sm">
-                {r.qth_locator}
-              </span>
-            )}
-            {r.dmr && (
-              <span className="px-2 py-0.5 rounded-md bg-purple-500/30 text-purple-100 text-xs font-medium">
-                DMR
-              </span>
-            )}
-            {r.dstar && (
-              <span className="px-2 py-0.5 rounded-md bg-blue-500/30 text-blue-100 text-xs font-medium">
-                D-STAR
+                {r.qthLocator}
               </span>
             )}
           </div>

@@ -49,6 +49,8 @@ function getBandFromFrequency(mhz: number): string {
   if (mhz >= 430 && mhz <= 450) return "70cm"
   if (mhz >= 144 && mhz <= 148) return "2m"
   if (mhz >= 50 && mhz <= 54) return "6m"
+  if (mhz >= 1240 && mhz <= 1300) return "23cm"
+  if (mhz >= 2300 && mhz <= 2450) return "13cm"
   return "Other"
 }
 
@@ -77,18 +79,25 @@ export default function RepeaterBrowser({
     if (columnFilters.find((f) => f.id === "callsign")?.value) count++
     if (columnFilters.find((f) => f.id === "band")?.value) count++
     if (columnFilters.find((f) => f.id === "owner")?.value) count++
-    if ((columnFilters.find((f) => f.id === "modulation")?.value as string[] | undefined)?.length) count++
-    if (columnFilters.find((f) => f.id === "qth_locator")?.value) count++
+    if ((columnFilters.find((f) => f.id === "modes")?.value as string[] | undefined)?.length) count++
+    if (columnFilters.find((f) => f.id === "qthLocator")?.value) count++
     if (columnFilters.find((f) => f.id === "opStatus")?.value) count++
     if (distanceRadius !== null) count++
     return count
   }, [columnFilters, distanceRadius])
 
-  const modulationOptions = React.useMemo(() => {
+  // Collect unique modes from all repeaters
+  const modeOptions = React.useMemo(() => {
     const set = new Set<string>()
-    data.forEach((d) => d.modulation && set.add(d.modulation))
+    data.forEach((d) => d.modes?.forEach((m) => set.add(m === 'DSTAR' ? 'D-STAR' : m)))
     return Array.from(set).sort()
   }, [data])
+
+  // Helper to get primary frequency
+  const getPrimaryFrequency = React.useCallback((r: Repeater) => {
+    if (!r.frequencies || r.frequencies.length === 0) return null
+    return r.frequencies.find(f => f.isPrimary) || r.frequencies[0]
+  }, [])
 
   // Auto-open drawer for deep-linked repeater
   React.useEffect(() => {
@@ -193,10 +202,10 @@ export default function RepeaterBrowser({
     const owner = columnFilters.find((f) => f.id === "owner")?.value as
       | string
       | undefined
-    const modulation = columnFilters.find((f) => f.id === "modulation")?.value as
+    const modes = columnFilters.find((f) => f.id === "modes")?.value as
       | string[]
       | undefined
-    const qth = columnFilters.find((f) => f.id === "qth_locator")?.value as
+    const qth = columnFilters.find((f) => f.id === "qthLocator")?.value as
       | string
       | undefined
     const opStatus = columnFilters.find((f) => f.id === "opStatus")?.value as
@@ -208,28 +217,29 @@ export default function RepeaterBrowser({
       result = result.filter((r) => r.callsign.toLowerCase().includes(q))
     }
     if (band) {
-      result = result.filter(
-        (r) => getBandFromFrequency(r.outputFrequency) === band
-      )
+      result = result.filter((r) => {
+        const primary = getPrimaryFrequency(r)
+        return primary ? getBandFromFrequency(primary.outputFrequency) === band : false
+      })
     }
     if (owner && owner.trim()) {
       const q = owner.trim().toLowerCase()
-      result = result.filter((r) =>
-        r.owner.toLowerCase().includes(q) || getOwnerShort(r.owner).toLowerCase().includes(q)
-      )
+      result = result.filter((r) => {
+        const ownerStr = r.owner ?? ''
+        return ownerStr.toLowerCase().includes(q) || getOwnerShort(ownerStr).toLowerCase().includes(q)
+      })
     }
-    if (modulation && modulation.length > 0) {
+    if (modes && modes.length > 0) {
       result = result.filter((r) =>
-        modulation.some(m => {
-          if (m === 'DMR' && r.dmr) return true
-          if (m === 'D-STAR' && r.dstar) return true
-          return r.modulation && m.toLowerCase() === r.modulation.toLowerCase()
+        modes.some(m => {
+          const normalizedFilter = m === 'D-STAR' ? 'DSTAR' : m
+          return r.modes?.includes(normalizedFilter as typeof r.modes[number])
         })
       )
     }
     if (qth && qth.trim()) {
       const q = qth.trim().toLowerCase()
-      result = result.filter((r) => r.qth_locator?.toLowerCase().includes(q))
+      result = result.filter((r) => r.qthLocator?.toLowerCase().includes(q))
     }
     if (opStatus) {
       result = result.filter((r) => r.status === opStatus)
@@ -247,7 +257,7 @@ export default function RepeaterBrowser({
       })
     }
     return result
-  }, [data, columnFilters, userLocation, distanceRadius])
+  }, [data, columnFilters, userLocation, distanceRadius, getPrimaryFrequency])
 
   return (
     <>
@@ -476,12 +486,12 @@ export default function RepeaterBrowser({
                       <Label>{t('filters.qth')}</Label>
                       <Input
                         placeholder={t('filters.qth')}
-                        value={(columnFilters.find((f) => f.id === "qth_locator")?.value as string) ?? ""}
+                        value={(columnFilters.find((f) => f.id === "qthLocator")?.value as string) ?? ""}
                         onChange={(event) => {
                           const v = event.target.value
                           setColumnFilters((prev) => {
-                            const next = prev.filter((f) => f.id !== "qth_locator")
-                            if (v) next.push({ id: "qth_locator", value: v })
+                            const next = prev.filter((f) => f.id !== "qthLocator")
+                            if (v) next.push({ id: "qthLocator", value: v })
                             return next
                           })
                         }}
@@ -517,7 +527,7 @@ export default function RepeaterBrowser({
                           <Button variant="outline" className="w-full justify-between font-normal">
                             <span className="truncate">
                               {(() => {
-                                const selected = columnFilters.find((f) => f.id === "modulation")?.value as string[] | undefined
+                                const selected = columnFilters.find((f) => f.id === "modes")?.value as string[] | undefined
                                 if (!selected || selected.length === 0) return t('filters.all')
                                 return selected.join(', ')
                               })()}
@@ -528,21 +538,21 @@ export default function RepeaterBrowser({
                         <DropdownMenuContent className="w-[200px]">
                           <DropdownMenuLabel>{t('filters.modulation')}</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          {modulationOptions.map((m) => {
-                            const selected = (columnFilters.find((f) => f.id === "modulation")?.value as string[] | undefined) || []
+                          {modeOptions.map((m) => {
+                            const selected = (columnFilters.find((f) => f.id === "modes")?.value as string[] | undefined) || []
                             return (
                               <DropdownMenuCheckboxItem
                                 key={m}
                                 checked={selected.includes(m)}
                                 onCheckedChange={(checked) => {
                                   setColumnFilters((prev) => {
-                                    const next = prev.filter((f) => f.id !== "modulation")
-                                    const current = (prev.find((f) => f.id === "modulation")?.value as string[] | undefined) || []
+                                    const next = prev.filter((f) => f.id !== "modes")
+                                    const current = (prev.find((f) => f.id === "modes")?.value as string[] | undefined) || []
                                     const updated = checked
                                       ? [...current, m]
                                       : current.filter((v) => v !== m)
                                     if (updated.length > 0) {
-                                      next.push({ id: "modulation", value: updated })
+                                      next.push({ id: "modes", value: updated })
                                     }
                                     return next
                                   })

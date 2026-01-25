@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import RepeaterPageClient from "./RepeaterPageClient";
 import { Repeater } from "@/app/columns";
 import { BreadcrumbJsonLd } from "@/components/seo";
+import { fetchRepeaters } from "@/lib/repeaters";
+import { getPrimaryFrequency } from "@/types/repeater-helpers";
 
 type PayloadRepeatersResponse = {
   docs?: Array<Record<string, unknown>>;
@@ -17,125 +19,13 @@ function resolveApiBaseUrl(): string {
   return "http://localhost:3000";
 }
 
-function toNumber(value: unknown): number {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string") {
-    const parsed = Number(value);
-    if (Number.isFinite(parsed)) return parsed;
-  }
-  return 0;
-}
-
-function toStringOrEmpty(value: unknown): string {
-  return typeof value === "string" ? value : "";
-}
-
-function toBoolean(value: unknown): boolean {
-  if (typeof value === "boolean") return value;
-  if (typeof value === "string") {
-    const normalized = value.trim().toLowerCase();
-    if (normalized === "true") return true;
-    if (normalized === "false") return false;
-  }
-  if (typeof value === "number") {
-    if (value === 1) return true;
-    if (value === 0) return false;
-  }
-  return Boolean(value);
-}
-
-function toOptionalNumber(value: unknown): number | undefined {
-  if (value === null || value === undefined) return undefined;
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string") {
-    const parsed = Number(value);
-    if (Number.isFinite(parsed)) return parsed;
-  }
-  return undefined;
-}
-
-function toOptionalString(value: unknown): string | undefined {
-  if (value === null || value === undefined) return undefined;
-  if (typeof value === "string" && value.trim()) return value;
-  return undefined;
-}
-
-function normalizeAssociation(
-  assocData: unknown
-): Repeater["association"] | undefined {
-  if (!assocData || typeof assocData !== "object") return undefined;
-  const assoc = assocData as Record<string, unknown>;
-  if (!assoc.id || !assoc.abbreviation) return undefined;
-  return {
-    id: toNumber(assoc.id),
-    name: toStringOrEmpty(assoc.name),
-    abbreviation: toStringOrEmpty(assoc.abbreviation),
-    slug: toStringOrEmpty(assoc.slug),
-  };
-}
-
-function normalizeRepeater(doc: Record<string, unknown>): Repeater {
-  return {
-    callsign: toStringOrEmpty(doc.callsign),
-    outputFrequency: toNumber(doc.outputFrequency),
-    inputFrequency: toNumber(doc.inputFrequency),
-    tone: toNumber(doc.tone),
-    modulation: toStringOrEmpty(doc.modulation),
-    latitude: toNumber(doc.latitude),
-    longitude: toNumber(doc.longitude),
-    qth_locator: toStringOrEmpty(doc.qth_locator),
-    owner: toStringOrEmpty(doc.owner),
-    dmr: toBoolean(doc.dmr),
-    dstar: toBoolean(doc.dstar),
-    association: normalizeAssociation(doc.association),
-    status: toOptionalString(doc.status) as Repeater['status'],
-    power: toOptionalNumber(doc.power),
-    antennaHeight: toOptionalNumber(doc.antennaHeight),
-    coverage: toOptionalString(doc.coverage) as Repeater['coverage'],
-    dmrColorCode: toOptionalNumber(doc.dmrColorCode),
-    dmrTalkgroups: toOptionalString(doc.dmrTalkgroups),
-    dstarReflector: toOptionalString(doc.dstarReflector),
-    dstarModule: toOptionalString(doc.dstarModule) as Repeater['dstarModule'],
-    echolinkNode: toOptionalNumber(doc.echolinkNode),
-    allstarNode: toOptionalNumber(doc.allstarNode),
-    operatingHours: toOptionalString(doc.operatingHours),
-    lastVerified: toOptionalString(doc.lastVerified),
-    notes: toOptionalString(doc.notes),
-    website: toOptionalString(doc.website),
-  };
-}
-
 async function fetchAllRepeaters(): Promise<Repeater[]> {
-  const baseUrl = resolveApiBaseUrl();
-  const repeaters: Repeater[] = [];
-
   try {
-    let page = 1;
-    while (true) {
-      const params = new URLSearchParams({
-        limit: "200",
-        page: page.toString(),
-        depth: "1", // Populate association relationship
-      });
-
-      const response = await fetch(`${baseUrl}/api/repeaters?${params.toString()}`, {
-        next: { revalidate: 3600 },
-      });
-
-      if (!response.ok) break;
-
-      const payload = (await response.json()) as PayloadRepeatersResponse & { hasNextPage?: boolean };
-      const docs = Array.isArray(payload.docs) ? payload.docs : [];
-      repeaters.push(...docs.map(normalizeRepeater));
-
-      if (!payload.hasNextPage || docs.length === 0) break;
-      page++;
-    }
+    return await fetchRepeaters();
   } catch (error) {
     console.error("[RepeaterPage] Error fetching all repeaters:", error);
+    return [];
   }
-
-  return repeaters;
 }
 
 function findRepeaterByCallsign(repeaters: Repeater[], callsign: string): Repeater | null {
@@ -192,13 +82,18 @@ export async function generateMetadata({ params }: { params: Promise<{ callsign:
       };
     }
 
-    const title = `${repeater.callsign} - Repetidor ${repeater.modulation} ${repeater.outputFrequency.toFixed(3)} MHz`;
-    const description = `Informação do repetidor ${repeater.callsign}: frequência ${repeater.outputFrequency.toFixed(3)} MHz, tom ${repeater.tone} Hz, modulação ${repeater.modulation}.${repeater.qth_locator ? ` Localização: ${repeater.qth_locator}.` : ""}`;
+    const primary = getPrimaryFrequency(repeater);
+    const modesStr = repeater.modes?.map(m => m === 'DSTAR' ? 'D-STAR' : m).join('/') || 'FM';
+    const freqStr = primary ? `${primary.outputFrequency.toFixed(3)} MHz` : '';
+    const toneStr = primary?.tone ? `${primary.tone} Hz` : '';
+
+    const title = `${repeater.callsign} - Repetidor ${modesStr} ${freqStr}`;
+    const description = `Informação do repetidor ${repeater.callsign}: frequência ${freqStr}${toneStr ? `, tom ${toneStr}` : ''}, modulação ${modesStr}.${repeater.qthLocator ? ` Localização: ${repeater.qthLocator}.` : ""}`;
 
     const keywords = [
       repeater.callsign,
-      repeater.modulation,
-      repeater.qth_locator,
+      ...(repeater.modes || []),
+      repeater.qthLocator,
       "repetidor",
       "radioamador",
       "ham radio",
@@ -237,16 +132,21 @@ export async function generateMetadata({ params }: { params: Promise<{ callsign:
 }
 
 function generateRepeaterJsonLd(repeater: Repeater) {
+  const primary = getPrimaryFrequency(repeater);
+  const modesStr = repeater.modes?.map(m => m === 'DSTAR' ? 'D-STAR' : m).join('/') || 'FM';
+
   return {
     "@context": "https://schema.org",
     "@type": "RadioBroadcastService",
     name: repeater.callsign,
-    description: `Repetidor ${repeater.modulation} - ${repeater.outputFrequency.toFixed(3)} MHz`,
-    broadcastFrequency: {
-      "@type": "BroadcastFrequencySpecification",
-      broadcastFrequencyValue: repeater.outputFrequency,
-      broadcastFrequencyUnit: "MHz",
-    },
+    description: `Repetidor ${modesStr} - ${primary ? `${primary.outputFrequency.toFixed(3)} MHz` : ''}`,
+    ...(primary && {
+      broadcastFrequency: {
+        "@type": "BroadcastFrequencySpecification",
+        broadcastFrequencyValue: primary.outputFrequency,
+        broadcastFrequencyUnit: "MHz",
+      },
+    }),
     ...(repeater.latitude && repeater.longitude && {
       areaServed: {
         "@type": "Place",
@@ -255,7 +155,7 @@ function generateRepeaterJsonLd(repeater: Repeater) {
           latitude: repeater.latitude,
           longitude: repeater.longitude,
         },
-        ...(repeater.qth_locator && { name: repeater.qth_locator }),
+        ...(repeater.qthLocator && { name: repeater.qthLocator }),
       },
     }),
     provider: {

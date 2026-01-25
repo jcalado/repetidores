@@ -1,6 +1,7 @@
 'use client';
 
 import { type Repeater } from '@/app/columns';
+import { getPrimaryFrequency } from '@/types/repeater-helpers';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -112,13 +113,14 @@ export default function RepeaterSubmitDialog({ repeaters = [] }: RepeaterSubmitD
 
   // Populate form with existing repeater data
   const populateFromRepeater = React.useCallback((repeater: Repeater) => {
+    const primary = getPrimaryFrequency(repeater);
     setFormData((prev) => ({
       ...prev,
       callsign: repeater.callsign,
-      outputFrequency: repeater.outputFrequency.toString(),
-      inputFrequency: repeater.inputFrequency.toString(),
-      tone: repeater.tone ? repeater.tone.toString() : '',
-      modulation: repeater.modulation || 'FM',
+      outputFrequency: primary?.outputFrequency.toString() || '',
+      inputFrequency: primary?.inputFrequency.toString() || '',
+      tone: primary?.tone ? primary.tone.toString() : '',
+      modulation: repeater.modes?.[0] || 'FM',
       latitude: repeater.latitude.toString(),
       longitude: repeater.longitude.toString(),
       owner: repeater.owner || '',
