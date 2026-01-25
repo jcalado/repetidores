@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import type { EventItem } from "@/components/HamRadioEventsCountdown";
-import { AnimatePresence, motion } from "framer-motion";
 import {
   Activity,
   ArrowLeft,
@@ -310,11 +309,7 @@ function useTick(intervalMs = 1000) {
 // Live indicator with pulsing animation - enhanced editorial style
 function LiveIndicator({ label }: { label: string }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-gradient-to-r from-emerald-500 to-green-600 shadow-lg shadow-green-500/25"
-    >
+    <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-gradient-to-r from-emerald-500 to-green-600 shadow-lg shadow-green-500/25 animate-in fade-in zoom-in-95 duration-300">
       <span className="relative flex h-3 w-3">
         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
         <span className="relative inline-flex rounded-full h-3 w-3 bg-white" />
@@ -322,7 +317,7 @@ function LiveIndicator({ label }: { label: string }) {
       <span className="text-sm font-bold uppercase tracking-wider text-white">
         {label}
       </span>
-    </motion.div>
+    </div>
   );
 }
 
@@ -340,24 +335,20 @@ function EventProgressBar({ start, end }: { start: string; end: string }) {
         <span className="font-mono font-bold text-white">{Math.round(progress)}%</span>
       </div>
       <div className="relative w-full h-3 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
-        <motion.div
-          className="absolute inset-y-0 left-0 bg-gradient-to-r from-emerald-400 to-green-500 rounded-full"
-          initial={{ width: 0 }}
-          animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+        <div
+          className="absolute inset-y-0 left-0 bg-gradient-to-r from-emerald-400 to-green-500 rounded-full transition-all duration-700 ease-out"
+          style={{ width: `${progress}%` }}
         />
-        <motion.div
-          className="absolute inset-y-0 left-0 bg-white/30 rounded-full blur-sm"
-          initial={{ width: 0 }}
-          animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
+        <div
+          className="absolute inset-y-0 left-0 bg-white/30 rounded-full blur-sm transition-all duration-700 ease-out delay-100"
+          style={{ width: `${progress}%` }}
         />
       </div>
     </div>
   );
 }
 
-// Editorial-style countdown unit with sophisticated animation
+// Editorial-style countdown unit with CSS animation
 function CountdownUnit({ value, label, isLight = false }: { value: string; label: string; isLight?: boolean }) {
   return (
     <div className="flex flex-col items-center">
@@ -366,20 +357,14 @@ function CountdownUnit({ value, label, isLight = false }: { value: string; label
           ? 'bg-white/10 backdrop-blur-sm'
           : 'bg-ship-cove-100 dark:bg-ship-cove-900/50'
       }`}>
-        <AnimatePresence mode="popLayout">
-          <motion.span
-            key={value}
-            initial={{ y: -8, opacity: 0, scale: 0.8 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: 8, opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className={`block text-3xl sm:text-4xl md:text-5xl font-bold tabular-nums tracking-tight ${
-              isLight ? 'text-white' : 'text-ship-cove-900 dark:text-ship-cove-100'
-            }`}
-          >
-            {value}
-          </motion.span>
-        </AnimatePresence>
+        <span
+          key={value}
+          className={`block text-3xl sm:text-4xl md:text-5xl font-bold tabular-nums tracking-tight transition-all duration-150 ${
+            isLight ? 'text-white' : 'text-ship-cove-900 dark:text-ship-cove-100'
+          }`}
+        >
+          {value}
+        </span>
       </div>
       <span className={`text-[10px] sm:text-xs uppercase tracking-wider mt-2 font-medium ${
         isLight ? 'text-white/70' : 'text-ship-cove-500 dark:text-ship-cove-400'
@@ -440,9 +425,8 @@ function CountdownDisplay({
 function RelatedEventCard({ event, tagColors }: { event: EventItem; tagColors: ReturnType<typeof getTagColors> }) {
   return (
     <Link href={`/events/${encodeURIComponent(event.id)}/`} className="block group">
-      <motion.div
-        whileHover={{ y: -2 }}
-        className={`p-4 rounded-xl border ${tagColors.border} ${tagColors.bg} ${tagColors.bgHover} transition-all duration-200 min-w-[220px]`}
+      <div
+        className={`p-4 rounded-xl border ${tagColors.border} ${tagColors.bg} ${tagColors.bgHover} transition-all duration-200 min-w-[220px] hover:-translate-y-0.5`}
       >
         <div className="flex items-start gap-3">
           <div className={`shrink-0 p-2 rounded-lg ${tagColors.solid}/10`}>
@@ -457,7 +441,7 @@ function RelatedEventCard({ event, tagColors }: { event: EventItem; tagColors: R
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </Link>
   );
 }
@@ -604,11 +588,7 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
   return (
     <div className="max-w-5xl mx-auto">
       {/* Full-width Hero Section */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="relative"
-      >
+      <div className="relative animate-in fade-in duration-300">
         {/* Hero Background with Dynamic Gradient */}
         <div className={`relative overflow-hidden rounded-b-3xl bg-gradient-to-br ${tagColors.heroGradient} shadow-2xl`}>
           {/* Grid pattern overlay */}
@@ -689,12 +669,7 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
           <div className="relative z-10 px-4 sm:px-6 md:px-8 pb-8 sm:pb-12 pt-6 sm:pt-8">
             {/* Featured Image (if exists) */}
             {imageUrl && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.1 }}
-                className="relative w-full h-48 sm:h-64 md:h-72 rounded-2xl overflow-hidden mb-6 sm:mb-8 ring-1 ring-white/20 shadow-2xl"
-              >
+              <div className="relative w-full h-48 sm:h-64 md:h-72 rounded-2xl overflow-hidden mb-6 sm:mb-8 ring-1 ring-white/20 shadow-2xl animate-in fade-in zoom-in-95 duration-300">
                 <Image
                   src={imageUrl}
                   alt={event.featuredImage?.alt || event.title}
@@ -704,16 +679,11 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
                   priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-              </motion.div>
+              </div>
             )}
 
             {/* Event Meta Row */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 }}
-              className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4"
-            >
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
               {/* Tag badge */}
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-white/20 text-white backdrop-blur-sm border border-white/20">
                 <TagIcon tag={event.tag} className="w-3.5 h-3.5" />
@@ -731,25 +701,15 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
                   {event.category === 'international' ? 'Internacional' : 'Nacional'}
                 </span>
               )}
-            </motion.div>
+            </div>
 
             {/* Title */}
-            <motion.h1
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight tracking-tight mb-6 sm:mb-8"
-            >
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight tracking-tight mb-6 sm:mb-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
               {event.title}
-            </motion.h1>
+            </h1>
 
             {/* Countdown Section - Integrated into Hero */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25 }}
-              className="relative"
-            >
+            <div className="relative animate-in fade-in slide-in-from-bottom-2 duration-300 delay-100">
               {isInProgress ? (
                 <div className="space-y-6">
                   <div className="flex items-center justify-center">
@@ -770,25 +730,17 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
               ) : (
                 <CountdownDisplay ms={remainingToStart} label={t('startsIn')} isLight />
               )}
-            </motion.div>
+            </div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Content Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="px-4 sm:px-6 md:px-8 py-6 sm:py-8 space-y-8"
-      >
+      <div className="px-4 sm:px-6 md:px-8 py-6 sm:py-8 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300 delay-150">
         {/* Quick Info Cards - Magazine style info blocks */}
         <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
           {/* Start time */}
-          <motion.div
-            whileHover={{ y: -2 }}
-            className={`group p-4 sm:p-5 rounded-2xl border ${tagColors.border} ${tagColors.bg} transition-all duration-200`}
-          >
+          <div className={`group p-4 sm:p-5 rounded-2xl border ${tagColors.border} ${tagColors.bg} transition-all duration-200 hover:-translate-y-0.5`}>
             <div className={`inline-flex p-2.5 rounded-xl ${tagColors.solid}/10 mb-3`}>
               <CalendarIcon className={`w-5 h-5 ${tagColors.text}`} />
             </div>
@@ -798,14 +750,11 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
             <div className="font-semibold text-sm sm:text-base leading-snug">
               {formatDateTime(event.start)}
             </div>
-          </motion.div>
+          </div>
 
           {/* End time */}
           {event.end && (
-            <motion.div
-              whileHover={{ y: -2 }}
-              className={`group p-4 sm:p-5 rounded-2xl border ${tagColors.border} ${tagColors.bg} transition-all duration-200`}
-            >
+            <div className={`group p-4 sm:p-5 rounded-2xl border ${tagColors.border} ${tagColors.bg} transition-all duration-200 hover:-translate-y-0.5`}>
               <div className={`inline-flex p-2.5 rounded-xl ${tagColors.solid}/10 mb-3`}>
                 <Clock className={`w-5 h-5 ${tagColors.text}`} />
               </div>
@@ -815,15 +764,12 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
               <div className="font-semibold text-sm sm:text-base leading-snug">
                 {formatDateTime(event.end)}
               </div>
-            </motion.div>
+            </div>
           )}
 
           {/* Duration */}
           {duration && (
-            <motion.div
-              whileHover={{ y: -2 }}
-              className={`group p-4 sm:p-5 rounded-2xl border ${tagColors.border} ${tagColors.bg} transition-all duration-200`}
-            >
+            <div className={`group p-4 sm:p-5 rounded-2xl border ${tagColors.border} ${tagColors.bg} transition-all duration-200 hover:-translate-y-0.5`}>
               <div className={`inline-flex p-2.5 rounded-xl ${tagColors.solid}/10 mb-3`}>
                 <Timer className={`w-5 h-5 ${tagColors.text}`} />
               </div>
@@ -833,17 +779,14 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
               <div className="font-semibold text-sm sm:text-base">
                 {duration}
               </div>
-            </motion.div>
+            </div>
           )}
 
           {/* Timezone */}
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <motion.div
-                  whileHover={{ y: -2 }}
-                  className={`group p-4 sm:p-5 rounded-2xl border ${tagColors.border} ${tagColors.bg} transition-all duration-200 cursor-help`}
-                >
+                <div className={`group p-4 sm:p-5 rounded-2xl border ${tagColors.border} ${tagColors.bg} transition-all duration-200 cursor-help hover:-translate-y-0.5`}>
                   <div className={`inline-flex p-2.5 rounded-xl ${tagColors.solid}/10 mb-3`}>
                     <Globe className={`w-5 h-5 ${tagColors.text}`} />
                   </div>
@@ -854,7 +797,7 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
                     {tzInfo.timezone}
                   </div>
                   <div className="text-xs text-muted-foreground">{tzInfo.offset}</div>
-                </motion.div>
+                </div>
               </TooltipTrigger>
               <TooltipContent>
                 <p className="text-xs">{tDetails('timezoneNote')}</p>
@@ -867,10 +810,7 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
         <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
           {/* Location */}
           {event.location && (
-            <motion.div
-              whileHover={{ scale: 1.01 }}
-              className="flex items-center gap-4 p-4 sm:p-5 rounded-2xl bg-ship-cove-50 dark:bg-ship-cove-900/30 border border-ship-cove-200 dark:border-ship-cove-800"
-            >
+            <div className="flex items-center gap-4 p-4 sm:p-5 rounded-2xl bg-ship-cove-50 dark:bg-ship-cove-900/30 border border-ship-cove-200 dark:border-ship-cove-800 transition-transform hover:scale-[1.01]">
               <div className="shrink-0 p-3 rounded-xl bg-ship-cove-100 dark:bg-ship-cove-800/50">
                 <MapPin className="w-6 h-6 text-ship-cove-600 dark:text-ship-cove-400" />
               </div>
@@ -882,15 +822,12 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
                   {event.location}
                 </div>
               </div>
-            </motion.div>
+            </div>
           )}
 
           {/* DMR Network */}
           {event.dmr && event.talkgroup && (
-            <motion.div
-              whileHover={{ scale: 1.01 }}
-              className="flex items-center gap-4 p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950/30 dark:to-orange-950/30 border border-red-200 dark:border-red-800"
-            >
+            <div className="flex items-center gap-4 p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950/30 dark:to-orange-950/30 border border-red-200 dark:border-red-800 transition-transform hover:scale-[1.01]">
               <div className="shrink-0 p-3 rounded-xl bg-red-100 dark:bg-red-900/50">
                 <Radio className="w-6 h-6 text-red-600 dark:text-red-400" />
               </div>
@@ -915,18 +852,13 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
                   </a>
                 )}
               </div>
-            </motion.div>
+            </div>
           )}
         </div>
 
         {/* Description */}
         {Boolean(event.description) && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35 }}
-            className="space-y-3"
-          >
+          <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <h2 className="text-lg font-bold tracking-tight flex items-center gap-2">
               <Info className={`w-5 h-5 ${tagColors.text}`} />
               {tDetails('description') || 'Descrição'}
@@ -934,16 +866,11 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
             <div className="prose prose-ship-cove dark:prose-invert max-w-none p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-ship-cove-50 to-slate-50 dark:from-ship-cove-950/50 dark:to-slate-900/50 border border-ship-cove-200/50 dark:border-ship-cove-800/50">
               <RichTextContent content={event.description} />
             </div>
-          </motion.div>
+          </div>
         )}
 
         {/* Action buttons - Refined magazine style */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="flex flex-wrap gap-3 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-ship-cove-50 via-slate-50 to-ship-cove-50 dark:from-ship-cove-950/50 dark:via-slate-900/50 dark:to-ship-cove-950/50 border border-ship-cove-200/50 dark:border-ship-cove-800/50"
-        >
+        <div className="flex flex-wrap gap-3 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-ship-cove-50 via-slate-50 to-ship-cove-50 dark:from-ship-cove-950/50 dark:via-slate-900/50 dark:to-ship-cove-950/50 border border-ship-cove-200/50 dark:border-ship-cove-800/50 animate-in fade-in slide-in-from-bottom-2 duration-300">
           {/* Visit Website */}
           {event.url && (
             <a href={event.url} target="_blank" rel="noreferrer">
@@ -1039,55 +966,40 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
               </div>
             </DialogContent>
           </Dialog>
-        </motion.div>
+        </div>
 
         {/* Related events */}
         {relatedByTag.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.45 }}
-            className="space-y-4"
-          >
+          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <h3 className="text-base font-bold tracking-tight flex items-center gap-2">
               <TagIcon tag={event.tag} className={`w-5 h-5 ${tagColors.text}`} />
               {tDetails('sameTag', { tag: event.tag || '' })}
             </h3>
             <div className="flex gap-4 overflow-x-auto pb-4 -mx-2 px-2 snap-x snap-mandatory">
               {relatedByTag.map((related, index) => (
-                <motion.div
+                <div
                   key={related.id}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.5 + index * 0.05 }}
-                  className="snap-start"
+                  className="snap-start animate-in fade-in slide-in-from-right-4 duration-200"
+                  style={{ animationDelay: `${index * 50}ms` }}
                 >
                   <RelatedEventCard
                     event={related}
                     tagColors={getTagColors(related.tag)}
                   />
-                </motion.div>
+                </div>
               ))}
             </div>
-          </motion.div>
+          </div>
         )}
-      </motion.div>
+      </div>
 
       {/* Bottom navigation - Editorial pagination style */}
       {(prevEvent || nextEvent) && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="px-4 sm:px-6 md:px-8 pb-8"
-        >
+        <div className="px-4 sm:px-6 md:px-8 pb-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
           <div className="grid grid-cols-2 gap-4">
             {prevEvent ? (
               <Link href={`/events/${encodeURIComponent(prevEvent.id)}/`} className="group block">
-                <motion.div
-                  whileHover={{ x: -4 }}
-                  className="relative p-4 sm:p-5 rounded-2xl border-2 border-ship-cove-200 dark:border-ship-cove-800 bg-gradient-to-br from-ship-cove-50 to-white dark:from-ship-cove-950/50 dark:to-slate-900/50 transition-all duration-200 overflow-hidden"
-                >
+                <div className="relative p-4 sm:p-5 rounded-2xl border-2 border-ship-cove-200 dark:border-ship-cove-800 bg-gradient-to-br from-ship-cove-50 to-white dark:from-ship-cove-950/50 dark:to-slate-900/50 transition-all duration-200 overflow-hidden hover:-translate-x-1">
                   <div className="absolute left-0 top-0 bottom-0 w-1 bg-ship-cove-400 dark:bg-ship-cove-600 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2">
                     <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
@@ -1096,15 +1008,12 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
                   <div className="font-semibold text-sm sm:text-base line-clamp-2 group-hover:text-ship-cove-700 dark:group-hover:text-ship-cove-300 transition-colors">
                     {prevEvent.title}
                   </div>
-                </motion.div>
+                </div>
               </Link>
             ) : <div />}
             {nextEvent ? (
               <Link href={`/events/${encodeURIComponent(nextEvent.id)}/`} className="group block">
-                <motion.div
-                  whileHover={{ x: 4 }}
-                  className="relative p-4 sm:p-5 rounded-2xl border-2 border-ship-cove-200 dark:border-ship-cove-800 bg-gradient-to-bl from-ship-cove-50 to-white dark:from-ship-cove-950/50 dark:to-slate-900/50 text-right transition-all duration-200 overflow-hidden"
-                >
+                <div className="relative p-4 sm:p-5 rounded-2xl border-2 border-ship-cove-200 dark:border-ship-cove-800 bg-gradient-to-bl from-ship-cove-50 to-white dark:from-ship-cove-950/50 dark:to-slate-900/50 text-right transition-all duration-200 overflow-hidden hover:translate-x-1">
                   <div className="absolute right-0 top-0 bottom-0 w-1 bg-ship-cove-400 dark:bg-ship-cove-600 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-center justify-end gap-2 text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2">
                     {tDetails('nextEvent')}
@@ -1113,11 +1022,11 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
                   <div className="font-semibold text-sm sm:text-base line-clamp-2 group-hover:text-ship-cove-700 dark:group-hover:text-ship-cove-300 transition-colors">
                     {nextEvent.title}
                   </div>
-                </motion.div>
+                </div>
               </Link>
             ) : <div />}
           </div>
-        </motion.div>
+        </div>
       )}
     </div>
   );

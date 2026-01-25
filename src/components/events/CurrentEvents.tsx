@@ -6,7 +6,6 @@
  */
 
 import { useMemo } from "react";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import {
   Activity,
@@ -52,11 +51,7 @@ export function CurrentEvents({ events, t }: CurrentEventsProps) {
   const heroIconBgClass = getTagIconBg(heroEvent.tag);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="mb-6"
-    >
+    <div className="mb-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
       {/* Hero Card - First ongoing event */}
       <Link
         href={`/events/${encodeURIComponent(heroEvent.id)}/`}
@@ -234,7 +229,7 @@ export function CurrentEvents({ events, t }: CurrentEventsProps) {
           })}
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }
 

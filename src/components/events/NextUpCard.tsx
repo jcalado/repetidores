@@ -6,7 +6,6 @@
  */
 
 import { useMemo } from "react";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import {
   CalendarClock,
@@ -60,11 +59,7 @@ export function NextUpCard({ events, t }: NextUpCardProps) {
   const TagIcon = getTagIcon(next.tag);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="mb-6"
-    >
+    <div className="mb-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
       <Link
         href={`/events/${encodeURIComponent(next.id)}/`}
         className="block group"
@@ -173,7 +168,7 @@ export function NextUpCard({ events, t }: NextUpCardProps) {
           </div>
         </div>
       </Link>
-    </motion.div>
+    </div>
   );
 }
 

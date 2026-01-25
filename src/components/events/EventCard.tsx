@@ -6,7 +6,6 @@
  */
 
 import { memo } from "react";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import {
   Activity,
@@ -182,38 +181,23 @@ export const EventCard = memo(EventCardComponent, (prevProps, nextProps) => {
 
 EventCard.displayName = "EventCard";
 
-// Animation variants for card list
+// CSS-based animation classes for card list (replaces framer-motion)
 export const cardVariants = {
-  hidden: { opacity: 0, y: 20, scale: 0.98 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] as const },
-  },
-  exit: {
-    opacity: 0,
-    y: -10,
-    scale: 0.98,
-    transition: { duration: 0.15 },
-  },
+  // Kept for backwards compatibility, not used with CSS animations
+  hidden: {},
+  visible: {},
+  exit: {},
 };
 
-// Animated wrapper for card lists
+// Animated wrapper for card lists using CSS animations
 export function AnimatedEventCard({
   event,
   t,
 }: EventCardProps) {
   return (
-    <motion.div
-      variants={cardVariants}
-      initial="hidden"
-      animate="visible"
-      exit="exit"
-      layout
-    >
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-200">
       <EventCard event={event} t={t} />
-    </motion.div>
+    </div>
   );
 }
 

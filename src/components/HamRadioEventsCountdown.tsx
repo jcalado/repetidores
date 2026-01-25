@@ -10,7 +10,6 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import {
   Calendar as CalendarIcon,
   CalendarDays,
@@ -30,7 +29,6 @@ import { fetchEvents } from "@/lib/events";
 import {
   TickProvider,
   EventCard,
-  cardVariants,
   CurrentEvents,
   NextUpCard,
   EventsTable,
@@ -406,20 +404,15 @@ export default function HamRadioEventsCountdown({
             )}
 
             <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              <AnimatePresence mode="popLayout">
-                {visibleEvents.map((evt) => (
-                  <motion.div
-                    key={evt.id}
-                    variants={cardVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    layout
-                  >
-                    <EventCard event={evt} t={t} />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
+              {visibleEvents.map((evt, index) => (
+                <div
+                  key={evt.id}
+                  className="animate-in fade-in slide-in-from-bottom-4 duration-200"
+                  style={{ animationDelay: `${Math.min(index * 50, 300)}ms` }}
+                >
+                  <EventCard event={evt} t={t} />
+                </div>
+              ))}
             </div>
 
             {/* Infinite scroll sentinel */}
