@@ -1,6 +1,12 @@
 import HamRadioEventsCountdown from '@/components/HamRadioEventsCountdown'
 import type { EventItem } from '@/components/HamRadioEventsCountdown'
 import type { Metadata } from 'next'
+import { WebPageJsonLd, BreadcrumbJsonLd } from "@/components/seo"
+
+const breadcrumbs = [
+  { name: "Início", url: "https://www.radioamador.info/" },
+  { name: "Eventos", url: "https://www.radioamador.info/events/" },
+]
 
 export const metadata: Metadata = {
   title: "Eventos de Radioamadorismo",
@@ -65,6 +71,13 @@ export default async function EventsPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <WebPageJsonLd
+        name="Eventos de Radioamadorismo"
+        description="Calendário de eventos, contests e nets de radioamadorismo em Portugal e internacional."
+        url="https://www.radioamador.info/events/"
+        breadcrumb={breadcrumbs}
+      />
+      <BreadcrumbJsonLd items={breadcrumbs} />
       <HamRadioEventsCountdown initialEvents={events} />
     </div>
   )

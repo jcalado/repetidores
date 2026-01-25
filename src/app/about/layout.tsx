@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { WebPageJsonLd, BreadcrumbJsonLd } from "@/components/seo";
 
 export const metadata: Metadata = {
   title: "Sobre",
-  description: "Informação sobre o projeto Repetidores - diretório de repetidores de radioamadorismo em Portugal.",
+  description: "Informação sobre o projeto Radioamador.info - diretório de repetidores de radioamadorismo em Portugal.",
   alternates: {
     canonical: "/about/",
   },
@@ -21,10 +22,26 @@ export const metadata: Metadata = {
   },
 };
 
+const breadcrumbs = [
+  { name: "Início", url: "https://www.radioamador.info/" },
+  { name: "Sobre", url: "https://www.radioamador.info/about/" },
+];
+
 export default function AboutLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <>
+      <WebPageJsonLd
+        name="Sobre o Radioamador.info"
+        description="Informação sobre o projeto Radioamador.info - diretório de repetidores de radioamadorismo em Portugal."
+        url="https://www.radioamador.info/about/"
+        breadcrumb={breadcrumbs}
+      />
+      <BreadcrumbJsonLd items={breadcrumbs} />
+      {children}
+    </>
+  );
 }
