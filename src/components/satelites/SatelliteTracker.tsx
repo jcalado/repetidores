@@ -62,11 +62,12 @@ export function SatelliteTracker() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [orbitBaseTime, setOrbitBaseTime] = useState(new Date());
 
-  // Update current time every second
+  // Update current time every 5 seconds (reduced from 1s for performance)
+  // This affects position and look angle calculations which don't need sub-second precision
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
-    }, 1000);
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
