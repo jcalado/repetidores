@@ -118,6 +118,7 @@ function HeroArticle({ item, showFeaturedBadge }: { item: NewsItem; showFeatured
               src={imageUrl}
               alt={item.featuredImage?.alt || item.title}
               fill
+              sizes="(max-width: 1024px) 100vw, 66vw"
               className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
               priority
             />
@@ -199,6 +200,7 @@ function SecondaryArticle({ item, showFeaturedBadge }: { item: NewsItem; showFea
               src={imageUrl}
               alt={item.featuredImage?.alt || item.title}
               fill
+              sizes="128px"
               className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
           </div>
@@ -258,6 +260,7 @@ function ArticleCard({ item, showFeaturedBadge }: { item: NewsItem; showFeatured
               src={imageUrl}
               alt={item.featuredImage?.alt || item.title}
               fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
           </div>
@@ -331,6 +334,7 @@ export function NewsListCompact({ news }: { news: NewsItem[] }) {
                 }
                 alt={item.featuredImage.alt || item.title}
                 fill
+                sizes="80px"
                 className="object-cover"
               />
             </div>
