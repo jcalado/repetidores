@@ -5,7 +5,6 @@ import OfflineIndicator from "@/components/OfflineIndicator";
 import PWAInstall from "@/components/PWAInstall";
 import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/seo";
 import { UserLocationProvider } from "@/contexts/UserLocationContext";
-import "leaflet/dist/leaflet.css";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from 'next-intl';
 import { Geist, Geist_Mono } from "next/font/google";
@@ -14,11 +13,13 @@ import "./globals.css";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const API_URL = process.env.NEXT_PUBLIC_PAYLOAD_API_BASE_URL || "https://api.radioamador.info";
@@ -98,6 +99,11 @@ export default async function RootLayout({
   return (
     <html lang="pt">
       <head>
+        {/* Preconnect to external CDNs for maps and images */}
+        <link rel="preconnect" href="https://unpkg.com" />
+        <link rel="preconnect" href="https://server.arcgisonline.com" />
+        <link rel="preconnect" href="https://tile.openstreetmap.org" />
+        <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
         {/* Global JSON-LD Structured Data */}
         <OrganizationJsonLd />
         <WebSiteJsonLd />

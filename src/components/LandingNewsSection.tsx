@@ -9,12 +9,19 @@ import Image from "next/image"
 import Link from "next/link"
 import * as React from "react"
 
-export default function LandingNewsSection() {
-  const t = useTranslations()
-  const [news, setNews] = React.useState<NewsItem[]>([])
-  const [isLoading, setIsLoading] = React.useState(true)
+interface LandingNewsSectionProps {
+  initialNews?: NewsItem[]
+}
 
+export default function LandingNewsSection({ initialNews }: LandingNewsSectionProps = {}) {
+  const t = useTranslations()
+  const [news, setNews] = React.useState<NewsItem[]>(initialNews || [])
+  const [isLoading, setIsLoading] = React.useState(!initialNews)
+
+  // Only fetch client-side if no initialNews was provided (fallback)
   React.useEffect(() => {
+    if (initialNews) return // Skip fetch if we have server-rendered news
+
     async function fetchNews() {
       try {
         const apiBaseUrl = (
@@ -34,7 +41,7 @@ export default function LandingNewsSection() {
     }
 
     fetchNews()
-  }, [])
+  }, [initialNews])
 
   // Don't render if no news and not loading
   if (!isLoading && news.length === 0) {
@@ -120,6 +127,7 @@ function NewsCard({ item }: { item: NewsItem }) {
               src={imageUrl}
               alt={item.featuredImage?.alt || item.title}
               fill
+              sizes="(max-width: 768px) 100vw, 33vw"
               className="object-cover group-hover:scale-105 transition-transform duration-200"
             />
             {item.featured && (
