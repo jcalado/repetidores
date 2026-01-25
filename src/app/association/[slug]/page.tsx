@@ -79,13 +79,13 @@ export async function generateMetadata({ params }: PageProps) {
       title,
       description,
       alternates: {
-        canonical: `/association/${slug}`,
+        canonical: `/association/${slug}/`,
       },
       openGraph: {
         title,
         description,
         type: "website",
-        url: `/association/${slug}`,
+        url: `/association/${slug}/`,
         siteName: "Radioamador.info",
         locale: "pt_PT",
         images: [ogImage],
@@ -438,7 +438,7 @@ async function AssociationContent({
                   return (
                     <Link
                       key={repeater.callsign}
-                      href={`/repeater/${encodeURIComponent(repeater.callsign)}`}
+                      href={`/repeater/${encodeURIComponent(repeater.callsign)}/`}
                       className="flex items-center gap-4 p-4 rounded-lg border border-ship-cove-100 dark:border-ship-cove-800/50 hover:border-ship-cove-300 dark:hover:border-ship-cove-700 bg-white dark:bg-ship-cove-900/30 hover:bg-ship-cove-50 dark:hover:bg-ship-cove-900/50 transition-all group animate-in fade-in slide-in-from-bottom-1 fill-mode-both"
                       style={{ animationDelay: `${index * 30}ms` }}
                     >

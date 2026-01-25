@@ -318,7 +318,7 @@ function RepeaterCard({
 }: RepeaterCardProps) {
   return (
     <Link
-      href={`/repeater/${repeater.callsign}`}
+      href={`/repeater/${repeater.callsign}/`}
       className={cn(
         'group block relative overflow-hidden rounded-xl border transition-all hover:shadow-md',
         isFirst

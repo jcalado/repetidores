@@ -111,7 +111,7 @@ function NewsCard({ item }: { item: NewsItem }) {
     : null
 
   return (
-    <Link href={`/noticias/${item.slug}`} className="group block">
+    <Link href={`/noticias/${item.slug}/`} className="group block">
       <Card className="overflow-hidden h-full hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5">
         {/* Image */}
         {imageUrl && (

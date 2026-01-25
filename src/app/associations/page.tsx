@@ -12,13 +12,13 @@ export async function generateMetadata() {
     description: t("subtitle"),
     keywords: ["associações", "radioamador", "ham radio", "Portugal", "clubes", "repetidores"],
     alternates: {
-      canonical: "/associations",
+      canonical: "/associations/",
     },
     openGraph: {
       title: t("title"),
       description: t("subtitle"),
       type: "website",
-      url: "/associations",
+      url: "/associations/",
       siteName: "Radioamador.info",
       locale: "pt_PT",
       images: [{ url: "/og-default.jpg", width: 1200, height: 630, alt: t("title") }],

@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description: "Calculadora de antenas para radioamadores. Calcule dimensões de antenas dipolo, vertical e outras configurações.",
   keywords: ["antena", "dipolo", "vertical", "calculadora", "radioamador", "dimensões", "frequência"],
   alternates: {
-    canonical: "/antenna",
+    canonical: "/antenna/",
   },
   openGraph: {
     title: "Calculadora de Antenas",
     description: "Calculadora de antenas para radioamadores. Calcule dimensões de antenas dipolo, vertical e outras configurações.",
     type: "website",
-    url: "/antenna",
+    url: "/antenna/",
     siteName: "Radioamador.info",
     locale: "pt_PT",
     images: [{ url: "/og-default.jpg", width: 1200, height: 630, alt: "Calculadora de Antenas" }],
@@ -26,8 +26,8 @@ export const metadata: Metadata = {
 };
 
 const breadcrumbs = [
-  { name: "Início", url: "https://www.radioamador.info" },
-  { name: "Calculadora de Antenas", url: "https://www.radioamador.info/antenna" },
+  { name: "Início", url: "https://www.radioamador.info/" },
+  { name: "Calculadora de Antenas", url: "https://www.radioamador.info/antenna/" },
 ];
 
 export default function AntennaLayout({
@@ -40,7 +40,7 @@ export default function AntennaLayout({
       <WebPageJsonLd
         name="Calculadora de Antenas"
         description="Calculadora de antenas para radioamadores. Calcule dimensões de antenas dipolo, vertical e outras configurações."
-        url="https://www.radioamador.info/antenna"
+        url="https://www.radioamador.info/antenna/"
         breadcrumb={breadcrumbs}
       />
       <BreadcrumbJsonLd items={breadcrumbs} />

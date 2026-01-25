@@ -51,13 +51,13 @@ export async function generateMetadata({ params }: PageProps) {
     title: news.title,
     description: news.excerpt,
     alternates: {
-      canonical: `/noticias/${slug}`,
+      canonical: `/noticias/${slug}/`,
     },
     openGraph: {
       title: news.title,
       description: news.excerpt,
       type: "article",
-      url: `/noticias/${slug}`,
+      url: `/noticias/${slug}/`,
       siteName: "Radioamador.info",
       locale: "pt_PT",
       publishedTime: news.publishedDate,

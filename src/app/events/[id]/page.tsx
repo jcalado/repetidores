@@ -93,13 +93,13 @@ export async function generateMetadata({ params }: PageProps) {
       title,
       description,
       alternates: {
-        canonical: `/events/${encodeURIComponent(event.id)}`,
+        canonical: `/events/${encodeURIComponent(event.id)}/`,
       },
       openGraph: {
         title,
         description,
         type: "website",
-        url: `/events/${encodeURIComponent(event.id)}`,
+        url: `/events/${encodeURIComponent(event.id)}/`,
         siteName: "Radioamador.info",
         locale: "pt_PT",
         images: [ogImage],

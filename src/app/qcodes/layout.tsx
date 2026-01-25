@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description: "Lista completa de códigos Q usados em comunicações de rádio. Referência essencial para radioamadores com significados e exemplos.",
   keywords: ["códigos Q", "Q-codes", "QSO", "QTH", "QRZ", "radioamador", "comunicações"],
   alternates: {
-    canonical: "/qcodes",
+    canonical: "/qcodes/",
   },
   openGraph: {
     title: "Códigos Q - Referência Completa",
     description: "Lista completa de códigos Q usados em comunicações de rádio. Referência essencial para radioamadores com significados e exemplos.",
     type: "website",
-    url: "/qcodes",
+    url: "/qcodes/",
     siteName: "Radioamador.info",
     locale: "pt_PT",
     images: [{ url: "/og-default.jpg", width: 1200, height: 630, alt: "Códigos Q" }],
@@ -26,8 +26,8 @@ export const metadata: Metadata = {
 };
 
 const breadcrumbs = [
-  { name: "Início", url: "https://www.radioamador.info" },
-  { name: "Códigos Q", url: "https://www.radioamador.info/qcodes" },
+  { name: "Início", url: "https://www.radioamador.info/" },
+  { name: "Códigos Q", url: "https://www.radioamador.info/qcodes/" },
 ];
 
 const faqItems = [
@@ -55,7 +55,7 @@ export default function QCodesLayout({
       <WebPageJsonLd
         name="Códigos Q - Referência Completa"
         description="Lista completa de códigos Q usados em comunicações de rádio. Referência essencial para radioamadores com significados e exemplos."
-        url="https://www.radioamador.info/qcodes"
+        url="https://www.radioamador.info/qcodes/"
         breadcrumb={breadcrumbs}
       />
       <BreadcrumbJsonLd items={breadcrumbs} />

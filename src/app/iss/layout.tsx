@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description: "Contactos de radioamador com a ISS. Frequências, passes e informações para contactar a Estação Espacial Internacional.",
   keywords: ["ISS", "Estação Espacial", "ARISS", "radioamador", "passes", "frequências", "espaço"],
   alternates: {
-    canonical: "/iss",
+    canonical: "/iss/",
   },
   openGraph: {
     title: "ISS - Estação Espacial Internacional",
     description: "Contactos de radioamador com a ISS. Frequências, passes e informações para contactar a Estação Espacial Internacional.",
     type: "website",
-    url: "/iss",
+    url: "/iss/",
     siteName: "Radioamador.info",
     locale: "pt_PT",
     images: [{ url: "/og-default.jpg", width: 1200, height: 630, alt: "ISS - Estação Espacial Internacional" }],
@@ -26,8 +26,8 @@ export const metadata: Metadata = {
 };
 
 const breadcrumbs = [
-  { name: "Início", url: "https://www.radioamador.info" },
-  { name: "ISS", url: "https://www.radioamador.info/iss" },
+  { name: "Início", url: "https://www.radioamador.info/" },
+  { name: "ISS", url: "https://www.radioamador.info/iss/" },
 ];
 
 export default function ISSLayout({
@@ -40,7 +40,7 @@ export default function ISSLayout({
       <WebPageJsonLd
         name="ISS - Estação Espacial Internacional"
         description="Contactos de radioamador com a ISS. Frequências, passes e informações para contactar a Estação Espacial Internacional."
-        url="https://www.radioamador.info/iss"
+        url="https://www.radioamador.info/iss/"
         breadcrumb={breadcrumbs}
       />
       <BreadcrumbJsonLd items={breadcrumbs} />

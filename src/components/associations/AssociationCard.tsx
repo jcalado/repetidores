@@ -27,7 +27,7 @@ export function AssociationCard({ association, index = 0 }: AssociationCardProps
 
   return (
     <Link
-      href={`/association/${association.slug}`}
+      href={`/association/${association.slug}/`}
       className="group block"
       style={{ animationDelay: `${index * 50}ms` }}
     >

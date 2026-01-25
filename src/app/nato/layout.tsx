@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description: "Referência e treino do alfabeto fonético NATO/ICAO. Pratique a soletração fonética usada em comunicações de rádio.",
   keywords: ["alfabeto NATO", "alfabeto fonético", "ICAO", "soletração", "radioamador", "comunicações"],
   alternates: {
-    canonical: "/nato",
+    canonical: "/nato/",
   },
   openGraph: {
     title: "Alfabeto Fonético NATO",
     description: "Referência e treino do alfabeto fonético NATO/ICAO. Pratique a soletração fonética usada em comunicações de rádio.",
     type: "website",
-    url: "/nato",
+    url: "/nato/",
     siteName: "Radioamador.info",
     locale: "pt_PT",
     images: [{ url: "/og-default.jpg", width: 1200, height: 630, alt: "Alfabeto Fonético NATO" }],
@@ -26,8 +26,8 @@ export const metadata: Metadata = {
 };
 
 const breadcrumbs = [
-  { name: "Início", url: "https://www.radioamador.info" },
-  { name: "Alfabeto NATO", url: "https://www.radioamador.info/nato" },
+  { name: "Início", url: "https://www.radioamador.info/" },
+  { name: "Alfabeto NATO", url: "https://www.radioamador.info/nato/" },
 ];
 
 const faqItems = [
@@ -55,7 +55,7 @@ export default function NATOLayout({
       <WebPageJsonLd
         name="Alfabeto Fonético NATO"
         description="Referência e treino do alfabeto fonético NATO/ICAO. Pratique a soletração fonética usada em comunicações de rádio."
-        url="https://www.radioamador.info/nato"
+        url="https://www.radioamador.info/nato/"
         breadcrumb={breadcrumbs}
       />
       <BreadcrumbJsonLd items={breadcrumbs} />

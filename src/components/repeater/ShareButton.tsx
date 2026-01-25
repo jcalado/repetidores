@@ -20,7 +20,7 @@ export function ShareButton({ callsign, variant = "default" }: ShareButtonProps)
   const t = useTranslations("repeater");
 
   const handleShare = async () => {
-    const shareUrl = `${window.location.origin}/repeater/${encodeURIComponent(callsign)}`;
+    const shareUrl = `${window.location.origin}/repeater/${encodeURIComponent(callsign)}/`;
 
     if (navigator.share) {
       try {

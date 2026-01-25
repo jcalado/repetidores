@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description: "Condições de propagação de rádio e índices solares em tempo real. SFI, índice K, índice A e previsões de bandas.",
   keywords: ["propagação", "SFI", "índice K", "índice A", "solar", "HF", "bandas", "radioamador"],
   alternates: {
-    canonical: "/propagation",
+    canonical: "/propagation/",
   },
   openGraph: {
     title: "Propagação",
     description: "Condições de propagação de rádio e índices solares em tempo real. SFI, índice K, índice A e previsões de bandas.",
     type: "website",
-    url: "/propagation",
+    url: "/propagation/",
     siteName: "Radioamador.info",
     locale: "pt_PT",
     images: [{ url: "/og-default.jpg", width: 1200, height: 630, alt: "Propagação" }],
@@ -26,8 +26,8 @@ export const metadata: Metadata = {
 };
 
 const breadcrumbs = [
-  { name: "Início", url: "https://www.radioamador.info" },
-  { name: "Propagação", url: "https://www.radioamador.info/propagation" },
+  { name: "Início", url: "https://www.radioamador.info/" },
+  { name: "Propagação", url: "https://www.radioamador.info/propagation/" },
 ];
 
 export default function PropagationLayout({
@@ -40,7 +40,7 @@ export default function PropagationLayout({
       <WebPageJsonLd
         name="Propagação"
         description="Condições de propagação de rádio e índices solares em tempo real. SFI, índice K, índice A e previsões de bandas."
-        url="https://www.radioamador.info/propagation"
+        url="https://www.radioamador.info/propagation/"
         breadcrumb={breadcrumbs}
       />
       <BreadcrumbJsonLd items={breadcrumbs} />

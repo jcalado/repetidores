@@ -358,7 +358,7 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
               <p className="text-xs text-ship-cove-500 mb-1">{t("owner")}</p>
               {r.association ? (
                 <Link
-                  href={`/association/${r.association.slug}`}
+                  href={`/association/${r.association.slug}/`}
                   className="font-medium text-ship-cove-900 dark:text-ship-cove-100 hover:text-ship-cove-600 dark:hover:text-ship-cove-300 transition-colors"
                 >
                   {r.association.abbreviation} - {r.association.name}
@@ -494,7 +494,7 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
             {nearbyRepeaters.map((nearby, index) => (
               <Link
                 key={nearby.callsign}
-                href={`/repeater/${encodeURIComponent(nearby.callsign)}`}
+                href={`/repeater/${encodeURIComponent(nearby.callsign)}/`}
                 className="flex items-center gap-4 p-3 rounded-lg border border-ship-cove-100 dark:border-ship-cove-800/50 hover:border-ship-cove-300 dark:hover:border-ship-cove-700 bg-white dark:bg-ship-cove-900/30 hover:bg-ship-cove-50 dark:hover:bg-ship-cove-900/50 transition-all group animate-in fade-in slide-in-from-bottom-1 fill-mode-both"
                 style={{ animationDelay: `${index * 30}ms` }}
               >
@@ -660,7 +660,7 @@ function ShareButton({ callsign }: { callsign: string }) {
   const t = useTranslations("repeater");
 
   const handleShare = async () => {
-    const shareUrl = `${window.location.origin}/repeater/${encodeURIComponent(callsign)}`;
+    const shareUrl = `${window.location.origin}/repeater/${encodeURIComponent(callsign)}/`;
 
     if (navigator.share) {
       try {

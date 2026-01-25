@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description: "Aprenda e pratique código Morse com o nosso treinador interativo. Tabela completa de caracteres e exercícios para radioamadores.",
   keywords: ["código morse", "morse", "CW", "telegrafia", "radioamador", "treino", "aprender morse"],
   alternates: {
-    canonical: "/morse",
+    canonical: "/morse/",
   },
   openGraph: {
     title: "Código Morse - Treino e Referência",
     description: "Aprenda e pratique código Morse com o nosso treinador interativo. Tabela completa de caracteres e exercícios para radioamadores.",
     type: "website",
-    url: "/morse",
+    url: "/morse/",
     siteName: "Radioamador.info",
     locale: "pt_PT",
     images: [{ url: "/og-default.jpg", width: 1200, height: 630, alt: "Código Morse" }],
@@ -26,8 +26,8 @@ export const metadata: Metadata = {
 };
 
 const breadcrumbs = [
-  { name: "Início", url: "https://www.radioamador.info" },
-  { name: "Código Morse", url: "https://www.radioamador.info/morse" },
+  { name: "Início", url: "https://www.radioamador.info/" },
+  { name: "Código Morse", url: "https://www.radioamador.info/morse/" },
 ];
 
 const faqItems = [
@@ -55,7 +55,7 @@ export default function MorseLayout({
       <WebPageJsonLd
         name="Código Morse - Treino e Referência"
         description="Aprenda e pratique código Morse com o nosso treinador interativo. Tabela completa de caracteres e exercícios para radioamadores."
-        url="https://www.radioamador.info/morse"
+        url="https://www.radioamador.info/morse/"
         breadcrumb={breadcrumbs}
       />
       <BreadcrumbJsonLd items={breadcrumbs} />

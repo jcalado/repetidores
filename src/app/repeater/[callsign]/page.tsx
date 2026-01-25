@@ -208,13 +208,13 @@ export async function generateMetadata({ params }: { params: Promise<{ callsign:
       title,
       description,
       alternates: {
-        canonical: `/repeater/${encodeURIComponent(repeater.callsign)}`,
+        canonical: `/repeater/${encodeURIComponent(repeater.callsign)}/`,
       },
       openGraph: {
         title,
         description,
         type: "website",
-        url: `/repeater/${encodeURIComponent(repeater.callsign)}`,
+        url: `/repeater/${encodeURIComponent(repeater.callsign)}/`,
         siteName: "Radioamador.info",
         locale: "pt_PT",
         images: [{ url: "/og-default.jpg", width: 1200, height: 630, alt: title }],

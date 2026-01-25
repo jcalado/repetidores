@@ -100,49 +100,49 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [
     {
-      url: BASE_URL,
+      url: `${BASE_URL}/`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1,
     },
     {
-      url: `${BASE_URL}/repetidores`,
+      url: `${BASE_URL}/repetidores/`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
-      url: `${BASE_URL}/events`,
+      url: `${BASE_URL}/events/`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.8,
     },
     {
-      url: `${BASE_URL}/noticias`,
+      url: `${BASE_URL}/noticias/`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.8,
     },
     {
-      url: `${BASE_URL}/bands`,
+      url: `${BASE_URL}/bands/`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.6,
     },
     {
-      url: `${BASE_URL}/qth`,
+      url: `${BASE_URL}/qth/`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.6,
     },
     {
-      url: `${BASE_URL}/propagation`,
+      url: `${BASE_URL}/propagation/`,
       lastModified: new Date(),
       changeFrequency: 'hourly',
       priority: 0.7,
     },
     {
-      url: `${BASE_URL}/about`,
+      url: `${BASE_URL}/about/`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.5,
@@ -159,7 +159,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Repeater pages
   const repeaterPages: MetadataRoute.Sitemap = repeaterCallsigns.map((callsign) => ({
-    url: `${BASE_URL}/repeater/${encodeURIComponent(callsign)}`,
+    url: `${BASE_URL}/repeater/${encodeURIComponent(callsign)}/`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.7,
@@ -167,7 +167,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Event pages
   const eventPages: MetadataRoute.Sitemap = eventIds.map((id) => ({
-    url: `${BASE_URL}/events/${encodeURIComponent(id)}`,
+    url: `${BASE_URL}/events/${encodeURIComponent(id)}/`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.6,
@@ -175,7 +175,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // News pages
   const newsPages: MetadataRoute.Sitemap = newsSlugs.map((slug) => ({
-    url: `${BASE_URL}/noticias/${slug}`,
+    url: `${BASE_URL}/noticias/${slug}/`,
     lastModified: new Date(),
     changeFrequency: 'monthly' as const,
     priority: 0.6,
@@ -183,7 +183,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Association pages
   const associationPages: MetadataRoute.Sitemap = associationSlugs.map((slug) => ({
-    url: `${BASE_URL}/association/${slug}`,
+    url: `${BASE_URL}/association/${slug}/`,
     lastModified: new Date(),
     changeFrequency: 'monthly' as const,
     priority: 0.6,

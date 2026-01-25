@@ -4,13 +4,13 @@ export const metadata: Metadata = {
   title: "Sobre",
   description: "Informação sobre o projeto Repetidores - diretório de repetidores de radioamadorismo em Portugal.",
   alternates: {
-    canonical: "/about",
+    canonical: "/about/",
   },
   openGraph: {
     title: "Sobre o Radioamador.info",
     description: "Informação sobre o projeto Radioamador.info - diretório de repetidores de radioamadorismo em Portugal.",
     type: "website",
-    url: "/about",
+    url: "/about/",
     siteName: "Radioamador.info",
     locale: "pt_PT",
   },

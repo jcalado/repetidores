@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   description: "Calendário de eventos, contests e nets de radioamadorismo em Portugal e internacional.",
   keywords: ["eventos", "contests", "nets", "radioamador", "ham radio", "Portugal", "calendário"],
   alternates: {
-    canonical: "/events",
+    canonical: "/events/",
   },
   openGraph: {
     title: "Eventos de Radioamadorismo",
     description: "Calendário de eventos, contests e nets de radioamadorismo em Portugal e internacional.",
     type: "website",
-    url: "/events",
+    url: "/events/",
     siteName: "Radioamador.info",
     locale: "pt_PT",
     images: [{ url: "/og-default.jpg", width: 1200, height: 630, alt: "Eventos de Radioamadorismo" }],

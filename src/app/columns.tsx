@@ -298,7 +298,7 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
         if (r.association) {
           return (
             <Link
-              href={`/association/${r.association.slug}`}
+              href={`/association/${r.association.slug}/`}
               className="text-primary hover:underline"
               onClick={(e) => e.stopPropagation()}
             >

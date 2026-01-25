@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description: "Relógio UTC (Tempo Universal Coordenado) em tempo real. Essencial para radioamadores que participam em contests e contactos DX.",
   keywords: ["UTC", "hora UTC", "tempo universal", "GMT", "radioamador", "contests", "DX"],
   alternates: {
-    canonical: "/utc",
+    canonical: "/utc/",
   },
   openGraph: {
     title: "Relógio UTC",
     description: "Relógio UTC (Tempo Universal Coordenado) em tempo real. Essencial para radioamadores que participam em contests e contactos DX.",
     type: "website",
-    url: "/utc",
+    url: "/utc/",
     siteName: "Radioamador.info",
     locale: "pt_PT",
     images: [{ url: "/og-default.jpg", width: 1200, height: 630, alt: "Relógio UTC" }],
@@ -26,8 +26,8 @@ export const metadata: Metadata = {
 };
 
 const breadcrumbs = [
-  { name: "Início", url: "https://www.radioamador.info" },
-  { name: "Relógio UTC", url: "https://www.radioamador.info/utc" },
+  { name: "Início", url: "https://www.radioamador.info/" },
+  { name: "Relógio UTC", url: "https://www.radioamador.info/utc/" },
 ];
 
 export default function UTCLayout({
@@ -40,7 +40,7 @@ export default function UTCLayout({
       <WebPageJsonLd
         name="Relógio UTC"
         description="Relógio UTC (Tempo Universal Coordenado) em tempo real. Essencial para radioamadores que participam em contests e contactos DX."
-        url="https://www.radioamador.info/utc"
+        url="https://www.radioamador.info/utc/"
         breadcrumb={breadcrumbs}
       />
       <BreadcrumbJsonLd items={breadcrumbs} />

@@ -32,7 +32,7 @@ export function LocationSection({ repeater: r, userLocation }: LocationSectionPr
       <div className="space-y-2">
         {r.association ? (
           <Link
-            href={`/association/${r.association.slug}`}
+            href={`/association/${r.association.slug}/`}
             className="group flex items-center gap-3 rounded-lg p-2.5 sm:p-3 bg-ship-cove-50 dark:bg-ship-cove-900/50 hover:bg-ship-cove-100 dark:hover:bg-ship-cove-800/50 transition-colors"
           >
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800">

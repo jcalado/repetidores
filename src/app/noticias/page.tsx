@@ -49,13 +49,13 @@ export async function generateMetadata() {
     description,
     keywords: ["notícias", "radioamador", "ham radio", "Portugal", "novidades"],
     alternates: {
-      canonical: "/noticias",
+      canonical: "/noticias/",
     },
     openGraph: {
       title,
       description,
       type: "website",
-      url: "/noticias",
+      url: "/noticias/",
       siteName: "Radioamador.info",
       locale: "pt_PT",
       images: [{ url: "/og-default.jpg", width: 1200, height: 630, alt: title }],

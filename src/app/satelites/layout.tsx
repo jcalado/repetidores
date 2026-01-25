@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description: "Informações sobre satélites de radioamador ativos. Frequências, modos e passes visíveis em Portugal.",
   keywords: ["satélites", "OSCAR", "radioamador", "frequências", "passes", "downlink", "uplink"],
   alternates: {
-    canonical: "/satelites",
+    canonical: "/satelites/",
   },
   openGraph: {
     title: "Satélites de Radioamador",
     description: "Informações sobre satélites de radioamador ativos. Frequências, modos e passes visíveis em Portugal.",
     type: "website",
-    url: "/satelites",
+    url: "/satelites/",
     siteName: "Radioamador.info",
     locale: "pt_PT",
     images: [{ url: "/og-default.jpg", width: 1200, height: 630, alt: "Satélites de Radioamador" }],
@@ -26,8 +26,8 @@ export const metadata: Metadata = {
 };
 
 const breadcrumbs = [
-  { name: "Início", url: "https://www.radioamador.info" },
-  { name: "Satélites", url: "https://www.radioamador.info/satelites" },
+  { name: "Início", url: "https://www.radioamador.info/" },
+  { name: "Satélites", url: "https://www.radioamador.info/satelites/" },
 ];
 
 export default function SatelitesLayout({
@@ -40,7 +40,7 @@ export default function SatelitesLayout({
       <WebPageJsonLd
         name="Satélites de Radioamador"
         description="Informações sobre satélites de radioamador ativos. Frequências, modos e passes visíveis em Portugal."
-        url="https://www.radioamador.info/satelites"
+        url="https://www.radioamador.info/satelites/"
         breadcrumb={breadcrumbs}
       />
       <BreadcrumbJsonLd items={breadcrumbs} />

@@ -109,7 +109,7 @@ function HeroArticle({ item, showFeaturedBadge }: { item: NewsItem; showFeatured
   })
 
   return (
-    <Link href={`/noticias/${item.slug}`} className="group lg:col-span-2">
+    <Link href={`/noticias/${item.slug}/`} className="group lg:col-span-2">
       <article className="relative">
         {/* Image */}
         {imageUrl ? (
@@ -190,7 +190,7 @@ function SecondaryArticle({ item, showFeaturedBadge }: { item: NewsItem; showFea
   })
 
   return (
-    <Link href={`/noticias/${item.slug}`} className="group flex-1">
+    <Link href={`/noticias/${item.slug}/`} className="group flex-1">
       <article className="flex gap-4 h-full">
         {/* Image */}
         {imageUrl ? (
@@ -249,7 +249,7 @@ function ArticleCard({ item, showFeaturedBadge }: { item: NewsItem; showFeatured
   })
 
   return (
-    <Link href={`/noticias/${item.slug}`} className="group">
+    <Link href={`/noticias/${item.slug}/`} className="group">
       <article>
         {/* Image */}
         {imageUrl ? (
@@ -317,7 +317,7 @@ export function NewsListCompact({ news }: { news: NewsItem[] }) {
       {news.map((item) => (
         <Link
           key={item.id}
-          href={`/noticias/${item.slug}`}
+          href={`/noticias/${item.slug}/`}
           className="group flex gap-4 py-4 first:pt-0 last:pb-0"
         >
           {/* Thumbnail */}
