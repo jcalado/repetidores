@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import RepeaterPageClient from "./RepeaterPageClient";
 import { Repeater } from "@/app/columns";
+import { BreadcrumbJsonLd } from "@/components/seo";
 
 type PayloadRepeatersResponse = {
   docs?: Array<Record<string, unknown>>;
@@ -265,6 +266,14 @@ function generateRepeaterJsonLd(repeater: Repeater) {
   };
 }
 
+function generateBreadcrumbs(repeater: Repeater) {
+  return [
+    { name: "Início", url: "https://www.radioamador.info/" },
+    { name: "Repetidores", url: "https://www.radioamador.info/repetidores/" },
+    { name: repeater.callsign, url: `https://www.radioamador.info/repeater/${encodeURIComponent(repeater.callsign)}/` },
+  ];
+}
+
 async function RepeaterContent({ callsign }: { callsign: string }) {
   const allRepeaters = await fetchAllRepeaters();
   const repeater = findRepeaterByCallsign(allRepeaters, callsign);
@@ -274,6 +283,7 @@ async function RepeaterContent({ callsign }: { callsign: string }) {
   }
 
   const jsonLd = generateRepeaterJsonLd(repeater);
+  const breadcrumbs = generateBreadcrumbs(repeater);
 
   return (
     <>
@@ -281,6 +291,7 @@ async function RepeaterContent({ callsign }: { callsign: string }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <BreadcrumbJsonLd items={breadcrumbs} />
       <RepeaterPageClient repeater={repeater} allRepeaters={allRepeaters} />
     </>
   );

@@ -7,6 +7,7 @@ import {
   fetchAllAssociationSlugs,
 } from "@/lib/associations"
 import { PageHeader, PageHeaderIcon } from "@/components/ui/PageHeader"
+import { BreadcrumbJsonLd } from "@/components/seo"
 import {
   ArrowLeft,
   Building2,
@@ -155,7 +156,7 @@ function generateOrganizationJsonLd(
     alternateName: association.abbreviation,
     url:
       association.website ||
-      `https://www.radioamador.info/association/${association.slug}`,
+      `https://www.radioamador.info/association/${association.slug}/`,
     ...(logoUrl && { logo: logoUrl }),
     ...(association.email && { email: association.email }),
     ...(association.address && {
@@ -181,6 +182,16 @@ function generateOrganizationJsonLd(
       })),
     }),
   }
+}
+
+function generateBreadcrumbs(
+  association: NonNullable<Awaited<ReturnType<typeof fetchAssociationBySlug>>>
+) {
+  return [
+    { name: "Início", url: "https://www.radioamador.info/" },
+    { name: "Associações", url: "https://www.radioamador.info/associations/" },
+    { name: association.abbreviation, url: `https://www.radioamador.info/association/${association.slug}/` },
+  ]
 }
 
 // Helper to get status color classes
@@ -234,6 +245,7 @@ async function AssociationContent({
     association.address || association.website || association.email
 
   const jsonLd = generateOrganizationJsonLd(association)
+  const breadcrumbs = generateBreadcrumbs(association)
 
   // Group repeaters by modulation for stats
   const modulationCounts = association.repeaters.reduce(
@@ -257,6 +269,7 @@ async function AssociationContent({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
+      <BreadcrumbJsonLd items={breadcrumbs} />
 
       {/* Back Link */}
       <Link

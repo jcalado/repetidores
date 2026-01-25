@@ -1,4 +1,4 @@
-import { WebPageJsonLd, BreadcrumbJsonLd } from "@/components/seo";
+import { WebPageJsonLd, BreadcrumbJsonLd, FAQJsonLd } from "@/components/seo";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -30,6 +30,21 @@ const breadcrumbs = [
   { name: "Calculadora de Antenas", url: "https://www.radioamador.info/antenna/" },
 ];
 
+const faqItems = [
+  {
+    question: "Como calcular o comprimento de uma antena dipolo?",
+    answer: "O comprimento total de um dipolo de meia onda calcula-se pela fórmula: L (metros) = 143 / frequência (MHz). Por exemplo, para 7.1 MHz (40m), o comprimento total seria aproximadamente 20.14 metros. Cada braço do dipolo terá metade deste valor.",
+  },
+  {
+    question: "O que é uma antena vertical de quarto de onda?",
+    answer: "Uma antena vertical de quarto de onda tem um elemento vertical com 1/4 do comprimento de onda e requer um plano de terra (radiais). O comprimento calcula-se por: L (metros) = 71.5 / frequência (MHz). É popular em HF pela sua omnidirecionalidade e ângulo de radiação baixo.",
+  },
+  {
+    question: "Qual é o fator de velocidade e porque é importante?",
+    answer: "O fator de velocidade indica a velocidade de propagação do sinal num condutor comparada com a velocidade da luz no vácuo. Para fio de cobre nu é cerca de 0.95. Este fator afeta o comprimento real das antenas, que será ligeiramente menor que o cálculo teórico.",
+  },
+];
+
 export default function AntennaLayout({
   children,
 }: {
@@ -44,6 +59,7 @@ export default function AntennaLayout({
         breadcrumb={breadcrumbs}
       />
       <BreadcrumbJsonLd items={breadcrumbs} />
+      <FAQJsonLd items={faqItems} />
       {children}
     </>
   );

@@ -1,5 +1,6 @@
 import type { EventItem } from '@/components/HamRadioEventsCountdown';
 import EventDetailsClient from './EventDetailsClient';
+import { BreadcrumbJsonLd } from "@/components/seo";
 
 async function getEvents(): Promise<EventItem[]> {
   const apiBaseUrl = (
@@ -120,6 +121,9 @@ export async function generateMetadata({ params }: PageProps) {
 
 function generateEventJsonLd(event: EventItem) {
   const startDate = new Date(event.start);
+  const isOnline = event.location?.toLowerCase().includes('online') ||
+                   event.location?.toLowerCase().includes('internet') ||
+                   event.location?.toLowerCase().includes('web');
 
   return {
     "@context": "https://schema.org",
@@ -128,19 +132,35 @@ function generateEventJsonLd(event: EventItem) {
     startDate: event.start,
     ...(event.end && { endDate: event.end }),
     ...(event.location && {
-      location: {
+      location: isOnline ? {
+        "@type": "VirtualLocation",
+        url: event.url || "https://www.radioamador.info",
+      } : {
         "@type": "Place",
         name: event.location,
       },
     }),
     ...(event.url && { url: event.url }),
+    eventAttendanceMode: isOnline
+      ? "https://schema.org/OnlineEventAttendanceMode"
+      : "https://schema.org/OfflineEventAttendanceMode",
+    eventStatus: startDate > new Date()
+      ? "https://schema.org/EventScheduled"
+      : "https://schema.org/EventPostponed",
     organizer: {
       "@type": "Organization",
-      name: "Repetidores",
+      name: "Radioamador.info",
       url: "https://www.radioamador.info",
     },
-    eventStatus: startDate > new Date() ? "https://schema.org/EventScheduled" : "https://schema.org/EventMovedOnline",
   };
+}
+
+function generateBreadcrumbs(event: EventItem) {
+  return [
+    { name: "Início", url: "https://www.radioamador.info/" },
+    { name: "Eventos", url: "https://www.radioamador.info/events/" },
+    { name: event.title, url: `https://www.radioamador.info/events/${encodeURIComponent(event.id)}/` },
+  ];
 }
 
 export default async function EventDetailPage({ params }: PageProps) {
@@ -150,6 +170,7 @@ export default async function EventDetailPage({ params }: PageProps) {
   const event = events.find((e) => e.id === decodedId);
 
   const jsonLd = event ? generateEventJsonLd(event) : null;
+  const breadcrumbs = event ? generateBreadcrumbs(event) : null;
 
   // Don't call notFound() here - let client handle fallback fetch from API
   return (
@@ -160,6 +181,7 @@ export default async function EventDetailPage({ params }: PageProps) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
+      {breadcrumbs && <BreadcrumbJsonLd items={breadcrumbs} />}
       <EventDetailsClient
         event={event}
         eventId={decodedId}

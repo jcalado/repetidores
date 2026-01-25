@@ -6,6 +6,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import ReactMarkdown from "react-markdown"
 import NewsDetailClient from "./NewsDetailClient"
+import { BreadcrumbJsonLd } from "@/components/seo"
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -99,14 +100,22 @@ function generateNewsJsonLd(news: Awaited<ReturnType<typeof fetchNewsBySlug>>) {
     }),
     publisher: {
       "@type": "Organization",
-      name: "Repetidores",
+      name: "Radioamador.info",
       url: "https://www.radioamador.info",
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://www.radioamador.info/noticias/${news.slug}`,
+      "@id": `https://www.radioamador.info/noticias/${news.slug}/`,
     },
   }
+}
+
+function generateBreadcrumbs(news: NonNullable<Awaited<ReturnType<typeof fetchNewsBySlug>>>) {
+  return [
+    { name: "Início", url: "https://www.radioamador.info/" },
+    { name: "Notícias", url: "https://www.radioamador.info/noticias/" },
+    { name: news.title, url: `https://www.radioamador.info/noticias/${news.slug}/` },
+  ]
 }
 
 export default async function NewsDetailPage({ params }: PageProps) {
@@ -136,6 +145,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
     : null
 
   const jsonLd = generateNewsJsonLd(news)
+  const breadcrumbs = generateBreadcrumbs(news)
 
   return (
     <div className="min-h-screen bg-white dark:bg-ship-cove-950">
@@ -145,6 +155,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
+      <BreadcrumbJsonLd items={breadcrumbs} />
 
       <div className="container mx-auto px-4 py-8 sm:py-12">
         {/* Back Link */}

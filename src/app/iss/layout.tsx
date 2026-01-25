@@ -1,4 +1,4 @@
-import { WebPageJsonLd, BreadcrumbJsonLd } from "@/components/seo";
+import { WebPageJsonLd, BreadcrumbJsonLd, FAQJsonLd } from "@/components/seo";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -30,6 +30,21 @@ const breadcrumbs = [
   { name: "ISS", url: "https://www.radioamador.info/iss/" },
 ];
 
+const faqItems = [
+  {
+    question: "É possível contactar a ISS com rádio amador?",
+    answer: "Sim, a ISS tem uma estação de radioamador (NA1SS) operada pelos astronautas. Contactos são possíveis durante passes com boa elevação. A frequência de downlink é 145.800 MHz FM. Para transmitir, precisa de licença de radioamador e a frequência de uplink é 145.990 MHz.",
+  },
+  {
+    question: "Que equipamento é necessário para ouvir a ISS?",
+    answer: "Para apenas ouvir, um rádio VHF que receba 145.800 MHz FM é suficiente. Uma antena omnidirecional funciona, mas uma Yagi direcional melhora significativamente a receção. Muitos radioamadores conseguem ouvir a ISS mesmo com equipamento portátil básico.",
+  },
+  {
+    question: "O que é o programa ARISS?",
+    answer: "ARISS (Amateur Radio on the International Space Station) é um programa que coordena contactos de rádio amador entre astronautas na ISS e escolas/grupos. Permite que estudantes façam perguntas diretamente aos astronautas, inspirando interesse em ciência e tecnologia.",
+  },
+];
+
 export default function ISSLayout({
   children,
 }: {
@@ -44,6 +59,7 @@ export default function ISSLayout({
         breadcrumb={breadcrumbs}
       />
       <BreadcrumbJsonLd items={breadcrumbs} />
+      <FAQJsonLd items={faqItems} />
       {children}
     </>
   );
