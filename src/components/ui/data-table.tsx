@@ -134,13 +134,15 @@ export function DataTable<TData, TValue>({
     },
   })
 
-  const modulationOptions = React.useMemo(() => {
+  const modeOptions = React.useMemo(() => {
     const set = new Set<string>()
-      ; (data as unknown[]).forEach((d) => {
-        const item = d as Record<string, unknown>
-        const v = item?.modulation
-        if (v && typeof v === "string") set.add(v)
-      })
+    ;(data as unknown[]).forEach((d) => {
+      const item = d as Record<string, unknown>
+      const modes = item?.modes as string[] | undefined
+      if (modes && Array.isArray(modes)) {
+        modes.forEach((m) => set.add(m === 'DSTAR' ? 'D-STAR' : m))
+      }
+    })
     return Array.from(set).sort()
   }, [data])
 
@@ -638,13 +640,13 @@ export function DataTable<TData, TValue>({
                               className="h-7 text-xs w-full"
                             />
                           )}
-                          {header.column.id === "modulation" && (
+                          {header.column.id === "modes" && (
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button variant="outline" className="h-7 w-full justify-between px-2 text-xs font-normal">
                                   <span className="truncate">
                                     {(() => {
-                                      const selected = table.getColumn("modulation")?.getFilterValue() as string[] | undefined
+                                      const selected = table.getColumn("modes")?.getFilterValue() as string[] | undefined
                                       if (!selected || selected.length === 0) return t("filters.all")
                                       return selected.join(', ')
                                     })()}
@@ -655,14 +657,14 @@ export function DataTable<TData, TValue>({
                               <DropdownMenuContent className="w-[140px]" align="start">
                                 <DropdownMenuLabel className="text-xs">{t("filters.modulation")}</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                {modulationOptions.map((m) => {
-                                  const selected = (table.getColumn("modulation")?.getFilterValue() as string[] | undefined) || []
+                                {modeOptions.map((m) => {
+                                  const selected = (table.getColumn("modes")?.getFilterValue() as string[] | undefined) || []
                                   return (
                                     <DropdownMenuCheckboxItem
                                       key={m}
                                       checked={selected.includes(m)}
                                       onCheckedChange={(checked) => {
-                                        const column = table.getColumn("modulation")
+                                        const column = table.getColumn("modes")
                                         const current = (column?.getFilterValue() as string[] | undefined) || []
                                         const updated = checked
                                           ? [...current, m]
