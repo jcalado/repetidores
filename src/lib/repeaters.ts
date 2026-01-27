@@ -434,10 +434,13 @@ export async function fetchRepeaters(): Promise<Repeater[]> {
       depth: "1", // Populate association relationship
     });
 
+    // Use force-cache at build time (server) to allow static generation
+    // Use no-store at runtime (client) to fetch fresh data
+    const isServer = typeof window === 'undefined';
     const response = await fetch(`${API_BASE_URL}/api/repeaters?${params}`, {
       method: 'GET',
       headers: { Accept: 'application/json' },
-      cache: 'force-cache',
+      cache: isServer ? 'force-cache' : 'no-store',
     });
 
     if (!response.ok) {
