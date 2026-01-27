@@ -381,6 +381,71 @@ export default function RepeaterBrowser({
                 {locationError && (
                   <span className="text-sm text-destructive">{locationError}</span>
                 )}
+              </div>
+
+              {/* Mode Filter Presets */}
+              <div className="mb-4 flex flex-wrap items-center gap-2">
+                <span className="text-sm text-muted-foreground mr-1">{t('filters.quickFilters')}:</span>
+                {[
+                  { mode: 'EchoLink', label: 'EchoLink', color: 'bg-emerald-500/10 text-emerald-700 border-emerald-500/30 hover:bg-emerald-500/20 dark:text-emerald-400' },
+                  { mode: 'AllStar', label: 'AllStarLink', color: 'bg-orange-500/10 text-orange-700 border-orange-500/30 hover:bg-orange-500/20 dark:text-orange-400' },
+                  { mode: 'DMR', label: 'DMR', color: 'bg-purple-500/10 text-purple-700 border-purple-500/30 hover:bg-purple-500/20 dark:text-purple-400' },
+                  { mode: 'DSTAR', label: 'D-STAR', color: 'bg-sky-500/10 text-sky-700 border-sky-500/30 hover:bg-sky-500/20 dark:text-sky-400' },
+                  { mode: 'C4FM', label: 'C4FM', color: 'bg-rose-500/10 text-rose-700 border-rose-500/30 hover:bg-rose-500/20 dark:text-rose-400' },
+                  { mode: 'FM', label: 'FM', color: 'bg-ship-cove-500/10 text-ship-cove-700 border-ship-cove-500/30 hover:bg-ship-cove-500/20 dark:text-ship-cove-400' },
+                  { mode: 'TETRA', label: 'TETRA', color: 'bg-amber-500/10 text-amber-700 border-amber-500/30 hover:bg-amber-500/20 dark:text-amber-400' },
+                ].map(({ mode, label, color }) => {
+                  const currentModes = (columnFilters.find((f) => f.id === "modes")?.value as string[] | undefined) || []
+                  const displayMode = mode === 'DSTAR' ? 'D-STAR' : mode
+                  const isActive = currentModes.includes(displayMode)
+                  return (
+                    <button
+                      key={mode}
+                      type="button"
+                      onClick={() => {
+                        setColumnFilters((prev) => {
+                          const next = prev.filter((f) => f.id !== "modes")
+                          if (isActive) {
+                            // Remove this mode from filter
+                            const updated = currentModes.filter((m) => m !== displayMode)
+                            if (updated.length > 0) {
+                              next.push({ id: "modes", value: updated })
+                            }
+                          } else {
+                            // Add this mode to filter (toggle on)
+                            next.push({ id: "modes", value: [displayMode] })
+                          }
+                          return next
+                        })
+                      }}
+                      className={`
+                        inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium
+                        rounded-full border transition-all duration-200
+                        ${isActive
+                          ? `${color} ring-2 ring-offset-1 ring-current/30`
+                          : `${color} opacity-70 hover:opacity-100`
+                        }
+                      `}
+                    >
+                      {isActive && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+                      )}
+                      {label}
+                    </button>
+                  )
+                })}
+                {(columnFilters.find((f) => f.id === "modes")?.value as string[] | undefined)?.length ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setColumnFilters((prev) => prev.filter((f) => f.id !== "modes"))
+                    }}
+                    className="inline-flex items-center gap-1 px-2 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <X className="h-3 w-3" />
+                    {t('filters.clearModes')}
+                  </button>
+                ) : null}
 
                 {/* Spacer */}
                 <div className="flex-1" />

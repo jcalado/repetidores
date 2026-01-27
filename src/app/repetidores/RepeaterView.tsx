@@ -30,12 +30,18 @@ import {
   ChevronDown,
   ChevronUp,
   Filter,
+  Globe,
   Heart,
+  Hexagon,
+  LayoutGrid,
+  Link2,
   MapIcon,
   MapPin,
   Radio,
   RefreshCw,
+  Shield,
   Signal,
+  Star,
   TableIcon,
   X,
 } from "lucide-react";
@@ -60,6 +66,7 @@ function getBandFromFrequency(mhz: number): string {
   return "Other";
 }
 
+// Mode colors - matches quick filter cards and ModesCell in columns.tsx
 function getModeColors(mode: string): string {
   switch (mode.toUpperCase()) {
     case "FM":
@@ -70,9 +77,13 @@ function getModeColors(mode: string): string {
     case "D-STAR":
       return "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300 border-cyan-300 dark:border-cyan-700";
     case "C4FM":
-      return "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 border-orange-300 dark:border-orange-700";
+      return "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 border-rose-300 dark:border-rose-700";
     case "TETRA":
-      return "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 border-red-300 dark:border-red-700";
+      return "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border-amber-300 dark:border-amber-700";
+    case "ECHOLINK":
+      return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700";
+    case "ALLSTAR":
+      return "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 border-orange-300 dark:border-orange-700";
     case "DIGIPEATER":
       return "bg-gray-100 text-gray-700 dark:bg-gray-900/40 dark:text-gray-300 border-gray-300 dark:border-gray-700";
     default:
@@ -186,6 +197,9 @@ export default function RepeaterView({ view }: Props) {
       result = result.filter((r) =>
         modes.some((m) => {
           const normalizedFilter = m === "D-STAR" ? "DSTAR" : m;
+          // EchoLink and AllStar are stored as separate fields, not in modes array
+          if (m === "EchoLink") return r.echolink?.enabled === true;
+          if (m === "AllStar") return r.allstarNode != null;
           return r.modes?.includes(normalizedFilter as typeof r.modes[number]);
         })
       );
@@ -217,7 +231,7 @@ export default function RepeaterView({ view }: Props) {
       <Card className="w-full max-w-7xl">
         <CardContent>
           {/* View toggle tabs */}
-          <div className="flex items-center justify-between gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-4">
             <div className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
               <Link
                 href="/repetidores"
@@ -242,60 +256,104 @@ export default function RepeaterView({ view }: Props) {
                 {t("nav.map")}
               </Link>
             </div>
-            <div className="flex items-center gap-2">
-              <RepeaterSubmitDialog repeaters={data} />
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={refreshRepeaters}
-                disabled={isRefreshing}
-                title="Refresh repeaters"
-                className="h-9 w-9"
-              >
-                <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
-              </Button>
-            </div>
           </div>
 
           {view === "table" && (
             <>
-              {/* Location display and favorites */}
-              <div className="mb-4 flex flex-wrap items-center gap-2">
-                {userLocation && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <MapPin className="h-4 w-4" />
-                    <span className="font-mono">
-                      {userLocation.qthLocator ||
-                        `${userLocation.latitude.toFixed(4)}, ${userLocation.longitude.toFixed(4)}`}
-                    </span>
-                  </div>
-                )}
 
-                <div className="flex-1" />
+              {/* Mode Filter Presets - Hero Cards */}
+              <div className="mb-6 rounded-xl border bg-gradient-to-br from-muted/30 via-background to-muted/20 p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-foreground tracking-tight">{t('filters.quickFilters')}</h3>
+                  {(columnFilters.find((f) => f.id === "modes")?.value as string[] | undefined)?.length ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setColumnFilters((prev) => prev.filter((f) => f.id !== "modes"))
+                      }}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-all"
+                    >
+                      <X className="h-3 w-3" />
+                      {t('filters.clearModes')}
+                    </button>
+                  ) : null}
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-8 gap-2">
+                  {(() => {
+                    const currentModes = (columnFilters.find((f) => f.id === "modes")?.value as string[] | undefined) || []
+                    const hasActiveFilter = currentModes.length > 0
+                    return [
+                      { mode: 'ALL', label: 'Todos', Icon: LayoutGrid, desc: 'Sem filtro', bg: 'bg-slate-50 dark:bg-slate-950/40', hoverBg: 'hover:bg-slate-100 dark:hover:bg-slate-900/50', border: 'border-slate-200 dark:border-slate-800', activeBorder: 'border-slate-500', text: 'text-slate-700 dark:text-slate-300', iconColor: 'text-slate-500', activeRing: 'ring-slate-500/30', dot: 'bg-slate-500' },
+                      { mode: 'FM', label: 'FM', Icon: Radio, desc: 'Analógico', bg: 'bg-blue-50 dark:bg-blue-950/40', hoverBg: 'hover:bg-blue-100 dark:hover:bg-blue-900/50', border: 'border-blue-200 dark:border-blue-800', activeBorder: 'border-blue-500', text: 'text-blue-700 dark:text-blue-300', iconColor: 'text-blue-500', activeRing: 'ring-blue-500/30', dot: 'bg-blue-500' },
+                      { mode: 'DMR', label: 'DMR', Icon: Signal, desc: 'Digital', bg: 'bg-purple-50 dark:bg-purple-950/40', hoverBg: 'hover:bg-purple-100 dark:hover:bg-purple-900/50', border: 'border-purple-200 dark:border-purple-800', activeBorder: 'border-purple-500', text: 'text-purple-700 dark:text-purple-300', iconColor: 'text-purple-500', activeRing: 'ring-purple-500/30', dot: 'bg-purple-500' },
+                      { mode: 'DSTAR', label: 'D-STAR', Icon: Star, desc: 'Digital', bg: 'bg-cyan-50 dark:bg-cyan-950/40', hoverBg: 'hover:bg-cyan-100 dark:hover:bg-cyan-900/50', border: 'border-cyan-200 dark:border-cyan-800', activeBorder: 'border-cyan-500', text: 'text-cyan-700 dark:text-cyan-300', iconColor: 'text-cyan-500', activeRing: 'ring-cyan-500/30', dot: 'bg-cyan-500' },
+                      { mode: 'C4FM', label: 'C4FM', Icon: Hexagon, desc: 'Fusion', bg: 'bg-rose-50 dark:bg-rose-950/40', hoverBg: 'hover:bg-rose-100 dark:hover:bg-rose-900/50', border: 'border-rose-200 dark:border-rose-800', activeBorder: 'border-rose-500', text: 'text-rose-700 dark:text-rose-300', iconColor: 'text-rose-500', activeRing: 'ring-rose-500/30', dot: 'bg-rose-500' },
+                      { mode: 'TETRA', label: 'TETRA', Icon: Shield, desc: 'Digital', bg: 'bg-amber-50 dark:bg-amber-950/40', hoverBg: 'hover:bg-amber-100 dark:hover:bg-amber-900/50', border: 'border-amber-200 dark:border-amber-800', activeBorder: 'border-amber-500', text: 'text-amber-700 dark:text-amber-300', iconColor: 'text-amber-500', activeRing: 'ring-amber-500/30', dot: 'bg-amber-500' },
+                      { mode: 'EchoLink', label: 'EchoLink', Icon: Globe, desc: 'VoIP', bg: 'bg-emerald-50 dark:bg-emerald-950/40', hoverBg: 'hover:bg-emerald-100 dark:hover:bg-emerald-900/50', border: 'border-emerald-200 dark:border-emerald-800', activeBorder: 'border-emerald-500', text: 'text-emerald-700 dark:text-emerald-300', iconColor: 'text-emerald-500', activeRing: 'ring-emerald-500/30', dot: 'bg-emerald-500' },
+                      { mode: 'AllStar', label: 'AllStar', Icon: Link2, desc: 'Link', bg: 'bg-orange-50 dark:bg-orange-950/40', hoverBg: 'hover:bg-orange-100 dark:hover:bg-orange-900/50', border: 'border-orange-200 dark:border-orange-800', activeBorder: 'border-orange-500', text: 'text-orange-700 dark:text-orange-300', iconColor: 'text-orange-500', activeRing: 'ring-orange-500/30', dot: 'bg-orange-500' },
+                    ].map(({ mode, label, Icon, desc, bg, hoverBg, border, activeBorder, text, iconColor, activeRing, dot }) => {
+                      const displayMode = mode === 'DSTAR' ? 'D-STAR' : mode
+                      // "ALL" is active when no mode filters are set
+                      const isActive = mode === 'ALL' ? !hasActiveFilter : currentModes.includes(displayMode)
+                      const isInactive = mode === 'ALL' ? false : (hasActiveFilter && !isActive)
+                      return (
+                        <button
+                          key={mode}
+                          type="button"
+                          onClick={() => {
+                            // "ALL" clears all mode filters
+                            if (mode === 'ALL') {
+                              setColumnFilters((prev) => prev.filter((f) => f.id !== "modes"))
+                              return
+                            }
+                            setColumnFilters((prev) => {
+                              const next = prev.filter((f) => f.id !== "modes")
+                              if (isActive) {
+                                const updated = currentModes.filter((m) => m !== displayMode)
+                                if (updated.length > 0) {
+                                  next.push({ id: "modes", value: updated })
+                                }
+                              } else {
+                                next.push({ id: "modes", value: [displayMode] })
+                              }
+                              return next
+                            })
+                          }}
+                          className={`
+                            group relative flex flex-col items-center justify-center p-3 rounded-lg border-2
+                            transition-all duration-200 ease-out
+                            ${bg} ${hoverBg}
+                            ${isActive
+                              ? `${activeBorder} shadow-md ring-2 ${activeRing} scale-[1.02]`
+                              : `${border} hover:scale-[1.01]`
+                            }
+                            ${isInactive ? 'opacity-50 saturate-50 hover:opacity-75 hover:saturate-75' : ''}
+                          `}
+                        >
+                        {/* Active indicator dot */}
+                        {isActive && (
+                          <span className={`absolute top-1.5 right-1.5 w-2 h-2 rounded-full ${dot} animate-pulse shadow-sm`} />
+                        )}
 
-                <Button
-                  variant={
-                    columnFilters.find((f) => f.id === "favorite")?.value
-                      ? "default"
-                      : "outline"
-                  }
-                  size="sm"
-                  onClick={() => {
-                    setColumnFilters((prev) => {
-                      const hasFavoriteFilter = prev.find((f) => f.id === "favorite");
-                      if (hasFavoriteFilter) {
-                        return prev.filter((f) => f.id !== "favorite");
-                      }
-                      return [...prev, { id: "favorite", value: true }];
-                    });
-                  }}
-                >
-                  <Heart className="mr-2 h-4 w-4" />
-                  {columnFilters.find((f) => f.id === "favorite")?.value
-                    ? t("favorites.showAll")
-                    : t("favorites.showOnly")}
-                </Button>
+                        {/* Icon */}
+                        <Icon className={`h-6 w-6 mb-1 transition-transform duration-200 ${iconColor} ${isActive ? 'scale-110' : 'group-hover:scale-105'}`} />
+
+                        {/* Label */}
+                        <span className={`text-sm font-semibold tracking-tight ${text}`}>
+                          {label}
+                        </span>
+
+                        {/* Description */}
+                        <span className={`text-[10px] uppercase tracking-wider ${text} opacity-60`}>
+                          {desc}
+                        </span>
+                        </button>
+                      )
+                    })
+                  })()}
+                </div>
               </div>
+
               <DataTable
                 columns={columns}
                 data={data}
@@ -306,6 +364,42 @@ export default function RepeaterView({ view }: Props) {
                   setOpen(true);
                 }}
                 isLoading={false}
+                leftActions={
+                  <>
+                    <Button
+                      variant={
+                        columnFilters.find((f) => f.id === "favorite")?.value
+                          ? "default"
+                          : "outline"
+                      }
+                      size="sm"
+                      onClick={() => {
+                        setColumnFilters((prev) => {
+                          const hasFavoriteFilter = prev.find((f) => f.id === "favorite");
+                          if (hasFavoriteFilter) {
+                            return prev.filter((f) => f.id !== "favorite");
+                          }
+                          return [...prev, { id: "favorite", value: true }];
+                        });
+                      }}
+                    >
+                      <Heart className="mr-2 h-4 w-4" />
+                      {columnFilters.find((f) => f.id === "favorite")?.value
+                        ? t("favorites.showAll")
+                        : t("favorites.showOnly")}
+                    </Button>
+                    <RepeaterSubmitDialog repeaters={data} />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={refreshRepeaters}
+                      disabled={isRefreshing}
+                      title="Refresh repeaters"
+                    >
+                      <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
+                    </Button>
+                  </>
+                }
               />
             </>
           )}

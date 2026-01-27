@@ -67,6 +67,7 @@ interface DataTableProps<TData, TValue> {
   onRowClick?: (row: TData) => void
   isLoading?: boolean
   initialSorting?: SortingState
+  leftActions?: React.ReactNode
 }
 
 export function DataTable<TData, TValue>({
@@ -78,6 +79,7 @@ export function DataTable<TData, TValue>({
   onRowClick,
   isLoading = false,
   initialSorting,
+  leftActions,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>(
     initialSorting ?? [{ id: 'outputFrequency', desc: false }]
@@ -458,9 +460,14 @@ export function DataTable<TData, TValue>({
   return (
     <div>
       {/* Action Buttons */}
-      <div className="flex items-center justify-end gap-4 mb-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+        {/* Left actions */}
+        <div className="flex items-center gap-2">
+          {leftActions}
+        </div>
 
-
+        {/* Right actions */}
+        <div className="flex items-center gap-2">
         <Button
           variant="outline"
           size="sm"
@@ -509,6 +516,7 @@ export function DataTable<TData, TValue>({
         >
           {t("filters.clear")}
         </Button>
+        </div>
       </div>
 
       <div className="rounded-md border" aria-busy={isLoading}>

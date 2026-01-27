@@ -222,6 +222,7 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
         return <ModesCell modes={r.modes} />
       },
       // Filter by modes array - supports multi-select
+      // Also handles EchoLink and AllStar which are stored as separate fields
       filterFn: (row, _id, value) => {
         if (!value) return true
         const r = row.original as Repeater
@@ -233,6 +234,9 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
             const filterVal = String(v).toUpperCase()
             // Normalize filter values to match modes array
             if (filterVal === 'D-STAR') return modes.includes('DSTAR')
+            // EchoLink and AllStar are stored as separate fields, not in modes array
+            if (filterVal === 'ECHOLINK') return r.echolink?.enabled === true
+            if (filterVal === 'ALLSTAR') return r.allstarNode != null
             return modes.includes(filterVal as typeof modes[number])
           })
         }
@@ -240,6 +244,8 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
         // Handle single value
         const v = String(value).toUpperCase()
         if (v === 'D-STAR') return modes.includes('DSTAR')
+        if (v === 'ECHOLINK') return r.echolink?.enabled === true
+        if (v === 'ALLSTAR') return r.allstarNode != null
         return modes.includes(v as typeof modes[number])
       },
     },
@@ -360,6 +366,18 @@ export function getOwnerShort(name: string): string {
 }
 
 // ---- Modes Cell ----
+// Mode colors - shared with quick filters in RepeaterView.tsx
+const MODE_COLORS: Record<string, string> = {
+  FM: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  DMR: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+  DSTAR: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400",
+  C4FM: "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400",
+  TETRA: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  EchoLink: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  AllStar: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
+  Digipeater: "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400",
+}
+
 function ModesCell({ modes }: { modes: Repeater['modes'] }) {
   if (!modes || modes.length === 0) return null
 
@@ -371,12 +389,7 @@ function ModesCell({ modes }: { modes: Repeater['modes'] }) {
           key={mode}
           className={cn(
             "inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium",
-            mode === 'FM' && "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-            mode === 'DMR' && "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
-            mode === 'DSTAR' && "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-            mode === 'C4FM' && "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
-            mode === 'TETRA' && "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-            mode === 'Digipeater' && "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400"
+            MODE_COLORS[mode] ?? "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400"
           )}
         >
           {mode === 'DSTAR' ? 'D-STAR' : mode}
