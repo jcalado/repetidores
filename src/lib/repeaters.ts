@@ -437,7 +437,7 @@ export async function fetchRepeaters(): Promise<Repeater[]> {
     const response = await fetch(`${API_BASE_URL}/api/repeaters?${params}`, {
       method: 'GET',
       headers: { Accept: 'application/json' },
-      cache: 'no-store',
+      cache: 'force-cache',
     });
 
     if (!response.ok) {
