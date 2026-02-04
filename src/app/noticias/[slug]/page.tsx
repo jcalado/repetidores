@@ -5,6 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 import NewsDetailClient from "./NewsDetailClient"
 import { BreadcrumbJsonLd } from "@/components/seo"
 
@@ -295,7 +296,7 @@ function RichTextContent({ content }: { content: unknown }) {
 
   // Render markdown content if it's a string
   if (typeof content === "string") {
-    return <ReactMarkdown>{content}</ReactMarkdown>
+    return <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
   }
 
   return null
@@ -321,7 +322,7 @@ function LexicalNodeRenderer({ node }: { node: LexicalNode }) {
 
     if (hasMarkdown) {
       // Render markdown content
-      return <ReactMarkdown>{text}</ReactMarkdown>
+      return <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>
     }
 
     let element: React.ReactNode = text
