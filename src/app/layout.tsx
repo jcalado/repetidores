@@ -1,5 +1,5 @@
 import Footer from "@/components/Footer";
-import GoogleAnalytics from "@/components/GoogleAnalytics";
+import UmamiAnalytics from "@/components/UmamiAnalytics";
 import Header from "@/components/Header";
 import OfflineIndicator from "@/components/OfflineIndicator";
 import PWAInstall from "@/components/PWAInstall";
@@ -113,7 +113,7 @@ export default async function RootLayout({
         <WebSiteJsonLd />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <GoogleAnalytics />
+        <UmamiAnalytics />
         <NextIntlClientProvider messages={messages}>
           <UserLocationProvider>
             <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">

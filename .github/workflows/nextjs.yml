@@ -57,6 +57,7 @@ jobs:
           NEXT_PUBLIC_PAYLOAD_API_BASE_URL: https://api.radioamador.info
           NEXT_PUBLIC_CMS_BASE_URL: https://api.radioamador.info
           NEXT_PUBLIC_VOTES_API_BASE_URL: https://api.radioamador.info
+          NEXT_PUBLIC_UMAMI_WEBSITE_ID: ${{ vars.UMAMI_WEBSITE_ID }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
