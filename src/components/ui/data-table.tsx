@@ -226,11 +226,15 @@ export function DataTable<TData, TValue>({
     const lines = [header.join(",")]
     rows.forEach((row, idx) => {
       const item = row as Record<string, unknown>
-      const rx = item?.outputFrequency as number | undefined
-      const tx = item?.inputFrequency as number | undefined
-      const tone = item?.tone as number | undefined
+      // Extract primary frequency pair from V2 frequencies array
+      const frequencies = item?.frequencies as Array<{ outputFrequency: number; inputFrequency: number; tone?: number; isPrimary?: boolean }> | undefined
+      const primaryFreq = frequencies?.find(f => f.isPrimary) || frequencies?.[0]
+      const rx = primaryFreq?.outputFrequency
+      const tx = primaryFreq?.inputFrequency
+      const tone = primaryFreq?.tone
       const name = item?.callsign as string ?? ""
-      const comment = (item?.qth_locator as string) || (item?.owner as string) || ""
+      const modes = item?.modes as string[] | undefined
+      const comment = (item?.qthLocator as string) || (item?.owner as string) || ""
       const fields = [
         String(idx + 1),
         name,
@@ -242,7 +246,7 @@ export function DataTable<TData, TValue>({
         fmtToneFreq(tone), // cToneFreq
         "023",
         "NN",
-        fmtMode(item?.modulation as string),
+        fmtMode(modes?.[0]),
         "", // TStep
         "", // Skip
         comment,
@@ -359,15 +363,17 @@ export function DataTable<TData, TValue>({
 
     rows.forEach((row, idx) => {
       const item = row as Record<string, unknown>
-      const rx = item?.outputFrequency as number | undefined
-      const tx = item?.inputFrequency as number | undefined
-      const tone = item?.tone as number | undefined
+      // Extract primary frequency pair from V2 frequencies array
+      const frequencies = item?.frequencies as Array<{ outputFrequency: number; inputFrequency: number; tone?: number; isPrimary?: boolean }> | undefined
+      const primaryFreq = frequencies?.find(f => f.isPrimary) || frequencies?.[0]
+      const rx = primaryFreq?.outputFrequency
+      const tx = primaryFreq?.inputFrequency
+      const tone = primaryFreq?.tone
       const name = item?.callsign as string ?? ""
-      const isDMR = item?.dmr === true
-      const modulation = item?.modulation as string | undefined
+      const modes = item?.modes as string[] | undefined
 
       // Determine if this is a digital channel
-      const isDigital = isDMR || (modulation && modulation.toUpperCase().includes("DMR"))
+      const isDigital = modes?.some(m => m.toUpperCase() === "DMR") ?? false
 
       const fields = [
         String(idx + 1),                              // No.
