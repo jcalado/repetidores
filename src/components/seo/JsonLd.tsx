@@ -35,7 +35,7 @@ export function OrganizationJsonLd() {
       name: "Portugal",
     },
     sameAs: [
-      // Add social media links here if available
+      "https://github.com/jcalado/repetidores",
     ],
     contactPoint: {
       "@type": "ContactPoint",

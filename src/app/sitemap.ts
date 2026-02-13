@@ -46,7 +46,12 @@ async function fetchAllRepeaterCallsigns(): Promise<string[]> {
   return callsigns
 }
 
-async function fetchAllEventIds(): Promise<string[]> {
+interface EventEntry {
+  id: string
+  updatedAt?: string
+}
+
+async function fetchAllEventIds(): Promise<EventEntry[]> {
   const baseUrl = getApiBaseUrl()
 
   try {
@@ -54,14 +59,22 @@ async function fetchAllEventIds(): Promise<string[]> {
     if (!response.ok) return []
 
     const data = await response.json()
-    return (data.docs || []).map((event: { id: string }) => event.id)
+    return (data.docs || []).map((event: { id: string; updatedAt?: string }) => ({
+      id: event.id,
+      updatedAt: event.updatedAt,
+    }))
   } catch (error) {
     console.error('[Sitemap] Error fetching events:', error)
     return []
   }
 }
 
-async function fetchAllNewsSlugs(): Promise<string[]> {
+interface NewsEntry {
+  slug: string
+  updatedAt?: string
+}
+
+async function fetchAllNewsSlugs(): Promise<NewsEntry[]> {
   const baseUrl = getApiBaseUrl()
 
   try {
@@ -74,7 +87,10 @@ async function fetchAllNewsSlugs(): Promise<string[]> {
     if (!response.ok) return []
 
     const data = await response.json()
-    return (data.docs || []).map((item: { slug: string }) => item.slug)
+    return (data.docs || []).map((item: { slug: string; updatedAt?: string }) => ({
+      slug: item.slug,
+      updatedAt: item.updatedAt,
+    }))
   } catch (error) {
     console.error('[Sitemap] Error fetching news:', error)
     return []
@@ -97,173 +113,175 @@ async function fetchAllAssociationSlugs(): Promise<string[]> {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const now = new Date()
+
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [
     // Main pages
     {
       url: `${BASE_URL}/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'daily',
       priority: 1,
     },
     {
       url: `${BASE_URL}/repetidores/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
       url: `${BASE_URL}/repetidores/mapa/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'daily',
       priority: 0.8,
     },
     {
       url: `${BASE_URL}/repetidores/proximo/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'daily',
       priority: 0.7,
     },
     {
       url: `${BASE_URL}/events/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'daily',
       priority: 0.8,
     },
     {
       url: `${BASE_URL}/noticias/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'daily',
       priority: 0.8,
     },
     {
       url: `${BASE_URL}/associations/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'weekly',
       priority: 0.7,
     },
     // Reference tools
     {
       url: `${BASE_URL}/bands/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.6,
     },
     {
       url: `${BASE_URL}/qth/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.6,
     },
     {
       url: `${BASE_URL}/propagation/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'hourly',
       priority: 0.7,
     },
     {
       url: `${BASE_URL}/utc/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.6,
     },
     {
       url: `${BASE_URL}/nato/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
       url: `${BASE_URL}/qcodes/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
       url: `${BASE_URL}/morse/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.6,
     },
     {
       url: `${BASE_URL}/antenna/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.6,
     },
     // Satellite pages
     {
       url: `${BASE_URL}/satelites/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'daily',
       priority: 0.7,
     },
     {
       url: `${BASE_URL}/iss/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'daily',
       priority: 0.7,
     },
     // Calculators
     {
       url: `${BASE_URL}/calculadoras/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.6,
     },
     {
       url: `${BASE_URL}/calculadoras/db/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
       url: `${BASE_URL}/calculadoras/swr/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
       url: `${BASE_URL}/calculadoras/coax/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
       url: `${BASE_URL}/calculadoras/frequencia/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
       url: `${BASE_URL}/calculadoras/power/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
       url: `${BASE_URL}/calculadoras/distance/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
       url: `${BASE_URL}/calculadoras/los/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     // Info pages
     {
       url: `${BASE_URL}/about/`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.5,
     },
   ]
 
   // Fetch dynamic content in parallel
-  const [repeaterCallsigns, eventIds, newsSlugs, associationSlugs] = await Promise.all([
+  const [repeaterCallsigns, eventEntries, newsEntries, associationSlugs] = await Promise.all([
     fetchAllRepeaterCallsigns(),
     fetchAllEventIds(),
     fetchAllNewsSlugs(),
@@ -273,23 +291,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Repeater pages
   const repeaterPages: MetadataRoute.Sitemap = repeaterCallsigns.map((callsign) => ({
     url: `${BASE_URL}/repeater/${encodeURIComponent(callsign)}/`,
-    lastModified: new Date(),
+    lastModified: now,
     changeFrequency: 'weekly' as const,
     priority: 0.7,
   }))
 
-  // Event pages
-  const eventPages: MetadataRoute.Sitemap = eventIds.map((id) => ({
-    url: `${BASE_URL}/events/${encodeURIComponent(id)}/`,
-    lastModified: new Date(),
+  // Event pages - use real updatedAt when available
+  const eventPages: MetadataRoute.Sitemap = eventEntries.map((entry) => ({
+    url: `${BASE_URL}/events/${encodeURIComponent(entry.id)}/`,
+    lastModified: entry.updatedAt ? new Date(entry.updatedAt) : now,
     changeFrequency: 'weekly' as const,
     priority: 0.6,
   }))
 
-  // News pages
-  const newsPages: MetadataRoute.Sitemap = newsSlugs.map((slug) => ({
-    url: `${BASE_URL}/noticias/${slug}/`,
-    lastModified: new Date(),
+  // News pages - use real updatedAt when available
+  const newsPages: MetadataRoute.Sitemap = newsEntries.map((entry) => ({
+    url: `${BASE_URL}/noticias/${entry.slug}/`,
+    lastModified: entry.updatedAt ? new Date(entry.updatedAt) : now,
     changeFrequency: 'monthly' as const,
     priority: 0.6,
   }))
@@ -297,7 +315,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Association pages
   const associationPages: MetadataRoute.Sitemap = associationSlugs.map((slug) => ({
     url: `${BASE_URL}/association/${slug}/`,
-    lastModified: new Date(),
+    lastModified: now,
     changeFrequency: 'monthly' as const,
     priority: 0.6,
   }))

@@ -1,5 +1,12 @@
+import type { Metadata } from 'next'
 import type { NewsItem } from '@/lib/news'
 import LandingPageClient from './LandingPageClient'
+
+export const metadata: Metadata = {
+    alternates: {
+        canonical: '/',
+    },
+}
 
 async function fetchFeaturedNews(): Promise<NewsItem[]> {
     const apiBaseUrl = (

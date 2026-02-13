@@ -67,6 +67,7 @@ export const metadata: Metadata = {
       "application/rss+xml": [
         { url: `${API_URL}/api/feeds/repeaters.rss`, title: "Repetidores - RSS" },
         { url: `${API_URL}/api/feeds/events.rss`, title: "Eventos - RSS" },
+        { url: `${API_URL}/api/feeds/status.rss`, title: "Estado dos Repetidores - RSS" },
       ],
     },
   },
@@ -77,6 +78,8 @@ export const metadata: Metadata = {
     "apple-mobile-web-app-title": "Radioamador.info",
     "msapplication-TileColor": "#1e293b",
     "msapplication-config": "/browserconfig.xml",
+    "geo.region": "PT",
+    "geo.placename": "Portugal",
   },
 };
 
@@ -84,7 +87,7 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  userScalable: false,
+  userScalable: true,
   themeColor: "#1e293b",
 };
 
@@ -99,6 +102,7 @@ export default async function RootLayout({
   return (
     <html lang="pt">
       <head>
+        <link rel="search" type="application/opensearchdescription+xml" title="Radioamador.info" href="/opensearch.xml" />
         {/* Preconnect to external CDNs for maps and images */}
         <link rel="preconnect" href="https://unpkg.com" />
         <link rel="preconnect" href="https://server.arcgisonline.com" />
