@@ -420,9 +420,34 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
       )}
 
       {/* Digital Modes */}
-      {(r.modes?.includes('DMR') || r.modes?.includes('DSTAR') || r.modes?.includes('C4FM') || r.modes?.includes('TETRA') || r.echolink?.enabled || r.allstarNode) && (
+      {(r.modes?.includes('DMR') || r.modes?.includes('DSTAR') || r.modes?.includes('C4FM') || r.modes?.includes('TETRA') || r.echolink?.enabled || r.allstarNode || autoStatus) && (
         <EquipmentPanel title="Modos Digitais & Linking" icon={Wifi}>
           <div className="space-y-4">
+            {/* Auto Status */}
+            {autoStatus && (
+              <div className="rounded-lg border p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className={cn(
+                    "inline-block h-3 w-3 rounded-full",
+                    autoStatus.isOnline ? "bg-emerald-500 ring-2 ring-emerald-300 dark:ring-emerald-700" : "bg-red-500"
+                  )} />
+                  <span className="font-medium">
+                    {autoStatus.isOnline ? t('autoStatus.online') : t('autoStatus.offline')}
+                  </span>
+                </div>
+                <div className="text-sm text-muted-foreground space-y-1">
+                  {autoStatus.sources.map((s, i) => (
+                    <div key={i} className="flex items-center justify-between">
+                      <span className="capitalize">{s.source}</span>
+                      <span>
+                        {s.isOnline ? '\u2713' : '\u2715'}
+                        {s.lastSeen && ` \u00B7 ${formatRelativeTime(s.lastSeen)}`}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             {/* DMR Details */}
             {r.modes?.includes('DMR') && (
               <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800/50">
@@ -660,35 +685,6 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
             ))}
           </div>
         </EquipmentPanel>
-      )}
-
-      {/* Separator */}
-      <div className="border-t border-ship-cove-200 dark:border-ship-cove-800" />
-
-      {/* Auto Status */}
-      {autoStatus && (
-        <div className="rounded-lg border p-4 space-y-2">
-          <div className="flex items-center gap-2">
-            <span className={cn(
-              "inline-block h-3 w-3 rounded-full",
-              autoStatus.isOnline ? "bg-emerald-500 ring-2 ring-emerald-300 dark:ring-emerald-700" : "bg-red-500"
-            )} />
-            <span className="font-medium">
-              {autoStatus.isOnline ? t('autoStatus.online') : t('autoStatus.offline')}
-            </span>
-          </div>
-          <div className="text-sm text-muted-foreground space-y-1">
-            {autoStatus.sources.map((s, i) => (
-              <div key={i} className="flex items-center justify-between">
-                <span className="capitalize">{s.source}</span>
-                <span>
-                  {s.isOnline ? '\u2713' : '\u2715'}
-                  {s.lastSeen && ` \u00B7 ${formatRelativeTime(s.lastSeen)}`}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
       )}
 
       {/* Community Section */}
