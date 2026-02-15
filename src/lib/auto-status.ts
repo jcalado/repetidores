@@ -33,7 +33,7 @@ export async function getAllAutoStatus(): Promise<AutoStatusMap> {
   }
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/repeaters/auto-status`, {
+    const res = await fetch(`${API_BASE_URL}/api/auto-status`, {
       method: 'GET',
       headers: { Accept: 'application/json' },
       cache: 'no-store',
