@@ -8,6 +8,7 @@ import { type UserLocation } from "@/contexts/UserLocationContext"
 import { calculateDistance, formatDistance } from "@/lib/geolocation"
 import { toggleFavorite, isFavorite } from "@/lib/favorites"
 import { getVoteStats, type VoteStats } from "@/lib/votes"
+import { getAllAutoStatus, type AutoStatusMap } from '@/lib/auto-status'
 import { ColumnDef } from "@tanstack/react-table"
 import { Heart } from "lucide-react"
 import { useTranslations } from "next-intl"
@@ -403,6 +404,18 @@ function ModesCell({ modes }: { modes: Repeater['modes'] }) {
 const voteCache = new Map<string, VoteStats>()
 const inFlight = new Map<string, Promise<VoteStats>>()
 
+// Auto status cache (loaded once on mount)
+let autoStatusCache: AutoStatusMap = {}
+let autoStatusLoaded = false
+
+export function preloadAutoStatus() {
+  if (autoStatusLoaded) return
+  autoStatusLoaded = true
+  getAllAutoStatus().then((data) => {
+    autoStatusCache = data
+  })
+}
+
 function useVoteStats(repeaterId: string) {
   const [stats, setStats] = React.useState<VoteStats | undefined>(() => voteCache.get(repeaterId))
 
@@ -439,32 +452,60 @@ function StatusCell({ repeaterId }: { repeaterId: string }) {
   const stats = useVoteStats(repeaterId)
   const t = useTranslations('table')
   const category = stats?.category ?? 'unknown'
-  const cfg = statusStyle(category)
-  const label = t(`status.${category}` as const)
+  const auto = autoStatusCache[repeaterId]
+
+  // If we have auto-check data, prefer it for the dot color
+  const effectiveCategory = auto
+    ? auto.isOnline ? 'ok' : 'bad'
+    : category
+
+  const cfg = statusStyle(effectiveCategory)
+  const label = auto
+    ? (auto.isOnline ? t('status.verified-online') : t('status.verified-offline'))
+    : t(`status.${category}` as any)
 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <span
-          aria-label={label}
-          title={label}
-          className={cn(
-            "inline-block h-2.5 w-2.5 rounded-full",
-            cfg.dotClass
-          )}
-        />
+        <span className="relative inline-flex items-center">
+          <span
+            aria-label={label}
+            title={label}
+            className={cn(
+              "inline-block h-2.5 w-2.5 rounded-full",
+              cfg.dotClass,
+              auto?.isOnline && "ring-2 ring-emerald-300 dark:ring-emerald-700"
+            )}
+          />
+        </span>
       </TooltipTrigger>
       <TooltipContent>
         <div className="flex items-center gap-2">
           <span className={cn("inline-block h-2.5 w-2.5 rounded-full", cfg.dotClass)} />
           <span>{label}</span>
         </div>
-        {stats && (
+        {auto && (
+          <div className="mt-1 text-xs opacity-80">
+            {auto.sources.map(s => s.source).join(', ')}
+            {auto.lastSeen && ` · ${formatRelativeTime(auto.lastSeen)}`}
+          </div>
+        )}
+        {!auto && stats && (
           <div className="mt-1 text-xs opacity-80">Up {stats.up} · Down {stats.down}</div>
         )}
       </TooltipContent>
     </Tooltip>
   )
+}
+
+function formatRelativeTime(isoString: string): string {
+  const diff = Date.now() - new Date(isoString).getTime()
+  const minutes = Math.floor(diff / 60000)
+  if (minutes < 60) return `${minutes}m ago`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours}h ago`
+  const days = Math.floor(hours / 24)
+  return `${days}d ago`
 }
 
 function statusStyle(category: VoteStats["category"]) {

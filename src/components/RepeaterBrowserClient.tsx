@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import RepeaterBrowser from "@/components/RepeaterBrowser"
-import { Repeater } from "@/app/columns"
+import { Repeater, preloadAutoStatus } from "@/app/columns"
 import { fetchRepeaters } from "@/lib/repeaters"
 
 type Props = {
@@ -65,6 +65,9 @@ export default function RepeaterBrowserClient({ data: initialData }: Props) {
       setInitialRepeater(repeaterParam.toUpperCase())
     }
   }, [])
+
+  // Preload auto-status data on mount
+  React.useEffect(() => { preloadAutoStatus() }, [])
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab)

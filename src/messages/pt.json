@@ -295,7 +295,9 @@
             "ok": "A funcionar",
             "prob-bad": "Provavelmente com problemas",
             "bad": "Não funciona",
-            "unknown": "Desconhecido"
+            "unknown": "Desconhecido",
+            "verified-online": "Online (verificado automaticamente)",
+            "verified-offline": "Offline (verificado automaticamente)"
         },
         "opStatus": {
             "header": "Op",
@@ -315,7 +317,12 @@
         "offset": "Offset",
         "tone": "Tom",
         "owner": "Proprietário",
-        "coordinates": "Coordenadas"
+        "coordinates": "Coordenadas",
+        "autoStatus": {
+            "online": "Online (verificado)",
+            "offline": "Offline (verificado)",
+            "title": "Verificação Automática"
+        }
     },
     "association": {
         "backToRepeaters": "Voltar aos Repetidores",

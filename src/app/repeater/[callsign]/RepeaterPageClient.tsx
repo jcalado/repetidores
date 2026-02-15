@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { useUserLocation } from "@/contexts/UserLocationContext";
 import { useDeviceCompass } from "@/hooks/useDeviceCompass";
 import { cn } from "@/lib/utils";
+import { getAllAutoStatus, type RepeaterAutoStatus } from "@/lib/auto-status";
 import { toggleFavorite, isFavorite } from "@/lib/favorites";
 import {
   ArrowLeft,
@@ -73,6 +74,16 @@ function formatDistance(km: number): string {
   return `${km.toFixed(1)}km`;
 }
 
+function formatRelativeTime(isoString: string): string {
+  const diff = Date.now() - new Date(isoString).getTime();
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
 interface RepeaterPageClientProps {
   repeater: Repeater;
   allRepeaters: Repeater[];
@@ -85,6 +96,15 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
     ? duplex(primary.outputFrequency, primary.inputFrequency)
     : { sign: '', offsetDisplay: '—', offsetCopy: '' };
   const [favorite, setFavorite] = React.useState(() => isFavorite(r.callsign));
+  const [autoStatus, setAutoStatus] = React.useState<RepeaterAutoStatus | null>(null);
+
+  React.useEffect(() => {
+    getAllAutoStatus().then((data) => {
+      const status = data[r.callsign];
+      if (status) setAutoStatus(status);
+    });
+  }, [r.callsign]);
+
   const { userLocation, requestLocation, isLocating } = useUserLocation();
   const compass = useDeviceCompass();
 
@@ -644,6 +664,32 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
 
       {/* Separator */}
       <div className="border-t border-ship-cove-200 dark:border-ship-cove-800" />
+
+      {/* Auto Status */}
+      {autoStatus && (
+        <div className="rounded-lg border p-4 space-y-2">
+          <div className="flex items-center gap-2">
+            <span className={cn(
+              "inline-block h-3 w-3 rounded-full",
+              autoStatus.isOnline ? "bg-emerald-500 ring-2 ring-emerald-300 dark:ring-emerald-700" : "bg-red-500"
+            )} />
+            <span className="font-medium">
+              {autoStatus.isOnline ? t('autoStatus.online') : t('autoStatus.offline')}
+            </span>
+          </div>
+          <div className="text-sm text-muted-foreground space-y-1">
+            {autoStatus.sources.map((s, i) => (
+              <div key={i} className="flex items-center justify-between">
+                <span className="capitalize">{s.source}</span>
+                <span>
+                  {s.isOnline ? '\u2713' : '\u2715'}
+                  {s.lastSeen && ` \u00B7 ${formatRelativeTime(s.lastSeen)}`}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Community Section */}
       <CommunitySection repeaterId={r.callsign} />
