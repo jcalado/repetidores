@@ -5,6 +5,7 @@
  * Provides the gradient background, grid pattern, and decorative elements
  */
 
+import { useId } from "react";
 import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
 
@@ -31,9 +32,6 @@ interface PageHeaderProps {
   patternId?: string;
 }
 
-// Counter for generating unique pattern IDs
-let patternIdCounter = 0;
-
 export function PageHeader({
   children,
   floatingIcons,
@@ -42,8 +40,8 @@ export function PageHeader({
   className,
   patternId,
 }: PageHeaderProps) {
-  // Generate unique pattern ID if not provided
-  const uniquePatternId = patternId || `grid-pattern-${++patternIdCounter}`;
+  const reactId = useId().replace(/:/g, "");
+  const uniquePatternId = patternId || `grid-${reactId}`;
 
   return (
     <header

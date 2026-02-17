@@ -35,7 +35,9 @@
         "nearestDescription": "Encontre o repetidor mais próximo de si",
         "location": "Localização",
         "associations": "Associações",
-        "associationsDescription": "Clubes e associações de radioamadores"
+        "associationsDescription": "Clubes e associações de radioamadores",
+        "indicativos": "Indicativos",
+        "indicativosDescription": "Directório de indicativos ANACOM"
     },
     "qth": {
         "title": "Localizador QTH",
