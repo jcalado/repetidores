@@ -6,6 +6,7 @@ import { Users, UserCheck, TrendingUp, Activity } from "lucide-react"
 
 interface StatsCardsProps {
   stats: CallsignStats
+  loading?: boolean
 }
 
 interface StatCardProps {
@@ -41,10 +42,30 @@ function StatCard({ icon, value, label, trend, trendColor, iconBgClass, iconText
   )
 }
 
-export function StatsCards({ stats }: StatsCardsProps) {
+export function StatsCards({ stats, loading }: StatsCardsProps) {
   const activos = Object.entries(stats.byEstado)
     .filter(([key]) => key.toLowerCase() === "ativo" || key.toLowerCase() === "activo")
     .reduce((sum, [, count]) => sum + count, 0)
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Card key={i} className="py-0">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3 animate-pulse">
+                <div className="h-10 w-10 rounded-lg bg-slate-200 dark:bg-slate-700" />
+                <div className="space-y-2">
+                  <div className="h-6 w-16 rounded bg-slate-200 dark:bg-slate-700" />
+                  <div className="h-4 w-24 rounded bg-slate-100 dark:bg-slate-800" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    )
+  }
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

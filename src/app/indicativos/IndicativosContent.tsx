@@ -1,7 +1,7 @@
 "use client"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { fetchCallsigns } from "@/lib/callsigns"
+import { fetchCallsigns, fetchCallsignStats } from "@/lib/callsigns"
 import type { Callsign, CallsignStats, PaginatedCallsignResponse } from "@/types/callsign"
 import { useCallback, useEffect, useState } from "react"
 import { StatsCards } from "./StatsCards"
@@ -11,11 +11,19 @@ import { ChangesFeed } from "./ChangesFeed"
 import { TrendsCharts } from "./TrendsCharts"
 import { IdCard, History, TrendingUp } from "lucide-react"
 
-interface IndicativosContentProps {
-  initialStats: CallsignStats
+const emptyStats: CallsignStats = {
+  total: 0,
+  byEstado: {},
+  byCategoria: {},
+  byDistrito: {},
+  newThisMonth: 0,
+  changesThisMonth: 0,
+  lastSyncAt: null,
 }
 
-export function IndicativosContent({ initialStats }: IndicativosContentProps) {
+export function IndicativosContent() {
+  const [stats, setStats] = useState<CallsignStats>(emptyStats)
+  const [statsLoading, setStatsLoading] = useState(true)
   const [filters, setFilters] = useState<CallsignFilters>({
     search: "",
     distrito: [],
@@ -25,6 +33,13 @@ export function IndicativosContent({ initialStats }: IndicativosContentProps) {
   const [data, setData] = useState<PaginatedCallsignResponse<Callsign> | null>(null)
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
+
+  useEffect(() => {
+    fetchCallsignStats()
+      .then(setStats)
+      .catch((err) => console.error("Failed to fetch stats:", err))
+      .finally(() => setStatsLoading(false))
+  }, [])
 
   const loadData = useCallback(async (p: number, f: CallsignFilters) => {
     setLoading(true)
@@ -57,7 +72,7 @@ export function IndicativosContent({ initialStats }: IndicativosContentProps) {
 
   return (
     <div className="space-y-6 mt-6">
-      <StatsCards stats={initialStats} />
+      <StatsCards stats={stats} loading={statsLoading} />
 
       <Tabs defaultValue="indicativos" className="w-full">
         <TabsList className="mb-4">
@@ -77,7 +92,7 @@ export function IndicativosContent({ initialStats }: IndicativosContentProps) {
 
         <TabsContent value="indicativos" className="space-y-4">
           <FilterBar
-            stats={initialStats}
+            stats={stats}
             filters={filters}
             onFiltersChange={setFilters}
           />
@@ -96,7 +111,7 @@ export function IndicativosContent({ initialStats }: IndicativosContentProps) {
         </TabsContent>
 
         <TabsContent value="tendencias">
-          <TrendsCharts stats={initialStats} />
+          <TrendsCharts stats={stats} />
         </TabsContent>
       </Tabs>
     </div>

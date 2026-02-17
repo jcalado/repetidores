@@ -47,7 +47,7 @@ export async function fetchCallsigns(
 
 export async function fetchCallsignStats(): Promise<CallsignStats> {
   const base = getApiBaseUrl()
-  const res = await fetch(`${base}/api/indicativos/stats`, { next: { revalidate: 3600 } })
+  const res = await fetch(`${base}/api/indicativos/stats`)
   if (!res.ok) throw new Error(`Failed to fetch callsign stats: ${res.status}`)
   return res.json()
 }
