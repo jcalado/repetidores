@@ -46,3 +46,23 @@ export interface PaginatedCallsignResponse<T> {
   totalPages: number
   page: number
 }
+
+export interface CategoryFlowEntry {
+  indicativo: string
+  reason: string
+}
+
+export interface CategoryFlowLeaving {
+  indicativo: string
+  reason: string
+  flagged: boolean
+}
+
+export interface CategoryFlows {
+  month: string
+  categories: Record<string, {
+    entering: CategoryFlowEntry[]
+    leaving: CategoryFlowLeaving[]
+  }>
+  availableMonths: string[]
+}

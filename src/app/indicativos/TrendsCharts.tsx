@@ -1,6 +1,7 @@
 "use client"
 
 import { fetchCallsignTrends } from "@/lib/callsigns"
+import { CategoryFlows } from "./CategoryFlows"
 import type { CallsignStats, CallsignTrends } from "@/types/callsign"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { type CallsignFilters, EMPTY_CALLSIGN_FILTERS, FilterBar } from "./FilterBar"
@@ -261,6 +262,9 @@ export function TrendsCharts({ stats }: TrendsChartsProps) {
           </div>
         </ChartCard>
       </div>
+
+      {/* Category flows */}
+      <CategoryFlows />
     </div>
   )
 }

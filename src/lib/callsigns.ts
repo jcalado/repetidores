@@ -3,6 +3,7 @@ import type {
   CallsignChange,
   CallsignStats,
   CallsignTrends,
+  CategoryFlows,
   PaginatedCallsignResponse,
 } from '@/types/callsign'
 
@@ -103,4 +104,11 @@ export async function searchCallsigns(query: string): Promise<Callsign[]> {
   if (!res.ok) throw new Error(`Failed to search callsigns: ${res.status}`)
   const data = await res.json()
   return data.docs
+}
+
+export async function fetchCategoryFlows(month: string): Promise<CategoryFlows> {
+  const base = getApiBaseUrl()
+  const res = await fetch(`${base}/api/indicativos/category-flows?month=${encodeURIComponent(month)}`)
+  if (!res.ok) throw new Error(`Failed to fetch category flows: ${res.status}`)
+  return res.json()
 }
