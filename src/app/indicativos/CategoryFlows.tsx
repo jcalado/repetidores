@@ -3,7 +3,7 @@
 import { fetchCategoryFlows } from "@/lib/callsigns"
 import type { CategoryFlows as CategoryFlowsType } from "@/types/callsign"
 import { Loader2 } from "lucide-react"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 const CATEGORY_ORDER = ["3", "2", "1", "A", "B", "C"]
 
@@ -15,6 +15,12 @@ function formatReason(reason: string): string {
   return reason
 }
 
+function formatMonth(month: string): string {
+  const [year, m] = month.split("-")
+  const date = new Date(Number(year), Number(m) - 1)
+  return date.toLocaleDateString("pt-PT", { month: "short", year: "2-digit" })
+}
+
 export function CategoryFlows() {
   const [data, setData] = useState<CategoryFlowsType | null>(null)
   const [loading, setLoading] = useState(true)
@@ -23,33 +29,41 @@ export function CategoryFlows() {
     const now = new Date()
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
   })
+  const abortRef = useRef<AbortController | null>(null)
 
   const load = useCallback(async (month: string) => {
+    // Cancel any in-flight request
+    abortRef.current?.abort()
+    const controller = new AbortController()
+    abortRef.current = controller
+
     setLoading(true)
     setError(null)
     try {
       const result = await fetchCategoryFlows(month)
+      if (controller.signal.aborted) return
       setData(result)
-      // If the response has available months and the selected month differs from what was returned,
-      // keep the returned month as the selected one
-      if (result.month && result.month !== month) {
-        setSelectedMonth(result.month)
-      }
     } catch (err) {
+      if (controller.signal.aborted) return
       console.error("Failed to load category flows:", err)
       setError(err instanceof Error ? err.message : "Erro ao carregar dados")
     } finally {
-      setLoading(false)
+      if (!controller.signal.aborted) {
+        setLoading(false)
+      }
     }
   }, [])
 
   useEffect(() => {
     load(selectedMonth)
+    return () => abortRef.current?.abort()
   }, [selectedMonth, load])
 
   const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedMonth(e.target.value)
   }
+
+  const availableMonths = data?.availableMonths ?? []
 
   return (
     <div className="space-y-4">
@@ -57,19 +71,22 @@ export function CategoryFlows() {
         <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-300">
           Movimentos por categoria
         </h3>
-        {data?.availableMonths && data.availableMonths.length > 0 && (
-          <select
-            value={selectedMonth}
-            onChange={handleMonthChange}
-            className="rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-700 dark:text-slate-200 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          >
-            {data.availableMonths.map((m) => (
+        <select
+          value={selectedMonth}
+          onChange={handleMonthChange}
+          disabled={loading && availableMonths.length === 0}
+          className="rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-700 dark:text-slate-200 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+        >
+          {availableMonths.length > 0 ? (
+            availableMonths.map((m) => (
               <option key={m} value={m}>
-                {m}
+                {formatMonth(m)}
               </option>
-            ))}
-          </select>
-        )}
+            ))
+          ) : (
+            <option value={selectedMonth}>{formatMonth(selectedMonth)}</option>
+          )}
+        </select>
       </div>
 
       {loading && (

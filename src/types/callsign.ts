@@ -55,7 +55,7 @@ export interface CategoryFlowEntry {
 export interface CategoryFlowLeaving {
   indicativo: string
   reason: string
-  flagged: boolean
+  flagged?: boolean
 }
 
 export interface CategoryFlows {
