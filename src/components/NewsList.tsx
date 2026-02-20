@@ -192,32 +192,32 @@ function SecondaryArticle({ item, showFeaturedBadge }: { item: NewsItem; showFea
 
   return (
     <Link href={`/noticias/${item.slug}/`} className="group flex-1">
-      <article className="flex gap-4 h-full">
+      <article className="flex flex-col gap-3 h-full">
         {/* Image */}
         {imageUrl ? (
-          <div className="relative w-28 sm:w-32 aspect-square rounded-xl overflow-hidden flex-shrink-0">
+          <div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden">
             <Image
               src={imageUrl}
               alt={item.featuredImage?.alt || item.title}
               fill
-              sizes="128px"
+              sizes="(max-width: 1024px) 100vw, 33vw"
               className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
           </div>
         ) : (
-          <div className="w-28 sm:w-32 aspect-square rounded-xl bg-gradient-to-br from-ship-cove-100 to-ship-cove-200 dark:from-ship-cove-800 dark:to-ship-cove-900 flex-shrink-0" />
+          <div className="w-full aspect-[16/9] rounded-xl bg-gradient-to-br from-ship-cove-100 to-ship-cove-200 dark:from-ship-cove-800 dark:to-ship-cove-900" />
         )}
 
         {/* Content */}
-        <div className="flex flex-col justify-center flex-1 min-w-0 py-1">
+        <div className="flex flex-col flex-1 min-w-0">
           {/* Meta */}
-          <div className="flex items-center gap-2 text-xs text-ship-cove-500 dark:text-ship-cove-400 mb-2">
+          <div className="flex items-center gap-2 text-xs text-ship-cove-500 dark:text-ship-cove-400 mb-1.5">
             {categoryLabel && (
               <span className="font-semibold uppercase tracking-wide text-ship-cove-600 dark:text-ship-cove-400">
                 {categoryLabel}
               </span>
             )}
-            {categoryLabel && <span className="text-ship-cove-300 dark:text-ship-cove-600">•</span>}
+            {categoryLabel && <span className="text-ship-cove-300 dark:text-ship-cove-600">·</span>}
             <time>{formattedDate}</time>
             {showFeaturedBadge && item.featured && (
               <Star className="h-3 w-3 text-amber-500 ml-auto" />
@@ -225,7 +225,7 @@ function SecondaryArticle({ item, showFeaturedBadge }: { item: NewsItem; showFea
           </div>
 
           {/* Title */}
-          <h3 className="font-bold text-ship-cove-900 dark:text-ship-cove-100 leading-snug line-clamp-3 group-hover:text-ship-cove-600 dark:group-hover:text-ship-cove-300 transition-colors">
+          <h3 className="text-base font-semibold text-ship-cove-900 dark:text-ship-cove-100 leading-tight line-clamp-2 group-hover:text-ship-cove-600 dark:group-hover:text-ship-cove-300 transition-colors tracking-tight">
             {item.title}
           </h3>
         </div>
