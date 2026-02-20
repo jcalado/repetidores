@@ -745,8 +745,10 @@ function EquipmentPanel({
   return (
     <div className="rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-white dark:bg-ship-cove-950">
       <div className="p-5">
-        <h3 className="flex items-center gap-2 text-base font-medium text-ship-cove-500 dark:text-ship-cove-400 mb-4">
-          <Icon className="h-4 w-4" />
+        <h3 className="flex items-center gap-2.5 text-base font-semibold text-ship-cove-900 dark:text-ship-cove-100 mb-4">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800">
+            <Icon className="h-4 w-4 text-ship-cove-600 dark:text-ship-cove-400" />
+          </div>
           {title}
           {titleExtra && <span className="ml-auto">{titleExtra}</span>}
         </h3>
