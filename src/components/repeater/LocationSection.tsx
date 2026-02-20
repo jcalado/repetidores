@@ -2,7 +2,7 @@
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { BearingIndicator } from "@/components/BearingCompass";
-import { MapPin, Navigation, ChevronRight, Building2 } from "lucide-react";
+import { MapPin, Navigation, ChevronRight, Building2, Globe, ExternalLink } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { SectionCard } from "./SectionCard";
@@ -12,12 +12,13 @@ import type { Repeater, UserLocation } from "./types";
 interface LocationSectionProps {
   repeater: Repeater;
   userLocation: UserLocation | null;
+  websiteUrl?: string;
 }
 
 /**
  * Location section displaying owner, coordinates, and bearing to repeater.
  */
-export function LocationSection({ repeater: r, userLocation }: LocationSectionProps) {
+export function LocationSection({ repeater: r, userLocation, websiteUrl }: LocationSectionProps) {
   const t = useTranslations("repeater");
 
   const osmUrl =
@@ -93,6 +94,27 @@ export function LocationSection({ repeater: r, userLocation }: LocationSectionPr
               />
             </div>
           </div>
+        )}
+        {websiteUrl && (
+          <a
+            href={websiteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center gap-3 rounded-lg p-2.5 sm:p-3 bg-ship-cove-50 dark:bg-ship-cove-900/50 hover:bg-ship-cove-100 dark:hover:bg-ship-cove-800/50 transition-colors"
+          >
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800">
+              <Globe className="h-4 w-4 text-ship-cove-600 dark:text-ship-cove-400" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-[10px] sm:text-xs uppercase tracking-wider text-ship-cove-500 mb-0.5">
+                Website
+              </div>
+              <div className="text-sm font-medium text-ship-cove-900 dark:text-ship-cove-100 truncate">
+                {websiteUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+              </div>
+            </div>
+            <ExternalLink className="h-4 w-4 text-ship-cove-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </a>
         )}
       </div>
     </SectionCard>

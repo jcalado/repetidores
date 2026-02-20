@@ -1,19 +1,25 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { formatRelativeTime } from "@/lib/time";
+import type { RepeaterAutoStatus } from "@/lib/auto-status";
 import { Radio, Wifi } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { SectionCard } from "./SectionCard";
 import type { Repeater } from "./types";
 
 interface DigitalModesSectionProps {
   repeater: Repeater;
+  autoStatus?: RepeaterAutoStatus | null;
 }
 
 /**
  * Digital modes and linking section displaying DMR, D-STAR, C4FM, TETRA, EchoLink, and AllStar.
  * Returns null if no digital mode data is available.
  */
-export function DigitalModesSection({ repeater: r }: DigitalModesSectionProps) {
+export function DigitalModesSection({ repeater: r, autoStatus }: DigitalModesSectionProps) {
+  const t = useTranslations("repeater");
   const hasDmrDetails = r.modes?.includes('DMR') && (r.dmr?.colorCode || r.dmr?.ts1StaticTalkgroups?.length || r.dmr?.ts2StaticTalkgroups?.length);
   const hasDstarDetails = r.modes?.includes('DSTAR') && (r.dstar?.reflector || r.dstar?.module);
   const hasC4fmDetails = r.modes?.includes('C4FM') && (r.c4fm?.room || r.c4fm?.node || r.c4fm?.network);
@@ -25,7 +31,24 @@ export function DigitalModesSection({ repeater: r }: DigitalModesSectionProps) {
   }
 
   return (
-    <SectionCard icon={Radio} title="Modos Digitais & Linking">
+    <SectionCard
+      icon={Radio}
+      title="Modos Digitais & Linking"
+      titleExtra={autoStatus && (
+        <span className={cn(
+          "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium",
+          autoStatus.isOnline
+            ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300"
+            : "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300"
+        )}>
+          <span className={cn(
+            "h-1.5 w-1.5 rounded-full",
+            autoStatus.isOnline ? "bg-emerald-500 animate-pulse" : "bg-red-500"
+          )} />
+          {autoStatus.isOnline ? t('autoStatus.online') : t('autoStatus.offline')}
+        </span>
+      )}
+    >
       <div className="space-y-2">
         {/* DMR Details */}
         {hasDmrDetails && (
@@ -48,6 +71,19 @@ export function DigitalModesSection({ repeater: r }: DigitalModesSectionProps) {
                   {r.dmr.network}
                 </Badge>
               )}
+              {(() => {
+                const bmSource = autoStatus?.sources.find(s => s.source === 'brandmeister');
+                if (!bmSource) return null;
+                return (
+                  <span className="ml-auto inline-flex items-center gap-1.5 text-xs text-purple-600 dark:text-purple-400">
+                    <span className={cn(
+                      "h-2 w-2 rounded-full",
+                      bmSource.isOnline ? "bg-emerald-500" : "bg-red-500"
+                    )} />
+                    {bmSource.lastSeen && formatRelativeTime(bmSource.lastSeen)}
+                  </span>
+                );
+              })()}
             </div>
 
             {/* Timeslot 1 Talkgroups */}
@@ -173,22 +209,52 @@ export function DigitalModesSection({ repeater: r }: DigitalModesSectionProps) {
         {/* EchoLink & AllStar */}
         {hasLinking && (
           <div className="flex flex-wrap gap-2">
-            {r.echolink?.enabled && r.echolink.nodeNumber && (
-              <a
-                href={`echolink://${r.echolink.nodeNumber}`}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 px-3 py-2 text-sm font-medium text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors"
-              >
-                <Wifi className="h-3.5 w-3.5" />
-                EchoLink #{r.echolink.nodeNumber}
-                {r.echolink.conference && ` (${r.echolink.conference})`}
-              </a>
-            )}
-            {r.allstarNode && (
-              <div className="inline-flex items-center gap-1.5 rounded-lg bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800/50 px-3 py-2 text-sm font-medium text-orange-700 dark:text-orange-300">
-                <Radio className="h-3.5 w-3.5" />
-                AllStar #{r.allstarNode}
-              </div>
-            )}
+            {r.echolink?.enabled && r.echolink.nodeNumber && (() => {
+              const elSource = autoStatus?.sources.find(s => s.source === 'echolink');
+              return (
+                <a
+                  href={`echolink://${r.echolink.nodeNumber}`}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 px-3 py-2 text-sm font-medium text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors"
+                >
+                  {elSource ? (
+                    <span className={cn(
+                      "h-2 w-2 rounded-full shrink-0",
+                      elSource.isOnline ? "bg-emerald-500" : "bg-red-500"
+                    )} />
+                  ) : (
+                    <Wifi className="h-3.5 w-3.5" />
+                  )}
+                  EchoLink #{r.echolink.nodeNumber}
+                  {r.echolink.conference && ` (${r.echolink.conference})`}
+                  {elSource?.lastSeen && (
+                    <span className="text-xs opacity-70">
+                      · {formatRelativeTime(elSource.lastSeen)}
+                    </span>
+                  )}
+                </a>
+              );
+            })()}
+            {r.allstarNode && (() => {
+              const asSource = autoStatus?.sources.find(s => s.source === 'allstar');
+              return (
+                <div className="inline-flex items-center gap-1.5 rounded-lg bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800/50 px-3 py-2 text-sm font-medium text-orange-700 dark:text-orange-300">
+                  {asSource ? (
+                    <span className={cn(
+                      "h-2 w-2 rounded-full shrink-0",
+                      asSource.isOnline ? "bg-emerald-500" : "bg-red-500"
+                    )} />
+                  ) : (
+                    <Radio className="h-3.5 w-3.5" />
+                  )}
+                  AllStar #{r.allstarNode}
+                  {asSource?.lastSeen && (
+                    <span className="text-xs opacity-70">
+                      · {formatRelativeTime(asSource.lastSeen)}
+                    </span>
+                  )}
+                </div>
+              );
+            })()}
           </div>
         )}
       </div>

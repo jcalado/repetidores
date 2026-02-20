@@ -8,6 +8,7 @@ import { useUserLocation } from "@/contexts/UserLocationContext";
 import { useDeviceCompass } from "@/hooks/useDeviceCompass";
 import { cn } from "@/lib/utils";
 import { getAllAutoStatus, type RepeaterAutoStatus } from "@/lib/auto-status";
+import { formatRelativeTime } from "@/lib/time";
 import { toggleFavorite, isFavorite } from "@/lib/favorites";
 import {
   ArrowLeft,
@@ -74,15 +75,6 @@ function formatDistance(km: number): string {
   return `${km.toFixed(1)}km`;
 }
 
-function formatRelativeTime(isoString: string): string {
-  const diff = Date.now() - new Date(isoString).getTime();
-  const minutes = Math.floor(diff / 60000);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  return `${days}d ago`;
-}
 
 interface RepeaterPageClientProps {
   repeater: Repeater;
@@ -373,29 +365,53 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
       )}
 
       {/* Owner/Association Info */}
-      {(r.association || r.owner) && (
+      {(r.association || r.owner || r.website) && (
         <EquipmentPanel title="Proprietário" icon={Building2}>
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800">
-              <Building2 className="h-6 w-6 text-ship-cove-600 dark:text-ship-cove-400" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs text-ship-cove-500 mb-1">{t("owner")}</p>
-              {r.association ? (
-                <Link
-                  href={`/association/${r.association.slug}/`}
-                  className="font-medium text-ship-cove-900 dark:text-ship-cove-100 hover:text-ship-cove-600 dark:hover:text-ship-cove-300 transition-colors"
-                >
-                  {r.association.abbreviation} - {r.association.name}
-                </Link>
-              ) : (
-                <p className="font-medium text-ship-cove-900 dark:text-ship-cove-100">{r.owner}</p>
+          {(r.association || r.owner) && (
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800">
+                <Building2 className="h-6 w-6 text-ship-cove-600 dark:text-ship-cove-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-ship-cove-500 mb-1">{t("owner")}</p>
+                {r.association ? (
+                  <Link
+                    href={`/association/${r.association.slug}/`}
+                    className="font-medium text-ship-cove-900 dark:text-ship-cove-100 hover:text-ship-cove-600 dark:hover:text-ship-cove-300 transition-colors"
+                  >
+                    {r.association.abbreviation} - {r.association.name}
+                  </Link>
+                ) : (
+                  <p className="font-medium text-ship-cove-900 dark:text-ship-cove-100">{r.owner}</p>
+                )}
+              </div>
+              {r.association && (
+                <ChevronRight className="h-5 w-5 text-ship-cove-400" />
               )}
             </div>
-            {r.association && (
-              <ChevronRight className="h-5 w-5 text-ship-cove-400" />
-            )}
-          </div>
+          )}
+          {r.website && (
+            <a
+              href={r.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                "flex items-center gap-4 group",
+                (r.association || r.owner) && "mt-3 pt-3 border-t border-ship-cove-100 dark:border-ship-cove-800/50"
+              )}
+            >
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800">
+                <Globe className="h-6 w-6 text-ship-cove-600 dark:text-ship-cove-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-ship-cove-500 mb-1">Website</p>
+                <p className="font-medium text-ship-cove-900 dark:text-ship-cove-100 group-hover:text-ship-cove-600 dark:group-hover:text-ship-cove-300 transition-colors truncate">
+                  {r.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                </p>
+              </div>
+              <ExternalLink className="h-5 w-5 text-ship-cove-400" />
+            </a>
+          )}
         </EquipmentPanel>
       )}
 
@@ -421,33 +437,25 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
 
       {/* Digital Modes */}
       {(r.modes?.includes('DMR') || r.modes?.includes('DSTAR') || r.modes?.includes('C4FM') || r.modes?.includes('TETRA') || r.echolink?.enabled || r.allstarNode || autoStatus) && (
-        <EquipmentPanel title="Modos Digitais & Linking" icon={Wifi}>
+        <EquipmentPanel
+          title="Modos Digitais & Linking"
+          icon={Wifi}
+          titleExtra={autoStatus && (
+            <span className={cn(
+              "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium",
+              autoStatus.isOnline
+                ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300"
+                : "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300"
+            )}>
+              <span className={cn(
+                "h-1.5 w-1.5 rounded-full",
+                autoStatus.isOnline ? "bg-emerald-500 animate-pulse" : "bg-red-500"
+              )} />
+              {autoStatus.isOnline ? t('autoStatus.online') : t('autoStatus.offline')}
+            </span>
+          )}
+        >
           <div className="space-y-4">
-            {/* Auto Status */}
-            {autoStatus && (
-              <div className="rounded-lg border p-4 space-y-2">
-                <div className="flex items-center gap-2">
-                  <span className={cn(
-                    "inline-block h-3 w-3 rounded-full",
-                    autoStatus.isOnline ? "bg-emerald-500 ring-2 ring-emerald-300 dark:ring-emerald-700" : "bg-red-500"
-                  )} />
-                  <span className="font-medium">
-                    {autoStatus.isOnline ? t('autoStatus.online') : t('autoStatus.offline')}
-                  </span>
-                </div>
-                <div className="text-sm text-muted-foreground space-y-1">
-                  {autoStatus.sources.map((s, i) => (
-                    <div key={i} className="flex items-center justify-between">
-                      <span className="capitalize">{s.source}</span>
-                      <span>
-                        {s.isOnline ? '\u2713' : '\u2715'}
-                        {s.lastSeen && ` \u00B7 ${formatRelativeTime(s.lastSeen)}`}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
             {/* DMR Details */}
             {r.modes?.includes('DMR') && (
               <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800/50">
@@ -461,10 +469,23 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
                     </span>
                   )}
                   {r.dmr?.network && (
-                    <span className="text-xs text-purple-600 dark:text-purple-400 ml-auto">
+                    <span className="text-xs text-purple-600 dark:text-purple-400">
                       {r.dmr.network}
                     </span>
                   )}
+                  {(() => {
+                    const bmSource = autoStatus?.sources.find(s => s.source === 'brandmeister');
+                    if (!bmSource) return null;
+                    return (
+                      <span className="ml-auto inline-flex items-center gap-1.5 text-xs text-purple-600 dark:text-purple-400">
+                        <span className={cn(
+                          "h-2 w-2 rounded-full",
+                          bmSource.isOnline ? "bg-emerald-500" : "bg-red-500"
+                        )} />
+                        {bmSource.lastSeen && formatRelativeTime(bmSource.lastSeen)}
+                      </span>
+                    );
+                  })()}
                 </div>
 
                 {/* Timeslot Talkgroups */}
@@ -606,22 +627,52 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
             {/* EchoLink & AllStar */}
             {(r.echolink?.enabled || r.allstarNode) && (
               <div className="flex flex-wrap gap-3">
-                {r.echolink?.enabled && r.echolink.nodeNumber && (
-                  <a
-                    href={`echolink://${r.echolink.nodeNumber}`}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-ship-cove-200 dark:border-ship-cove-700 text-sm font-medium text-ship-cove-700 dark:text-ship-cove-300 hover:bg-ship-cove-50 dark:hover:bg-ship-cove-800 transition-colors"
-                  >
-                    <Wifi className="h-4 w-4" />
-                    EchoLink #{r.echolink.nodeNumber}
-                    {r.echolink.conference && ` (${r.echolink.conference})`}
-                  </a>
-                )}
-                {r.allstarNode && (
-                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-ship-cove-200 dark:border-ship-cove-700 text-sm font-medium text-ship-cove-700 dark:text-ship-cove-300">
-                    <Radio className="h-4 w-4" />
-                    AllStar #{r.allstarNode}
-                  </div>
-                )}
+                {r.echolink?.enabled && r.echolink.nodeNumber && (() => {
+                  const elSource = autoStatus?.sources.find(s => s.source === 'echolink');
+                  return (
+                    <a
+                      href={`echolink://${r.echolink.nodeNumber}`}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-ship-cove-200 dark:border-ship-cove-700 text-sm font-medium text-ship-cove-700 dark:text-ship-cove-300 hover:bg-ship-cove-50 dark:hover:bg-ship-cove-800 transition-colors"
+                    >
+                      {elSource ? (
+                        <span className={cn(
+                          "h-2 w-2 rounded-full shrink-0",
+                          elSource.isOnline ? "bg-emerald-500" : "bg-red-500"
+                        )} />
+                      ) : (
+                        <Wifi className="h-4 w-4" />
+                      )}
+                      EchoLink #{r.echolink.nodeNumber}
+                      {r.echolink.conference && ` (${r.echolink.conference})`}
+                      {elSource?.lastSeen && (
+                        <span className="text-xs text-ship-cove-500">
+                          · {formatRelativeTime(elSource.lastSeen)}
+                        </span>
+                      )}
+                    </a>
+                  );
+                })()}
+                {r.allstarNode && (() => {
+                  const asSource = autoStatus?.sources.find(s => s.source === 'allstar');
+                  return (
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-ship-cove-200 dark:border-ship-cove-700 text-sm font-medium text-ship-cove-700 dark:text-ship-cove-300">
+                      {asSource ? (
+                        <span className={cn(
+                          "h-2 w-2 rounded-full shrink-0",
+                          asSource.isOnline ? "bg-emerald-500" : "bg-red-500"
+                        )} />
+                      ) : (
+                        <Radio className="h-4 w-4" />
+                      )}
+                      AllStar #{r.allstarNode}
+                      {asSource?.lastSeen && (
+                        <span className="text-xs text-ship-cove-500">
+                          · {formatRelativeTime(asSource.lastSeen)}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
             )}
           </div>
@@ -635,20 +686,6 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
             {r.notes}
           </p>
         </EquipmentPanel>
-      )}
-
-      {/* Website Link */}
-      {r.website && (
-        <a
-          href={r.website}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-sm text-ship-cove-600 dark:text-ship-cove-400 hover:text-ship-cove-900 dark:hover:text-ship-cove-100 transition-colors"
-        >
-          <Globe className="h-4 w-4" />
-          Visitar website
-          <ExternalLink className="h-3 w-3 opacity-50" />
-        </a>
       )}
 
       {/* Nearby Repeaters */}
@@ -700,11 +737,13 @@ function EquipmentPanel({
   icon: Icon,
   children,
   accentColor,
+  titleExtra,
 }: {
   title: string;
   icon: React.ComponentType<{ className?: string }>;
   children: React.ReactNode;
   accentColor?: "emerald" | "purple" | "blue";
+  titleExtra?: React.ReactNode;
 }) {
   return (
     <div className={cn(
@@ -735,6 +774,7 @@ function EquipmentPanel({
             )} />
           </div>
           {title}
+          {titleExtra && <span className="ml-auto">{titleExtra}</span>}
         </h3>
         {children}
       </div>

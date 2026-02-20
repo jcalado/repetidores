@@ -3,6 +3,7 @@ import type { ComponentType, ReactNode } from "react";
 interface SectionCardProps {
   icon: ComponentType<{ className?: string }>;
   title: string;
+  titleExtra?: ReactNode;
   children: ReactNode;
 }
 
@@ -10,7 +11,7 @@ interface SectionCardProps {
  * Generic card wrapper for content sections with icon and title header.
  * Styled with Radio Station Dashboard aesthetic.
  */
-export function SectionCard({ icon: Icon, title, children }: SectionCardProps) {
+export function SectionCard({ icon: Icon, title, titleExtra, children }: SectionCardProps) {
   return (
     <div className="relative overflow-hidden rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-gradient-to-br from-white via-white to-ship-cove-50/50 dark:from-ship-cove-950 dark:via-ship-cove-950 dark:to-ship-cove-900/30 shadow-sm">
       {/* Top accent line */}
@@ -24,6 +25,7 @@ export function SectionCard({ icon: Icon, title, children }: SectionCardProps) {
         <span className="text-sm font-semibold text-ship-cove-900 dark:text-ship-cove-100">
           {title}
         </span>
+        {titleExtra && <span className="ml-auto">{titleExtra}</span>}
       </div>
 
       {/* Content */}

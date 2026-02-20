@@ -9,6 +9,7 @@ import { calculateDistance, formatDistance } from "@/lib/geolocation"
 import { toggleFavorite, isFavorite } from "@/lib/favorites"
 import { getVoteStats, type VoteStats } from "@/lib/votes"
 import { getAllAutoStatus, type AutoStatusMap } from '@/lib/auto-status'
+import { formatRelativeTime } from "@/lib/time"
 import { ColumnDef } from "@tanstack/react-table"
 import { Heart } from "lucide-react"
 import { useTranslations } from "next-intl"
@@ -498,15 +499,6 @@ function StatusCell({ repeaterId }: { repeaterId: string }) {
   )
 }
 
-function formatRelativeTime(isoString: string): string {
-  const diff = Date.now() - new Date(isoString).getTime()
-  const minutes = Math.floor(diff / 60000)
-  if (minutes < 60) return `${minutes}m ago`
-  const hours = Math.floor(minutes / 60)
-  if (hours < 24) return `${hours}h ago`
-  const days = Math.floor(hours / 24)
-  return `${days}d ago`
-}
 
 function statusStyle(category: VoteStats["category"]) {
   switch (category) {

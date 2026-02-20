@@ -1,6 +1,8 @@
 "use client";
 
+import * as React from "react";
 import { useUserLocation } from "@/contexts/UserLocationContext";
+import { getAllAutoStatus, type RepeaterAutoStatus } from "@/lib/auto-status";
 import type { Repeater } from "./types";
 
 import { RepeaterHeader } from "./RepeaterHeader";
@@ -9,7 +11,6 @@ import { LocationSection } from "./LocationSection";
 import { TechnicalSpecsSection } from "./TechnicalSpecsSection";
 import { DigitalModesSection } from "./DigitalModesSection";
 import { NotesSection } from "./NotesSection";
-import { WebsiteLink } from "./WebsiteLink";
 import { OperationalStatusCard } from "./OperationalStatusCard";
 import { CommunitySection } from "./community/CommunitySection";
 
@@ -23,16 +24,23 @@ interface RepeaterDetailsProps {
  */
 export default function RepeaterDetails({ r }: RepeaterDetailsProps) {
   const { userLocation } = useUserLocation();
+  const [autoStatus, setAutoStatus] = React.useState<RepeaterAutoStatus | null>(null);
+
+  React.useEffect(() => {
+    getAllAutoStatus().then((data) => {
+      const status = data[r.callsign];
+      if (status) setAutoStatus(status);
+    });
+  }, [r.callsign]);
 
   return (
     <div className="space-y-3 sm:space-y-4">
       <RepeaterHeader repeater={r} />
       <FrequencySection repeater={r} />
-      <LocationSection repeater={r} userLocation={userLocation} />
+      <LocationSection repeater={r} userLocation={userLocation} websiteUrl={r.website} />
       <TechnicalSpecsSection repeater={r} />
-      <DigitalModesSection repeater={r} />
+      <DigitalModesSection repeater={r} autoStatus={autoStatus} />
       <NotesSection notes={r.notes} />
-      <WebsiteLink url={r.website} />
       {r.status && r.status !== "unknown" && (
         <OperationalStatusCard status={r.status} lastVerified={r.lastVerified} />
       )}
