@@ -1,15 +1,19 @@
 "use client";
 
 import * as React from "react";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { Users, ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
+import { ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { SectionCard } from "../SectionCard";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { useCommunityVoting } from "../hooks/useCommunityVoting";
-import { StatusDisplay } from "./StatusDisplay";
+import { communityStatusConfig } from "../utils/statusConfig";
 import { VoteDistributionBar } from "./VoteDistributionBar";
-import { VotingButtons } from "./VotingButtons";
 import { FeedbackDialog } from "./FeedbackDialog";
 import { FeedbackList } from "./FeedbackList";
 
@@ -17,95 +21,122 @@ interface CommunitySectionProps {
   repeaterId: string;
 }
 
+const dotColor: Record<string, string> = {
+  ok: "bg-emerald-500",
+  "prob-bad": "bg-amber-500",
+  bad: "bg-red-500",
+  unknown: "bg-slate-400",
+};
+
 /**
- * Unified community section combining voting status and feedback.
+ * Compact community status row with vote buttons and reports dialog.
  */
 export function CommunitySection({ repeaterId }: CommunitySectionProps) {
   const t = useTranslations("communityStatus");
   const voting = useCommunityVoting(repeaterId);
 
-  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [feedbackDialogOpen, setFeedbackDialogOpen] = React.useState(false);
+  const [reportsOpen, setReportsOpen] = React.useState(false);
   const [pendingVoteType, setPendingVoteType] = React.useState<"up" | "down">("up");
 
   const handleOpenFeedback = (type: "up" | "down") => {
     setPendingVoteType(type);
-    setDialogOpen(true);
+    setFeedbackDialogOpen(true);
   };
 
   const handleSubmitFeedback = (feedback: string, reporterCallsign: string) => {
     voting.submitVote(pendingVoteType, feedback, reporterCallsign);
-    setDialogOpen(false);
+    setFeedbackDialogOpen(false);
   };
 
+  const cfg = communityStatusConfig[voting.status];
   const hasFeedback = voting.feedbackList.length > 0;
+  const upPercent =
+    voting.stats && voting.stats.total > 0
+      ? Math.round((voting.stats.up / voting.stats.total) * 100)
+      : null;
+
+  if (voting.isStatsLoading) {
+    return (
+      <div className="rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-white dark:bg-ship-cove-950 px-4 py-3">
+        <div className="h-5 w-40 rounded bg-ship-cove-100 dark:bg-ship-cove-800 animate-pulse" />
+      </div>
+    );
+  }
 
   return (
-    <SectionCard
-      icon={Users}
-      title={t("title")}
-      titleExtra={voting.vote?.vote && (
-        <Badge
-          variant="outline"
-          className={cn(
-            "text-[10px] gap-1",
-            voting.vote.vote === "up"
-              ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"
-              : "border-red-300 bg-red-50 text-red-700 dark:border-red-700 dark:bg-red-950/50 dark:text-red-300"
+    <>
+      <div className="rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-white dark:bg-ship-cove-950">
+        {/* Compact status row */}
+        <div className="flex items-center gap-2.5 px-4 py-3">
+          <span className={cn("h-2.5 w-2.5 rounded-full shrink-0", dotColor[voting.status])} />
+          <span className={cn("text-sm font-medium", cfg.textClass)}>
+            {t(cfg.labelKey)}
+          </span>
+          {upPercent !== null && (
+            <span className="text-xs text-ship-cove-400 dark:text-ship-cove-500 tabular-nums">
+              {upPercent}% {t("positive")}
+            </span>
           )}
-        >
-          {voting.vote.vote === "up" ? (
-            <ThumbsUp className="h-3 w-3" />
-          ) : (
-            <ThumbsDown className="h-3 w-3" />
-          )}
-          {t("yourVote")}
-        </Badge>
-      )}
-    >
-      <div className="space-y-4">
-        {/* Stats and voting */}
-        {voting.isStatsLoading ? (
-          <div className="space-y-3 animate-pulse">
-            <div className="h-16 rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800" />
-            <div className="h-2 rounded-full bg-ship-cove-100 dark:bg-ship-cove-800" />
-            <div className="h-10 rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800" />
-          </div>
-        ) : (
-          <>
-            <StatusDisplay status={voting.status} stats={voting.stats} t={t} />
-            <VoteDistributionBar stats={voting.stats} t={t} />
-            <VotingButtons
-              currentVote={voting.vote?.vote}
-              submitting={voting.submitting}
-              onVote={handleOpenFeedback}
-              t={t}
-            />
-            <FeedbackDialog
-              open={dialogOpen}
-              onOpenChange={setDialogOpen}
-              voteType={pendingVoteType}
-              initialCallsign={voting.savedCallsign}
-              onSubmit={handleSubmitFeedback}
-              submitting={voting.submitting}
-              t={t}
-            />
-          </>
-        )}
-
-        {/* Feedback entries */}
-        {(voting.isFeedbackLoading || hasFeedback) && (
-          <div className="space-y-3 pt-4 border-t border-ship-cove-200 dark:border-ship-cove-800/50">
-            <div className="flex items-center gap-2 text-xs text-ship-cove-500">
-              <MessageSquare className="h-3.5 w-3.5" />
-              <span className="font-medium uppercase tracking-wider">
-                {t("feedbackSection.title")}
-              </span>
-              {hasFeedback && (
-                <span className="ml-auto px-2 py-0.5 rounded-full bg-ship-cove-100 dark:bg-ship-cove-800 text-ship-cove-600 dark:text-ship-cove-400 text-[10px] font-medium tabular-nums">
-                  {voting.totalCount}
-                </span>
+          <div className="ml-auto flex items-center gap-1.5">
+            {(hasFeedback || voting.isFeedbackLoading) && (
+              <button
+                onClick={() => setReportsOpen(true)}
+                className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs text-ship-cove-500 hover:text-ship-cove-700 dark:hover:text-ship-cove-300 hover:bg-ship-cove-100 dark:hover:bg-ship-cove-800 transition-colors"
+              >
+                <MessageSquare className="h-3 w-3" />
+                {voting.totalCount}
+              </button>
+            )}
+            <button
+              onClick={() => handleOpenFeedback("up")}
+              disabled={voting.submitting}
+              className={cn(
+                "p-1.5 rounded-md transition-colors",
+                voting.vote?.vote === "up"
+                  ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400"
+                  : "text-ship-cove-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:text-emerald-400 dark:hover:bg-emerald-900/30"
               )}
-            </div>
+              aria-label={t("reportWorking")}
+            >
+              <ThumbsUp className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={() => handleOpenFeedback("down")}
+              disabled={voting.submitting}
+              className={cn(
+                "p-1.5 rounded-md transition-colors",
+                voting.vote?.vote === "down"
+                  ? "bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-400"
+                  : "text-ship-cove-400 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-900/30"
+              )}
+              aria-label={t("reportIssues")}
+            >
+              <ThumbsDown className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Vote feedback dialog */}
+      <FeedbackDialog
+        open={feedbackDialogOpen}
+        onOpenChange={setFeedbackDialogOpen}
+        voteType={pendingVoteType}
+        initialCallsign={voting.savedCallsign}
+        onSubmit={handleSubmitFeedback}
+        submitting={voting.submitting}
+        t={t}
+      />
+
+      {/* Reports dialog */}
+      <Dialog open={reportsOpen} onOpenChange={setReportsOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("feedbackSection.title")}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <VoteDistributionBar stats={voting.stats} t={t} />
             <FeedbackList
               loading={voting.isFeedbackLoading}
               feedbackList={voting.displayedFeedback}
@@ -116,8 +147,8 @@ export function CommunitySection({ repeaterId }: CommunitySectionProps) {
               t={t}
             />
           </div>
-        )}
-      </div>
-    </SectionCard>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

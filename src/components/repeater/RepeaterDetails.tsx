@@ -36,15 +36,15 @@ export default function RepeaterDetails({ r }: RepeaterDetailsProps) {
   return (
     <div className="space-y-3 sm:space-y-4">
       <RepeaterHeader repeater={r} />
+      {r.status && r.status !== "unknown" && (
+        <OperationalStatusCard status={r.status} lastVerified={r.lastVerified} />
+      )}
+      <CommunitySection repeaterId={r.callsign} />
       <FrequencySection repeater={r} />
       <LocationSection repeater={r} userLocation={userLocation} websiteUrl={r.website} />
       <TechnicalSpecsSection repeater={r} />
       <DigitalModesSection repeater={r} autoStatus={autoStatus} />
       <NotesSection notes={r.notes} />
-      {r.status && r.status !== "unknown" && (
-        <OperationalStatusCard status={r.status} lastVerified={r.lastVerified} />
-      )}
-      <CommunitySection repeaterId={r.callsign} />
     </div>
   );
 }

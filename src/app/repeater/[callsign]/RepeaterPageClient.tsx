@@ -242,6 +242,9 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
         )}
       </PageHeader>
 
+      {/* Community Section */}
+      <CommunitySection repeaterId={r.callsign} />
+
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Frequency Info Panel */}
@@ -723,8 +726,6 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
         </EquipmentPanel>
       )}
 
-      {/* Community Section */}
-      <CommunitySection repeaterId={r.callsign} />
     </div>
   );
 }
