@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Users, ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { SectionCard } from "../SectionCard";
 import { useCommunityVoting } from "../hooks/useCommunityVoting";
 import { StatusDisplay } from "./StatusDisplay";
 import { VoteDistributionBar } from "./VoteDistributionBar";
@@ -39,39 +40,29 @@ export function CommunitySection({ repeaterId }: CommunitySectionProps) {
   const hasFeedback = voting.feedbackList.length > 0;
 
   return (
-    <div className="relative overflow-hidden rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-gradient-to-br from-white via-white to-ship-cove-50/50 dark:from-ship-cove-950 dark:via-ship-cove-950 dark:to-ship-cove-900/30 shadow-sm">
-      {/* Top accent */}
-      <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-ship-cove-500 to-transparent opacity-60" />
-
-      {/* Header */}
-      <div className="flex items-center gap-2 px-5 py-4 border-b border-ship-cove-200 dark:border-ship-cove-800/50">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800">
-          <Users className="h-4 w-4 text-ship-cove-600 dark:text-ship-cove-400" />
-        </div>
-        <span className="text-lg font-semibold text-ship-cove-900 dark:text-ship-cove-100">
-          {t("title")}
-        </span>
-        {voting.vote?.vote && (
-          <Badge
-            variant="outline"
-            className={cn(
-              "ml-auto text-[10px] gap-1",
-              voting.vote.vote === "up"
-                ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"
-                : "border-red-300 bg-red-50 text-red-700 dark:border-red-700 dark:bg-red-950/50 dark:text-red-300"
-            )}
-          >
-            {voting.vote.vote === "up" ? (
-              <ThumbsUp className="h-3 w-3" />
-            ) : (
-              <ThumbsDown className="h-3 w-3" />
-            )}
-            {t("yourVote")}
-          </Badge>
-        )}
-      </div>
-
-      <div className="p-5 space-y-4">
+    <SectionCard
+      icon={Users}
+      title={t("title")}
+      titleExtra={voting.vote?.vote && (
+        <Badge
+          variant="outline"
+          className={cn(
+            "text-[10px] gap-1",
+            voting.vote.vote === "up"
+              ? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"
+              : "border-red-300 bg-red-50 text-red-700 dark:border-red-700 dark:bg-red-950/50 dark:text-red-300"
+          )}
+        >
+          {voting.vote.vote === "up" ? (
+            <ThumbsUp className="h-3 w-3" />
+          ) : (
+            <ThumbsDown className="h-3 w-3" />
+          )}
+          {t("yourVote")}
+        </Badge>
+      )}
+    >
+      <div className="space-y-4">
         {/* Stats and voting */}
         {voting.isStatsLoading ? (
           <div className="space-y-3 animate-pulse">
@@ -127,9 +118,6 @@ export function CommunitySection({ repeaterId }: CommunitySectionProps) {
           </div>
         )}
       </div>
-
-      {/* Corner LED */}
-      <div className="absolute top-3 right-3 h-2 w-2 rounded-full bg-emerald-500/80 shadow-sm shadow-emerald-500/50 animate-pulse" />
-    </div>
+    </SectionCard>
   );
 }

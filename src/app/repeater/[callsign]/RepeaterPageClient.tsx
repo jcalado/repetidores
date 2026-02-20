@@ -303,7 +303,6 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
         <EquipmentPanel
           title="Direção para o Repetidor"
           icon={Compass}
-          accentColor={compass.isEnabled ? "emerald" : undefined}
         >
           <div className="flex items-center justify-between gap-4">
             <div className="space-y-2">
@@ -736,56 +735,23 @@ function EquipmentPanel({
   title,
   icon: Icon,
   children,
-  accentColor,
   titleExtra,
 }: {
   title: string;
   icon: React.ComponentType<{ className?: string }>;
   children: React.ReactNode;
-  accentColor?: "emerald" | "purple" | "blue";
   titleExtra?: React.ReactNode;
 }) {
   return (
-    <div className={cn(
-      "relative overflow-hidden rounded-xl border shadow-sm",
-      accentColor === "emerald"
-        ? "border-emerald-300 dark:border-emerald-700 bg-gradient-to-br from-emerald-50 via-white to-emerald-50/50 dark:from-emerald-950/50 dark:via-ship-cove-950 dark:to-emerald-900/20"
-        : "border-ship-cove-200 dark:border-ship-cove-800/50 bg-gradient-to-br from-white via-white to-ship-cove-50/50 dark:from-ship-cove-950 dark:via-ship-cove-950 dark:to-ship-cove-900/30"
-    )}>
-      {/* Top accent */}
-      <div className={cn(
-        "absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent to-transparent opacity-60",
-        accentColor === "emerald" ? "via-emerald-500" : "via-ship-cove-500"
-      )} />
-
+    <div className="rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-white dark:bg-ship-cove-950">
       <div className="p-5">
-        <h3 className="flex items-center gap-2 text-lg font-semibold text-ship-cove-900 dark:text-ship-cove-100 mb-4">
-          <div className={cn(
-            "flex h-8 w-8 items-center justify-center rounded-lg",
-            accentColor === "emerald"
-              ? "bg-emerald-100 dark:bg-emerald-800"
-              : "bg-ship-cove-100 dark:bg-ship-cove-800"
-          )}>
-            <Icon className={cn(
-              "h-4 w-4",
-              accentColor === "emerald"
-                ? "text-emerald-600 dark:text-emerald-400"
-                : "text-ship-cove-600 dark:text-ship-cove-400"
-            )} />
-          </div>
+        <h3 className="flex items-center gap-2 text-base font-medium text-ship-cove-500 dark:text-ship-cove-400 mb-4">
+          <Icon className="h-4 w-4" />
           {title}
           {titleExtra && <span className="ml-auto">{titleExtra}</span>}
         </h3>
         {children}
       </div>
-
-      {/* Corner LED */}
-      <div className={cn(
-        "absolute top-3 right-3 h-2 w-2 rounded-full shadow-sm animate-pulse",
-        accentColor === "emerald"
-          ? "bg-emerald-500/80 shadow-emerald-500/50"
-          : "bg-emerald-500/80 shadow-emerald-500/50"
-      )} />
     </div>
   );
 }
