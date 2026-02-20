@@ -42,7 +42,7 @@ import {
   duplex,
 } from "@/components/repeater/utils/formatters";
 import { getPrimaryFrequency } from "@/types/repeater-helpers";
-import { CommunitySection } from "@/components/repeater/community/CommunitySection";
+import { RepeaterHealthCard } from "@/components/repeater/RepeaterHealthCard";
 import { operationalStatusConfig } from "@/components/repeater/utils/statusConfig";
 
 // Dynamic import for the mini map (SSR disabled)
@@ -243,7 +243,11 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
       </PageHeader>
 
       {/* Community Section */}
-      <CommunitySection repeaterId={r.callsign} />
+      <RepeaterHealthCard
+        repeaterId={r.callsign}
+        operationalStatus={r.status}
+        lastVerified={r.lastVerified}
+      />
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
