@@ -30,9 +30,6 @@ export function SectionCard({ icon: Icon, title, titleExtra, children }: Section
 
       {/* Content */}
       <div className="p-2.5 sm:p-3">{children}</div>
-
-      {/* Corner LED */}
-      <div className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-emerald-500/80 shadow-sm shadow-emerald-500/50 animate-pulse" />
     </div>
   );
 }
