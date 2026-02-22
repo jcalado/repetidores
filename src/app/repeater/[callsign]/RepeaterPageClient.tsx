@@ -494,65 +494,74 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
                   })()}
                 </div>
 
-                {/* Timeslot Talkgroups */}
-                <div className="space-y-3">
-                  {r.dmr?.ts1StaticTalkgroups && r.dmr.ts1StaticTalkgroups.length > 0 && (
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-xs font-semibold text-purple-700 dark:text-purple-300 uppercase tracking-wide">
-                          Timeslot 1
-                        </span>
-                        <div className="flex-1 h-px bg-purple-200 dark:bg-purple-700/50" />
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
+                {/* Timeslot Columns */}
+                <div className="grid grid-cols-2 gap-3">
+                  {/* Timeslot 1 */}
+                  <div className="rounded-lg bg-purple-100/60 dark:bg-purple-800/30 border border-purple-200/80 dark:border-purple-700/40 p-3">
+                    <div className="flex items-center gap-2 mb-2.5">
+                      <span className="font-mono text-xs font-bold text-purple-600 dark:text-purple-300 uppercase tracking-wider">
+                        TS1
+                      </span>
+                      <div className="flex-1 h-px bg-purple-200 dark:bg-purple-700/50" />
+                    </div>
+                    {r.dmr?.ts1StaticTalkgroups && r.dmr.ts1StaticTalkgroups.length > 0 ? (
+                      <div className="space-y-1.5">
                         {r.dmr.ts1StaticTalkgroups.map((tg, idx) => (
-                          <span
+                          <div
                             key={idx}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-purple-100 dark:bg-purple-800/40 border border-purple-200 dark:border-purple-700/50 text-purple-800 dark:text-purple-200"
+                            className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/70 dark:bg-purple-900/40 border border-purple-200/60 dark:border-purple-700/40"
                           >
-                            <span className="font-mono text-sm font-semibold">{tg.tgId}</span>
+                            <span className="font-mono text-sm font-semibold text-purple-800 dark:text-purple-200">{tg.tgId}</span>
                             {tg.name && (
-                              <span className="text-xs text-purple-600 dark:text-purple-400">
+                              <span className="text-xs text-purple-600 dark:text-purple-400 truncate">
                                 {tg.name}
                               </span>
                             )}
-                          </span>
+                          </div>
                         ))}
                       </div>
-                    </div>
-                  )}
+                    ) : (
+                      <p className="text-xs text-purple-400 dark:text-purple-500 italic">
+                        Sem talkgroups estáticos
+                      </p>
+                    )}
+                  </div>
 
-                  {r.dmr?.ts2StaticTalkgroups && r.dmr.ts2StaticTalkgroups.length > 0 && (
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-xs font-semibold text-purple-700 dark:text-purple-300 uppercase tracking-wide">
-                          Timeslot 2
-                        </span>
-                        <div className="flex-1 h-px bg-purple-200 dark:bg-purple-700/50" />
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
+                  {/* Timeslot 2 */}
+                  <div className="rounded-lg bg-purple-100/60 dark:bg-purple-800/30 border border-purple-200/80 dark:border-purple-700/40 p-3">
+                    <div className="flex items-center gap-2 mb-2.5">
+                      <span className="font-mono text-xs font-bold text-purple-600 dark:text-purple-300 uppercase tracking-wider">
+                        TS2
+                      </span>
+                      <div className="flex-1 h-px bg-purple-200 dark:bg-purple-700/50" />
+                    </div>
+                    {r.dmr?.ts2StaticTalkgroups && r.dmr.ts2StaticTalkgroups.length > 0 ? (
+                      <div className="space-y-1.5">
                         {r.dmr.ts2StaticTalkgroups.map((tg, idx) => (
-                          <span
+                          <div
                             key={idx}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-purple-100 dark:bg-purple-800/40 border border-purple-200 dark:border-purple-700/50 text-purple-800 dark:text-purple-200"
+                            className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/70 dark:bg-purple-900/40 border border-purple-200/60 dark:border-purple-700/40"
                           >
-                            <span className="font-mono text-sm font-semibold">{tg.tgId}</span>
+                            <span className="font-mono text-sm font-semibold text-purple-800 dark:text-purple-200">{tg.tgId}</span>
                             {tg.name && (
-                              <span className="text-xs text-purple-600 dark:text-purple-400">
+                              <span className="text-xs text-purple-600 dark:text-purple-400 truncate">
                                 {tg.name}
                               </span>
                             )}
-                          </span>
+                          </div>
                         ))}
                       </div>
-                    </div>
-                  )}
-
-                  {r.dmr?.ts2DynamicAllowed && (
-                    <p className="text-xs text-purple-500 dark:text-purple-400 italic">
-                      Talkgroups dinâmicos permitidos em TS2
-                    </p>
-                  )}
+                    ) : (
+                      <p className="text-xs text-purple-400 dark:text-purple-500 italic">
+                        Sem talkgroups estáticos
+                      </p>
+                    )}
+                    {r.dmr?.ts2DynamicAllowed && (
+                      <p className="text-xs text-purple-500 dark:text-purple-400 italic mt-2">
+                        Dinâmicos permitidos
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
