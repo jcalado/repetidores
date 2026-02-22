@@ -8,6 +8,7 @@ import { useUserLocation } from "@/contexts/UserLocationContext";
 import { useDeviceCompass } from "@/hooks/useDeviceCompass";
 import { cn } from "@/lib/utils";
 import { getAllAutoStatus, type RepeaterAutoStatus } from "@/lib/auto-status";
+import { getBrandmeisterProfile, type BMProfileBySlot, type BMTalkgroupEntry } from "@/lib/brandmeister";
 import { formatRelativeTime } from "@/lib/time";
 import { toggleFavorite, isFavorite } from "@/lib/favorites";
 import {
@@ -89,6 +90,8 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
     : { sign: '', offsetDisplay: '—', offsetCopy: '' };
   const [favorite, setFavorite] = React.useState(() => isFavorite(r.callsign));
   const [autoStatus, setAutoStatus] = React.useState<RepeaterAutoStatus | null>(null);
+  const [bmProfile, setBmProfile] = React.useState<BMProfileBySlot | null>(null);
+  const [bmLoading, setBmLoading] = React.useState(false);
 
   React.useEffect(() => {
     getAllAutoStatus().then((data) => {
@@ -96,6 +99,17 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
       if (status) setAutoStatus(status);
     });
   }, [r.callsign]);
+
+  // Fetch live BM profile for Brandmeister DMR repeaters
+  React.useEffect(() => {
+    if (!r.modes?.includes('DMR') || !r.dmr?.dmrId || r.dmr.network !== 'Brandmeister') return;
+    setBmLoading(true);
+    getBrandmeisterProfile(r.dmr.dmrId)
+      .then((profile) => {
+        if (profile) setBmProfile(profile);
+      })
+      .finally(() => setBmLoading(false));
+  }, [r.modes, r.dmr?.dmrId, r.dmr?.network]);
 
   const { userLocation, requestLocation, isLocating } = useUserLocation();
   const compass = useDeviceCompass();
@@ -497,72 +511,52 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
                 {/* Timeslot Columns */}
                 <div className="grid grid-cols-2 gap-3">
                   {/* Timeslot 1 */}
-                  <div className="rounded-lg bg-purple-100/60 dark:bg-purple-800/30 border border-purple-200/80 dark:border-purple-700/40 p-3">
-                    <div className="flex items-center gap-2 mb-2.5">
-                      <span className="font-mono text-xs font-bold text-purple-600 dark:text-purple-300 uppercase tracking-wider">
-                        TS1
-                      </span>
-                      <div className="flex-1 h-px bg-purple-200 dark:bg-purple-700/50" />
-                    </div>
-                    {r.dmr?.ts1StaticTalkgroups && r.dmr.ts1StaticTalkgroups.length > 0 ? (
-                      <div className="space-y-1.5">
-                        {r.dmr.ts1StaticTalkgroups.map((tg, idx) => (
-                          <div
-                            key={idx}
-                            className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/70 dark:bg-purple-900/40 border border-purple-200/60 dark:border-purple-700/40"
-                          >
-                            <span className="font-mono text-sm font-semibold text-purple-800 dark:text-purple-200">{tg.tgId}</span>
-                            {tg.name && (
-                              <span className="text-xs text-purple-600 dark:text-purple-400 truncate">
-                                {tg.name}
-                              </span>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-xs text-purple-400 dark:text-purple-500 italic">
-                        Sem talkgroups estáticos
-                      </p>
-                    )}
-                  </div>
+                  <TimeslotColumn
+                    label="TS1"
+                    liveTalkgroups={bmProfile?.ts1}
+                    cmsTalkgroups={r.dmr?.ts1Talkgroups}
+                    loading={bmLoading}
+                  />
 
                   {/* Timeslot 2 */}
-                  <div className="rounded-lg bg-purple-100/60 dark:bg-purple-800/30 border border-purple-200/80 dark:border-purple-700/40 p-3">
-                    <div className="flex items-center gap-2 mb-2.5">
-                      <span className="font-mono text-xs font-bold text-purple-600 dark:text-purple-300 uppercase tracking-wider">
-                        TS2
-                      </span>
-                      <div className="flex-1 h-px bg-purple-200 dark:bg-purple-700/50" />
-                    </div>
-                    {r.dmr?.ts2StaticTalkgroups && r.dmr.ts2StaticTalkgroups.length > 0 ? (
-                      <div className="space-y-1.5">
-                        {r.dmr.ts2StaticTalkgroups.map((tg, idx) => (
-                          <div
-                            key={idx}
-                            className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/70 dark:bg-purple-900/40 border border-purple-200/60 dark:border-purple-700/40"
-                          >
-                            <span className="font-mono text-sm font-semibold text-purple-800 dark:text-purple-200">{tg.tgId}</span>
-                            {tg.name && (
-                              <span className="text-xs text-purple-600 dark:text-purple-400 truncate">
-                                {tg.name}
-                              </span>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-xs text-purple-400 dark:text-purple-500 italic">
-                        Sem talkgroups estáticos
-                      </p>
-                    )}
-                    {r.dmr?.ts2DynamicAllowed && (
-                      <p className="text-xs text-purple-500 dark:text-purple-400 italic mt-2">
-                        Dinâmicos permitidos
-                      </p>
-                    )}
-                  </div>
+                  <TimeslotColumn
+                    label="TS2"
+                    liveTalkgroups={bmProfile?.ts2}
+                    cmsTalkgroups={r.dmr?.ts2Talkgroups}
+                    loading={bmLoading}
+                  />
                 </div>
+
+                {/* Blocked Talkgroups */}
+                {((bmProfile?.blocked && bmProfile.blocked.length > 0) || (r.dmr?.blockedTalkgroups && r.dmr.blockedTalkgroups.length > 0)) && (
+                  <div className="mt-3 p-2 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200/80 dark:border-red-700/40">
+                    <span className="text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wider">
+                      Bloqueados
+                    </span>
+                    <div className="flex flex-wrap gap-1.5 mt-1.5">
+                      {(bmProfile?.blocked ?? r.dmr?.blockedTalkgroups ?? []).map((bg, idx) => (
+                        <BlockedEntry key={idx} talkgroup={bg} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Live data indicator */}
+                {bmProfile && r.dmr?.dmrId && (
+                  <div className="mt-3 flex items-center gap-2 text-xs text-purple-600 dark:text-purple-400">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>Dados ao vivo do Brandmeister</span>
+                    <a
+                      href={`https://brandmeister.network/?page=repeater&id=${r.dmr.dmrId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 hover:underline"
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                      Ver perfil
+                    </a>
+                  </div>
+                )}
               </div>
             )}
 
@@ -838,6 +832,97 @@ function TechSpec({
       )}>
         {value}
       </p>
+    </div>
+  );
+}
+
+// --- DMR Talkgroup Sub-components ---
+
+const TYPE_BADGE_STYLES = {
+  static: "bg-purple-500 text-white",
+  cluster: "border border-purple-400 dark:border-purple-500 text-purple-600 dark:text-purple-300 border-dashed",
+  timed: "border border-purple-400 dark:border-purple-500 text-purple-600 dark:text-purple-300",
+  dynamic: "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300",
+} as const;
+
+const TYPE_LABELS: Record<string, string> = {
+  static: "Estático",
+  cluster: "Cluster",
+  timed: "Agendado",
+  dynamic: "Dinâmico",
+};
+
+function TalkgroupEntry({ entry }: { entry: { tgId: number; name?: string; type: string; days?: string; startTime?: string; endTime?: string } }) {
+  return (
+    <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/70 dark:bg-purple-900/40 border border-purple-200/60 dark:border-purple-700/40">
+      <span className="font-mono text-sm font-semibold text-purple-800 dark:text-purple-200">{entry.tgId}</span>
+      {entry.name && (
+        <span className="text-xs text-purple-600 dark:text-purple-400 truncate">{entry.name}</span>
+      )}
+      <span className={cn(
+        "ml-auto shrink-0 px-1.5 py-0.5 rounded text-[10px] font-semibold leading-none",
+        TYPE_BADGE_STYLES[entry.type as keyof typeof TYPE_BADGE_STYLES] || TYPE_BADGE_STYLES.static
+      )}>
+        {entry.type === 'dynamic' && <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse mr-1 align-middle" />}
+        {TYPE_LABELS[entry.type] || entry.type}
+      </span>
+      {entry.type === 'timed' && (entry.days || entry.startTime) && (
+        <span className="text-[10px] text-purple-500 dark:text-purple-400 whitespace-nowrap">
+          {entry.days && entry.days.replace(/Mon/g, 'Seg').replace(/Tue/g, 'Ter').replace(/Wed/g, 'Qua').replace(/Thu/g, 'Qui').replace(/Fri/g, 'Sex').replace(/Sat/g, 'Sáb').replace(/Sun/g, 'Dom')}
+          {entry.startTime && ` ${entry.startTime}`}{entry.endTime && `-${entry.endTime}`}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function BlockedEntry({ talkgroup }: { talkgroup: { tgId: number; slot?: string } }) {
+  return (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-xs font-mono line-through">
+      {talkgroup.tgId}
+      {talkgroup.slot && talkgroup.slot !== 'both' && (
+        <span className="no-underline text-red-500 text-[10px]">TS{talkgroup.slot}</span>
+      )}
+    </span>
+  );
+}
+
+function TimeslotColumn({
+  label,
+  liveTalkgroups,
+  cmsTalkgroups,
+  loading,
+}: {
+  label: string;
+  liveTalkgroups?: BMTalkgroupEntry[];
+  cmsTalkgroups?: Array<{ tgId: number; name?: string; type: string; days?: string; startTime?: string; endTime?: string }>;
+  loading: boolean;
+}) {
+  // Use live data if available, otherwise fall back to CMS data
+  const talkgroups = liveTalkgroups ?? cmsTalkgroups;
+
+  return (
+    <div className="rounded-lg bg-purple-100/60 dark:bg-purple-800/30 border border-purple-200/80 dark:border-purple-700/40 p-3">
+      <div className="flex items-center gap-2 mb-2.5">
+        <span className="font-mono text-xs font-bold text-purple-600 dark:text-purple-300 uppercase tracking-wider">
+          {label}
+        </span>
+        <div className="flex-1 h-px bg-purple-200 dark:bg-purple-700/50" />
+        {loading && (
+          <span className="h-3 w-3 border-2 border-purple-300 border-t-purple-600 rounded-full animate-spin" />
+        )}
+      </div>
+      {talkgroups && talkgroups.length > 0 ? (
+        <div className="space-y-1.5">
+          {talkgroups.map((tg, idx) => (
+            <TalkgroupEntry key={idx} entry={tg} />
+          ))}
+        </div>
+      ) : (
+        <p className="text-xs text-purple-400 dark:text-purple-500 italic">
+          Sem talkgroups
+        </p>
+      )}
     </div>
   );
 }

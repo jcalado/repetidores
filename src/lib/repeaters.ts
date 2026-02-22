@@ -3,6 +3,9 @@ import type {
   FrequencyPair,
   RepeaterMode,
   DMRConfig,
+  DMRTalkgroup,
+  DMRTalkgroupType,
+  DMRBlockedTalkgroup,
   DSTARConfig,
   C4FMConfig,
   TETRAConfig,
@@ -204,9 +207,13 @@ function normalizeDMRConfig(doc: Record<string, unknown>): DMRConfig | undefined
       colorCode,
       dmrId: toOptionalNumber(cfg.dmrId),
       network: toOptionalString(cfg.network),
-      ts1StaticTalkgroups: normalizeTalkgroups(cfg.ts1StaticTalkgroups),
-      ts2StaticTalkgroups: normalizeTalkgroups(cfg.ts2StaticTalkgroups),
-      ts2DynamicAllowed: cfg.ts2DynamicAllowed !== false,
+      // New unified arrays (with legacy fallback)
+      ts1Talkgroups: normalizeTalkgroupsV2(cfg.ts1Talkgroups)
+        ?? normalizeLegacyToV2(cfg.ts1StaticTalkgroups),
+      ts2Talkgroups: normalizeTalkgroupsV2(cfg.ts2Talkgroups)
+        ?? normalizeLegacyToV2(cfg.ts2StaticTalkgroups),
+      blockedTalkgroups: normalizeBlockedArray(cfg.blockedTalkgroups),
+      bmProfileSyncedAt: toOptionalString(cfg.bmProfileSyncedAt),
     };
   }
 
@@ -218,23 +225,60 @@ function normalizeDMRConfig(doc: Record<string, unknown>): DMRConfig | undefined
 
   return {
     colorCode: colorCode || 1,
-    ts2StaticTalkgroups: parseLegacyTalkgroups(talkgroupsStr),
-    ts2DynamicAllowed: true,
+    ts2Talkgroups: parseLegacyTalkgroupsToV2(talkgroupsStr),
   };
 }
 
-function normalizeTalkgroups(value: unknown): { tgId: number; name?: string }[] | undefined {
+const VALID_TG_TYPES: DMRTalkgroupType[] = ['static', 'cluster', 'timed', 'dynamic'];
+
+function normalizeTalkgroupsV2(value: unknown): DMRTalkgroup[] | undefined {
   if (!Array.isArray(value) || value.length === 0) return undefined;
-  return value.map((tg: unknown) => {
+  const result = value.map((tg: unknown) => {
+    const t = tg as Record<string, unknown>;
+    const rawType = toOptionalString(t.type);
+    const type: DMRTalkgroupType = rawType && VALID_TG_TYPES.includes(rawType as DMRTalkgroupType)
+      ? (rawType as DMRTalkgroupType) : 'static';
+    return {
+      tgId: toNumber(t.tgId),
+      name: toOptionalString(t.name),
+      type,
+      extTalkgroup: toOptionalNumber(t.extTalkgroup),
+      days: toOptionalString(t.days),
+      startTime: toOptionalString(t.startTime),
+      endTime: toOptionalString(t.endTime),
+    };
+  }).filter(tg => tg.tgId > 0);
+  return result.length > 0 ? result : undefined;
+}
+
+/** Convert old ts1StaticTalkgroups/ts2StaticTalkgroups arrays to V2 format */
+function normalizeLegacyToV2(value: unknown): DMRTalkgroup[] | undefined {
+  if (!Array.isArray(value) || value.length === 0) return undefined;
+  const result = value.map((tg: unknown) => {
     const t = tg as Record<string, unknown>;
     return {
       tgId: toNumber(t.tgId),
       name: toOptionalString(t.name),
+      type: 'static' as const,
     };
   }).filter(tg => tg.tgId > 0);
+  return result.length > 0 ? result : undefined;
 }
 
-function parseLegacyTalkgroups(str: string | undefined): { tgId: number; name?: string }[] | undefined {
+function normalizeBlockedArray(value: unknown): DMRBlockedTalkgroup[] | undefined {
+  if (!Array.isArray(value) || value.length === 0) return undefined;
+  const result = value.map((tg: unknown) => {
+    const t = tg as Record<string, unknown>;
+    const slot = toOptionalString(t.slot) as DMRBlockedTalkgroup['slot'];
+    return {
+      tgId: toNumber(t.tgId),
+      slot: slot && ['1', '2', 'both'].includes(slot) ? slot : undefined,
+    };
+  }).filter(tg => tg.tgId > 0);
+  return result.length > 0 ? result : undefined;
+}
+
+function parseLegacyTalkgroupsToV2(str: string | undefined): DMRTalkgroup[] | undefined {
   if (!str?.trim()) return undefined;
 
   const result = str
@@ -246,12 +290,12 @@ function parseLegacyTalkgroups(str: string | undefined): { tgId: number; name?: 
       if (slashIndex > 0) {
         const tgId = parseInt(item.substring(0, slashIndex).trim(), 10);
         const name = item.substring(slashIndex + 1).trim();
-        return Number.isFinite(tgId) ? { tgId, name: name || undefined } : null;
+        return Number.isFinite(tgId) ? { tgId, name: name || undefined, type: 'static' as const } : null;
       }
       const tgId = parseInt(item, 10);
-      return Number.isFinite(tgId) ? { tgId } : null;
+      return Number.isFinite(tgId) ? { tgId, type: 'static' as const } : null;
     })
-    .filter((tg): tg is { tgId: number; name?: string } => tg !== null);
+    .filter((tg) => tg !== null) as DMRTalkgroup[];
 
   return result.length > 0 ? result : undefined;
 }

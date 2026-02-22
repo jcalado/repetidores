@@ -200,8 +200,9 @@ export function migrateFromLegacy(legacy: LegacyRepeater): RepeaterV2 {
     dmr = {
       colorCode: legacy.dmrColorCode || 1,
       // Put all talkgroups on TS2 by default (common configuration)
-      ts2StaticTalkgroups: talkgroups.length > 0 ? talkgroups : undefined,
-      ts2DynamicAllowed: true,
+      ts2Talkgroups: talkgroups.length > 0
+        ? talkgroups.map(tg => ({ ...tg, type: 'static' as const }))
+        : undefined,
     };
   }
 
@@ -284,8 +285,8 @@ export function toLegacyFormat(repeater: RepeaterV2): LegacyRepeater {
   // Convert talkgroups back to string
   let dmrTalkgroups: string | undefined;
   const talkgroups = [
-    ...(repeater.dmr?.ts1StaticTalkgroups || []),
-    ...(repeater.dmr?.ts2StaticTalkgroups || []),
+    ...(repeater.dmr?.ts1Talkgroups || []),
+    ...(repeater.dmr?.ts2Talkgroups || []),
   ];
   if (talkgroups.length > 0) {
     dmrTalkgroups = talkgroups

@@ -20,7 +20,7 @@ interface DigitalModesSectionProps {
  */
 export function DigitalModesSection({ repeater: r, autoStatus }: DigitalModesSectionProps) {
   const t = useTranslations("repeater");
-  const hasDmrDetails = r.modes?.includes('DMR') && (r.dmr?.colorCode || r.dmr?.ts1StaticTalkgroups?.length || r.dmr?.ts2StaticTalkgroups?.length);
+  const hasDmrDetails = r.modes?.includes('DMR') && (r.dmr?.colorCode || r.dmr?.ts1Talkgroups?.length || r.dmr?.ts2Talkgroups?.length);
   const hasDstarDetails = r.modes?.includes('DSTAR') && (r.dstar?.reflector || r.dstar?.module);
   const hasC4fmDetails = r.modes?.includes('C4FM') && (r.c4fm?.room || r.c4fm?.node || r.c4fm?.network);
   const hasTetraDetails = r.modes?.includes('TETRA') && r.tetra?.talkgroups?.length;
@@ -87,13 +87,13 @@ export function DigitalModesSection({ repeater: r, autoStatus }: DigitalModesSec
             </div>
 
             {/* Timeslot 1 Talkgroups */}
-            {r.dmr?.ts1StaticTalkgroups && r.dmr.ts1StaticTalkgroups.length > 0 && (
+            {r.dmr?.ts1Talkgroups && r.dmr.ts1Talkgroups.length > 0 && (
               <div className="mt-2.5">
                 <div className="text-[10px] font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide mb-1">
                   TS1
                 </div>
                 <div className="flex flex-wrap gap-1">
-                  {r.dmr.ts1StaticTalkgroups.map((tg, idx) => (
+                  {r.dmr.ts1Talkgroups.map((tg, idx) => (
                     <span
                       key={idx}
                       className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-800/50 text-purple-700 dark:text-purple-300 text-xs"
@@ -108,13 +108,13 @@ export function DigitalModesSection({ repeater: r, autoStatus }: DigitalModesSec
             )}
 
             {/* Timeslot 2 Talkgroups */}
-            {r.dmr?.ts2StaticTalkgroups && r.dmr.ts2StaticTalkgroups.length > 0 && (
+            {r.dmr?.ts2Talkgroups && r.dmr.ts2Talkgroups.length > 0 && (
               <div className="mt-2">
                 <div className="text-[10px] font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide mb-1">
                   TS2
                 </div>
                 <div className="flex flex-wrap gap-1">
-                  {r.dmr.ts2StaticTalkgroups.map((tg, idx) => (
+                  {r.dmr.ts2Talkgroups.map((tg, idx) => (
                     <span
                       key={idx}
                       className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-800/50 text-purple-700 dark:text-purple-300 text-xs"

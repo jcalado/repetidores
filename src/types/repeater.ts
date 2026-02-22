@@ -39,11 +39,28 @@ export interface FrequencyPair {
 // Digital Mode Configurations
 // ============================================================================
 
+export type DMRTalkgroupType = 'static' | 'cluster' | 'timed' | 'dynamic';
+
 export interface DMRTalkgroup {
   /** Talkgroup ID */
   tgId: number;
   /** Human-readable name (optional) */
   name?: string;
+  /** Subscription type */
+  type: DMRTalkgroupType;
+  /** Extended talkgroup for clusters */
+  extTalkgroup?: number;
+  /** Days for timed subscriptions (e.g., "Wed,Sat") */
+  days?: string;
+  /** Start time for timed subscriptions (HH:MM) */
+  startTime?: string;
+  /** End time for timed subscriptions (HH:MM) */
+  endTime?: string;
+}
+
+export interface DMRBlockedTalkgroup {
+  tgId: number;
+  slot?: '1' | '2' | 'both';
 }
 
 export interface DMRConfig {
@@ -51,14 +68,16 @@ export interface DMRConfig {
   colorCode: number;
   /** DMR ID of the repeater */
   dmrId?: number;
-  /** Static talkgroups on timeslot 1 */
-  ts1StaticTalkgroups?: DMRTalkgroup[];
-  /** Static talkgroups on timeslot 2 */
-  ts2StaticTalkgroups?: DMRTalkgroup[];
-  /** Whether dynamic talkgroups are allowed on TS2 */
-  ts2DynamicAllowed?: boolean;
   /** Network name (e.g., "Brandmeister", "DMR-MARC") */
   network?: string;
+  /** TS1 talkgroups (all types) */
+  ts1Talkgroups?: DMRTalkgroup[];
+  /** TS2 talkgroups (all types) */
+  ts2Talkgroups?: DMRTalkgroup[];
+  /** Blocked talkgroups */
+  blockedTalkgroups?: DMRBlockedTalkgroup[];
+  /** When BM profile was last synced */
+  bmProfileSyncedAt?: string;
 }
 
 export interface DSTARConfig {
