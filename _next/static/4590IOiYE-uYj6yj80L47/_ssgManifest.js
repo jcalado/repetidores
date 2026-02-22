@@ -1,0 +1,1 @@
+self.__SSG_MANIFEST=new Set(["\u002Fassociation\u002F[slug]","\u002Fevents\u002F[id]","\u002Fnoticias\u002F[slug]","\u002Frepeater\u002F[callsign]"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()
