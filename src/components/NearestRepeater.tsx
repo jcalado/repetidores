@@ -171,8 +171,6 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
           </div>
         </div>
 
-        {/* Status LED */}
-        <div className="absolute top-4 right-4 h-2 w-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50 animate-pulse" />
       </PageHeader>
 
       {/* Location Status Panel */}
@@ -210,7 +208,6 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
             </div>
           </div>
 
-          <div className="absolute top-3 right-3 h-1.5 w-1.5 rounded-full bg-emerald-500/80 shadow-sm shadow-emerald-500/50 animate-pulse" />
         </div>
       )}
 
@@ -257,7 +254,6 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
             </button>
           </div>
 
-          <div className="absolute top-3 right-3 h-1.5 w-1.5 rounded-full bg-amber-500/80 shadow-sm shadow-amber-500/50" />
         </div>
       )}
 
@@ -558,13 +554,6 @@ function RepeaterCard({
         </div>
       </div>
 
-      {/* Corner LED */}
-      <div className={cn(
-        'absolute top-2 right-2 h-1.5 w-1.5 rounded-full shadow-sm animate-pulse',
-        isFirst
-          ? 'bg-emerald-500 shadow-emerald-500/50'
-          : 'bg-ship-cove-400/50 shadow-ship-cove-400/30'
-      )} />
     </Link>
   );
 }
