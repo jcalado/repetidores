@@ -321,8 +321,8 @@
         "owner": "Proprietário",
         "coordinates": "Coordenadas",
         "autoStatus": {
-            "online": "Online (verificado)",
-            "offline": "Offline (verificado)",
+            "online": "Online",
+            "offline": "Offline",
             "title": "Verificação Automática"
         }
     },

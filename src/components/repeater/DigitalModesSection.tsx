@@ -4,10 +4,27 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { formatRelativeTime } from "@/lib/time";
 import type { RepeaterAutoStatus } from "@/lib/auto-status";
-import { Radio, Wifi } from "lucide-react";
+import { Ban, Clock, Radio, ShieldCheck, Wifi } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SectionCard } from "./SectionCard";
 import type { Repeater } from "./types";
+
+function translateDays(days: string): string {
+  return days
+    .replace(/Mon/g, 'Seg').replace(/Tue/g, 'Ter').replace(/Wed/g, 'Qua')
+    .replace(/Thu/g, 'Qui').replace(/Fri/g, 'Sex').replace(/Sat/g, 'Sáb').replace(/Sun/g, 'Dom');
+}
+
+function formatTgTooltip(tg: { tgId: number; name?: string; type?: string; days?: string; startTime?: string; endTime?: string }): string {
+  const parts = [tg.name || `TG ${tg.tgId}`];
+  if (tg.type === 'timed') {
+    const schedule: string[] = [];
+    if (tg.days) schedule.push(translateDays(tg.days));
+    if (tg.startTime) schedule.push(`${tg.startTime}${tg.endTime ? `-${tg.endTime}` : ''}`);
+    if (schedule.length) parts.push(`(${schedule.join(' ')})`);
+  }
+  return parts.join(' ');
+}
 
 interface DigitalModesSectionProps {
   repeater: Repeater;
@@ -46,6 +63,7 @@ export function DigitalModesSection({ repeater: r, autoStatus }: DigitalModesSec
             autoStatus.isOnline ? "bg-emerald-500 animate-pulse" : "bg-red-500"
           )} />
           {autoStatus.isOnline ? t('autoStatus.online') : t('autoStatus.offline')}
+          <ShieldCheck className="h-3 w-3 opacity-60" />
         </span>
       )}
     >
@@ -87,46 +105,78 @@ export function DigitalModesSection({ repeater: r, autoStatus }: DigitalModesSec
             </div>
 
             {/* Timeslot 1 Talkgroups */}
-            {r.dmr?.ts1Talkgroups && r.dmr.ts1Talkgroups.length > 0 && (
-              <div className="mt-2.5">
-                <div className="text-[10px] font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide mb-1">
-                  TS1
+            {(() => {
+              const ts1Blocked = r.dmr?.blockedTalkgroups?.filter(tg => tg.slot === '1' || tg.slot === 'both');
+              const hasTs1 = (r.dmr?.ts1Talkgroups && r.dmr.ts1Talkgroups.length > 0) || (ts1Blocked && ts1Blocked.length > 0);
+              if (!hasTs1) return null;
+              return (
+                <div className="mt-2.5">
+                  <div className="text-[10px] font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide mb-1">
+                    TS1
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {r.dmr?.ts1Talkgroups?.map((tg, idx) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-800/50 text-purple-700 dark:text-purple-300 text-xs"
+                        title={formatTgTooltip(tg)}
+                      >
+                        {tg.type === 'timed' && <Clock className="h-3 w-3 shrink-0 text-purple-400" />}
+                        <span className="font-mono font-medium">{tg.tgId}</span>
+                        {tg.name && <span className="text-purple-500 dark:text-purple-400 max-w-[60px] truncate">{tg.name}</span>}
+                      </span>
+                    ))}
+                    {ts1Blocked?.map((tg, idx) => (
+                      <span
+                        key={`blocked-${idx}`}
+                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-xs"
+                        title={`TG ${tg.tgId} (bloqueado)`}
+                      >
+                        <Ban className="h-3 w-3 shrink-0" />
+                        <span className="font-mono font-medium">{tg.tgId}</span>
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-1">
-                  {r.dmr.ts1Talkgroups.map((tg, idx) => (
-                    <span
-                      key={idx}
-                      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-800/50 text-purple-700 dark:text-purple-300 text-xs"
-                      title={tg.name || `TG ${tg.tgId}`}
-                    >
-                      <span className="font-mono font-medium">{tg.tgId}</span>
-                      {tg.name && <span className="text-purple-500 dark:text-purple-400 max-w-[60px] truncate">{tg.name}</span>}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
+              );
+            })()}
 
             {/* Timeslot 2 Talkgroups */}
-            {r.dmr?.ts2Talkgroups && r.dmr.ts2Talkgroups.length > 0 && (
-              <div className="mt-2">
-                <div className="text-[10px] font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide mb-1">
-                  TS2
+            {(() => {
+              const ts2Blocked = r.dmr?.blockedTalkgroups?.filter(tg => tg.slot === '2' || tg.slot === 'both');
+              const hasTs2 = (r.dmr?.ts2Talkgroups && r.dmr.ts2Talkgroups.length > 0) || (ts2Blocked && ts2Blocked.length > 0);
+              if (!hasTs2) return null;
+              return (
+                <div className="mt-2">
+                  <div className="text-[10px] font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide mb-1">
+                    TS2
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {r.dmr?.ts2Talkgroups?.map((tg, idx) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-800/50 text-purple-700 dark:text-purple-300 text-xs"
+                        title={formatTgTooltip(tg)}
+                      >
+                        {tg.type === 'timed' && <Clock className="h-3 w-3 shrink-0 text-purple-400" />}
+                        <span className="font-mono font-medium">{tg.tgId}</span>
+                        {tg.name && <span className="text-purple-500 dark:text-purple-400 max-w-[60px] truncate">{tg.name}</span>}
+                      </span>
+                    ))}
+                    {ts2Blocked?.map((tg, idx) => (
+                      <span
+                        key={`blocked-${idx}`}
+                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-xs"
+                        title={`TG ${tg.tgId} (bloqueado)`}
+                      >
+                        <Ban className="h-3 w-3 shrink-0" />
+                        <span className="font-mono font-medium">{tg.tgId}</span>
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-1">
-                  {r.dmr.ts2Talkgroups.map((tg, idx) => (
-                    <span
-                      key={idx}
-                      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-800/50 text-purple-700 dark:text-purple-300 text-xs"
-                      title={tg.name || `TG ${tg.tgId}`}
-                    >
-                      <span className="font-mono font-medium">{tg.tgId}</span>
-                      {tg.name && <span className="text-purple-500 dark:text-purple-400 max-w-[60px] truncate">{tg.name}</span>}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
         )}
 

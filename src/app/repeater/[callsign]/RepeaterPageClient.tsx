@@ -13,7 +13,9 @@ import { formatRelativeTime } from "@/lib/time";
 import { toggleFavorite, isFavorite } from "@/lib/favorites";
 import {
   ArrowLeft,
+  Ban,
   Building2,
+  Clock,
   Check,
   ChevronRight,
   Compass,
@@ -25,6 +27,7 @@ import {
   Navigation,
   Radio,
   Share2,
+  ShieldCheck,
   Wifi,
   Zap,
   Antenna,
@@ -472,6 +475,7 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
                 autoStatus.isOnline ? "bg-emerald-500 animate-pulse" : "bg-red-500"
               )} />
               {autoStatus.isOnline ? t('autoStatus.online') : t('autoStatus.offline')}
+              <ShieldCheck className="h-3 w-3 opacity-60" />
             </span>
           )}
         >
@@ -513,33 +517,23 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
                   {/* Timeslot 1 */}
                   <TimeslotColumn
                     label="TS1"
+                    slot="1"
                     liveTalkgroups={bmProfile?.ts1}
                     cmsTalkgroups={r.dmr?.ts1Talkgroups}
+                    blockedTalkgroups={bmProfile?.blocked ?? r.dmr?.blockedTalkgroups}
                     loading={bmLoading}
                   />
 
                   {/* Timeslot 2 */}
                   <TimeslotColumn
                     label="TS2"
+                    slot="2"
                     liveTalkgroups={bmProfile?.ts2}
                     cmsTalkgroups={r.dmr?.ts2Talkgroups}
+                    blockedTalkgroups={bmProfile?.blocked ?? r.dmr?.blockedTalkgroups}
                     loading={bmLoading}
                   />
                 </div>
-
-                {/* Blocked Talkgroups */}
-                {((bmProfile?.blocked && bmProfile.blocked.length > 0) || (r.dmr?.blockedTalkgroups && r.dmr.blockedTalkgroups.length > 0)) && (
-                  <div className="mt-3 p-2 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200/80 dark:border-red-700/40">
-                    <span className="text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wider">
-                      Bloqueados
-                    </span>
-                    <div className="flex flex-wrap gap-1.5 mt-1.5">
-                      {(bmProfile?.blocked ?? r.dmr?.blockedTalkgroups ?? []).map((bg, idx) => (
-                        <BlockedEntry key={idx} talkgroup={bg} />
-                      ))}
-                    </div>
-                  </div>
-                )}
 
                 {/* Live data indicator */}
                 {bmProfile && r.dmr?.dmrId && (
@@ -852,9 +846,28 @@ const TYPE_LABELS: Record<string, string> = {
   dynamic: "Dinâmico",
 };
 
+function translateDays(days: string): string {
+  return days
+    .replace(/Mon/g, 'Seg').replace(/Tue/g, 'Ter').replace(/Wed/g, 'Qua')
+    .replace(/Thu/g, 'Qui').replace(/Fri/g, 'Sex').replace(/Sat/g, 'Sáb').replace(/Sun/g, 'Dom');
+}
+
+function formatScheduleTooltip(entry: { tgId: number; name?: string; days?: string; startTime?: string; endTime?: string }): string {
+  const parts = [entry.name || `TG ${entry.tgId}`];
+  const schedule: string[] = [];
+  if (entry.days) schedule.push(translateDays(entry.days));
+  if (entry.startTime) schedule.push(`${entry.startTime}${entry.endTime ? `-${entry.endTime}` : ''}`);
+  if (schedule.length) parts.push(`Horário: ${schedule.join(' ')}`);
+  return parts.join(' — ');
+}
+
 function TalkgroupEntry({ entry }: { entry: { tgId: number; name?: string; type: string; days?: string; startTime?: string; endTime?: string } }) {
+  const tooltip = entry.type === 'timed' ? formatScheduleTooltip(entry) : (entry.name || `TG ${entry.tgId}`);
   return (
-    <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/70 dark:bg-purple-900/40 border border-purple-200/60 dark:border-purple-700/40">
+    <div
+      className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/70 dark:bg-purple-900/40 border border-purple-200/60 dark:border-purple-700/40"
+      title={tooltip}
+    >
       <span className="font-mono text-sm font-semibold text-purple-800 dark:text-purple-200">{entry.tgId}</span>
       {entry.name && (
         <span className="text-xs text-purple-600 dark:text-purple-400 truncate">{entry.name}</span>
@@ -868,7 +881,7 @@ function TalkgroupEntry({ entry }: { entry: { tgId: number; name?: string; type:
       </span>
       {entry.type === 'timed' && (entry.days || entry.startTime) && (
         <span className="text-[10px] text-purple-500 dark:text-purple-400 whitespace-nowrap">
-          {entry.days && entry.days.replace(/Mon/g, 'Seg').replace(/Tue/g, 'Ter').replace(/Wed/g, 'Qua').replace(/Thu/g, 'Qui').replace(/Fri/g, 'Sex').replace(/Sat/g, 'Sáb').replace(/Sun/g, 'Dom')}
+          {entry.days && translateDays(entry.days)}
           {entry.startTime && ` ${entry.startTime}`}{entry.endTime && `-${entry.endTime}`}
         </span>
       )}
@@ -878,28 +891,31 @@ function TalkgroupEntry({ entry }: { entry: { tgId: number; name?: string; type:
 
 function BlockedEntry({ talkgroup }: { talkgroup: { tgId: number; slot?: string } }) {
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-xs font-mono line-through">
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-xs font-mono">
+      <Ban className="h-3 w-3 shrink-0" />
       {talkgroup.tgId}
-      {talkgroup.slot && talkgroup.slot !== 'both' && (
-        <span className="no-underline text-red-500 text-[10px]">TS{talkgroup.slot}</span>
-      )}
     </span>
   );
 }
 
 function TimeslotColumn({
   label,
+  slot,
   liveTalkgroups,
   cmsTalkgroups,
+  blockedTalkgroups,
   loading,
 }: {
   label: string;
+  slot: '1' | '2';
   liveTalkgroups?: BMTalkgroupEntry[];
   cmsTalkgroups?: Array<{ tgId: number; name?: string; type: string; days?: string; startTime?: string; endTime?: string }>;
+  blockedTalkgroups?: Array<{ tgId: number; slot?: string }>;
   loading: boolean;
 }) {
   // Use live data if available, otherwise fall back to CMS data
   const talkgroups = liveTalkgroups ?? cmsTalkgroups;
+  const slotBlocked = blockedTalkgroups?.filter(tg => tg.slot === slot || tg.slot === 'both');
 
   return (
     <div className="rounded-lg bg-purple-100/60 dark:bg-purple-800/30 border border-purple-200/80 dark:border-purple-700/40 p-3">
@@ -922,6 +938,15 @@ function TimeslotColumn({
         <p className="text-xs text-purple-400 dark:text-purple-500 italic">
           Sem talkgroups
         </p>
+      )}
+      {slotBlocked && slotBlocked.length > 0 && (
+        <div className="mt-2 pt-2 border-t border-purple-200/60 dark:border-purple-700/40">
+          <div className="flex flex-wrap gap-1.5">
+            {slotBlocked.map((tg, idx) => (
+              <BlockedEntry key={idx} talkgroup={tg} />
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );
