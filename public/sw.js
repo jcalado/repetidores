@@ -1,15 +1,9 @@
 // Service Worker for Repetidores PWA
-const CACHE_NAME = 'radioamador.info-v1';
-const DATA_CACHE_NAME = 'radioamador.info-data-v1';
+const CACHE_NAME = 'radioamador.info-v2';
+const DATA_CACHE_NAME = 'radioamador.info-data-v2';
 
-// Static assets to cache on install
+// Static assets to cache on install (only assets that won't redirect)
 const STATIC_ASSETS = [
-  '/',
-  '/about',
-  '/events',
-  '/bands',
-  '/iss',
-  '/qth',
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',
@@ -54,8 +48,11 @@ self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (request.method !== 'GET') return;
 
-  // Skip chrome-extension and other non-http requests
+  // Skip non-http requests (chrome-extension, etc.)
   if (!url.protocol.startsWith('http')) return;
+
+  // Skip cross-origin requests (avoids CORS issues with www/non-www redirects)
+  if (url.origin !== self.location.origin) return;
 
   // API requests - network first, cache fallback
   if (url.pathname.startsWith('/api/')) {
