@@ -201,7 +201,6 @@ function normalizeDMRConfig(doc: Record<string, unknown>): DMRConfig | undefined
   if (doc.dmrConfig && typeof doc.dmrConfig === 'object') {
     const cfg = doc.dmrConfig as Record<string, unknown>;
     const colorCode = toOptionalNumber(cfg.colorCode);
-    if (colorCode === undefined) return undefined;
 
     return {
       colorCode,
@@ -224,7 +223,7 @@ function normalizeDMRConfig(doc: Record<string, unknown>): DMRConfig | undefined
   if (colorCode === undefined && !talkgroupsStr) return undefined;
 
   return {
-    colorCode: colorCode || 1,
+    colorCode,
     ts2Talkgroups: parseLegacyTalkgroupsToV2(talkgroupsStr),
   };
 }

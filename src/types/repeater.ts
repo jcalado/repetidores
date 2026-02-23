@@ -65,7 +65,7 @@ export interface DMRBlockedTalkgroup {
 
 export interface DMRConfig {
   /** DMR color code (1-15) */
-  colorCode: number;
+  colorCode?: number;
   /** DMR ID of the repeater */
   dmrId?: number;
   /** Network name (e.g., "Brandmeister", "DMR-MARC") */
