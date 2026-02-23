@@ -861,14 +861,16 @@ function formatScheduleTooltip(entry: { tgId: number; name?: string; days?: stri
   return parts.join(' — ');
 }
 
-function TalkgroupEntry({ entry }: { entry: { tgId: number; name?: string; type: string; days?: string; startTime?: string; endTime?: string } }) {
+function TalkgroupEntry({ entry }: { entry: { tgId: number; name?: string; type: string; extTalkgroup?: number; days?: string; startTime?: string; endTime?: string } }) {
   const tooltip = entry.type === 'timed' ? formatScheduleTooltip(entry) : (entry.name || `TG ${entry.tgId}`);
   return (
     <div
       className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/70 dark:bg-purple-900/40 border border-purple-200/60 dark:border-purple-700/40"
       title={tooltip}
     >
-      <span className="font-mono text-sm font-semibold text-purple-800 dark:text-purple-200">{entry.tgId}</span>
+      <span className="font-mono text-sm font-semibold text-purple-800 dark:text-purple-200">
+        {entry.tgId}{entry.type === 'cluster' && entry.extTalkgroup ? ` → ${entry.extTalkgroup}` : ''}
+      </span>
       {entry.name && (
         <span className="text-xs text-purple-600 dark:text-purple-400 truncate">{entry.name}</span>
       )}
@@ -909,12 +911,24 @@ function TimeslotColumn({
   label: string;
   slot: '1' | '2';
   liveTalkgroups?: BMTalkgroupEntry[];
-  cmsTalkgroups?: Array<{ tgId: number; name?: string; type: string; days?: string; startTime?: string; endTime?: string }>;
+  cmsTalkgroups?: Array<{ tgId: number; name?: string; type: string; extTalkgroup?: number; days?: string; startTime?: string; endTime?: string }>;
   blockedTalkgroups?: Array<{ tgId: number; slot?: string }>;
   loading: boolean;
 }) {
-  // Use live data if available, otherwise fall back to CMS data
-  const talkgroups = liveTalkgroups ?? cmsTalkgroups;
+  // Use live data if available, otherwise fall back to CMS data.
+  // When using live data, merge in names from CMS since the BM API often omits them.
+  const talkgroups = React.useMemo(() => {
+    if (!liveTalkgroups) return cmsTalkgroups;
+    if (!cmsTalkgroups || cmsTalkgroups.length === 0) return liveTalkgroups;
+    const cmsNameMap = new Map<number, string>();
+    for (const tg of cmsTalkgroups) {
+      if (tg.name) cmsNameMap.set(tg.tgId, tg.name);
+    }
+    return liveTalkgroups.map((tg) => ({
+      ...tg,
+      name: tg.name || cmsNameMap.get(tg.tgId),
+    }));
+  }, [liveTalkgroups, cmsTalkgroups]);
   const slotBlocked = blockedTalkgroups?.filter(tg => tg.slot === slot || tg.slot === 'both');
 
   return (
