@@ -103,16 +103,17 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
     });
   }, [r.callsign]);
 
-  // Fetch live BM profile for Brandmeister DMR repeaters
+  // Fetch live BM profile for any DMR repeater with a DMR ID
+  // The BM API will return an error for non-BM devices, which we handle gracefully
   React.useEffect(() => {
-    if (!r.modes?.includes('DMR') || !r.dmr?.dmrId || r.dmr.network !== 'Brandmeister') return;
+    if (!r.modes?.includes('DMR') || !r.dmr?.dmrId) return;
     setBmLoading(true);
     getBrandmeisterProfile(r.dmr.dmrId)
       .then((profile) => {
         if (profile) setBmProfile(profile);
       })
       .finally(() => setBmLoading(false));
-  }, [r.modes, r.dmr?.dmrId, r.dmr?.network]);
+  }, [r.modes, r.dmr?.dmrId]);
 
   const { userLocation, requestLocation, isLocating } = useUserLocation();
   const compass = useDeviceCompass();
