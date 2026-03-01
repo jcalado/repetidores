@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { StandardPageHeader } from "@/components/ui/PageHeader";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Calculator, Gauge, Cable, Waves, Zap, MapPin, Eye } from "lucide-react";
 
@@ -54,17 +55,18 @@ export default function CalculadorasPage() {
   const t = useTranslations("calculadoras");
 
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-          {t("title")}
-        </h1>
-        <p className="text-slate-600 dark:text-slate-400">
-          {t("subtitle")}
-        </p>
-      </div>
+    <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+      <StandardPageHeader
+        icon={<Calculator className="h-7 w-7" />}
+        title={t("title")}
+        description={t("subtitle")}
+        floatingIcons={[
+          <Calculator key="calc" className="h-12 w-12 text-white" />,
+          <Waves key="waves" className="h-10 w-10 text-white" />,
+        ]}
+      />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {calculators.map((calc) => (
           <Link key={calc.id} href={calc.href}>
             <Card className="h-full transition-all duration-200 hover:shadow-lg hover:-translate-y-1 cursor-pointer">
