@@ -1,17 +1,28 @@
-'use client';
+import SatelliteTrackerClient from "./SatelliteTrackerClient"
 
-import dynamic from 'next/dynamic';
-
-// Disable SSR for this page since it uses browser APIs (localStorage, navigator.geolocation)
-const SatelliteTracker = dynamic(
-  () => import('@/components/satelites/SatelliteTracker').then((mod) => ({ default: mod.SatelliteTracker })),
-  { ssr: false }
-);
+export async function generateMetadata() {
+  return {
+    title: "Satélites - Radioamador Portugal",
+    description: "Rastreio de satélites de radioamador em tempo real com previsão de passagens",
+    keywords: ["satélites", "satellites", "ISS", "radioamador", "ham radio", "Portugal", "rastreio"],
+    alternates: {
+      canonical: "/satelites/",
+    },
+    openGraph: {
+      title: "Satélites - Radioamador Portugal",
+      description: "Rastreio de satélites de radioamador em tempo real com previsão de passagens",
+      type: "website",
+      url: "/satelites/",
+      siteName: "Radioamador.info",
+      locale: "pt_PT",
+    },
+  }
+}
 
 export default function SatelitesPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <SatelliteTracker />
-    </div>
-  );
+    <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+      <SatelliteTrackerClient />
+    </main>
+  )
 }

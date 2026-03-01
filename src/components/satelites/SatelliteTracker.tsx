@@ -37,7 +37,11 @@ import {
 import { fetchBulkTLE, formatBulkCacheAge, getBulkCacheAge } from '@/lib/satellites/tle-bulk-fetcher';
 import { DopplerCalculator } from './DopplerCalculator';
 
-export function SatelliteTracker() {
+interface SatelliteTrackerProps {
+  onSatelliteCount?: (count: number) => void;
+}
+
+export function SatelliteTracker({ onSatelliteCount }: SatelliteTrackerProps) {
   // Satellite catalog state
   const [satellites, setSatellites] = useState<SatelliteWithTLE[]>([]);
   const [selectedSatellite, setSelectedSatellite] = useState<SatelliteWithTLE | null>(null);
@@ -94,6 +98,7 @@ export function SatelliteTracker() {
         }
 
         setSatellites(result.satellites);
+        onSatelliteCount?.(result.satellites.length);
 
         // Select default satellite (ISS)
         const defaultSat = getDefaultSatellite(result.satellites);
@@ -300,17 +305,8 @@ export function SatelliteTracker() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <Satellite className="h-8 w-8" />
-            Passagens de Satelites
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400 mt-1">
-            {satellites.length} satelites de radioamador disponiveis
-          </p>
-        </div>
+      {/* Refresh TLE button */}
+      <div className="flex justify-end">
         <Button
           onClick={handleRefreshTLE}
           disabled={isLoading}
