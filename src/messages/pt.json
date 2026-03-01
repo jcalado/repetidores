@@ -748,7 +748,20 @@
         "enterFrequency": "Introduza uma frequência para calcular",
         "formulas": "Fórmulas",
         "note": "Nota",
-        "correctionNote": "O fator 0.95 compensa o efeito das extremidades e a velocidade de propagação no condutor"
+        "correctionNote": "O fator 0.95 compensa o efeito das extremidades e a velocidade de propagação no condutor",
+        "yagi": "Yagi-Uda",
+        "yagiDescription": "Antena direcional com refletor e diretores",
+        "numElements": "Número de Elementos",
+        "boomLength": "Comprimento do Boom",
+        "estimatedGain": "Ganho Estimado",
+        "reflector": "Refletor",
+        "drivenElement": "Elemento Ativo",
+        "director": "Diretor",
+        "element": "Elemento",
+        "length": "Comprimento",
+        "spacing": "Espaçamento",
+        "position": "Posição",
+        "yagiFormula": "Refletor ≈ 0.495λ, Ativo ≈ 0.473λ, Diretores ≈ 0.440λ–0.410λ"
     },
     "qcodes": {
         "title": "Códigos Q",

@@ -54,6 +54,104 @@ export interface CommonBand {
   description: string;
 }
 
+export interface YagiElement {
+  type: 'reflector' | 'driven' | 'director';
+  label: string;
+  length: number;
+  lengthFeet: number;
+  spacing: number;
+  spacingFeet: number;
+  position: number;
+}
+
+export interface YagiResult {
+  frequency: number;
+  wavelength: number;
+  numElements: number;
+  elements: YagiElement[];
+  boomLength: number;
+  boomLengthFeet: number;
+  estimatedGainDbd: number;
+}
+
+/**
+ * Calculate Yagi-Uda antenna dimensions
+ * Element lengths based on NBS optimized design data
+ * Gain estimates averaged from 4 formulas (VK3AUU, WA2PHW, DBJ9BV, Rothammel)
+ * @param frequencyMHz - Frequency in MHz
+ * @param numElements - Number of elements (2-10)
+ */
+export function calculateYagi(frequencyMHz: number, numElements: number): YagiResult {
+  const n = Math.max(2, Math.min(10, Math.round(numElements)));
+  const wavelength = 300 / frequencyMHz;
+
+  const elements: YagiElement[] = [];
+  let position = 0;
+
+  // Reflector
+  const reflectorLength = wavelength * 0.495;
+  elements.push({
+    type: 'reflector',
+    label: 'Reflector',
+    length: reflectorLength,
+    lengthFeet: reflectorLength * METERS_TO_FEET,
+    spacing: 0,
+    spacingFeet: 0,
+    position: 0,
+  });
+
+  // Driven element
+  const spacingReflectorToDriven = wavelength * 0.25;
+  position += spacingReflectorToDriven;
+  const drivenLength = wavelength * 0.473;
+  elements.push({
+    type: 'driven',
+    label: 'Driven',
+    length: drivenLength,
+    lengthFeet: drivenLength * METERS_TO_FEET,
+    spacing: spacingReflectorToDriven,
+    spacingFeet: spacingReflectorToDriven * METERS_TO_FEET,
+    position,
+  });
+
+  // Directors
+  const numDirectors = n - 2;
+  for (let i = 0; i < numDirectors; i++) {
+    const spacing = i === 0 ? wavelength * 0.20 : wavelength * 0.308;
+    position += spacing;
+    const directorFactor = Math.max(0.410, 0.440 - i * 0.005);
+    const directorLength = wavelength * directorFactor;
+    elements.push({
+      type: 'director',
+      label: `D${i + 1}`,
+      length: directorLength,
+      lengthFeet: directorLength * METERS_TO_FEET,
+      spacing,
+      spacingFeet: spacing * METERS_TO_FEET,
+      position,
+    });
+  }
+
+  const boomLength = position;
+
+  // Gain estimate: average of 4 formulas from steeman.org
+  const gainVK3AUU = 10 * Math.log10(4.3 * (n - 1));
+  const gainWA2PHW = 10 * Math.log10(n) + 1.5;
+  const gainDBJ9BV = 2.15 * Math.log(n) + 1.3;
+  const gainRothammel = n <= 3 ? (n === 2 ? 3.8 : 6.0) : 5.2 + 1.45 * Math.log2(n - 2);
+  const estimatedGainDbd = (gainVK3AUU + gainWA2PHW + gainDBJ9BV + gainRothammel) / 4;
+
+  return {
+    frequency: frequencyMHz,
+    wavelength,
+    numElements: n,
+    elements,
+    boomLength,
+    boomLengthFeet: boomLength * METERS_TO_FEET,
+    estimatedGainDbd,
+  };
+}
+
 export const COMMON_FREQUENCIES: CommonBand[] = [
   { label: '160m', freq: 1.85, description: 'Top Band' },
   { label: '80m', freq: 3.65, description: 'Night band' },
