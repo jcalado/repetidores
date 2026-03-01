@@ -107,16 +107,9 @@ export function NATOAlphabetTrainer() {
   const letters = showNumbers ? [...NATO_ALPHABET, ...NATO_NUMBERS] : NATO_ALPHABET;
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-4 sm:p-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-6">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">
-            {t('title')}
-          </h1>
-          <p className="text-muted-foreground mt-1">{t('subtitle')}</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-4">
+    <div className="space-y-6">
+      {/* Controls */}
+      <div className="flex flex-wrap items-center gap-4">
           {/* Audio toggle */}
           {speechSupported ? (
             <Button
@@ -156,11 +149,10 @@ export function NATOAlphabetTrainer() {
               {t('includeNumbers')}
             </label>
           </div>
-        </div>
       </div>
 
       {/* Current Letter Display */}
-      <Card className="mb-6">
+      <Card>
         <CardContent className="py-8 sm:py-12">
           {currentLetter ? (
             <div className="text-center space-y-4">
