@@ -67,12 +67,7 @@ export function PropagationStatus() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-            {t('title')}
-          </h1>
-          <p className="mt-2 text-muted-foreground">{t('loading')}</p>
-        </div>
+        <p className="text-muted-foreground">{t('loading')}</p>
         <div className="grid gap-4 md:grid-cols-2">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="h-48 animate-pulse rounded-lg bg-muted" />
@@ -84,13 +79,6 @@ export function PropagationStatus() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-          {t('title')}
-        </h1>
-        <p className="mt-2 text-muted-foreground">{t('subtitle')}</p>
-      </div>
 
       {/* Error Alert */}
       {error && (

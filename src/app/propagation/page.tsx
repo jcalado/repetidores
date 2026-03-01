@@ -1,17 +1,28 @@
-'use client';
+import PropagationClient from "./PropagationClient"
 
-import dynamic from 'next/dynamic';
-
-// Disable SSR for this page since it uses browser APIs (DOMParser for XML parsing)
-const PropagationStatus = dynamic(
-  () => import('@/components/propagation/PropagationStatus').then((mod) => ({ default: mod.PropagationStatus })),
-  { ssr: false }
-);
+export async function generateMetadata() {
+  return {
+    title: "Propagação - Radioamador Portugal",
+    description: "Condições de propagação em tempo real para Portugal",
+    keywords: ["propagação", "propagation", "HF", "VHF", "solar", "radioamador", "ham radio", "Portugal"],
+    alternates: {
+      canonical: "/propagation/",
+    },
+    openGraph: {
+      title: "Propagação - Radioamador Portugal",
+      description: "Condições de propagação em tempo real para Portugal",
+      type: "website",
+      url: "/propagation/",
+      siteName: "Radioamador.info",
+      locale: "pt_PT",
+    },
+  }
+}
 
 export default function PropagationPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <PropagationStatus />
-    </div>
-  );
+    <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+      <PropagationClient />
+    </main>
+  )
 }
