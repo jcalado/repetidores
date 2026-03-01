@@ -45,16 +45,7 @@ export function AntennaCalculator() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4 sm:p-6">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">
-          {t('title')}
-        </h1>
-        <p className="text-muted-foreground mt-1">{t('subtitle')}</p>
-      </div>
-
-      <div className="grid gap-6">
+    <div className="grid gap-6">
         {/* Frequency Input */}
         <Card>
           <CardHeader>
@@ -248,7 +239,6 @@ export function AntennaCalculator() {
             </div>
           </CardContent>
         </Card>
-      </div>
     </div>
   );
 }
