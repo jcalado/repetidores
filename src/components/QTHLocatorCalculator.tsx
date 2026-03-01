@@ -115,18 +115,7 @@ export default function QTHLocatorCalculator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
-            {t('title')}
-          </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-300">
-            {t('subtitle')}
-          </p>
-        </div>
-
-        <div className="grid gap-6 lg:grid-cols-2">
+    <div className="grid gap-6 lg:grid-cols-2">
           {/* Input Methods Card */}
           <Card>
             <CardHeader>
@@ -349,8 +338,6 @@ export default function QTHLocatorCalculator() {
               )}
             </CardContent>
           </Card>
-        </div>
-      </div>
     </div>
   );
 }
