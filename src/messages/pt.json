@@ -914,7 +914,9 @@
             "clearDesc": ">60% da zona de Fresnel livre",
             "marginalDesc": "20-60% da zona de Fresnel livre",
             "blockedDesc": "<20% ou terreno bloqueia LOS",
-            "info": "A análise de linha de vista considera a curvatura da Terra (modelo 4/3) e calcula a desobstrução da 1ª zona de Fresnel. Alturas de antena e frequência afetam o resultado."
+            "info": "A análise de linha de vista considera a curvatura da Terra (modelo 4/3) e calcula a desobstrução da 1ª zona de Fresnel. Alturas de antena e frequência afetam o resultado.",
+            "searchAddress": "Pesquisar",
+            "searchPlaceholder": "Procurar localidade ou morada..."
         }
     },
     "compass": {

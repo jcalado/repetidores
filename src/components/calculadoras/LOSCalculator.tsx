@@ -7,8 +7,8 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -22,8 +22,11 @@ import {
   XCircle,
   Navigation,
   Info,
+  Search,
 } from "lucide-react";
-import { useUserLocation } from "@/contexts/UserLocationContext";
+import { useUserLocation, type UserLocation } from "@/contexts/UserLocationContext";
+import LocationPickerDialog from "@/components/LocationPickerDialog";
+import { searchLocation, type GeocodingResult } from "@/lib/geolocation";
 import { qthToLatLon, isValidQth } from "@/lib/iss/qth-locator";
 import { formatNumber } from "@/lib/rf-calculations";
 import {
@@ -47,7 +50,7 @@ const LOSMiniMap = dynamic(
   { ssr: false }
 );
 
-type TargetMode = "coords" | "qth";
+type TargetMode = "coords" | "qth" | "search";
 
 // Default frequency presets (common amateur bands in MHz)
 const FREQUENCY_PRESETS = [
@@ -66,10 +69,15 @@ export default function LOSCalculator() {
   const [targetAntennaHeight, setTargetAntennaHeight] = React.useState("30");
 
   // Target position state
-  const [targetMode, setTargetMode] = React.useState<TargetMode>("coords");
+  const [targetMode, setTargetMode] = React.useState<TargetMode>("search");
   const [targetQth, setTargetQth] = React.useState("");
   const [targetLat, setTargetLat] = React.useState("");
   const [targetLon, setTargetLon] = React.useState("");
+
+  // Address search state
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [searchResults, setSearchResults] = React.useState<GeocodingResult[]>([]);
+  const [isSearching, setIsSearching] = React.useState(false);
 
   // Calculation parameters
   const [frequencyMHz, setFrequencyMHz] = React.useState("145");
@@ -98,7 +106,7 @@ export default function LOSCalculator() {
         ? { latitude: coords.latitude, longitude: coords.longitude }
         : null;
     }
-    if (targetMode === "coords") {
+    if (targetMode === "coords" || targetMode === "search") {
       const lat = parseFloat(targetLat);
       const lon = parseFloat(targetLon);
       if (
@@ -122,6 +130,34 @@ export default function LOSCalculator() {
     const bearing = calculateBearing(userPosition, targetPosition);
     return { distance, bearing, cardinal: bearingToCardinal(bearing) };
   }, [userPosition, targetPosition]);
+
+  // Debounced address search
+  React.useEffect(() => {
+    if (targetMode !== "search" || searchQuery.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const results = await searchLocation(searchQuery);
+        setSearchResults(results.slice(0, 5));
+      } catch {
+        setSearchResults([]);
+      }
+      setIsSearching(false);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, targetMode]);
+
+  const handleSearchSelect = (result: GeocodingResult) => {
+    setTargetLat(result.lat);
+    setTargetLon(result.lon);
+    setSearchQuery(result.display_name.split(",").slice(0, 2).join(","));
+    setSearchResults([]);
+  };
 
   // Calculate LOS
   const handleCalculate = async () => {
@@ -195,18 +231,7 @@ export default function LOSCalculator() {
     <div className="space-y-6">
       {/* Main calculator card */}
       <Card>
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-lg">
-              <Eye className="h-5 w-5" />
-            </div>
-            <div>
-              <CardTitle>{t("title")}</CardTitle>
-              <CardDescription>{t("description")}</CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-6 pt-6">
           {/* User Position Section - from global context */}
           <div className="space-y-4">
             <h3 className="font-medium flex items-center gap-2">
@@ -270,93 +295,143 @@ export default function LOSCalculator() {
 
           {/* Target Position Section */}
           <div className="space-y-4">
-            <h3 className="font-medium flex items-center gap-2">
-              <Radio className="h-4 w-4" />
-              {t("targetPosition")}
-            </h3>
-
-            {/* Target mode selection */}
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant={targetMode === "qth" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setTargetMode("qth")}
-              >
-                QTH
-              </Button>
-              <Button
-                variant={targetMode === "coords" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setTargetMode("coords")}
-              >
-                {t("coordinates")}
-              </Button>
+            <div className="flex items-center justify-between">
+              <h3 className="font-medium flex items-center gap-2">
+                <Radio className="h-4 w-4" />
+                {t("targetPosition")}
+              </h3>
+              <LocationPickerDialog
+                onLocationSelect={(loc: UserLocation) => {
+                  setTargetLat(String(loc.latitude));
+                  setTargetLon(String(loc.longitude));
+                  setTargetMode("coords");
+                }}
+              />
             </div>
 
-            {/* QTH mode */}
-            {targetMode === "qth" && (
-              <div className="space-y-2">
-                <Label htmlFor="target-qth">QTH Locator</Label>
-                <Input
-                  id="target-qth"
-                  placeholder="IN51qr"
-                  value={targetQth}
-                  onChange={(e) => setTargetQth(e.target.value.toUpperCase())}
-                  className="font-mono uppercase max-w-[150px]"
-                  maxLength={6}
-                />
-                {targetQth.length >= 4 && !isValidQth(targetQth) && (
-                  <p className="text-xs text-red-500">{t("invalidQth")}</p>
-                )}
-              </div>
-            )}
+            <Tabs
+              value={targetMode}
+              onValueChange={(v) => setTargetMode(v as TargetMode)}
+            >
+              <TabsList className="w-full">
+                <TabsTrigger value="search">
+                  <Search className="h-3.5 w-3.5" />
+                  {t("searchAddress")}
+                </TabsTrigger>
+                <TabsTrigger value="qth">QTH</TabsTrigger>
+                <TabsTrigger value="coords">{t("coordinates")}</TabsTrigger>
+              </TabsList>
 
-            {/* Coordinates mode */}
-            {targetMode === "coords" && (
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="target-lat">{t("latitude")}</Label>
-                  <Input
-                    id="target-lat"
-                    type="number"
-                    step="any"
-                    placeholder="41.1496"
-                    value={targetLat}
-                    onChange={(e) => setTargetLat(e.target.value)}
-                    className="font-mono"
-                  />
+              {/* Search by address */}
+              <TabsContent value="search">
+                <div className="space-y-2 relative">
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="target-search"
+                      placeholder={t("searchPlaceholder")}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-8 pr-8"
+                    />
+                    {isSearching && (
+                      <Loader2 className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+                    )}
+                  </div>
+                  {searchResults.length > 0 && (
+                    <div className="absolute z-10 w-full rounded-md border bg-popover shadow-md">
+                      {searchResults.map((r) => (
+                        <button
+                          key={r.place_id}
+                          type="button"
+                          className="w-full px-3 py-2 text-left text-sm hover:bg-muted transition-colors first:rounded-t-md last:rounded-b-md"
+                          onClick={() => handleSearchSelect(r)}
+                        >
+                          <div className="flex items-start gap-2">
+                            <MapPin className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-muted-foreground" />
+                            <span className="line-clamp-2">{r.display_name}</span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
+              </TabsContent>
+
+              {/* QTH Locator */}
+              <TabsContent value="qth">
                 <div className="space-y-2">
-                  <Label htmlFor="target-lon">{t("longitude")}</Label>
                   <Input
-                    id="target-lon"
-                    type="number"
-                    step="any"
-                    placeholder="-8.6109"
-                    value={targetLon}
-                    onChange={(e) => setTargetLon(e.target.value)}
-                    className="font-mono"
+                    id="target-qth"
+                    placeholder="IN51qr"
+                    value={targetQth}
+                    onChange={(e) => setTargetQth(e.target.value.toUpperCase())}
+                    className="font-mono uppercase max-w-[150px]"
+                    maxLength={6}
                   />
+                  {targetQth.length >= 4 && !isValidQth(targetQth) && (
+                    <p className="text-xs text-red-500">{t("invalidQth")}</p>
+                  )}
                 </div>
+              </TabsContent>
+
+              {/* Manual coordinates */}
+              <TabsContent value="coords">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <Label htmlFor="target-lat" className="text-xs">{t("latitude")}</Label>
+                    <Input
+                      id="target-lat"
+                      type="number"
+                      step="any"
+                      placeholder="41.1496"
+                      value={targetLat}
+                      onChange={(e) => setTargetLat(e.target.value)}
+                      className="font-mono"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="target-lon" className="text-xs">{t("longitude")}</Label>
+                    <Input
+                      id="target-lon"
+                      type="number"
+                      step="any"
+                      placeholder="-8.6109"
+                      value={targetLon}
+                      onChange={(e) => setTargetLon(e.target.value)}
+                      className="font-mono"
+                    />
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
+
+            {/* Resolved position feedback */}
+            {targetPosition && (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground p-2 rounded-md bg-muted/50">
+                <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
+                <span className="font-mono">
+                  {formatNumber(targetPosition.latitude, 5)}°, {formatNumber(targetPosition.longitude, 5)}°
+                </span>
               </div>
             )}
 
             {/* Target antenna height */}
-            <div className="space-y-2">
-              <Label htmlFor="target-height">{t("antennaHeight")}</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  id="target-height"
-                  type="number"
-                  step="1"
-                  min="0"
-                  placeholder="30"
-                  value={targetAntennaHeight}
-                  onChange={(e) => setTargetAntennaHeight(e.target.value)}
-                  className="font-mono max-w-[100px]"
-                />
-                <span className="text-sm text-muted-foreground">m</span>
-              </div>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="target-height" className="text-sm whitespace-nowrap">
+                {t("antennaHeight")}:
+              </Label>
+              <Input
+                id="target-height"
+                type="number"
+                step="1"
+                min="0"
+                placeholder="30"
+                value={targetAntennaHeight}
+                onChange={(e) => setTargetAntennaHeight(e.target.value)}
+                className="font-mono w-20 h-8"
+              />
+              <span className="text-sm text-muted-foreground">m</span>
             </div>
           </div>
 
@@ -554,35 +629,30 @@ export default function LOSCalculator() {
         </>
       )}
 
-      {/* Info */}
-      <Card>
-        <CardContent className="pt-6">
-          <p className="text-sm text-muted-foreground">{t("info")}</p>
-          <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-            <div className="p-3 rounded-lg bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800">
-              <div className="flex items-center gap-2 font-medium text-green-700 dark:text-green-300">
-                <CheckCircle2 className="h-4 w-4" />
-                {t("losStatus.clear")}
-              </div>
-              <p className="text-muted-foreground mt-1">{t("clearDesc")}</p>
-            </div>
-            <div className="p-3 rounded-lg bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800">
-              <div className="flex items-center gap-2 font-medium text-yellow-700 dark:text-yellow-300">
-                <AlertTriangle className="h-4 w-4" />
-                {t("losStatus.marginal")}
-              </div>
-              <p className="text-muted-foreground mt-1">{t("marginalDesc")}</p>
-            </div>
-            <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800">
-              <div className="flex items-center gap-2 font-medium text-red-700 dark:text-red-300">
-                <XCircle className="h-4 w-4" />
-                {t("losStatus.blocked")}
-              </div>
-              <p className="text-muted-foreground mt-1">{t("blockedDesc")}</p>
-            </div>
+      {/* Info legend */}
+      <div className="rounded-lg border bg-muted/30 p-4 space-y-4">
+        <div className="flex items-start gap-2.5 text-sm text-muted-foreground">
+          <Info className="h-4 w-4 flex-shrink-0 mt-0.5" />
+          <p>{t("info")}</p>
+        </div>
+        <div className="grid grid-cols-3 gap-px rounded-md overflow-hidden bg-border">
+          <div className="flex flex-col items-center gap-1 px-3 py-2.5 bg-background">
+            <CheckCircle2 className="h-4 w-4 text-green-600" />
+            <span className="text-xs font-medium text-green-700 dark:text-green-400">{t("losStatus.clear")}</span>
+            <span className="text-[11px] text-muted-foreground text-center leading-tight">{t("clearDesc")}</span>
           </div>
-        </CardContent>
-      </Card>
+          <div className="flex flex-col items-center gap-1 px-3 py-2.5 bg-background">
+            <AlertTriangle className="h-4 w-4 text-yellow-600" />
+            <span className="text-xs font-medium text-yellow-700 dark:text-yellow-400">{t("losStatus.marginal")}</span>
+            <span className="text-[11px] text-muted-foreground text-center leading-tight">{t("marginalDesc")}</span>
+          </div>
+          <div className="flex flex-col items-center gap-1 px-3 py-2.5 bg-background">
+            <XCircle className="h-4 w-4 text-red-600" />
+            <span className="text-xs font-medium text-red-700 dark:text-red-400">{t("losStatus.blocked")}</span>
+            <span className="text-[11px] text-muted-foreground text-center leading-tight">{t("blockedDesc")}</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
