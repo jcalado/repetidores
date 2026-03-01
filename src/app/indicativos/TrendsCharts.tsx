@@ -171,9 +171,13 @@ export function TrendsCharts({ stats }: TrendsChartsProps) {
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={cumulativeData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
               <defs>
-                <linearGradient id="totalGradient" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="mainGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
                   <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="additionalGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" className="stroke-slate-200 dark:stroke-slate-700" />
@@ -186,11 +190,19 @@ export function TrendsCharts({ stats }: TrendsChartsProps) {
               <Tooltip content={<ChartTooltip />} />
               <Area
                 type="monotone"
-                dataKey="total"
-                name="Total"
+                dataKey="main"
+                name="Principais"
                 stroke="#6366f1"
                 strokeWidth={2}
-                fill="url(#totalGradient)"
+                fill="url(#mainGradient)"
+              />
+              <Area
+                type="monotone"
+                dataKey="additional"
+                name="Adicionais (/1)"
+                stroke="#f59e0b"
+                strokeWidth={2}
+                fill="url(#additionalGradient)"
               />
             </AreaChart>
           </ResponsiveContainer>

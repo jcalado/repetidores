@@ -35,7 +35,7 @@ export interface CallsignStats {
 
 export interface CallsignTrends {
   monthly: Array<{ month: string; added: number; removed: number; modified: number }>
-  cumulative: Array<{ month: string; total: number }>
+  cumulative: Array<{ month: string; total: number; main: number; additional: number }>
   byCategoria: Record<string, number>
   currentTotal: number
 }
