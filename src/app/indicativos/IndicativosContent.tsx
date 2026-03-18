@@ -5,12 +5,29 @@ import { fetchCallsigns, fetchCallsignStats } from "@/lib/callsigns"
 import type { Callsign, CallsignStats, PaginatedCallsignResponse } from "@/types/callsign"
 import { useCallback, useEffect, useState } from "react"
 import { StatsCards } from "./StatsCards"
-import { FilterBar, type CallsignFilters } from "./FilterBar"
+import { FilterBar, type CallsignFilters, EMPTY_CALLSIGN_FILTERS } from "./FilterBar"
 import { CallsignTable } from "./CallsignTable"
 import { ChangesFeed } from "./ChangesFeed"
 import { TrendsCharts } from "./TrendsCharts"
 import { IdCard, History, TrendingUp } from "lucide-react"
 import { useIndicativosFilters } from "./hooks/useIndicativosFilters"
+import { ErrorBoundary } from "react-error-boundary"
+
+function TabErrorFallback({ resetErrorBoundary }: { error: unknown; resetErrorBoundary: () => void }) {
+  return (
+    <div className="rounded-lg border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/20 p-6 text-center">
+      <p className="text-sm text-red-600 dark:text-red-400">
+        Erro inesperado. Tente recarregar a página.
+      </p>
+      <button
+        onClick={resetErrorBoundary}
+        className="mt-3 text-sm text-ship-cove-600 dark:text-ship-cove-400 hover:underline"
+      >
+        Tentar novamente
+      </button>
+    </div>
+  )
+}
 
 const emptyStats: CallsignStats = {
   total: 0,
@@ -93,35 +110,42 @@ export function IndicativosContent() {
         </TabsList>
 
         <TabsContent value="indicativos" className="space-y-4">
-          <FilterBar
-            stats={stats}
-            filters={filters}
-            onFiltersChange={setFilters}
-          />
-          <CallsignTable
-            data={data?.docs || []}
-            loading={loading}
-            page={page}
-            totalPages={data?.totalPages || 1}
-            totalDocs={data?.totalDocs || 0}
-            onPageChange={handlePageChange}
-          />
+          <ErrorBoundary FallbackComponent={TabErrorFallback}>
+            <FilterBar
+              stats={stats}
+              filters={filters}
+              onFiltersChange={setFilters}
+            />
+            <CallsignTable
+              data={data?.docs || []}
+              loading={loading}
+              page={page}
+              totalPages={data?.totalPages || 1}
+              totalDocs={data?.totalDocs || 0}
+              onPageChange={handlePageChange}
+              onClearFilters={() => setFilters(EMPTY_CALLSIGN_FILTERS)}
+            />
+          </ErrorBoundary>
         </TabsContent>
 
         <TabsContent value="alteracoes">
-          <ChangesFeed
-            changeType={changeType}
-            onChangeTypeChange={setChangeType}
-          />
+          <ErrorBoundary FallbackComponent={TabErrorFallback}>
+            <ChangesFeed
+              changeType={changeType}
+              onChangeTypeChange={setChangeType}
+            />
+          </ErrorBoundary>
         </TabsContent>
 
         <TabsContent value="tendencias">
-          <TrendsCharts
-            stats={stats}
-            startDate={startDate}
-            endDate={endDate}
-            onDateRangeChange={setDateRange}
-          />
+          <ErrorBoundary FallbackComponent={TabErrorFallback}>
+            <TrendsCharts
+              stats={stats}
+              startDate={startDate}
+              endDate={endDate}
+              onDateRangeChange={setDateRange}
+            />
+          </ErrorBoundary>
         </TabsContent>
       </Tabs>
     </div>

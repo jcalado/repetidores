@@ -169,7 +169,7 @@ export function ChangesFeed({ changeType, onChangeTypeChange }: ChangesFeedProps
         </div>
       ) : changes.length === 0 ? (
         <div className="text-center py-12 text-slate-400">
-          Nenhuma alteração encontrada.
+          Sem alterações registadas para o período selecionado.
         </div>
       ) : (
         <div className="space-y-6">

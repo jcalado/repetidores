@@ -28,6 +28,7 @@ interface CallsignTableProps {
   totalPages: number
   totalDocs: number
   onPageChange: (page: number) => void
+  onClearFilters?: () => void
 }
 
 export function CallsignTable({
@@ -37,6 +38,7 @@ export function CallsignTable({
   totalPages,
   totalDocs,
   onPageChange,
+  onClearFilters,
 }: CallsignTableProps) {
   const [sorting, setSorting] = useState<SortingState>([])
 
@@ -93,8 +95,18 @@ export function CallsignTable({
               ))
             ) : table.getRowModel().rows.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={callsignColumns.length} className="text-center py-12 text-slate-400">
-                  Nenhum indicativo encontrado.
+                <TableCell colSpan={callsignColumns.length} className="text-center py-12">
+                  <div className="text-slate-400">
+                    Nenhum indicativo encontrado para os filtros selecionados.
+                  </div>
+                  {onClearFilters && (
+                    <button
+                      onClick={onClearFilters}
+                      className="mt-2 text-sm text-ship-cove-600 dark:text-ship-cove-400 hover:underline"
+                    >
+                      Limpar filtros
+                    </button>
+                  )}
                 </TableCell>
               </TableRow>
             ) : (
