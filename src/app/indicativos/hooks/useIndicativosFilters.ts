@@ -44,6 +44,7 @@ export function useIndicativosFilters() {
         distrito: parseCommaSeparated(searchParams.get("distrito")),
         categoria: parseCommaSeparated(searchParams.get("categoria")),
         estado: parseCommaSeparated(searchParams.get("estado")),
+        concelho: parseCommaSeparated(searchParams.get("concelho")),
       },
       page: Math.max(1, parseInt(searchParams.get("page") || "1", 10) || 1),
       changeType: searchParams.get("changeType") || "",
@@ -68,6 +69,8 @@ export function useIndicativosFilters() {
     if (categoria) params.set("categoria", categoria)
     const estado = toCommaSeparated(state.filters.estado)
     if (estado) params.set("estado", estado)
+    const concelho = toCommaSeparated(state.filters.concelho)
+    if (concelho) params.set("concelho", concelho)
     if (state.page > 1) params.set("page", String(state.page))
     if (state.changeType) params.set("changeType", state.changeType)
     if (state.startDate) params.set("startDate", state.startDate)

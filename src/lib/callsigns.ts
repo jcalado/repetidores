@@ -106,6 +106,18 @@ export async function searchCallsigns(query: string): Promise<Callsign[]> {
   return data.docs
 }
 
+export async function fetchConcelhos(distrito?: string): Promise<{ concelho: string; count: number }[]> {
+  const base = getApiBaseUrl()
+  const params = new URLSearchParams()
+  if (distrito) params.set('distrito', distrito)
+  const qs = params.toString()
+  const url = `${base}/api/indicativos/concelhos${qs ? `?${qs}` : ''}`
+  const res = await fetch(url, { next: { revalidate: 3600 } })
+  if (!res.ok) throw new Error(`Failed to fetch concelhos: ${res.status}`)
+  const data = await res.json()
+  return data.docs
+}
+
 export async function fetchCategoryFlows(month: string): Promise<CategoryFlows> {
   const base = getApiBaseUrl()
   const res = await fetch(`${base}/api/indicativos/category-flows?month=${encodeURIComponent(month)}`)

@@ -2,15 +2,17 @@
 
 import { Input } from "@/components/ui/input"
 import type { CallsignStats } from "@/types/callsign"
-import { Search, X, MapPin, Tag, ShieldCheck } from "lucide-react"
+import { Search, X, MapPin, Tag, ShieldCheck, Building2 } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { FacetedFilter } from "./FacetedFilter"
+import { fetchConcelhos } from "@/lib/callsigns"
 
 export interface CallsignFilters {
   search: string
   distrito: string[]
   categoria: string[]
   estado: string[]
+  concelho: string[]
 }
 
 export const EMPTY_CALLSIGN_FILTERS: CallsignFilters = {
@@ -18,6 +20,7 @@ export const EMPTY_CALLSIGN_FILTERS: CallsignFilters = {
   distrito: [],
   categoria: [],
   estado: [],
+  concelho: [],
 }
 
 interface FilterBarProps {
@@ -61,8 +64,33 @@ export function FilterBar({ stats, filters, onFiltersChange, children, onClear, 
     }
   }, [])
 
+  const [concelhoOptions, setConcelhoOptions] = useState<{ value: string; label: string; count?: number }[]>([])
+  const [concelhoLoading, setConcelhoLoading] = useState(false)
+
+  useEffect(() => {
+    if (filters.distrito.length === 0) {
+      setConcelhoOptions([])
+      if (filters.concelho.length > 0) {
+        onFiltersChange({ ...filters, concelho: [] })
+      }
+      return
+    }
+    setConcelhoLoading(true)
+    fetchConcelhos(filters.distrito.join(","))
+      .then((docs) => {
+        const validConcelhos = new Set(docs.map((d) => d.concelho))
+        const filtered = filters.concelho.filter((c) => validConcelhos.has(c))
+        setConcelhoOptions(docs.map((d) => ({ value: d.concelho, label: d.concelho, count: d.count })))
+        if (filtered.length !== filters.concelho.length) {
+          onFiltersChange({ ...filters, concelho: filtered })
+        }
+      })
+      .catch(() => setConcelhoOptions([]))
+      .finally(() => setConcelhoLoading(false))
+  }, [filters.distrito])
+
   const hasActiveFilters =
-    filters.search || filters.distrito.length > 0 || filters.categoria.length > 0 || filters.estado.length > 0 || hasExtraFilters
+    filters.search || filters.distrito.length > 0 || filters.categoria.length > 0 || filters.estado.length > 0 || filters.concelho.length > 0 || hasExtraFilters
 
   const clearFilters = () => {
     setSearchInput("")
@@ -94,6 +122,13 @@ export function FilterBar({ stats, filters, onFiltersChange, children, onClear, 
       key: `e-${e}`,
       label: e,
       onRemove: () => onFiltersChange({ ...filters, estado: filters.estado.filter((v) => v !== e) }),
+    })
+  }
+  for (const co of filters.concelho) {
+    activeChips.push({
+      key: `co-${co}`,
+      label: co,
+      onRemove: () => onFiltersChange({ ...filters, concelho: filters.concelho.filter((v) => v !== co) }),
     })
   }
 
@@ -138,6 +173,16 @@ export function FilterBar({ stats, filters, onFiltersChange, children, onClear, 
           options={estados.map((e) => ({ value: e, label: e, count: stats.byEstado[e] }))}
           selected={filters.estado}
           onChange={(v) => onFiltersChange({ ...filters, estado: v })}
+        />
+
+        <FacetedFilter
+          icon={<Building2 />}
+          title="Concelho"
+          options={concelhoOptions}
+          selected={filters.concelho}
+          onChange={(v) => onFiltersChange({ ...filters, concelho: v })}
+          disabled={filters.distrito.length === 0}
+          disabledHint="Selecione um distrito primeiro"
         />
 
         {/* Extra controls slot (e.g. date range for trends) */}

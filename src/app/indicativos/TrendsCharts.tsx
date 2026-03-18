@@ -82,7 +82,7 @@ export function TrendsCharts({ stats, startDate, endDate, onDateRangeChange }: T
     try {
       const hasAny =
         startDate || endDate ||
-        filters.distrito.length > 0 || filters.categoria.length > 0 || filters.estado.length > 0 || filters.search
+        filters.distrito.length > 0 || filters.categoria.length > 0 || filters.estado.length > 0 || filters.concelho.length > 0 || filters.search
       const data = await fetchCallsignTrends(hasAny ? {
         startDate: startDate || undefined,
         endDate: endDate || undefined,

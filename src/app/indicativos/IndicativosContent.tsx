@@ -53,6 +53,7 @@ export function IndicativosContent() {
         distrito: f.distrito.length > 0 ? f.distrito.join(",") : undefined,
         categoria: f.categoria.length > 0 ? f.categoria.join(",") : undefined,
         estado: f.estado.length > 0 ? f.estado.join(",") : undefined,
+        concelho: f.concelho.length > 0 ? f.concelho.join(",") : undefined,
       })
       setData(result)
     } catch (err) {

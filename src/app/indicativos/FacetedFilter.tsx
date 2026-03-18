@@ -18,9 +18,11 @@ interface FacetedFilterProps {
   options: FacetedFilterOption[]
   selected: string[]
   onChange: (selected: string[]) => void
+  disabled?: boolean
+  disabledHint?: string
 }
 
-export function FacetedFilter({ icon, title, options, selected, onChange }: FacetedFilterProps) {
+export function FacetedFilter({ icon, title, options, selected, onChange, disabled, disabledHint }: FacetedFilterProps) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState("")
   const inputRef = useRef<HTMLInputElement>(null)
@@ -56,9 +58,12 @@ export function FacetedFilter({ icon, title, options, selected, onChange }: Face
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger asChild>
         <button
+          disabled={disabled}
+          title={disabled ? disabledHint : undefined}
           className={`
             group inline-flex items-center gap-1.5 h-8 rounded-md text-xs font-medium
             border shadow-xs transition-all duration-150
+            disabled:opacity-50 disabled:cursor-not-allowed
             ${isActive
               ? "bg-ship-cove-50 dark:bg-ship-cove-950/50 border-ship-cove-200 dark:border-ship-cove-800 text-ship-cove-800 dark:text-ship-cove-200"
               : "bg-transparent dark:bg-input/30 border-input text-muted-foreground hover:text-foreground"
