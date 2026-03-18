@@ -66,24 +66,26 @@ function ChartTooltip({ active, payload, label }: any) {
 
 interface TrendsChartsProps {
   stats: CallsignStats
+  startDate: string
+  endDate: string
+  onDateRangeChange: (startDate: string, endDate: string) => void
 }
 
-export function TrendsCharts({ stats }: TrendsChartsProps) {
+export function TrendsCharts({ stats, startDate, endDate, onDateRangeChange }: TrendsChartsProps) {
   const [trends, setTrends] = useState<CallsignTrends | null>(null)
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState<CallsignFilters>(EMPTY_CALLSIGN_FILTERS)
-  const [dateRange, setDateRange] = useState<DateRange>({})
   const dateFilterResetRef = useRef<{ reset: () => void } | null>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
     try {
       const hasAny =
-        dateRange.startDate || dateRange.endDate ||
+        startDate || endDate ||
         filters.distrito.length > 0 || filters.categoria.length > 0 || filters.estado.length > 0 || filters.search
       const data = await fetchCallsignTrends(hasAny ? {
-        startDate: dateRange.startDate,
-        endDate: dateRange.endDate,
+        startDate: startDate || undefined,
+        endDate: endDate || undefined,
         distrito: filters.distrito.length > 0 ? filters.distrito.join(",") : undefined,
         categoria: filters.categoria.length > 0 ? filters.categoria.join(",") : undefined,
         estado: filters.estado.length > 0 ? filters.estado.join(",") : undefined,
@@ -95,19 +97,19 @@ export function TrendsCharts({ stats }: TrendsChartsProps) {
     } finally {
       setLoading(false)
     }
-  }, [filters, dateRange])
+  }, [filters, startDate, endDate])
 
   useEffect(() => {
     load()
   }, [load])
 
-  const hasDateFilter = !!(dateRange.startDate || dateRange.endDate)
+  const hasDateFilter = !!(startDate || endDate)
 
   const handleClearAll = useCallback(() => {
     setFilters(EMPTY_CALLSIGN_FILTERS)
-    setDateRange({})
+    onDateRangeChange("", "")
     dateFilterResetRef.current?.reset()
-  }, [])
+  }, [onDateRangeChange])
 
   const filterBar = (
     <FilterBar
@@ -117,7 +119,7 @@ export function TrendsCharts({ stats }: TrendsChartsProps) {
       hasExtraFilters={hasDateFilter}
       onClear={handleClearAll}
     >
-      <TrendsDateFilter value={dateRange} onChange={setDateRange} resetRef={dateFilterResetRef} />
+      <TrendsDateFilter value={{ startDate: startDate || undefined, endDate: endDate || undefined }} onChange={(dr: DateRange) => onDateRangeChange(dr.startDate || "", dr.endDate || "")} resetRef={dateFilterResetRef} />
     </FilterBar>
   )
 

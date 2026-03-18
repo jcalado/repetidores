@@ -1,5 +1,7 @@
 import { StandardPageHeader } from "@/components/ui/PageHeader"
 import { IdCard, Users } from "lucide-react"
+import { Loader2 } from "lucide-react"
+import { Suspense } from "react"
 import { IndicativosContent } from "./IndicativosContent"
 
 export async function generateMetadata() {
@@ -34,7 +36,14 @@ export default function IndicativosPage() {
         ]}
       />
 
-      <IndicativosContent />
+      <Suspense fallback={
+        <div className="flex items-center justify-center py-24 text-slate-400">
+          <Loader2 className="h-5 w-5 animate-spin mr-2" />
+          A carregar...
+        </div>
+      }>
+        <IndicativosContent />
+      </Suspense>
     </main>
   )
 }

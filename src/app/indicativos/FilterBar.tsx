@@ -36,6 +36,10 @@ export function FilterBar({ stats, filters, onFiltersChange, children, onClear, 
   const [searchInput, setSearchInput] = useState(filters.search)
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
+  useEffect(() => {
+    setSearchInput(filters.search)
+  }, [filters.search])
+
   const distritos = Object.keys(stats.byDistrito).sort()
   const categorias = Object.keys(stats.byCategoria).sort()
   const estados = Object.keys(stats.byEstado).sort()

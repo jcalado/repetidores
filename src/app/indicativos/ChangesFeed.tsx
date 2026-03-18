@@ -93,12 +93,16 @@ function ChangeEntry({ change }: { change: CallsignChange }) {
   )
 }
 
-export function ChangesFeed() {
+interface ChangesFeedProps {
+  changeType: string
+  onChangeTypeChange: (type: string) => void
+}
+
+export function ChangesFeed({ changeType, onChangeTypeChange }: ChangesFeedProps) {
   const [changes, setChanges] = useState<CallsignChange[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [filter, setFilter] = useState("")
 
   const loadChanges = useCallback(async (p: number, changeType: string) => {
     setLoading(true)
@@ -122,14 +126,15 @@ export function ChangesFeed() {
   }, [])
 
   useEffect(() => {
+    setChanges([])
     setPage(1)
-    loadChanges(1, filter)
-  }, [filter, loadChanges])
+    loadChanges(1, changeType)
+  }, [changeType, loadChanges])
 
   const loadMore = () => {
     const next = page + 1
     setPage(next)
-    loadChanges(next, filter)
+    loadChanges(next, changeType)
   }
 
   // Group changes by date
@@ -147,9 +152,9 @@ export function ChangesFeed() {
         {FILTER_OPTIONS.map((opt) => (
           <Button
             key={opt.value}
-            variant={filter === opt.value ? "default" : "outline"}
+            variant={changeType === opt.value ? "default" : "outline"}
             size="sm"
-            onClick={() => setFilter(opt.value)}
+            onClick={() => onChangeTypeChange(opt.value)}
           >
             {opt.label}
           </Button>

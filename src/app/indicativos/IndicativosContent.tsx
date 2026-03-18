@@ -10,6 +10,7 @@ import { CallsignTable } from "./CallsignTable"
 import { ChangesFeed } from "./ChangesFeed"
 import { TrendsCharts } from "./TrendsCharts"
 import { IdCard, History, TrendingUp } from "lucide-react"
+import { useIndicativosFilters } from "./hooks/useIndicativosFilters"
 
 const emptyStats: CallsignStats = {
   total: 0,
@@ -22,17 +23,18 @@ const emptyStats: CallsignStats = {
 }
 
 export function IndicativosContent() {
+  const {
+    tab, setTab,
+    filters, setFilters,
+    page, setPage,
+    changeType, setChangeType,
+    startDate, endDate, setDateRange,
+  } = useIndicativosFilters()
+
   const [stats, setStats] = useState<CallsignStats>(emptyStats)
   const [statsLoading, setStatsLoading] = useState(true)
-  const [filters, setFilters] = useState<CallsignFilters>({
-    search: "",
-    distrito: [],
-    categoria: [],
-    estado: [],
-  })
   const [data, setData] = useState<PaginatedCallsignResponse<Callsign> | null>(null)
   const [loading, setLoading] = useState(true)
-  const [page, setPage] = useState(1)
 
   useEffect(() => {
     fetchCallsignStats()
@@ -61,20 +63,18 @@ export function IndicativosContent() {
   }, [])
 
   useEffect(() => {
-    setPage(1)
-    loadData(1, filters)
-  }, [filters, loadData])
+    loadData(page, filters)
+  }, [filters, page, loadData])
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage)
-    loadData(newPage, filters)
   }
 
   return (
     <div className="space-y-6 mt-6">
       <StatsCards stats={stats} loading={statsLoading} />
 
-      <Tabs defaultValue="indicativos" className="w-full">
+      <Tabs value={tab} onValueChange={setTab} className="w-full">
         <TabsList className="mb-4">
           <TabsTrigger value="indicativos" className="gap-2">
             <IdCard className="h-4 w-4" />
@@ -107,11 +107,19 @@ export function IndicativosContent() {
         </TabsContent>
 
         <TabsContent value="alteracoes">
-          <ChangesFeed />
+          <ChangesFeed
+            changeType={changeType}
+            onChangeTypeChange={setChangeType}
+          />
         </TabsContent>
 
         <TabsContent value="tendencias">
-          <TrendsCharts stats={stats} />
+          <TrendsCharts
+            stats={stats}
+            startDate={startDate}
+            endDate={endDate}
+            onDateRangeChange={setDateRange}
+          />
         </TabsContent>
       </Tabs>
     </div>
