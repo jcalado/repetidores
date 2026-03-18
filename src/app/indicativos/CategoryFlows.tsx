@@ -2,10 +2,25 @@
 
 import { fetchCategoryFlows } from "@/lib/callsigns"
 import type { CategoryFlows as CategoryFlowsType } from "@/types/callsign"
-import { Loader2 } from "lucide-react"
+import { AlertTriangle, Loader2 } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 const CATEGORY_ORDER = ["3", "2", "1", "A", "B", "C"]
+
+function getFlagReason(category: string, reason: string): string {
+  if (reason === "removed") return "Indicativo removido da categoria"
+  if (reason.startsWith("to_")) {
+    const targetCat = reason.slice(3)
+    const expectedNext: Record<string, string> = { "3": "2", "2": "1" }
+    const expected = expectedNext[category]
+    if (expected && targetCat !== expected) {
+      return `Esperado: Cat ${category} → Cat ${expected}, mas foi Cat ${category} → Cat ${targetCat}`
+    }
+    return `Transição inesperada de Cat ${category} para Cat ${targetCat}`
+  }
+  return "Movimento sinalizado"
+}
 
 function formatReason(reason: string): string {
   if (reason === "added") return "Novo"
@@ -89,6 +104,13 @@ export function CategoryFlows() {
         </select>
       </div>
 
+      <div className="flex items-start gap-2 rounded-md border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/20 px-3 py-2 text-xs text-amber-800 dark:text-amber-300">
+        <AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+        <p>
+          <span className="font-semibold">Movimentos sinalizados</span> — Entradas e saídas destacadas a vermelho indicam transições de categoria inesperadas (ex: saltar de Categoria 3 para Categoria 1 sem passar pela 2).
+        </p>
+      </div>
+
       {loading && (
         <div className="flex items-center justify-center py-12 text-slate-400">
           <Loader2 className="h-5 w-5 animate-spin mr-2" />
@@ -164,26 +186,39 @@ export function CategoryFlows() {
                         {leaving.length === 0 ? (
                           <p className="text-xs text-slate-400 dark:text-slate-500 italic">—</p>
                         ) : (
-                          leaving.map((entry) => (
-                            <div
-                              key={entry.indicativo}
-                              className={`text-xs ${
-                                entry.flagged
-                                  ? "bg-red-50 dark:bg-red-950/30 border-l-2 border-red-400 pl-1.5"
-                                  : ""
-                              }`}
-                            >
-                              <span className="font-medium text-slate-700 dark:text-slate-200">
-                                {entry.flagged && (
-                                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-red-500 mr-1 align-middle" />
-                                )}
-                                {entry.indicativo}
-                              </span>
-                              <span className="ml-1 text-slate-400 dark:text-slate-500">
-                                {formatReason(entry.reason)}
-                              </span>
-                            </div>
-                          ))
+                          <TooltipProvider>
+                            {leaving.map((entry) =>
+                              entry.flagged ? (
+                                <Tooltip key={entry.indicativo}>
+                                  <TooltipTrigger asChild>
+                                    <div
+                                      className="text-xs bg-red-50 dark:bg-red-950/30 border-l-2 border-red-400 pl-1.5 cursor-help"
+                                    >
+                                      <span className="font-medium text-slate-700 dark:text-slate-200">
+                                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-red-500 mr-1 align-middle" />
+                                        {entry.indicativo}
+                                      </span>
+                                      <span className="ml-1 text-slate-400 dark:text-slate-500">
+                                        {formatReason(entry.reason)}
+                                      </span>
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>{getFlagReason(cat, entry.reason)}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              ) : (
+                                <div key={entry.indicativo} className="text-xs">
+                                  <span className="font-medium text-slate-700 dark:text-slate-200">
+                                    {entry.indicativo}
+                                  </span>
+                                  <span className="ml-1 text-slate-400 dark:text-slate-500">
+                                    {formatReason(entry.reason)}
+                                  </span>
+                                </div>
+                              )
+                            )}
+                          </TooltipProvider>
                         )}
                       </div>
                     </div>
