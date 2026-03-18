@@ -6,9 +6,17 @@ import { Search, X, MapPin, Tag, ShieldCheck, Building2 } from "lucide-react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { FacetedFilter } from "./FacetedFilter"
 import { fetchConcelhos } from "@/lib/callsigns"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export interface CallsignFilters {
   search: string
+  searchField: string
   distrito: string[]
   categoria: string[]
   estado: string[]
@@ -17,6 +25,7 @@ export interface CallsignFilters {
 
 export const EMPTY_CALLSIGN_FILTERS: CallsignFilters = {
   search: "",
+  searchField: "todos",
   distrito: [],
   categoria: [],
   estado: [],
@@ -137,14 +146,30 @@ export function FilterBar({ stats, filters, onFiltersChange, children, onClear, 
       {/* Main filter row */}
       <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center flex-wrap">
         {/* Search */}
-        <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
-          <Input
-            placeholder="Pesquisar indicativo, nome..."
-            value={searchInput}
-            onChange={(e) => handleSearchChange(e.target.value)}
-            className="pl-9 h-8 text-sm bg-white dark:bg-white/5 border-slate-200 dark:border-slate-700"
-          />
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Select
+            value={filters.searchField}
+            onValueChange={(v) => onFiltersChange({ ...filters, searchField: v })}
+          >
+            <SelectTrigger className="h-8 w-full sm:w-[110px] text-xs bg-white dark:bg-white/5 border-slate-200 dark:border-slate-700">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos</SelectItem>
+              <SelectItem value="indicativo">Indicativo</SelectItem>
+              <SelectItem value="nome">Nome</SelectItem>
+              <SelectItem value="localidade">Localidade</SelectItem>
+            </SelectContent>
+          </Select>
+          <div className="relative w-full sm:w-56">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+            <Input
+              placeholder="Pesquisar..."
+              value={searchInput}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              className="pl-9 h-8 text-sm bg-white dark:bg-white/5 border-slate-200 dark:border-slate-700"
+            />
+          </div>
         </div>
 
         {/* Separator */}

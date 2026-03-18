@@ -22,6 +22,7 @@ export interface CallsignListParams {
   estado?: string
   concelho?: string
   search?: string
+  searchField?: string
 }
 
 export async function fetchCallsigns(
@@ -37,6 +38,7 @@ export async function fetchCallsigns(
   if (params.estado) searchParams.set('estado', params.estado)
   if (params.concelho) searchParams.set('concelho', params.concelho)
   if (params.search) searchParams.set('search', params.search)
+  if (params.searchField) searchParams.set('searchField', params.searchField)
 
   const qs = searchParams.toString()
   const url = `${base}/api/indicativos/list${qs ? `?${qs}` : ''}`

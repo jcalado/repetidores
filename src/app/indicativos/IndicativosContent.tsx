@@ -50,6 +50,7 @@ export function IndicativosContent() {
         page: p,
         limit: 50,
         search: f.search || undefined,
+        searchField: f.searchField !== "todos" ? f.searchField : undefined,
         distrito: f.distrito.length > 0 ? f.distrito.join(",") : undefined,
         categoria: f.categoria.length > 0 ? f.categoria.join(",") : undefined,
         estado: f.estado.length > 0 ? f.estado.join(",") : undefined,

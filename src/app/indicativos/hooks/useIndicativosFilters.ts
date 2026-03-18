@@ -41,6 +41,7 @@ export function useIndicativosFilters() {
       tab: isValidTab(tabParam) ? tabParam : "indicativos",
       filters: {
         search: searchParams.get("search") || "",
+        searchField: searchParams.get("searchField") || "todos",
         distrito: parseCommaSeparated(searchParams.get("distrito")),
         categoria: parseCommaSeparated(searchParams.get("categoria")),
         estado: parseCommaSeparated(searchParams.get("estado")),
@@ -63,6 +64,7 @@ export function useIndicativosFilters() {
     const params = new URLSearchParams()
     if (state.tab !== "indicativos") params.set("tab", state.tab)
     if (state.filters.search) params.set("search", state.filters.search)
+    if (state.filters.searchField && state.filters.searchField !== "todos") params.set("searchField", state.filters.searchField)
     const distrito = toCommaSeparated(state.filters.distrito)
     if (distrito) params.set("distrito", distrito)
     const categoria = toCommaSeparated(state.filters.categoria)
