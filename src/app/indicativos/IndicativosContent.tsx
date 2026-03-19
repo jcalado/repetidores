@@ -15,9 +15,10 @@ import { TrendsCharts } from "./TrendsCharts"
 import { IdCard, History, TrendingUp, Map as MapIcon, Loader2 } from "lucide-react"
 import { DistritoRanking } from "@/components/indicativos/DistritoRanking"
 
-const DistritoMap = dynamic(() => import("@/components/indicativos/DistritoMap"), { ssr: false })
 import { useIndicativosFilters } from "./hooks/useIndicativosFilters"
 import { ErrorBoundary } from "react-error-boundary"
+
+const DistritoMap = dynamic(() => import("@/components/indicativos/DistritoMap"), { ssr: false })
 
 function TabErrorFallback({ resetErrorBoundary }: { error: unknown; resetErrorBoundary: () => void }) {
   return (
@@ -92,15 +93,20 @@ export function IndicativosContent() {
   }, [])
 
   useEffect(() => {
-    loadData(page, filters)
-  }, [filters, page, loadData])
+    if (tab === "indicativos") {
+      loadData(page, filters)
+    }
+  }, [tab, filters, page, loadData])
 
   useEffect(() => {
     if (tab !== "mapa" || distritoStats.length > 0) return
     setMapLoading(true)
     Promise.all([
       fetchDistritoStats(),
-      fetch("/geo/distritos.json").then((r) => r.json()),
+      fetch("/geo/distritos.json").then((r) => {
+        if (!r.ok) throw new Error(`Failed to fetch GeoJSON: ${r.status}`)
+        return r.json()
+      }),
     ])
       .then(([stats, geo]) => {
         setDistritoStats(stats)
