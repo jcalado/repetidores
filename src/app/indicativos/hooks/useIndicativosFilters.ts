@@ -4,7 +4,7 @@ import { useCallback, useState, useEffect, useRef } from "react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import type { CallsignFilters } from "../FilterBar"
 
-const VALID_TABS = ["indicativos", "alteracoes", "tendencias"] as const
+const VALID_TABS = ["indicativos", "alteracoes", "tendencias", "mapa"] as const
 type Tab = (typeof VALID_TABS)[number]
 
 function isValidTab(value: string | null): value is Tab {

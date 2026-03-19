@@ -1,15 +1,21 @@
 "use client"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { fetchCallsigns, fetchCallsignStats } from "@/lib/callsigns"
+import { fetchCallsigns, fetchCallsignStats, fetchDistritoStats } from "@/lib/callsigns"
 import type { Callsign, CallsignStats, PaginatedCallsignResponse } from "@/types/callsign"
+import type { DistritoStats } from "@/types/distrito-stats"
+import type { FeatureCollection } from "geojson"
 import { useCallback, useEffect, useState } from "react"
+import dynamic from "next/dynamic"
 import { StatsCards } from "./StatsCards"
 import { FilterBar, type CallsignFilters, EMPTY_CALLSIGN_FILTERS } from "./FilterBar"
 import { CallsignTable } from "./CallsignTable"
 import { ChangesFeed } from "./ChangesFeed"
 import { TrendsCharts } from "./TrendsCharts"
-import { IdCard, History, TrendingUp } from "lucide-react"
+import { IdCard, History, TrendingUp, Map as MapIcon, Loader2 } from "lucide-react"
+import { DistritoRanking } from "@/components/indicativos/DistritoRanking"
+
+const DistritoMap = dynamic(() => import("@/components/indicativos/DistritoMap"), { ssr: false })
 import { useIndicativosFilters } from "./hooks/useIndicativosFilters"
 import { ErrorBoundary } from "react-error-boundary"
 
@@ -52,6 +58,10 @@ export function IndicativosContent() {
   const [statsLoading, setStatsLoading] = useState(true)
   const [data, setData] = useState<PaginatedCallsignResponse<Callsign> | null>(null)
   const [loading, setLoading] = useState(true)
+  const [distritoStats, setDistritoStats] = useState<DistritoStats[]>([])
+  const [distritoGeo, setDistritoGeo] = useState<FeatureCollection | null>(null)
+  const [mapLoading, setMapLoading] = useState(false)
+  const [highlightedDistrito, setHighlightedDistrito] = useState<string | null>(null)
 
   useEffect(() => {
     fetchCallsignStats()
@@ -85,6 +95,21 @@ export function IndicativosContent() {
     loadData(page, filters)
   }, [filters, page, loadData])
 
+  useEffect(() => {
+    if (tab !== "mapa" || distritoStats.length > 0) return
+    setMapLoading(true)
+    Promise.all([
+      fetchDistritoStats(),
+      fetch("/geo/distritos.json").then((r) => r.json()),
+    ])
+      .then(([stats, geo]) => {
+        setDistritoStats(stats)
+        setDistritoGeo(geo)
+      })
+      .catch((err) => console.error("Failed to load map data:", err))
+      .finally(() => setMapLoading(false))
+  }, [tab, distritoStats.length])
+
   const handlePageChange = (newPage: number) => {
     setPage(newPage)
   }
@@ -106,6 +131,10 @@ export function IndicativosContent() {
           <TabsTrigger value="tendencias" className="gap-2">
             <TrendingUp className="h-4 w-4" />
             Tendências
+          </TabsTrigger>
+          <TabsTrigger value="mapa" className="gap-2">
+            <MapIcon className="h-4 w-4" />
+            Mapa
           </TabsTrigger>
         </TabsList>
 
@@ -145,6 +174,39 @@ export function IndicativosContent() {
               endDate={endDate}
               onDateRangeChange={setDateRange}
             />
+          </ErrorBoundary>
+        </TabsContent>
+
+        <TabsContent value="mapa">
+          <ErrorBoundary FallbackComponent={TabErrorFallback}>
+            {mapLoading ? (
+              <div className="flex items-center justify-center py-12 text-slate-400">
+                <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                A carregar mapa...
+              </div>
+            ) : distritoGeo ? (
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+                <div className="lg:col-span-3">
+                  <DistritoMap
+                    data={distritoStats}
+                    geojson={distritoGeo}
+                    highlightedDistrito={highlightedDistrito}
+                    onHover={setHighlightedDistrito}
+                  />
+                </div>
+                <div className="lg:col-span-2">
+                  <DistritoRanking
+                    data={distritoStats}
+                    highlightedDistrito={highlightedDistrito}
+                    onHover={setHighlightedDistrito}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12 text-slate-400">
+                Não foi possível carregar os dados geográficos.
+              </div>
+            )}
           </ErrorBoundary>
         </TabsContent>
       </Tabs>
