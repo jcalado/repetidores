@@ -6,6 +6,7 @@ import type {
   CategoryFlows,
   PaginatedCallsignResponse,
 } from '@/types/callsign'
+import type { DistritoStats } from '@/types/distrito-stats'
 
 function getApiBaseUrl(): string {
   if (typeof window !== 'undefined') {
@@ -125,4 +126,12 @@ export async function fetchCategoryFlows(month: string): Promise<CategoryFlows> 
   const res = await fetch(`${base}/api/indicativos/category-flows?month=${encodeURIComponent(month)}`)
   if (!res.ok) throw new Error(`Failed to fetch category flows: ${res.status}`)
   return res.json()
+}
+
+export async function fetchDistritoStats(): Promise<DistritoStats[]> {
+  const base = getApiBaseUrl()
+  const res = await fetch(`${base}/api/indicativos/distrito-stats`, { next: { revalidate: 3600 } })
+  if (!res.ok) throw new Error(`Failed to fetch distrito stats: ${res.status}`)
+  const data = await res.json()
+  return data.docs
 }
