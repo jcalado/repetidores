@@ -185,6 +185,16 @@ export default function Header() {
                         {t('nav.associations')}
                     </Link>
 
+                    <Link
+                        href="/simplex"
+                        className={`text-sm/6 font-semibold transition-colors ${isCurrent('/simplex')
+                            ? 'text-ship-cove-600 dark:text-ship-cove-400'
+                            : 'text-slate-700 hover:text-ship-cove-600 dark:text-slate-200 dark:hover:text-ship-cove-400'
+                            }`}
+                    >
+                        {t('nav.simplex')}
+                    </Link>
+
                     <Popover className="relative">
                         <PopoverButton className="group flex items-center gap-x-1 text-sm/6 font-semibold text-slate-700 hover:text-ship-cove-600 focus:outline-none dark:text-slate-200 dark:hover:text-ship-cove-400 transition-colors">
                             {t('nav.tools')}
@@ -377,6 +387,27 @@ export default function Header() {
                                             />
                                         </div>
                                         {t('nav.associations')}
+                                    </Link>
+                                    <Link
+                                        href="/simplex"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className={`-mx-3 flex items-center gap-x-4 rounded-lg p-3 text-base/7 font-semibold transition-colors ${isCurrent('/simplex')
+                                            ? 'bg-ship-cove-50 text-ship-cove-600 dark:bg-ship-cove-900/20 dark:text-ship-cove-400'
+                                            : 'text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-slate-800/50'
+                                            }`}
+                                    >
+                                        <div className={`flex size-10 flex-none items-center justify-center rounded-lg transition-colors ${isCurrent('/simplex')
+                                            ? 'bg-white dark:bg-slate-800'
+                                            : 'bg-gray-50 dark:bg-slate-800'
+                                            }`}>
+                                            <RadioIcon
+                                                className={`size-5 ${isCurrent('/simplex')
+                                                    ? 'text-ship-cove-600 dark:text-ship-cove-400'
+                                                    : 'text-gray-600 dark:text-gray-400'
+                                                    }`}
+                                            />
+                                        </div>
+                                        {t('nav.simplex')}
                                     </Link>
                                 </div>
                                 <div className="space-y-2 py-6">

@@ -37,7 +37,8 @@
         "associations": "Associações",
         "associationsDescription": "Clubes e associações de radioamadores",
         "indicativos": "Indicativos",
-        "indicativosDescription": "Directório de indicativos ANACOM"
+        "indicativosDescription": "Directório de indicativos ANACOM",
+        "simplex": "Simplex"
     },
     "qth": {
         "title": "Localizador QTH",
@@ -1141,5 +1142,25 @@
             "timeout": "Tempo esgotado ao obter localização",
             "unknown": "Erro desconhecido ao obter localização"
         }
+    },
+    "simplex": {
+        "title": "Frequências Simplex",
+        "description": "Frequências simplex comunitárias utilizadas para QSOs locais sem repetidores em Portugal.",
+        "frequency": "Frequência",
+        "municipality": "Município",
+        "district": "Distrito",
+        "mode": "Modo",
+        "tone": "Tom CTCSS",
+        "band": "Banda",
+        "status": "Estado",
+        "notes": "Notas",
+        "active": "Activo",
+        "inactive": "Inactivo",
+        "tableView": "Tabela",
+        "mapView": "Mapa",
+        "frequencies": "frequências",
+        "viewDetails": "Ver detalhes",
+        "noFrequencies": "Nenhuma frequência simplex registada.",
+        "close": "Fechar"
     }
 }
