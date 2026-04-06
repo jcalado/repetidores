@@ -64,7 +64,7 @@ export default function SimplexBrowser({ data }: Props) {
               {t("mapView")}
             </button>
             <span className="ml-auto text-sm text-muted-foreground">
-              {data.length} {t("frequencies")}
+              {data.length} {data.length === 1 ? t("frequencySingular") : t("frequencyPlural")}
             </span>
           </div>
 

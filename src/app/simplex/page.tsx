@@ -75,7 +75,7 @@ async function SimplexContent() {
           {
             icon: <Radio className="h-4 w-4" />,
             value: frequencies.length,
-            label: t("frequencies"),
+            label: frequencies.length === 1 ? t("frequencySingular") : t("frequencyPlural"),
           },
         ]}
         floatingIcons={[

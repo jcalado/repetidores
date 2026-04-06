@@ -7,7 +7,7 @@ import { Repeater } from '@/app/columns';
 import { calculateDistance, formatDistance } from '@/lib/geolocation';
 import { useDeviceCompass } from '@/hooks/useDeviceCompass';
 import { useUserLocation } from '@/contexts/UserLocationContext';
-import { PageHeader, PageHeaderIcon } from '@/components/ui/PageHeader';
+import { StandardPageHeader } from '@/components/ui/PageHeader';
 import { cn } from '@/lib/utils';
 import {
   MapPin,
@@ -121,33 +121,21 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Hero Header */}
-      <PageHeader compact noMargin className="relative">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 mb-2">
-              <PageHeaderIcon icon={<Crosshair />} size="sm" />
-              <div>
-                <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                  {t('title')}
-                </h1>
-                <p className="text-sm text-ship-cove-200">
-                  {t('description')}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Action buttons */}
-          <div className="flex items-center gap-2 flex-shrink-0">
+      <StandardPageHeader
+        icon={<Crosshair className="h-5 w-5" />}
+        title={t('title')}
+        description={t('description')}
+        noMargin
+        actions={
+          <div className="flex items-center gap-2">
             {compass.isSupported && userLocation && (
               <button
                 onClick={() => compass.toggle()}
                 className={cn(
-                  'flex h-9 sm:h-10 items-center gap-2 px-3 sm:px-4 rounded-lg transition-all text-sm font-medium',
+                  'flex h-9 items-center gap-2 px-3 rounded-lg transition-all text-sm font-medium border',
                   compass.isEnabled
-                    ? 'bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-400/50'
-                    : 'bg-white/10 text-white hover:bg-white/20'
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800'
+                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700'
                 )}
               >
                 <Compass className={cn('h-4 w-4', compass.isEnabled && 'animate-pulse')} />
@@ -159,7 +147,7 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
             <button
               onClick={() => requestLocation(true)}
               disabled={isLocating}
-              className="flex h-9 sm:h-10 items-center gap-2 px-3 sm:px-4 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors text-sm font-medium disabled:opacity-50"
+              className="flex h-9 items-center gap-2 px-3 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition-colors text-sm font-medium disabled:opacity-50 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700"
             >
               {isLocating ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -169,9 +157,8 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
               <span className="hidden sm:inline">{t('refreshLocation')}</span>
             </button>
           </div>
-        </div>
-
-      </PageHeader>
+        }
+      />
 
       {/* Location Status Panel */}
       {userLocation && (

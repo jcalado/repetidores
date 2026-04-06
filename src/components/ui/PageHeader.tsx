@@ -228,35 +228,54 @@ export function StandardPageHeader({
   subtitle,
   description,
   stats,
-  floatingIcons,
   actions,
-  compact = false,
   noMargin = false,
   className,
 }: StandardPageHeaderProps) {
   return (
-    <PageHeader
-      floatingIcons={floatingIcons}
-      compact={compact}
-      noMargin={noMargin}
-      className={className}
+    <header
+      className={cn(
+        "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 py-4 border-b border-slate-200 dark:border-slate-800",
+        !noMargin && "mb-8",
+        className
+      )}
     >
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-        <div className="flex-1">
-          <PageHeaderTitle
-            icon={icon}
-            title={title}
-            subtitle={subtitle}
-            iconSize={compact ? "sm" : "md"}
-          />
-          {description && (
-            <PageHeaderDescription>{description}</PageHeaderDescription>
-          )}
-          {stats && stats.length > 0 && <PageHeaderStats stats={stats} />}
+      <div className="flex items-center gap-3">
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-900/40 text-ship-cove-600 dark:text-ship-cove-400 shrink-0 [&>svg]:h-5 [&>svg]:w-5">
+          {icon}
         </div>
+        <div>
+          <h1 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
+            {title}
+            {subtitle && (
+              <span className="ml-2 text-sm font-normal text-slate-500 dark:text-slate-400">
+                {subtitle}
+              </span>
+            )}
+          </h1>
+          {description && (
+            <p className="text-sm text-slate-500 dark:text-slate-400 hidden sm:block">
+              {description}
+            </p>
+          )}
+        </div>
+      </div>
+      <div className="flex items-center gap-4">
+        {stats && stats.length > 0 && (
+          <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+            {stats.map((stat, index) => (
+              <span key={index} className="flex items-center gap-1.5">
+                <span className="font-mono font-semibold text-slate-700 dark:text-slate-300">
+                  {stat.value}
+                </span>
+                {stat.label}
+              </span>
+            ))}
+          </div>
+        )}
         {actions && <div className="flex items-center gap-2 shrink-0">{actions}</div>}
       </div>
-    </PageHeader>
+    </header>
   );
 }
 

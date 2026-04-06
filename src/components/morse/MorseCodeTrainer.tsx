@@ -2,12 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Volume2, VolumeX, Keyboard, Play, RotateCcw, CheckCircle, XCircle } from 'lucide-react';
+import { Volume2, VolumeX, Keyboard, Play, RotateCcw, CheckCircle, XCircle, Radio } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
+import { StandardPageHeader } from '@/components/ui/PageHeader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import {
@@ -189,56 +190,52 @@ export function MorseCodeTrainer() {
 
   return (
     <div className="w-full max-w-7xl mx-auto p-4 sm:p-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-6">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">
-            {t('title')}
-          </h1>
-          <p className="text-muted-foreground mt-1">{t('subtitle')}</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-4">
-          {/* Audio toggle */}
-          {audioSupported ? (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsAudioEnabled(!isAudioEnabled)}
-              className="gap-2"
-            >
-              {isAudioEnabled ? (
-                <>
-                  <Volume2 className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('audioEnabled')}</span>
-                </>
-              ) : (
-                <>
-                  <VolumeX className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t('audioDisabled')}</span>
-                </>
-              )}
-            </Button>
-          ) : (
-            <Badge variant="secondary" className="text-xs">
-              {t('audioNotSupported')}
-            </Badge>
-          )}
-          {/* Numbers toggle */}
-          <div className="flex items-center gap-2">
-            <Switch
-              checked={showNumbers}
-              onCheckedChange={setShowNumbers}
-              id="show-numbers"
-            />
-            <label
-              htmlFor="show-numbers"
-              className="text-sm text-muted-foreground cursor-pointer"
-            >
-              {t('includeNumbers')}
-            </label>
+      <StandardPageHeader
+        icon={<Radio className="h-5 w-5" />}
+        title={t('title')}
+        description={t('subtitle')}
+        actions={
+          <div className="flex flex-wrap items-center gap-4">
+            {audioSupported ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsAudioEnabled(!isAudioEnabled)}
+                className="gap-2"
+              >
+                {isAudioEnabled ? (
+                  <>
+                    <Volume2 className="h-4 w-4" />
+                    <span className="hidden sm:inline">{t('audioEnabled')}</span>
+                  </>
+                ) : (
+                  <>
+                    <VolumeX className="h-4 w-4" />
+                    <span className="hidden sm:inline">{t('audioDisabled')}</span>
+                  </>
+                )}
+              </Button>
+            ) : (
+              <Badge variant="secondary" className="text-xs">
+                {t('audioNotSupported')}
+              </Badge>
+            )}
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={showNumbers}
+                onCheckedChange={setShowNumbers}
+                id="show-numbers"
+              />
+              <label
+                htmlFor="show-numbers"
+                className="text-sm text-muted-foreground cursor-pointer"
+              >
+                {t('includeNumbers')}
+              </label>
+            </div>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* Settings */}
       <Card className="mb-6">

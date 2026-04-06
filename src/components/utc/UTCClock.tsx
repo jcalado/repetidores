@@ -1,13 +1,28 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
-import { Clock, Globe, MapPin } from 'lucide-react';
+import { Clock, Globe, MapPin, Maximize2, Minimize2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export function UTCClock() {
   const t = useTranslations('utc');
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
+  const [maximized, setMaximized] = useState(false);
+
+  const toggleMaximized = useCallback(() => {
+    setMaximized(prev => !prev);
+  }, []);
+
+  // Escape key to exit maximized mode
+  useEffect(() => {
+    if (!maximized) return;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMaximized(false);
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [maximized]);
 
   useEffect(() => {
     // Set initial time
@@ -85,6 +100,34 @@ export function UTCClock() {
         <p className="text-muted-foreground mt-1">{t('subtitle')}</p>
       </div>
 
+      {/* Maximized fullscreen overlay */}
+      {maximized && (
+        <div
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950 cursor-pointer"
+          onClick={toggleMaximized}
+        >
+          <button
+            onClick={toggleMaximized}
+            className="absolute top-6 right-6 p-2 rounded-lg text-slate-500 hover:text-white hover:bg-slate-800 transition-colors"
+            aria-label="Exit fullscreen"
+          >
+            <Minimize2 className="h-6 w-6" />
+          </button>
+          <span className="text-[12vw] sm:text-[14vw] font-mono font-bold tracking-wider text-white tabular-nums">
+            {formatTime(currentTime, 'UTC')}
+          </span>
+          <p className="mt-4 text-xl sm:text-2xl text-slate-400 capitalize">
+            {formatDate(currentTime, 'UTC')}
+          </p>
+          <p className="mt-2 text-sm text-slate-500 font-mono">
+            {formatDateShort(currentTime, 'UTC')} UTC
+          </p>
+          <p className="absolute bottom-6 text-xs text-slate-600">
+            ESC ou clique para sair
+          </p>
+        </div>
+      )}
+
       <div className="grid gap-6 md:grid-cols-2">
         {/* UTC Time - Primary */}
         <Card className="md:col-span-2">
@@ -93,6 +136,15 @@ export function UTCClock() {
               <Globe className="h-5 w-5 text-ship-cove-600 dark:text-ship-cove-400" />
               {t('utcTime')}
             </CardTitle>
+            <button
+              data-slot="card-action"
+              onClick={toggleMaximized}
+              className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors"
+              aria-label="Maximize clock"
+              title="Maximizar relógio"
+            >
+              <Maximize2 className="h-4 w-4" />
+            </button>
           </CardHeader>
           <CardContent className="pt-4">
             <div className="text-center">
