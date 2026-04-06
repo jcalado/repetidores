@@ -27,7 +27,7 @@ export default function Footer({ className }: FooterProps) {
         <nav className="grid grid-cols-2 sm:grid-cols-3 gap-8 mb-8">
           <div>
             <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">
-              {t('repeaters')}
+              {t('frequencies')}
             </h3>
             <ul className="space-y-2">
               <li>
@@ -43,6 +43,11 @@ export default function Footer({ className }: FooterProps) {
               <li>
                 <Link href="/repetidores/proximo" className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
                   {t('nearest')}
+                </Link>
+              </li>
+              <li>
+                <Link href="/simplex" className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+                  {t('simplex')}
                 </Link>
               </li>
             </ul>

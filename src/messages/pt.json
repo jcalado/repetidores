@@ -1,11 +1,11 @@
 {
     "nav": {
         "home": "Início",
-        "repeaters": "Repetidores",
+        "repeaters": "Frequências",
         "bands": "Bandas",
         "bandsDescription": "Plano de bandas de radioamador",
-        "table": "Tabela",
-        "map": "Mapa",
+        "table": "Repetidores",
+        "map": "Mapa de Repetidores",
         "events": "Eventos",
         "news": "Notícias",
         "newsDescription": "Últimas notícias e anúncios",
@@ -38,7 +38,8 @@
         "associationsDescription": "Clubes e associações de radioamadores",
         "indicativos": "Indicativos",
         "indicativosDescription": "Directório de indicativos ANACOM",
-        "simplex": "Simplex"
+        "simplex": "Simplex",
+        "simplexDescription": "Frequências simplex comunitárias por município"
     },
     "qth": {
         "title": "Localizador QTH",
@@ -625,6 +626,7 @@
         "rss": "RSS",
         "rssFeeds": "Feeds RSS",
         "repeaters": "Repetidores",
+        "frequencies": "Frequências",
         "list": "Lista",
         "map": "Mapa",
         "nearest": "Mais Próximo",
@@ -636,6 +638,7 @@
         "morse": "Código Morse",
         "nato": "Alfabeto NATO",
         "qcodes": "Códigos Q",
+        "simplex": "Frequências Simplex",
         "community": "Comunidade",
         "events": "Eventos",
         "news": "Notícias",

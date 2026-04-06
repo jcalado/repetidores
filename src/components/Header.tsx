@@ -59,10 +59,10 @@ export default function Header() {
     }
 
 
-    const repeaters = [
-        { name: t('nav.table'), description: 'Lista de repetidores', href: '/repetidores', icon: TableCellsIcon },
-        { name: t('nav.map'), description: 'Mapa de repetidores', href: '/repetidores/mapa', icon: MapIcon },
+    const frequencies = [
+        { name: t('nav.table'), description: 'Tabela de repetidores', href: '/repetidores', icon: TableCellsIcon },
         { name: t('nav.nearest'), description: t('nav.nearestDescription'), href: '/repetidores/proximo', icon: Navigation },
+        { name: t('nav.simplex'), description: t('nav.simplexDescription'), href: '/simplex', icon: Radio },
     ]
 
     const tools = [
@@ -131,7 +131,7 @@ export default function Header() {
                             className="absolute left-1/2 z-10 mt-3 w-screen max-w-md -translate-x-1/2 overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-gray-900/5 transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[enter]:ease-out data-[leave]:duration-150 data-[leave]:ease-in dark:bg-slate-900 dark:ring-white/10"
                         >
                             <div className="p-4">
-                                {repeaters.map((item) => (
+                                {frequencies.map((item) => (
                                     <div
                                         key={item.name}
                                         className="group relative flex items-center gap-x-6 rounded-xl p-4 text-sm/6 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors"
@@ -185,16 +185,6 @@ export default function Header() {
                         {t('nav.associations')}
                     </Link>
 
-                    <Link
-                        href="/simplex"
-                        className={`text-sm/6 font-semibold transition-colors ${isCurrent('/simplex')
-                            ? 'text-ship-cove-600 dark:text-ship-cove-400'
-                            : 'text-slate-700 hover:text-ship-cove-600 dark:text-slate-200 dark:hover:text-ship-cove-400'
-                            }`}
-                    >
-                        {t('nav.simplex')}
-                    </Link>
-
                     <Popover className="relative">
                         <PopoverButton className="group flex items-center gap-x-1 text-sm/6 font-semibold text-slate-700 hover:text-ship-cove-600 focus:outline-none dark:text-slate-200 dark:hover:text-ship-cove-400 transition-colors">
                             {t('nav.tools')}
@@ -230,15 +220,6 @@ export default function Header() {
                         </PopoverPanel>
                     </Popover>
 
-                    <Link
-                        href="/about"
-                        className={`text-sm/6 font-semibold transition-colors ${isCurrent('/about')
-                            ? 'text-ship-cove-600 dark:text-ship-cove-400'
-                            : 'text-slate-700 hover:text-ship-cove-600 dark:text-slate-200 dark:hover:text-ship-cove-400'
-                            }`}
-                    >
-                        {t('nav.about')}
-                    </Link>
                 </PopoverGroup>
                 <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:items-center lg:gap-x-4">
                     <LocationPickerPopover />
@@ -295,7 +276,7 @@ export default function Header() {
                                     <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                                         {t('nav.repeaters')}
                                     </div>
-                                    {repeaters.map((item) => (
+                                    {frequencies.map((item) => (
                                         <Link
                                             key={item.name}
                                             href={item.href}
@@ -388,27 +369,6 @@ export default function Header() {
                                         </div>
                                         {t('nav.associations')}
                                     </Link>
-                                    <Link
-                                        href="/simplex"
-                                        onClick={() => setMobileMenuOpen(false)}
-                                        className={`-mx-3 flex items-center gap-x-4 rounded-lg p-3 text-base/7 font-semibold transition-colors ${isCurrent('/simplex')
-                                            ? 'bg-ship-cove-50 text-ship-cove-600 dark:bg-ship-cove-900/20 dark:text-ship-cove-400'
-                                            : 'text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-slate-800/50'
-                                            }`}
-                                    >
-                                        <div className={`flex size-10 flex-none items-center justify-center rounded-lg transition-colors ${isCurrent('/simplex')
-                                            ? 'bg-white dark:bg-slate-800'
-                                            : 'bg-gray-50 dark:bg-slate-800'
-                                            }`}>
-                                            <RadioIcon
-                                                className={`size-5 ${isCurrent('/simplex')
-                                                    ? 'text-ship-cove-600 dark:text-ship-cove-400'
-                                                    : 'text-gray-600 dark:text-gray-400'
-                                                    }`}
-                                            />
-                                        </div>
-                                        {t('nav.simplex')}
-                                    </Link>
                                 </div>
                                 <div className="space-y-2 py-6">
                                     <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
@@ -438,32 +398,6 @@ export default function Header() {
                                             {item.name}
                                         </Link>
                                     ))}
-                                </div>
-                                <div className="space-y-2 py-6">
-                                    <div className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                                        {t('nav.about')}
-                                    </div>
-                                    <Link
-                                        href="/about"
-                                        onClick={() => setMobileMenuOpen(false)}
-                                        className={`-mx-3 flex items-center gap-x-4 rounded-lg p-3 text-base/7 font-semibold transition-colors ${isCurrent('/about')
-                                            ? 'bg-ship-cove-50 text-ship-cove-600 dark:bg-ship-cove-900/20 dark:text-ship-cove-400'
-                                            : 'text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-slate-800/50'
-                                            }`}
-                                    >
-                                        <div className={`flex size-10 flex-none items-center justify-center rounded-lg transition-colors ${isCurrent('/about')
-                                            ? 'bg-white dark:bg-slate-800'
-                                            : 'bg-gray-50 dark:bg-slate-800'
-                                            }`}>
-                                            <InformationCircleIcon
-                                                className={`size-5 ${isCurrent('/about')
-                                                    ? 'text-ship-cove-600 dark:text-ship-cove-400'
-                                                    : 'text-gray-600 dark:text-gray-400'
-                                                    }`}
-                                            />
-                                        </div>
-                                        {t('nav.about')}
-                                    </Link>
                                 </div>
                                 <div className="py-6">
                                     <div className="flex items-center justify-between -mx-3 px-3">

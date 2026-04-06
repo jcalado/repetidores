@@ -1,6 +1,7 @@
 "use client"
 
 import { useSimplexColumns } from "@/app/simplex/columns"
+import { Card, CardContent } from "@/components/ui/card"
 import { DataTable } from "@/components/ui/data-table"
 import { Drawer, DrawerContent, DrawerFooter, DrawerOverlay, DrawerTitle } from "@/components/ui/drawer"
 import { VisuallyHidden } from "@/components/ui/visually-hidden"
@@ -36,54 +37,58 @@ export default function SimplexBrowser({ data }: Props) {
 
   return (
     <>
-      {/* Tab buttons */}
-      <div className="flex items-center gap-2 mb-4">
-        <button
-          type="button"
-          onClick={() => setActiveTab("table")}
-          className={`inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-            activeTab === "table"
-              ? "bg-ship-cove-600 text-white dark:bg-ship-cove-500"
-              : "bg-muted text-muted-foreground hover:bg-muted/80"
-          }`}
-        >
-          {t("tableView")}
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab("map")}
-          className={`inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-            activeTab === "map"
-              ? "bg-ship-cove-600 text-white dark:bg-ship-cove-500"
-              : "bg-muted text-muted-foreground hover:bg-muted/80"
-          }`}
-        >
-          {t("mapView")}
-        </button>
-        <span className="ml-auto text-sm text-muted-foreground">
-          {data.length} {t("frequencies")}
-        </span>
-      </div>
+      <Card className="w-full">
+        <CardContent>
+          {/* Tab buttons */}
+          <div className="flex items-center gap-2 mb-4">
+            <button
+              type="button"
+              onClick={() => setActiveTab("table")}
+              className={`inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                activeTab === "table"
+                  ? "bg-ship-cove-600 text-white dark:bg-ship-cove-500"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              {t("tableView")}
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("map")}
+              className={`inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                activeTab === "map"
+                  ? "bg-ship-cove-600 text-white dark:bg-ship-cove-500"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              {t("mapView")}
+            </button>
+            <span className="ml-auto text-sm text-muted-foreground">
+              {data.length} {t("frequencies")}
+            </span>
+          </div>
 
-      {/* Table view */}
-      {activeTab === "table" && (
-        <DataTable
-          columns={columns}
-          data={data}
-          onRowClick={(row) => handleSelect(row as SimplexFrequency)}
-          initialSorting={[{ id: "frequency", desc: false }]}
-        />
-      )}
+          {/* Table view */}
+          {activeTab === "table" && (
+            <DataTable
+              columns={columns}
+              data={data}
+              onRowClick={(row) => handleSelect(row as SimplexFrequency)}
+              initialSorting={[{ id: "frequency", desc: false }]}
+            />
+          )}
 
-      {/* Map view */}
-      {activeTab === "map" && (
-        <div className="h-[500px]">
-          <SimplexMapView
-            frequencies={data}
-            onFrequencyClick={handleSelect}
-          />
-        </div>
-      )}
+          {/* Map view */}
+          {activeTab === "map" && (
+            <div className="h-[500px]">
+              <SimplexMapView
+                frequencies={data}
+                onFrequencyClick={handleSelect}
+              />
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Detail drawer */}
       <Drawer open={open} onOpenChange={setOpen} direction="right">
