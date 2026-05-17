@@ -218,6 +218,10 @@ export interface RepeaterV2 {
   operatingHours?: string;
   /** When information was last verified (ISO string) */
   lastVerified?: string;
+  /** Soft-delete: hides from public lists but preserves history */
+  isDecommissioned?: boolean;
+  /** When the repeater was marked decommissioned (ISO string, auto-stamped) */
+  decommissionedAt?: string;
 
   // === Additional Info ===
   /** Public notes */
@@ -263,4 +267,6 @@ export interface LegacyRepeater {
   lastVerified?: string;
   notes?: string;
   website?: string;
+  isDecommissioned?: boolean;
+  decommissionedAt?: string;
 }
