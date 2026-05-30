@@ -259,7 +259,7 @@ export default function Header() {
 
                     <DesktopLink href="/events" label={t('nav.events')} active={isCurrent('/events')} />
                     <DesktopLink href="/noticias" label={t('nav.news')} active={isCurrent('/noticias')} />
-                    <DesktopLink href="/associations" label={t('nav.associations')} active={isCurrent('/associations')} />
+                    <DesktopLink href="/associacoes" label={t('nav.associations')} active={isCurrent('/associacoes')} />
 
                     <Popover className="relative">
                         <PopoverButton className="group inline-flex items-center gap-x-1 rounded-lg px-3 py-1.5 text-sm font-medium text-foreground hover:bg-azulejo-50 hover:text-azulejo-700 dark:hover:bg-azulejo-950/30 dark:hover:text-azulejo-300 focus:outline-none transition-colors duration-150">
@@ -358,10 +358,10 @@ export default function Header() {
                                 onClick={closeMobileMenu}
                             />
                             <MobileNavLink
-                                href="/associations"
+                                href="/associacoes"
                                 label={t('nav.associations')}
                                 icon={BuildingOffice2Icon}
-                                active={isCurrent('/associations')}
+                                active={isCurrent('/associacoes')}
                                 onClick={closeMobileMenu}
                             />
                         </section>

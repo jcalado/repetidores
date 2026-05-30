@@ -112,7 +112,7 @@ export default function Footer({ className }: FooterProps) {
                 </Link>
               </li>
               <li>
-                <Link href="/associations" className="text-sm text-muted-foreground hover:text-azulejo-600 dark:hover:text-azulejo-400 transition-colors">
+                <Link href="/associacoes" className="text-sm text-muted-foreground hover:text-azulejo-600 dark:hover:text-azulejo-400 transition-colors">
                   {t('associations')}
                 </Link>
               </li>

@@ -194,7 +194,7 @@ function generateBreadcrumbs(
 ) {
   return [
     { name: "Início", url: "https://www.radioamador.info/" },
-    { name: "Associações", url: "https://www.radioamador.info/associations/" },
+    { name: "Associações", url: "https://www.radioamador.info/associacoes/" },
     { name: association.abbreviation, url: `https://www.radioamador.info/association/${association.slug}/` },
   ]
 }
@@ -281,7 +281,7 @@ async function AssociationContent({
 
       {/* Back Link */}
       <Link
-        href="/associations"
+        href="/associacoes"
         className="inline-flex items-center gap-2 text-azulejo-600 dark:text-azulejo-400 hover:text-azulejo-900 dark:hover:text-azulejo-100 mb-6 transition-colors group"
       >
         <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />

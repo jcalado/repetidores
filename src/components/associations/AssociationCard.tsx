@@ -26,12 +26,20 @@ export function AssociationCard({ association, index = 0 }: AssociationCardProps
   const signalBars = Math.min(5, Math.ceil(repeaterCount / 2))
 
   return (
-    <Link
-      href={`/association/${association.slug}/`}
-      className="group block"
+    <article
+      className="group relative h-full overflow-hidden rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-gradient-to-br from-white via-white to-azulejo-50/50 dark:from-azulejo-950 dark:via-azulejo-950 dark:to-azulejo-900/30 shadow-sm transition-all duration-300 ease-out hover:shadow-lg hover:shadow-azulejo-500/10 hover:border-azulejo-400 dark:hover:border-azulejo-600 hover:-translate-y-0.5 animate-in fade-in slide-in-from-bottom-2 fill-mode-both"
       style={{ animationDelay: `${index * 50}ms` }}
     >
-      <article className="relative h-full overflow-hidden rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-gradient-to-br from-white via-white to-azulejo-50/50 dark:from-azulejo-950 dark:via-azulejo-950 dark:to-azulejo-900/30 shadow-sm transition-all duration-300 ease-out hover:shadow-lg hover:shadow-azulejo-500/10 hover:border-azulejo-400 dark:hover:border-azulejo-600 hover:-translate-y-0.5 animate-in fade-in slide-in-from-bottom-2 fill-mode-both">
+      {/* Card-wide tap target — overlay link covers the entire card.
+          Sibling links (e.g. external website) sit above via z-20 so they
+          win the click without nesting <a> tags (which is invalid HTML). */}
+      <Link
+        href={`/association/${association.slug}/`}
+        aria-label={association.name}
+        className="absolute inset-0 z-10 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-azulejo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      >
+        <span className="sr-only">{association.name}</span>
+      </Link>
         {/* Top accent line - like an LED strip */}
         <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-azulejo-500 to-transparent opacity-60 group-hover:opacity-100 transition-opacity" />
 
@@ -89,14 +97,13 @@ export function AssociationCard({ association, index = 0 }: AssociationCardProps
               </span>
             </div>
 
-            {/* Website link */}
+            {/* Website link — sits above the overlay link so this click wins. */}
             {association.website && (
               <a
                 href={association.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium text-azulejo-600 dark:text-azulejo-400 hover:text-azulejo-900 dark:hover:text-azulejo-100 hover:bg-azulejo-100 dark:hover:bg-azulejo-800 transition-colors"
-                onClick={(e) => e.stopPropagation()}
+                className="relative z-20 flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium text-azulejo-600 dark:text-azulejo-400 hover:text-azulejo-900 dark:hover:text-azulejo-100 hover:bg-azulejo-100 dark:hover:bg-azulejo-800 transition-colors"
               >
                 <Globe className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">{t("website")}</span>
@@ -108,7 +115,6 @@ export function AssociationCard({ association, index = 0 }: AssociationCardProps
 
         {/* Corner accent - like a status LED */}
         <div className="absolute top-3 right-3 h-2 w-2 rounded-full bg-emerald-500/80 shadow-sm shadow-emerald-500/50 animate-pulse" />
-      </article>
-    </Link>
+    </article>
   )
 }

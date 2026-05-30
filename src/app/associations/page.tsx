@@ -1,116 +1,42 @@
-import { Suspense } from "react"
-import { getTranslations } from "next-intl/server"
-import { fetchAssociations } from "@/lib/associations"
-import { AssociationsList } from "@/components/associations/AssociationsList"
-import { StandardPageHeader } from "@/components/ui/PageHeader"
-import { Building2, Radio, Antenna } from "lucide-react"
+/**
+ * Permanent redirect stub for /associations/ → /associacoes/.
+ *
+ * The site is statically exported (output: 'export'), so there is no server
+ * to issue an HTTP 301. The strongest SEO-friendly substitute for a static
+ * export is the combination of:
+ *   - canonical link to the new URL (set via the metadata API)
+ *   - <meta http-equiv="refresh" content="0; url=…"> hoisted into <head>
+ *   - robots: noindex on this stub
+ *   - a client-side window.location.replace() so humans don't see the stub
+ *
+ * Google and Bing both treat a 0-delay meta refresh + matching canonical as
+ * a signal equivalent to a 301 for the purpose of consolidating ranking.
+ */
+import type { Metadata } from "next"
+import RedirectClient from "./RedirectClient"
 
-export async function generateMetadata() {
-  const t = await getTranslations("associations")
-  return {
-    title: t("title"),
-    description: t("subtitle"),
-    keywords: ["associações", "radioamador", "ham radio", "Portugal", "clubes", "repetidores"],
-    alternates: {
-      canonical: "/associations/",
-    },
-    openGraph: {
-      title: t("title"),
-      description: t("subtitle"),
-      type: "website",
-      url: "/associations/",
-      siteName: "Radioamador.info",
-      locale: "pt_PT",
-      images: [{ url: "/og-default.jpg", width: 1200, height: 630, alt: t("title") }],
-    },
-    twitter: {
-      card: "summary",
-      title: t("title"),
-      description: t("subtitle"),
-      images: ["/og-default.png"],
-    },
-  }
+const NEW_URL = "/associacoes/"
+
+export const metadata: Metadata = {
+  title: "Associações",
+  description: "Esta página mudou para /associacoes/.",
+  robots: { index: false, follow: true },
+  alternates: { canonical: NEW_URL },
 }
 
-function AssociationsPageSkeleton() {
-  return (
-    <div className="space-y-8">
-      {/* Header skeleton */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-azulejo-100 to-azulejo-50 dark:from-azulejo-900 dark:to-azulejo-950 p-8 animate-pulse">
-        <div className="h-8 w-64 bg-azulejo-200 dark:bg-azulejo-800 rounded mb-3" />
-        <div className="h-5 w-96 bg-azulejo-200 dark:bg-azulejo-800 rounded" />
-      </div>
-
-      {/* Search skeleton */}
-      <div className="flex justify-between items-center">
-        <div className="h-10 w-80 bg-azulejo-100 dark:bg-azulejo-900 rounded-lg" />
-        <div className="flex gap-3">
-          <div className="h-8 w-20 bg-azulejo-100 dark:bg-azulejo-900 rounded-full" />
-          <div className="h-8 w-32 bg-azulejo-100 dark:bg-azulejo-900 rounded-full" />
-        </div>
-      </div>
-
-      {/* Grid skeleton */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {Array.from({ length: 9 }).map((_, i) => (
-          <div
-            key={i}
-            className="h-44 bg-azulejo-100 dark:bg-azulejo-900 rounded-xl"
-            style={{ animationDelay: `${i * 50}ms` }}
-          />
-        ))}
-      </div>
-    </div>
-  )
-}
-
-async function AssociationsContent() {
-  const t = await getTranslations("associations")
-  const associations = await fetchAssociations()
-
-  // Calculate stats
-  const totalRepeaters = associations.reduce(
-    (sum, a) => sum + (a.repeaterCount ?? 0),
-    0
-  )
-
+export default function AssociationsRedirectStub() {
   return (
     <>
-      <StandardPageHeader
-        icon={<Building2 className="h-7 w-7" />}
-        title={t("title")}
-        description={t("subtitle")}
-        stats={[
-          {
-            icon: <Building2 className="h-4 w-4" />,
-            value: associations.length,
-            label: "associações",
-          },
-          {
-            icon: <Radio className="h-4 w-4" />,
-            value: totalRepeaters,
-            label: "repetidores",
-            variant: "success",
-          },
-        ]}
-        floatingIcons={[
-          <Radio key="radio" className="h-12 w-12 text-white" />,
-          <Antenna key="antenna" className="h-10 w-10 text-white" />,
-        ]}
-      />
+      {/* Hoisted into <head> by the App Router. */}
+      <meta httpEquiv="refresh" content={`0; url=${NEW_URL}`} />
 
-      {/* Associations Grid */}
-      <AssociationsList associations={associations} />
+      <RedirectClient newUrl={NEW_URL} />
+
+      <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+        <p className="text-sm text-muted-foreground">
+          Esta página mudou para <a href={NEW_URL} className="text-azulejo-600 underline">{NEW_URL}</a>.
+        </p>
+      </main>
     </>
-  )
-}
-
-export default async function AssociationsPage() {
-  return (
-    <main className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-6">
-      <Suspense fallback={<AssociationsPageSkeleton />}>
-        <AssociationsContent />
-      </Suspense>
-    </main>
   )
 }

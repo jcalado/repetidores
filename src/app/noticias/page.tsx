@@ -1,4 +1,5 @@
 import NewsList from "@/components/NewsList"
+import { Card, CardContent } from "@/components/ui/card"
 import { fetchNews, type NewsItem } from "@/lib/news"
 import { getTranslations } from "next-intl/server"
 
@@ -13,29 +14,16 @@ async function getNews(): Promise<NewsItem[]> {
 }
 
 export default async function NewsPage() {
-  const [news, t] = await Promise.all([
-    getNews(),
-    getTranslations("news"),
-  ])
+  const news = await getNews()
 
   return (
-    <div className="min-h-screen bg-white dark:bg-azulejo-950">
-      <div className="container mx-auto px-4 py-8 sm:py-12 lg:py-16">
-        {/* Header */}
-        <header className="mb-10 sm:mb-14 lg:mb-16">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-azulejo-900 dark:text-azulejo-50 tracking-tight mb-3">
-            {t("title")}
-          </h1>
-          <p className="text-lg sm:text-xl text-azulejo-600 dark:text-azulejo-400 max-w-2xl">
-            {t("description")}
-          </p>
-          <div className="mt-6 h-1 w-16 bg-azulejo-600 dark:bg-azulejo-400 rounded-full" />
-        </header>
-
-        {/* News */}
-        <NewsList news={news} />
-      </div>
-    </div>
+    <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+      <Card>
+        <CardContent>
+          <NewsList news={news} />
+        </CardContent>
+      </Card>
+    </main>
   )
 }
 
