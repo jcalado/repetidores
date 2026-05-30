@@ -587,9 +587,9 @@ export function DataTable<TData, TValue>({
                           {header.column.getIsSorted() === 'desc' && ' ↓'}
                         </div>
 
-                        {/* Column Filter — always reserves h-7 so column titles
+                        {/* Column Filter — always reserves h-8 so column titles
                             align at the top even when there is no filter input. */}
-                        <div className="min-w-0 h-7">
+                        <div className="min-w-0 h-8">
                           {header.column.id === "callsign" && (
                             <Input
                               placeholder=""
@@ -597,7 +597,7 @@ export function DataTable<TData, TValue>({
                               onChange={(event) =>
                                 table.getColumn("callsign")?.setFilterValue(event.target.value)
                               }
-                              className="h-7 text-xs w-full"
+                              className="h-8 text-xs w-full"
                             />
                           )}
                           {header.column.id === "status" && (
@@ -609,7 +609,7 @@ export function DataTable<TData, TValue>({
                                   ?.setFilterValue(value === "all" ? undefined : value)
                               }
                             >
-                              <SelectTrigger className="h-7 text-xs w-full">
+                              <SelectTrigger size="sm" className="h-8 text-xs w-full">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
@@ -628,7 +628,7 @@ export function DataTable<TData, TValue>({
                               onChange={(event) =>
                                 table.getColumn("owner")?.setFilterValue(event.target.value)
                               }
-                              className="h-7 text-xs w-full"
+                              className="h-8 text-xs w-full"
                             />
                           )}
                           {header.column.id === "qth_locator" && (
@@ -638,7 +638,7 @@ export function DataTable<TData, TValue>({
                               onChange={(event) =>
                                 table.getColumn("qth_locator")?.setFilterValue(event.target.value)
                               }
-                              className="h-7 text-xs w-full"
+                              className="h-8 text-xs w-full"
                             />
                           )}
                           {header.column.id === "band" && (
@@ -650,7 +650,7 @@ export function DataTable<TData, TValue>({
                                   ?.setFilterValue(value === "all" ? undefined : value)
                               }
                             >
-                              <SelectTrigger className="h-7 text-xs w-full">
+                              <SelectTrigger size="sm" className="h-8 text-xs w-full">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
@@ -667,7 +667,7 @@ export function DataTable<TData, TValue>({
                               onChange={(event) =>
                                 table.getColumn("outputFrequency")?.setFilterValue(event.target.value)
                               }
-                              className="h-7 text-xs w-full"
+                              className="h-8 text-xs w-full"
                             />
                           )}
                           {header.column.id === "inputFrequency" && (
@@ -677,7 +677,7 @@ export function DataTable<TData, TValue>({
                               onChange={(event) =>
                                 table.getColumn("inputFrequency")?.setFilterValue(event.target.value)
                               }
-                              className="h-7 text-xs w-full"
+                              className="h-8 text-xs w-full"
                             />
                           )}
                           {header.column.id === "tone" && (
@@ -687,13 +687,13 @@ export function DataTable<TData, TValue>({
                               onChange={(event) =>
                                 table.getColumn("tone")?.setFilterValue(event.target.value)
                               }
-                              className="h-7 text-xs w-full"
+                              className="h-8 text-xs w-full"
                             />
                           )}
                           {header.column.id === "modes" && (
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button variant="outline" className="h-7 w-full justify-between px-2 text-xs font-normal">
+                                <Button variant="outline" className="h-8 w-full justify-between px-2 text-xs font-normal">
                                   <span className="truncate">
                                     {(() => {
                                       const selected = table.getColumn("modes")?.getFilterValue() as string[] | undefined
@@ -743,7 +743,7 @@ export function DataTable<TData, TValue>({
                                   ?.setFilterValue(value === "all" ? undefined : value === "yes")
                               }
                             >
-                              <SelectTrigger className="h-7 text-xs w-full">
+                              <SelectTrigger size="sm" className="h-8 text-xs w-full">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
@@ -766,7 +766,7 @@ export function DataTable<TData, TValue>({
                                   ?.setFilterValue(value === "all" ? undefined : value === "yes")
                               }
                             >
-                              <SelectTrigger className="h-7 text-xs w-full">
+                              <SelectTrigger size="sm" className="h-8 text-xs w-full">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
