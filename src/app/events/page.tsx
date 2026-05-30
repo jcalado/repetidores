@@ -79,8 +79,8 @@ export default async function EventsPage() {
         breadcrumb={breadcrumbs}
       />
       <BreadcrumbJsonLd items={breadcrumbs} />
-      <Card className="py-3 sm:py-4">
-        <CardContent className="px-3 sm:px-4">
+      <Card className="py-3">
+        <CardContent className="px-3">
           <HamRadioEventsCountdown initialEvents={events} />
         </CardContent>
       </Card>
