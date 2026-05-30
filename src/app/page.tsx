@@ -98,18 +98,16 @@ type T = Awaited<ReturnType<typeof getTranslations>>
 function Hero({ liveCount, upcomingCount, t }: { liveCount: number; upcomingCount: number; t: T }) {
     return (
         <section className="text-center pt-4 pb-2">
-            <div className="inline-flex items-center gap-2 rounded-full bg-azulejo-50 dark:bg-azulejo-950/40 px-3 py-1 text-xs font-medium text-azulejo-700 dark:text-azulejo-300 mb-5">
-                <span className="relative flex size-2">
-                    {liveCount > 0 && (
+            {liveCount > 0 && (
+                <div className="inline-flex items-center gap-2 rounded-full bg-azulejo-50 dark:bg-azulejo-950/40 px-3 py-1 text-xs font-medium text-azulejo-700 dark:text-azulejo-300 mb-5">
+                    <span className="relative flex size-2">
                         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-azulejo-500 opacity-60 motion-reduce:hidden" />
-                    )}
-                    <span className="relative inline-flex size-2 rounded-full bg-azulejo-500" />
-                </span>
-                {liveCount > 0
-                    ? `${liveCount} evento${liveCount > 1 ? 's' : ''} ao vivo`
-                    : 'Sem eventos ao vivo'}
-                {upcomingCount > 0 && <span className="text-muted-foreground"> · {upcomingCount} próximos</span>}
-            </div>
+                        <span className="relative inline-flex size-2 rounded-full bg-azulejo-500" />
+                    </span>
+                    {`${liveCount} evento${liveCount > 1 ? 's' : ''} ao vivo`}
+                    {upcomingCount > 0 && <span className="text-muted-foreground"> · {upcomingCount} próximos</span>}
+                </div>
+            )}
             <h1 className="mx-auto max-w-3xl text-3xl sm:text-4xl lg:text-5xl font-semibold leading-[1.05] tracking-[-0.025em] text-foreground">
                 O diretório português de{' '}
                 <span className="bg-gradient-to-br from-azulejo-400 via-azulejo-500 to-azulejo-700 bg-clip-text [color:transparent] [-webkit-text-fill-color:transparent]">
