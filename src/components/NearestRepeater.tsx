@@ -8,6 +8,8 @@ import { calculateDistance, formatDistance } from '@/lib/geolocation';
 import { useDeviceCompass } from '@/hooks/useDeviceCompass';
 import { useUserLocation } from '@/contexts/UserLocationContext';
 import { StandardPageHeader } from '@/components/ui/PageHeader';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import {
   MapPin,
@@ -15,9 +17,7 @@ import {
   Compass,
   Loader2,
   RefreshCw,
-  Radio,
   Signal,
-  ChevronRight,
   Crosshair,
 } from 'lucide-react';
 
@@ -46,19 +46,9 @@ function bearingToCardinal(bearing: number): string {
   return directions[index];
 }
 
-function getBandFromFrequency(mhz: number): string {
-  if (mhz >= 430 && mhz <= 450) return '70cm';
-  if (mhz >= 144 && mhz <= 148) return '2m';
-  if (mhz >= 50 && mhz <= 54) return '6m';
-  if (mhz >= 1240 && mhz <= 1300) return '23cm';
-  if (mhz >= 2300 && mhz <= 2450) return '13cm';
-  return 'Other';
-}
-
-// Helper to get primary frequency from repeater
 function getPrimaryFrequency(r: Repeater) {
   if (!r.frequencies || r.frequencies.length === 0) return null;
-  return r.frequencies.find(f => f.isPrimary) || r.frequencies[0];
+  return r.frequencies.find((f) => f.isPrimary) || r.frequencies[0];
 }
 
 interface NearestRepeaterProps {
@@ -120,427 +110,251 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <StandardPageHeader
-        icon={<Crosshair className="h-5 w-5" />}
-        title={t('title')}
-        description={t('description')}
-        noMargin
-        actions={
-          <div className="flex items-center gap-2">
-            {compass.isSupported && userLocation && (
-              <button
-                onClick={() => compass.toggle()}
-                className={cn(
-                  'flex h-9 items-center gap-2 px-3 rounded-lg transition-all text-sm font-medium border',
-                  compass.isEnabled
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800'
-                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700'
-                )}
+    <Card>
+      <CardContent>
+        <StandardPageHeader
+          icon={<Crosshair className="h-5 w-5" />}
+          title={t('title')}
+          description={t('description')}
+          noMargin
+          actions={
+            <div className="flex items-center gap-1.5">
+              {compass.isSupported && userLocation && (
+                <Button
+                  variant={compass.isEnabled ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => compass.toggle()}
+                >
+                  <Compass className="h-4 w-4" />
+                  <span className="hidden sm:inline">
+                    {compass.isEnabled ? tCompass('disable') : tCompass('enable')}
+                  </span>
+                </Button>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => requestLocation(true)}
+                disabled={isLocating}
               >
-                <Compass className={cn('h-4 w-4', compass.isEnabled && 'animate-pulse')} />
-                <span className="hidden sm:inline">
-                  {compass.isEnabled ? tCompass('disable') : tCompass('enable')}
-                </span>
-              </button>
-            )}
-            <button
-              onClick={() => requestLocation(true)}
-              disabled={isLocating}
-              className="flex h-9 items-center gap-2 px-3 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition-colors text-sm font-medium disabled:opacity-50 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700"
-            >
-              {isLocating ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <RefreshCw className="h-4 w-4" />
-              )}
-              <span className="hidden sm:inline">{t('refreshLocation')}</span>
-            </button>
-          </div>
-        }
-      />
-
-      {/* Location Status Panel */}
-      {userLocation && (
-        <div className="relative overflow-hidden rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-gradient-to-br from-white via-white to-azulejo-50/50 dark:from-azulejo-950 dark:via-azulejo-950 dark:to-azulejo-900/30 shadow-sm">
-          <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-60" />
-
-          <div className="p-3 sm:p-4">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-800">
-                  <MapPin className="h-5 w-5 text-azulejo-600 dark:text-azulejo-400" />
-                </div>
-                <div>
-                  <div className="text-xs uppercase tracking-wider text-azulejo-500 mb-0.5">
-                    Posição Atual
-                  </div>
-                  <div className="font-mono text-sm sm:text-base font-medium text-azulejo-900 dark:text-azulejo-100">
-                    {userLocation.qthLocator || `${userLocation.latitude.toFixed(5)}°, ${userLocation.longitude.toFixed(5)}°`}
-                  </div>
-                </div>
-              </div>
-
-              {compass.isEnabled && compass.heading !== null && (
-                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 ring-1 ring-emerald-200 dark:ring-emerald-800">
-                  <Compass className="h-4 w-4 text-emerald-600 dark:text-emerald-400 animate-pulse" />
-                  <div className="text-right">
-                    <div className="text-xs text-emerald-600 dark:text-emerald-400">{t('heading')}</div>
-                    <div className="font-mono text-sm font-bold text-emerald-700 dark:text-emerald-300">
-                      {compass.heading}° {bearingToCardinal(compass.heading)}
-                    </div>
-                  </div>
-                </div>
-              )}
+                {isLocating ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-4 w-4" />
+                )}
+                <span className="hidden sm:inline">{t('refreshLocation')}</span>
+              </Button>
             </div>
-          </div>
+          }
+        />
 
-        </div>
-      )}
-
-      {/* Loading State */}
-      {isLocating && !userLocation && (
-        <div className="relative overflow-hidden rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-gradient-to-br from-white via-white to-azulejo-50/50 dark:from-azulejo-950 dark:via-azulejo-950 dark:to-azulejo-900/30 shadow-sm">
-          <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-azulejo-500 to-transparent opacity-60" />
-
-          <div className="py-12 sm:py-16 text-center">
-            <div className="flex h-16 w-16 mx-auto mb-4 items-center justify-center rounded-2xl bg-azulejo-100 dark:bg-azulejo-800">
-              <Loader2 className="h-8 w-8 animate-spin text-azulejo-600 dark:text-azulejo-400" />
-            </div>
-            <p className="text-sm sm:text-base text-azulejo-600 dark:text-azulejo-400 font-medium">
-              {t('locating')}
-            </p>
-            <p className="text-xs text-azulejo-500 mt-1">
-              A obter coordenadas GPS...
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* No Location State */}
-      {!userLocation && !isLocating && (
-        <div className="relative overflow-hidden rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-gradient-to-br from-white via-white to-azulejo-50/50 dark:from-azulejo-950 dark:via-azulejo-950 dark:to-azulejo-900/30 shadow-sm">
-          <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-60" />
-
-          <div className="py-12 sm:py-16 text-center">
-            <div className="flex h-16 w-16 mx-auto mb-4 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-900/30">
-              <MapPin className="h-8 w-8 text-amber-600 dark:text-amber-400" />
-            </div>
-            <p className="text-sm sm:text-base text-azulejo-900 dark:text-azulejo-100 font-medium mb-1">
-              {t('noLocation')}
-            </p>
-            <p className="text-xs text-azulejo-500 max-w-xs mx-auto">
-              {t('setLocationHint')}
-            </p>
-            <button
-              onClick={() => requestLocation(true)}
-              className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-azulejo-600 text-white hover:bg-azulejo-700 transition-colors text-sm font-medium"
-            >
-              <Crosshair className="h-4 w-4" />
-              Obter Localização
-            </button>
-          </div>
-
-        </div>
-      )}
-
-      {/* Repeater List */}
-      {userLocation && sortedRepeaters.length > 0 && (
-        <div className="space-y-3">
-          {sortedRepeaters.slice(0, 20).map((repeater, index) => {
-            const relativeBearing = getRelativeBearing(repeater.bearing);
-            const isFirst = index === 0;
-
-            return (
-              <RepeaterCard
-                key={repeater.callsign}
-                repeater={repeater}
-                index={index}
-                isFirst={isFirst}
-                compassEnabled={compass.isEnabled}
-                relativeBearing={relativeBearing}
-                getDirectionInstruction={getDirectionInstruction}
-              />
-            );
-          })}
-
-          {sortedRepeaters.length > 20 && (
-            <div className="text-center py-3">
-              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-azulejo-100 dark:bg-azulejo-800/50 text-sm text-azulejo-600 dark:text-azulejo-400">
-                <Signal className="h-3.5 w-3.5" />
-                {t('showingCount', { shown: 20, total: sortedRepeaters.length })}
+        {/* Position strip — calm meta-line, no extra card */}
+        {userLocation && (
+          <div className="mt-1 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
+            <div className="flex items-center gap-2 text-sm">
+              <MapPin className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
+              <span className="text-[11px] font-semibold tracking-[0.04em] text-muted-foreground">
+                Posição atual
+              </span>
+              <span className="font-mono tabular-nums text-foreground">
+                {userLocation.qthLocator ||
+                  `${userLocation.latitude.toFixed(5)}, ${userLocation.longitude.toFixed(5)}`}
               </span>
             </div>
-          )}
-        </div>
-      )}
-
-      {/* Info Panel */}
-      {userLocation && (
-        <div className="relative overflow-hidden rounded-xl border border-azulejo-200/50 dark:border-azulejo-800/30 bg-azulejo-50/50 dark:bg-azulejo-900/20">
-          <div className="p-3 sm:p-4">
-            <div className="flex items-start gap-3 text-xs sm:text-sm text-azulejo-600 dark:text-azulejo-400">
-              <Signal className="h-4 w-4 mt-0.5 flex-shrink-0" />
-              <p>{t('info')}</p>
-            </div>
+            {compass.isEnabled && compass.heading !== null && (
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Compass
+                  className="h-3.5 w-3.5 text-azulejo-600 dark:text-azulejo-400"
+                  aria-hidden="true"
+                />
+                <span>{t('heading')}</span>
+                <span className="font-mono tabular-nums text-foreground">
+                  {compass.heading}° {bearingToCardinal(compass.heading)}
+                </span>
+              </div>
+            )}
           </div>
-        </div>
-      )}
-    </div>
+        )}
+
+        {/* Loading */}
+        {isLocating && !userLocation && (
+          <div className="mt-5 flex flex-col items-center justify-center py-12 text-center">
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" aria-hidden="true" />
+            <p className="mt-3 text-sm text-muted-foreground">{t('locating')}</p>
+          </div>
+        )}
+
+        {/* No location */}
+        {!userLocation && !isLocating && (
+          <div className="mt-5 flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-muted/30 py-12 text-center">
+            <div className="flex size-12 items-center justify-center rounded-lg border border-border bg-muted">
+              <MapPin className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
+            </div>
+            <p className="mt-3 text-sm font-medium text-foreground">{t('noLocation')}</p>
+            <p className="mt-1 max-w-xs text-xs text-muted-foreground">
+              {t('setLocationHint')}
+            </p>
+            <Button className="mt-4" size="sm" onClick={() => requestLocation(true)}>
+              <Crosshair className="h-4 w-4" />
+              Obter localização
+            </Button>
+          </div>
+        )}
+
+        {/* List */}
+        {userLocation && sortedRepeaters.length > 0 && (
+          <ol className="mt-4 divide-y divide-border border-t border-border">
+            {sortedRepeaters.slice(0, 20).map((repeater, index) => {
+              const relativeBearing = getRelativeBearing(repeater.bearing);
+              return (
+                <NearestRow
+                  key={repeater.callsign}
+                  repeater={repeater}
+                  index={index}
+                  compassEnabled={compass.isEnabled}
+                  relativeBearing={relativeBearing}
+                  getDirectionInstruction={getDirectionInstruction}
+                />
+              );
+            })}
+          </ol>
+        )}
+
+        {userLocation && sortedRepeaters.length > 20 && (
+          <p className="mt-3 text-center text-xs text-muted-foreground">
+            {t('showingCount', { shown: 20, total: sortedRepeaters.length })}
+          </p>
+        )}
+
+        {/* Footer hint */}
+        {userLocation && (
+          <p className="mt-4 flex items-start gap-2 border-t border-border pt-3 text-xs text-muted-foreground">
+            <Signal className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            <span>{t('info')}</span>
+          </p>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
-interface RepeaterCardProps {
+interface NearestRowProps {
   repeater: RepeaterWithDistance;
   index: number;
-  isFirst: boolean;
   compassEnabled: boolean;
   relativeBearing: number | null;
   getDirectionInstruction: (bearing: number) => string;
 }
 
-function RepeaterCard({
+function NearestRow({
   repeater,
   index,
-  isFirst,
   compassEnabled,
   relativeBearing,
   getDirectionInstruction,
-}: RepeaterCardProps) {
+}: NearestRowProps) {
+  const primary = getPrimaryFrequency(repeater);
+  const modesStr =
+    repeater.modes?.map((m) => (m === 'DSTAR' ? 'D-STAR' : m)).join(' · ') || 'FM';
+
+  const aligned =
+    compassEnabled && relativeBearing !== null && Math.abs(relativeBearing) <= 15;
+
   return (
-    <Link
-      href={`/repeater/${repeater.callsign}/`}
-      className={cn(
-        'group block relative overflow-hidden rounded-xl border transition-all hover:shadow-md',
-        isFirst
-          ? 'border-azulejo-300 dark:border-azulejo-700 bg-gradient-to-br from-azulejo-50 via-white to-azulejo-50/50 dark:from-azulejo-900/50 dark:via-azulejo-950 dark:to-azulejo-900/30 ring-1 ring-azulejo-200 dark:ring-azulejo-800'
-          : 'border-azulejo-200 dark:border-azulejo-800/50 bg-gradient-to-br from-white via-white to-azulejo-50/30 dark:from-azulejo-950 dark:via-azulejo-950 dark:to-azulejo-900/20'
-      )}
-    >
-      {/* Top accent */}
-      <div className={cn(
-        'absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent to-transparent opacity-60',
-        isFirst ? 'via-azulejo-500' : 'via-azulejo-400/50'
-      )} />
+    <li>
+      <Link
+        href={`/repeater/${repeater.callsign}/`}
+        className="group flex items-center gap-3 py-2.5 transition-colors hover:bg-azulejo-50/40 dark:hover:bg-azulejo-950/20"
+      >
+        {/* Rank */}
+        <span className="w-5 shrink-0 text-right font-mono text-[11px] tabular-nums text-muted-foreground">
+          {index + 1}
+        </span>
 
-      <div className="p-3 sm:p-4">
-        {/* Desktop Layout */}
-        <div className="hidden sm:flex sm:items-center sm:gap-4">
-          {/* Rank & Distance */}
-          <div className="flex flex-col items-center min-w-[70px]">
-            <div className={cn(
-              'text-2xl font-bold font-mono',
-              isFirst ? 'text-azulejo-600 dark:text-azulejo-400' : 'text-azulejo-400 dark:text-azulejo-600'
-            )}>
-              #{index + 1}
-            </div>
-            <div className="text-sm font-medium text-azulejo-600 dark:text-azulejo-300 bg-azulejo-100 dark:bg-azulejo-800 px-2 py-0.5 rounded-md">
-              {formatDistance(repeater.distance)}
-            </div>
-          </div>
-
-          {/* Bearing Indicator */}
-          <div className={cn(
-            'flex-shrink-0 w-16 h-16 rounded-xl flex items-center justify-center transition-all',
+        {/* Bearing tile — rotates to point at the repeater */}
+        <div
+          className={cn(
+            'flex size-10 shrink-0 items-center justify-center rounded-lg border bg-muted',
             compassEnabled
-              ? 'bg-emerald-100 dark:bg-emerald-900/30 ring-2 ring-emerald-400 dark:ring-emerald-600'
-              : 'bg-azulejo-100 dark:bg-azulejo-800'
-          )}>
-            <Navigation
-              className={cn(
-                'h-8 w-8 transition-transform duration-300',
-                compassEnabled
-                  ? 'text-emerald-600 dark:text-emerald-400'
-                  : 'text-azulejo-500 dark:text-azulejo-400'
-              )}
-              style={{
-                transform: `rotate(${
-                  compassEnabled && relativeBearing !== null
-                    ? relativeBearing
-                    : repeater.bearing
-                }deg)`,
-              }}
-            />
-          </div>
+              ? 'border-azulejo-300 dark:border-azulejo-700'
+              : 'border-border'
+          )}
+          aria-label={`${Math.round(repeater.bearing)}° ${bearingToCardinal(repeater.bearing)}`}
+        >
+          <Navigation
+            className={cn(
+              'h-4 w-4 transition-transform duration-300',
+              compassEnabled
+                ? 'text-azulejo-600 dark:text-azulejo-400'
+                : 'text-muted-foreground'
+            )}
+            style={{
+              transform: `rotate(${
+                compassEnabled && relativeBearing !== null
+                  ? relativeBearing
+                  : repeater.bearing
+              }deg)`,
+            }}
+            aria-hidden="true"
+          />
+        </div>
 
-          {/* Repeater Info */}
-          <div className="flex-grow min-w-0">
-            <div className="flex items-center gap-2 flex-wrap mb-1">
-              <span className="text-lg font-bold font-mono text-azulejo-900 dark:text-azulejo-100 group-hover:text-azulejo-600 dark:group-hover:text-azulejo-300 transition-colors">
-                {repeater.callsign}
+        {/* Identity */}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-baseline gap-2">
+            <span className="font-mono text-sm font-semibold tabular-nums text-foreground transition-colors group-hover:text-azulejo-700 dark:group-hover:text-azulejo-300">
+              {repeater.callsign}
+            </span>
+            <span className="text-[11px] uppercase tracking-wider text-muted-foreground">
+              {modesStr}
+            </span>
+          </div>
+          <div className="mt-0.5 flex flex-wrap items-baseline gap-x-2 text-[12.5px] text-muted-foreground">
+            {primary && (
+              <span className="whitespace-nowrap font-mono tabular-nums">
+                {primary.outputFrequency.toFixed(3)}
+                <span className="text-muted-foreground/70"> MHz</span>
               </span>
-              {(() => {
-                const primary = getPrimaryFrequency(repeater);
-                return primary ? (
-                  <span className="px-2 py-0.5 rounded-md bg-azulejo-100 dark:bg-azulejo-800 text-azulejo-600 dark:text-azulejo-400 text-xs font-medium">
-                    {getBandFromFrequency(primary.outputFrequency)}
-                  </span>
-                ) : null;
-              })()}
-              {repeater.modes?.map(mode => (
-                <span
-                  key={mode}
-                  className={cn(
-                    "px-2 py-0.5 rounded-md text-xs font-medium",
-                    mode === 'DMR' && "bg-purple-500/20 text-purple-600 dark:text-purple-400",
-                    mode === 'DSTAR' && "bg-blue-500/20 text-blue-600 dark:text-blue-400",
-                    mode === 'FM' && "bg-azulejo-50 dark:bg-azulejo-800/50 text-azulejo-500 ring-1 ring-azulejo-200 dark:ring-azulejo-700",
-                    mode === 'C4FM' && "bg-orange-500/20 text-orange-600 dark:text-orange-400",
-                    mode === 'TETRA' && "bg-red-500/20 text-red-600 dark:text-red-400"
-                  )}
-                >
-                  {mode === 'DSTAR' ? 'D-STAR' : mode}
+            )}
+            {primary?.tone ? (
+              <>
+                <span aria-hidden="true">·</span>
+                <span className="whitespace-nowrap font-mono tabular-nums">
+                  {primary.tone} Hz
                 </span>
-              ))}
-            </div>
-            <div className="text-sm text-azulejo-600 dark:text-azulejo-400">
-              {(() => {
-                const primary = getPrimaryFrequency(repeater);
-                return primary ? (
-                  <>
-                    <span className="font-mono">{primary.outputFrequency.toFixed(4)} MHz</span>
-                    {primary.tone && primary.tone > 0 && <span className="ml-2">CTCSS: {primary.tone} Hz</span>}
-                  </>
-                ) : null;
-              })()}
-            </div>
-            <div className="text-sm text-azulejo-500">
-              {repeater.owner ?? ''} • <span className="font-mono">{repeater.qthLocator}</span>
-            </div>
-          </div>
-
-          {/* Bearing & Direction */}
-          <div className="flex flex-col items-end text-right min-w-[100px]">
-            <div className="text-lg font-bold font-mono text-azulejo-900 dark:text-azulejo-100">
-              {Math.round(repeater.bearing)}° {bearingToCardinal(repeater.bearing)}
-            </div>
-            {compassEnabled && relativeBearing !== null && (
-              <div className={cn(
-                'text-sm font-medium px-2 py-0.5 rounded-md mt-1',
-                Math.abs(relativeBearing) <= 15
-                  ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400'
-                  : 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400'
-              )}>
-                {getDirectionInstruction(relativeBearing)}
-              </div>
+              </>
+            ) : null}
+            {repeater.qthLocator && (
+              <>
+                <span aria-hidden="true">·</span>
+                <span className="font-mono tabular-nums">{repeater.qthLocator}</span>
+              </>
             )}
           </div>
-
-          {/* Arrow */}
-          <ChevronRight className="h-5 w-5 text-azulejo-400 opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
 
-        {/* Mobile Layout */}
-        <div className="sm:hidden">
-          <div className="flex items-start gap-3">
-            {/* Bearing Indicator with rank */}
-            <div className="relative flex-shrink-0">
-              <div className={cn(
-                'w-14 h-14 rounded-xl flex items-center justify-center',
-                compassEnabled
-                  ? 'bg-emerald-100 dark:bg-emerald-900/30 ring-2 ring-emerald-400'
-                  : 'bg-azulejo-100 dark:bg-azulejo-800'
-              )}>
-                <Navigation
-                  className={cn(
-                    'h-7 w-7 transition-transform duration-300',
-                    compassEnabled
-                      ? 'text-emerald-600 dark:text-emerald-400'
-                      : 'text-azulejo-500 dark:text-azulejo-400'
-                  )}
-                  style={{
-                    transform: `rotate(${
-                      compassEnabled && relativeBearing !== null
-                        ? relativeBearing
-                        : repeater.bearing
-                    }deg)`,
-                  }}
-                />
-              </div>
-              {/* Rank badge */}
-              <div className={cn(
-                'absolute -top-1 -left-1 min-w-[1.25rem] h-5 px-1.5 rounded-md text-xs font-bold flex items-center justify-center',
-                isFirst
-                  ? 'bg-azulejo-600 text-white'
-                  : 'bg-azulejo-200 dark:bg-azulejo-700 text-azulejo-600 dark:text-azulejo-300'
-              )}>
-                {index + 1}
-              </div>
-            </div>
-
-            {/* Content */}
-            <div className="flex-1 min-w-0">
-              {/* Top row */}
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="font-bold font-mono text-azulejo-900 dark:text-azulejo-100">
-                      {repeater.callsign}
-                    </span>
-                    {(() => {
-                      const primary = getPrimaryFrequency(repeater);
-                      return primary ? (
-                        <span className="px-1.5 py-0.5 rounded bg-azulejo-100 dark:bg-azulejo-800 text-azulejo-600 dark:text-azulejo-400 text-xs">
-                          {getBandFromFrequency(primary.outputFrequency)}
-                        </span>
-                      ) : null;
-                    })()}
-                    {repeater.modes?.includes('DMR') && (
-                      <span className="px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-600 dark:text-purple-400 text-xs">
-                        DMR
-                      </span>
-                    )}
-                    {repeater.modes?.includes('DSTAR') && (
-                      <span className="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-600 dark:text-blue-400 text-xs">
-                        D-STAR
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div className="text-right flex-shrink-0">
-                  <div className="text-sm font-semibold text-azulejo-900 dark:text-azulejo-100 bg-azulejo-100 dark:bg-azulejo-800 px-1.5 py-0.5 rounded">
-                    {formatDistance(repeater.distance)}
-                  </div>
-                </div>
-              </div>
-
-              {/* Middle row */}
-              <div className="mt-1 flex items-center justify-between text-xs text-azulejo-600 dark:text-azulejo-400">
-                <div className="font-mono">
-                  {(() => {
-                    const primary = getPrimaryFrequency(repeater);
-                    return primary ? (
-                      <>
-                        {primary.outputFrequency.toFixed(3)} MHz
-                        {primary.tone && primary.tone > 0 && <span className="ml-1.5">• {primary.tone}Hz</span>}
-                      </>
-                    ) : null;
-                  })()}
-                </div>
-                <div className="font-mono font-medium">
-                  {Math.round(repeater.bearing)}° {bearingToCardinal(repeater.bearing)}
-                </div>
-              </div>
-
-              {/* Bottom row */}
-              <div className="mt-1 flex items-center justify-between">
-                <span className="text-xs text-azulejo-500 font-mono">{repeater.qthLocator}</span>
-                {compassEnabled && relativeBearing !== null && (
-                  <span className={cn(
-                    'text-xs font-medium px-1.5 py-0.5 rounded',
-                    Math.abs(relativeBearing) <= 15
-                      ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400'
-                      : 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400'
-                  )}>
-                    {getDirectionInstruction(relativeBearing)}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
+        {/* Right column: distance + bearing + direction */}
+        <div className="flex shrink-0 flex-col items-end gap-0.5 text-right">
+          <span className="font-mono text-sm font-semibold tabular-nums text-foreground">
+            {formatDistance(repeater.distance)}
+          </span>
+          <span className="font-mono text-[11px] tabular-nums text-muted-foreground">
+            {Math.round(repeater.bearing)}° {bearingToCardinal(repeater.bearing)}
+          </span>
+          {compassEnabled && relativeBearing !== null && (
+            <span
+              className={cn(
+                'text-[10px] font-medium',
+                aligned
+                  ? 'text-[oklch(0.45_0.13_145)] dark:text-[oklch(0.78_0.13_145)]'
+                  : 'text-[oklch(0.55_0.13_75)] dark:text-[oklch(0.78_0.13_75)]'
+              )}
+            >
+              {getDirectionInstruction(relativeBearing)}
+            </span>
+          )}
         </div>
-      </div>
-
-    </Link>
+      </Link>
+    </li>
   );
 }
