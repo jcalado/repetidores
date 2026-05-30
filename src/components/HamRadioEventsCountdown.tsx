@@ -309,7 +309,7 @@ export default function HamRadioEventsCountdown({
   // Don't render time-sensitive content until client is mounted
   if (!mounted) {
     return (
-      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-6">
+      <>
         {/* Header skeleton */}
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-azulejo-100 to-azulejo-50 dark:from-azulejo-900 dark:to-azulejo-950 p-8 mb-8 animate-pulse">
           <div className="h-8 w-64 bg-azulejo-200 dark:bg-azulejo-800 rounded mb-3" />
@@ -321,14 +321,13 @@ export default function HamRadioEventsCountdown({
             <EventCardSkeleton key={i} />
           ))}
         </div>
-      </div>
+      </>
     );
   }
 
   return (
     <TickProvider interval={1000}>
-      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-6">
-        {/* Hero Header - Radio Station Dashboard style */}
+      {/* Hero Header - Radio Station Dashboard style */}
         <StandardPageHeader
           icon={<CalendarDays className="h-7 w-7" />}
           title={t("title") || "Eventos"}
@@ -479,7 +478,6 @@ export default function HamRadioEventsCountdown({
         <footer className="mt-10 text-xs text-muted-foreground text-center">
           {t("tip")}
         </footer>
-      </div>
     </TickProvider>
   );
 }
