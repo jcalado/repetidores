@@ -212,37 +212,38 @@ export default async function RepeaterPage({ params }: { params: Promise<{ calls
 
 function RepeaterPageSkeleton() {
   return (
-    <div className="space-y-6">
-      {/* Back link skeleton */}
-      <div className="h-5 w-32 bg-azulejo-100 dark:bg-azulejo-900 rounded animate-pulse" />
-
-      {/* Hero skeleton */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-azulejo-100 to-azulejo-50 dark:from-azulejo-900 dark:to-azulejo-950 p-8 animate-pulse">
-        <div className="flex flex-col sm:flex-row gap-6">
-          <div className="flex-1 space-y-4">
-            <div className="h-10 w-48 bg-azulejo-200 dark:bg-azulejo-800 rounded" />
-            <div className="flex gap-2">
-              <div className="h-6 w-16 bg-azulejo-200 dark:bg-azulejo-800 rounded-full" />
-              <div className="h-6 w-20 bg-azulejo-200 dark:bg-azulejo-800 rounded-full" />
-              <div className="h-6 w-24 bg-azulejo-200 dark:bg-azulejo-800 rounded-full" />
+    <div>
+      <div className="mb-4 h-4 w-32 animate-pulse rounded bg-muted" />
+      <div className="mb-4 h-11 animate-pulse rounded-xl bg-muted" />
+      <div className="rounded-xl border border-border bg-card p-5 shadow-[0_1px_2px_oklch(0.20_0.012_250/0.06),0_4px_12px_oklch(0.20_0.012_250/0.04)]">
+        <div className="flex flex-col gap-4 pb-4 sm:flex-row sm:items-start sm:gap-5">
+          <div className="size-14 animate-pulse rounded-lg bg-muted" />
+          <div className="flex-1 space-y-2">
+            <div className="h-5 w-40 animate-pulse rounded bg-muted" />
+            <div className="flex gap-1.5">
+              <div className="h-5 w-14 animate-pulse rounded-full bg-muted" />
+              <div className="h-5 w-12 animate-pulse rounded-full bg-muted" />
+              <div className="h-5 w-20 animate-pulse rounded-full bg-muted" />
             </div>
           </div>
-          <div className="flex gap-3">
-            <div className="h-10 w-24 bg-azulejo-200 dark:bg-azulejo-800 rounded-lg" />
-            <div className="h-10 w-28 bg-azulejo-200 dark:bg-azulejo-800 rounded-lg" />
+        </div>
+        <div className="border-t border-border" />
+        <div className="grid gap-6 pt-5 lg:grid-cols-3">
+          <div className="space-y-2 lg:col-span-2">
+            <div className="h-3 w-20 animate-pulse rounded bg-muted" />
+            <div className="grid grid-cols-2 gap-2">
+              <div className="h-14 animate-pulse rounded-lg bg-muted" />
+              <div className="h-14 animate-pulse rounded-lg bg-muted" />
+              <div className="h-14 animate-pulse rounded-lg bg-muted" />
+              <div className="h-14 animate-pulse rounded-lg bg-muted" />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <div className="h-3 w-20 animate-pulse rounded bg-muted" />
+            <div className="h-48 animate-pulse rounded-lg bg-muted" />
           </div>
         </div>
       </div>
-
-      {/* Grid skeleton */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="h-56 bg-azulejo-100 dark:bg-azulejo-900 rounded-xl animate-pulse" />
-        <div className="h-56 bg-azulejo-100 dark:bg-azulejo-900 rounded-xl animate-pulse" />
-      </div>
-
-      {/* Additional cards skeleton */}
-      <div className="h-32 bg-azulejo-100 dark:bg-azulejo-900 rounded-xl animate-pulse" />
-      <div className="h-40 bg-azulejo-100 dark:bg-azulejo-900 rounded-xl animate-pulse" />
     </div>
   );
 }

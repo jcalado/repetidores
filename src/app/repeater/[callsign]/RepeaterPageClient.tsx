@@ -3,19 +3,22 @@
 import { Repeater } from "@/app/columns";
 import BearingCompass from "@/components/BearingCompass";
 import { Button } from "@/components/ui/button";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { Card, CardContent } from "@/components/ui/card";
 import { useUserLocation } from "@/contexts/UserLocationContext";
 import { useDeviceCompass } from "@/hooks/useDeviceCompass";
 import { cn } from "@/lib/utils";
 import { getAllAutoStatus, type RepeaterAutoStatus } from "@/lib/auto-status";
-import { getBrandmeisterProfile, type BMProfileBySlot, type BMTalkgroupEntry } from "@/lib/brandmeister";
+import {
+  getBrandmeisterProfile,
+  type BMProfileBySlot,
+  type BMTalkgroupEntry,
+} from "@/lib/brandmeister";
 import { formatRelativeTime } from "@/lib/time";
 import { toggleFavorite, isFavorite } from "@/lib/favorites";
 import {
   ArrowLeft,
   Ban,
   Building2,
-  Clock,
   Check,
   ChevronRight,
   Compass,
@@ -27,10 +30,8 @@ import {
   Navigation,
   Radio,
   Share2,
-  ShieldCheck,
   Wifi,
   Zap,
-  Antenna,
   Globe,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -38,7 +39,6 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import * as React from "react";
 
-// Import from refactored repeater module
 import {
   getBandFromFrequency,
   fmtMHzDisplay,
@@ -47,15 +47,11 @@ import {
 } from "@/components/repeater/utils/formatters";
 import { getPrimaryFrequency } from "@/types/repeater-helpers";
 import { RepeaterHealthCard } from "@/components/repeater/RepeaterHealthCard";
-import { operationalStatusConfig } from "@/components/repeater/utils/statusConfig";
 
-// Dynamic import for the mini map (SSR disabled)
 const MiniMap = dynamic(() => import("./MiniMap"), {
   ssr: false,
   loading: () => (
-    <div className="h-64 bg-azulejo-100 dark:bg-azulejo-900/50 animate-pulse rounded-lg flex items-center justify-center">
-      <span className="text-azulejo-500 text-sm">A carregar mapa...</span>
-    </div>
+    <div className="h-64 animate-pulse rounded-lg bg-muted" />
   ),
 });
 
@@ -75,22 +71,44 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
 }
 
 function formatDistance(km: number): string {
-  if (km < 1) return `${Math.round(km * 1000)}m`;
-  return `${km.toFixed(1)}km`;
+  if (km < 1) return `${Math.round(km * 1000)} m`;
+  return `${km.toFixed(1)} km`;
 }
 
+// Admin operational status → semantic dot + label. DESIGN.md §2 sanctions
+// Success / Warning / Destructive as the only saturated colours beyond
+// azulejo, and only for state signalling.
+function statusDot(status?: string): {
+  color: string;
+  label: string;
+} | null {
+  switch (status) {
+    case "active":
+      return { color: "bg-[oklch(0.55_0.13_145)]", label: "Operacional" };
+    case "maintenance":
+      return { color: "bg-[oklch(0.72_0.13_75)]", label: "Em manutenção" };
+    case "offline":
+      return { color: "bg-destructive", label: "Offline" };
+    case "unknown":
+    default:
+      return null;
+  }
+}
 
 interface RepeaterPageClientProps {
   repeater: Repeater;
   allRepeaters: Repeater[];
 }
 
-export default function RepeaterPageClient({ repeater: r, allRepeaters }: RepeaterPageClientProps) {
+export default function RepeaterPageClient({
+  repeater: r,
+  allRepeaters,
+}: RepeaterPageClientProps) {
   const primary = getPrimaryFrequency(r);
-  const band = primary ? getBandFromFrequency(primary.outputFrequency) : 'unknown';
+  const band = primary ? getBandFromFrequency(primary.outputFrequency) : "unknown";
   const { sign, offsetDisplay, offsetCopy } = primary
     ? duplex(primary.outputFrequency, primary.inputFrequency)
-    : { sign: '', offsetDisplay: '—', offsetCopy: '' };
+    : { sign: "", offsetDisplay: "—", offsetCopy: "" };
   const [favorite, setFavorite] = React.useState(() => isFavorite(r.callsign));
   const [autoStatus, setAutoStatus] = React.useState<RepeaterAutoStatus | null>(null);
   const [bmProfile, setBmProfile] = React.useState<BMProfileBySlot | null>(null);
@@ -103,10 +121,8 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
     });
   }, [r.callsign]);
 
-  // Fetch live BM profile for any DMR repeater with a DMR ID
-  // The BM API will return an error for non-BM devices, which we handle gracefully
   React.useEffect(() => {
-    if (!r.modes?.includes('DMR') || !r.dmr?.dmrId) return;
+    if (!r.modes?.includes("DMR") || !r.dmr?.dmrId) return;
     setBmLoading(true);
     getBrandmeisterProfile(r.dmr.dmrId)
       .then((profile) => {
@@ -118,7 +134,9 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
   const { userLocation, requestLocation, isLocating } = useUserLocation();
   const compass = useDeviceCompass();
 
-  const mapsUrl = `https://www.google.com/maps?q=${encodeURIComponent(r.latitude + "," + r.longitude)}`;
+  const mapsUrl = `https://www.google.com/maps?q=${encodeURIComponent(
+    r.latitude + "," + r.longitude
+  )}`;
   const osmUrl =
     typeof r.latitude === "number" && typeof r.longitude === "number"
       ? `https://www.openstreetmap.org/?mlat=${r.latitude}&mlon=${r.longitude}&zoom=14`
@@ -134,630 +152,602 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
     setFavorite(newState);
   };
 
-  // Calculate nearby repeaters (within 50km, excluding self)
   const nearbyRepeaters = React.useMemo(() => {
     if (!r.latitude || !r.longitude) return [];
 
     return allRepeaters
-      .filter((other) => other.callsign !== r.callsign && other.latitude && other.longitude)
+      .filter(
+        (other) => other.callsign !== r.callsign && other.latitude && other.longitude
+      )
       .map((other) => ({
         ...other,
-        distance: calculateDistance(r.latitude, r.longitude, other.latitude, other.longitude),
+        distance: calculateDistance(
+          r.latitude,
+          r.longitude,
+          other.latitude,
+          other.longitude
+        ),
       }))
       .filter((other) => other.distance <= 50)
       .sort((a, b) => a.distance - b.distance)
       .slice(0, 5);
   }, [allRepeaters, r.callsign, r.latitude, r.longitude]);
 
-  // Status configuration
-  const statusConfig = r.status ? operationalStatusConfig[r.status] : null;
+  const status = statusDot(r.status);
+  const verifiedDate = r.lastVerified
+    ? new Date(r.lastVerified).toLocaleDateString("pt-PT", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+    : null;
+
+  const hasOwnerInfo = r.association || r.owner || r.website;
+  const hasTechSpecs = r.power || r.antennaHeight || r.coverage || r.operatingHours;
+  const hasDigitalModes =
+    r.modes?.includes("DMR") ||
+    r.modes?.includes("DSTAR") ||
+    r.modes?.includes("C4FM") ||
+    r.modes?.includes("TETRA") ||
+    r.echolink?.enabled ||
+    r.allstarNode;
 
   return (
-    <div className="space-y-6">
-      {/* Back Navigation */}
+    <>
+      {/* Back link */}
       <Link
         href="/repetidores"
-        className="inline-flex items-center gap-2 text-azulejo-600 dark:text-azulejo-400 hover:text-azulejo-900 dark:hover:text-azulejo-100 transition-colors group"
+        className="group mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-azulejo-700 dark:hover:text-azulejo-300"
       >
-        <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-        <span>{tNav("repeaters")}</span>
+        <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
+        {tNav("repeaters")}
       </Link>
 
-      {/* Hero Header */}
-      <PageHeader
-        noMargin
-        floatingIcons={[
-          <Radio key="radio" className="h-12 w-12 text-white" />,
-          <Antenna key="antenna" className="h-10 w-10 text-white" />,
-        ]}
-      >
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-          <div>
-            {/* Callsign and favorite */}
-            <div className="flex items-center gap-3 mb-3">
-              <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight font-mono">
-                {r.callsign}
-              </h1>
-              <button
+      {/* Health bar (its own card; sibling, not nested) */}
+      <div className="mb-4">
+        <RepeaterHealthCard
+          repeaterId={r.callsign}
+          operationalStatus={r.status}
+          lastVerified={r.lastVerified}
+        />
+      </div>
+
+      <Card>
+        <CardContent>
+          {/* Header: icon + identity + chip strip + actions */}
+          <header className="flex flex-col gap-4 pb-4 sm:flex-row sm:items-start sm:gap-5">
+            <div className="flex size-14 shrink-0 items-center justify-center rounded-lg border border-border bg-muted">
+              <Radio className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+                <h1 className="font-mono text-lg font-semibold tracking-tight text-foreground">
+                  {r.callsign}
+                </h1>
+                {status && (
+                  <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <span
+                      className={cn("size-2 shrink-0 rounded-full", status.color)}
+                      aria-hidden="true"
+                    />
+                    {status.label}
+                  </span>
+                )}
+              </div>
+
+              {/* Chip strip — band + modes + locator + verified. Single voice. */}
+              <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+                {band !== "unknown" && (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-azulejo-100 px-2.5 py-0.5 text-xs text-azulejo-700 dark:bg-azulejo-950/50 dark:text-azulejo-300">
+                    {band}
+                  </span>
+                )}
+                {r.modes?.map((mode) => (
+                  <span
+                    key={mode}
+                    className="inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-0.5 text-xs text-foreground"
+                  >
+                    {mode === "DSTAR" ? "D-STAR" : mode}
+                  </span>
+                ))}
+                {r.qthLocator && (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-0.5 font-mono text-xs tabular-nums text-muted-foreground">
+                    {r.qthLocator}
+                  </span>
+                )}
+                {verifiedDate && (
+                  <span className="inline-flex items-center gap-1 rounded-full px-1 py-0.5 text-[11px] text-muted-foreground">
+                    Verificado <time className="font-mono tabular-nums">{verifiedDate}</time>
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex shrink-0 items-center gap-1.5 self-start">
+              <Button
+                variant="ghost"
+                size="icon-sm"
                 onClick={handleFavoriteToggle}
-                className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-                aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
+                aria-label={favorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+                title={favorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
               >
                 <Heart
                   className={cn(
-                    "h-5 w-5 transition-colors",
-                    favorite ? "fill-red-400 text-red-400" : "text-white/70 hover:text-red-300"
+                    "h-4 w-4 transition-colors",
+                    favorite
+                      ? "fill-azulejo-600 text-azulejo-600 dark:fill-azulejo-400 dark:text-azulejo-400"
+                      : "text-muted-foreground"
                   )}
                 />
-              </button>
-            </div>
-
-            {/* Badges */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="px-3 py-1 rounded-md bg-white/10 text-white text-sm font-medium">
-                {band}
-              </span>
-              {r.modes?.map((mode) => (
-                <span
-                  key={mode}
-                  className={cn(
-                    "px-3 py-1 rounded-md text-sm font-medium",
-                    mode === 'DMR' && "bg-purple-500/30 text-purple-100",
-                    mode === 'DSTAR' && "bg-blue-500/30 text-blue-100",
-                    mode === 'C4FM' && "bg-orange-500/30 text-orange-100",
-                    mode === 'TETRA' && "bg-cyan-500/30 text-cyan-100",
-                    mode === 'FM' && "bg-azulejo-500/30 text-azulejo-100",
-                    mode === 'Digipeater' && "bg-green-500/30 text-green-100"
-                  )}
-                >
-                  {mode === 'DSTAR' ? 'D-STAR' : mode}
-                </span>
-              ))}
-              {r.qthLocator && (
-                <span className="px-3 py-1 rounded-md bg-white/10 text-white text-sm font-mono">
-                  {r.qthLocator}
-                </span>
+              </Button>
+              <ShareButton callsign={r.callsign} />
+              {typeof r.latitude === "number" && typeof r.longitude === "number" && (
+                <Button asChild variant="outline" size="sm">
+                  <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
+                    <MapPin className="h-4 w-4" />
+                    {t("maps")}
+                  </a>
+                </Button>
               )}
             </div>
-          </div>
+          </header>
 
-          {/* Action buttons */}
-          <div className="flex items-center gap-2">
-            <ShareButton callsign={r.callsign} />
-            <a
-              href={mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-azulejo-900 font-medium text-sm hover:bg-azulejo-50 transition-colors"
-            >
-              <MapPin className="h-4 w-4" />
-              {t("maps")}
-            </a>
-          </div>
-        </div>
+          <Divider />
 
-        {/* Status badge in header */}
-        {statusConfig && r.status !== "unknown" && (
-          <div className={cn(
-            "mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium",
-            r.status === "active" && "bg-emerald-500/20 text-emerald-100",
-            r.status === "maintenance" && "bg-amber-500/20 text-amber-100",
-            r.status === "offline" && "bg-red-500/20 text-red-100"
-          )}>
-            <div className={cn(
-              "h-2 w-2 rounded-full",
-              r.status === "active" && "bg-emerald-400 animate-pulse",
-              r.status === "maintenance" && "bg-amber-400",
-              r.status === "offline" && "bg-red-400"
-            )} />
-            {statusConfig.label}
-            {r.lastVerified && (
-              <span className="text-white/60 text-xs">
-                · Verificado {new Date(r.lastVerified).toLocaleDateString("pt-PT")}
-              </span>
-            )}
-          </div>
-        )}
-      </PageHeader>
-
-      {/* Community Section */}
-      <RepeaterHealthCard
-        repeaterId={r.callsign}
-        operationalStatus={r.status}
-        lastVerified={r.lastVerified}
-      />
-
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Frequency Info Panel */}
-        <EquipmentPanel title="Frequências" icon={Radio}>
-          <div className="grid grid-cols-2 gap-4">
-            <FrequencyDisplay
-              label={t("output")}
-              value={primary ? fmtMHzDisplay(primary.outputFrequency) : "—"}
-              copyValue={primary ? fmtMHzCopy(primary.outputFrequency) : undefined}
-            />
-            <FrequencyDisplay
-              label={t("input")}
-              value={primary ? fmtMHzDisplay(primary.inputFrequency) : "—"}
-              copyValue={primary ? fmtMHzCopy(primary.inputFrequency) : undefined}
-            />
-            <FrequencyDisplay
-              label={t("offset")}
-              value={`${sign}${sign ? " " : ""}${offsetDisplay}`}
-              copyValue={`${sign}${offsetCopy}`}
-            />
-            <FrequencyDisplay
-              label={t("tone")}
-              value={primary?.tone ? `${Number(primary.tone.toFixed(1))} Hz` : "—"}
-              copyValue={primary?.tone ? `${Number(primary.tone.toFixed(1))}` : undefined}
-            />
-          </div>
-        </EquipmentPanel>
-
-        {/* Map Panel */}
-        <EquipmentPanel title="Localização" icon={MapPin}>
-          <MiniMap
-            latitude={r.latitude}
-            longitude={r.longitude}
-            callsign={r.callsign}
-            userLatitude={userLocation?.latitude}
-            userLongitude={userLocation?.longitude}
-          />
-          <div className="flex items-center justify-between text-sm mt-3">
-            <span className="font-mono text-azulejo-600 dark:text-azulejo-400 text-xs">
-              {r.latitude?.toFixed(5)}, {r.longitude?.toFixed(5)}
-            </span>
-            {osmUrl && (
-              <a
-                href={osmUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs text-azulejo-600 dark:text-azulejo-400 hover:text-azulejo-900 dark:hover:text-azulejo-100 transition-colors"
-              >
-                <ExternalLink className="h-3 w-3" />
-                OpenStreetMap
-              </a>
-            )}
-          </div>
-        </EquipmentPanel>
-      </div>
-
-      {/* Bearing Compass */}
-      {hasValidLocations ? (
-        <EquipmentPanel
-          title="Direção para o Repetidor"
-          icon={Compass}
-        >
-          <div className="flex items-center justify-between gap-4">
-            <div className="space-y-2">
-              <p className="text-sm text-azulejo-600 dark:text-azulejo-400">
-                {compass.isEnabled
-                  ? "Aponte o dispositivo para a direção indicada"
-                  : "Baseado na sua localização atual"}
-              </p>
-              {compass.isSupported && (
-                <button
-                  onClick={() => compass.toggle()}
-                  className={cn(
-                    "inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
-                    compass.isEnabled
-                      ? "bg-emerald-500 text-white hover:bg-emerald-600"
-                      : "bg-azulejo-100 dark:bg-azulejo-800 text-azulejo-700 dark:text-azulejo-300 hover:bg-azulejo-200 dark:hover:bg-azulejo-700"
-                  )}
-                >
-                  <Compass className="h-4 w-4" />
-                  {compass.isEnabled ? "Desativar bússola" : "Ativar bússola"}
-                </button>
-              )}
-              {compass.error && (
-                <p className="text-xs text-red-600 dark:text-red-400">{compass.error}</p>
-              )}
-            </div>
-            <BearingCompass
-              userLat={userLocation.latitude}
-              userLon={userLocation.longitude}
-              targetLat={r.latitude}
-              targetLon={r.longitude}
-              size="lg"
-              deviceHeading={compass.heading}
-              isCompassActive={compass.isEnabled}
-            />
-          </div>
-        </EquipmentPanel>
-      ) : (
-        <div className="relative overflow-hidden rounded-xl border border-dashed border-azulejo-300 dark:border-azulejo-700 bg-azulejo-50/50 dark:bg-azulejo-900/20 p-5">
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <h3 className="font-medium text-azulejo-700 dark:text-azulejo-300">
-                Direção para o Repetidor
-              </h3>
-              <p className="text-sm text-azulejo-500">
-                Partilhe a sua localização para ver a direção
-              </p>
-            </div>
-            <button
-              onClick={() => requestLocation()}
-              disabled={isLocating}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-azulejo-100 dark:bg-azulejo-800 text-azulejo-700 dark:text-azulejo-300 font-medium text-sm hover:bg-azulejo-200 dark:hover:bg-azulejo-700 transition-colors disabled:opacity-50"
-            >
-              <MapPin className="h-4 w-4" />
-              {isLocating ? "A localizar..." : "Obter localização"}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Owner/Association Info */}
-      {(r.association || r.owner || r.website) && (
-        <EquipmentPanel title="Proprietário" icon={Building2}>
-          {(r.association || r.owner) && (
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-800">
-                <Building2 className="h-6 w-6 text-azulejo-600 dark:text-azulejo-400" />
+          {/* Frequencies + Location */}
+          <div className="grid gap-6 pt-5 lg:grid-cols-3 lg:gap-8">
+            <section className="lg:col-span-2 lg:border-r lg:border-border lg:pr-8">
+              <SectionLabel>Frequências</SectionLabel>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <FrequencyDisplay
+                  label={t("output")}
+                  value={primary ? fmtMHzDisplay(primary.outputFrequency) : "—"}
+                  copyValue={primary ? fmtMHzCopy(primary.outputFrequency) : undefined}
+                />
+                <FrequencyDisplay
+                  label={t("input")}
+                  value={primary ? fmtMHzDisplay(primary.inputFrequency) : "—"}
+                  copyValue={primary ? fmtMHzCopy(primary.inputFrequency) : undefined}
+                />
+                <FrequencyDisplay
+                  label={t("offset")}
+                  value={`${sign}${sign ? " " : ""}${offsetDisplay}`}
+                  copyValue={`${sign}${offsetCopy}`}
+                />
+                <FrequencyDisplay
+                  label={t("tone")}
+                  value={primary?.tone ? `${Number(primary.tone.toFixed(1))} Hz` : "—"}
+                  copyValue={primary?.tone ? `${Number(primary.tone.toFixed(1))}` : undefined}
+                />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs text-azulejo-500 mb-1">{t("owner")}</p>
-                {r.association ? (
-                  <Link
-                    href={`/association/${r.association.slug}/`}
-                    className="font-medium text-azulejo-900 dark:text-azulejo-100 hover:text-azulejo-600 dark:hover:text-azulejo-300 transition-colors"
+            </section>
+
+            <section>
+              <SectionLabel>Localização</SectionLabel>
+              <div className="mt-3 overflow-hidden rounded-lg border border-border">
+                <MiniMap
+                  latitude={r.latitude}
+                  longitude={r.longitude}
+                  callsign={r.callsign}
+                  userLatitude={userLocation?.latitude}
+                  userLongitude={userLocation?.longitude}
+                />
+              </div>
+              <div className="mt-2 flex items-center justify-between text-xs">
+                <span className="font-mono tabular-nums text-muted-foreground">
+                  {r.latitude?.toFixed(5)}, {r.longitude?.toFixed(5)}
+                </span>
+                {osmUrl && (
+                  <a
+                    href={osmUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-azulejo-600 transition-colors hover:text-azulejo-700 dark:text-azulejo-400 dark:hover:text-azulejo-300"
                   >
-                    {r.association.abbreviation} - {r.association.name}
-                  </Link>
-                ) : (
-                  <p className="font-medium text-azulejo-900 dark:text-azulejo-100">{r.owner}</p>
+                    <ExternalLink className="h-3 w-3" />
+                    OpenStreetMap
+                  </a>
                 )}
               </div>
-              {r.association && (
-                <ChevronRight className="h-5 w-5 text-azulejo-400" />
-              )}
-            </div>
-          )}
-          {r.website && (
-            <a
-              href={r.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={cn(
-                "flex items-center gap-4 group",
-                (r.association || r.owner) && "mt-3 pt-3 border-t border-azulejo-100 dark:border-azulejo-800/50"
-              )}
-            >
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-800">
-                <Globe className="h-6 w-6 text-azulejo-600 dark:text-azulejo-400" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs text-azulejo-500 mb-1">Website</p>
-                <p className="font-medium text-azulejo-900 dark:text-azulejo-100 group-hover:text-azulejo-600 dark:group-hover:text-azulejo-300 transition-colors truncate">
-                  {r.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
-                </p>
-              </div>
-              <ExternalLink className="h-5 w-5 text-azulejo-400" />
-            </a>
-          )}
-        </EquipmentPanel>
-      )}
-
-      {/* Technical Specs */}
-      {(r.power || r.antennaHeight || r.coverage || r.operatingHours) && (
-        <EquipmentPanel title="Especificações Técnicas" icon={Zap}>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {r.power && (
-              <TechSpec label="Potência" value={`${r.power}W`} />
-            )}
-            {r.antennaHeight && (
-              <TechSpec label="Altura Antena" value={`${r.antennaHeight}m AGL`} />
-            )}
-            {r.coverage && (
-              <TechSpec label="Cobertura" value={r.coverage} capitalize />
-            )}
-            {r.operatingHours && (
-              <TechSpec label="Horário" value={r.operatingHours} />
-            )}
+            </section>
           </div>
-        </EquipmentPanel>
-      )}
 
-      {/* Digital Modes */}
-      {(r.modes?.includes('DMR') || r.modes?.includes('DSTAR') || r.modes?.includes('C4FM') || r.modes?.includes('TETRA') || r.echolink?.enabled || r.allstarNode || autoStatus) && (
-        <EquipmentPanel
-          title="Modos Digitais & Linking"
-          icon={Wifi}
-          titleExtra={autoStatus && (
-            <span className={cn(
-              "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium",
-              autoStatus.isOnline
-                ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300"
-                : "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300"
-            )}>
-              <span className={cn(
-                "h-1.5 w-1.5 rounded-full",
-                autoStatus.isOnline ? "bg-emerald-500 animate-pulse" : "bg-red-500"
-              )} />
-              {autoStatus.isOnline ? t('autoStatus.online') : t('autoStatus.offline')}
-              <ShieldCheck className="h-3 w-3 opacity-60" />
-            </span>
+          {/* Bearing compass */}
+          {hasValidLocations ? (
+            <Section title="Direção para o repetidor">
+              <div className="flex items-center justify-between gap-4">
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    {compass.isEnabled
+                      ? "Aponte o dispositivo para a direção indicada"
+                      : "Baseado na sua localização atual"}
+                  </p>
+                  {compass.isSupported && (
+                    <Button
+                      variant={compass.isEnabled ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => compass.toggle()}
+                    >
+                      <Compass className="h-4 w-4" />
+                      {compass.isEnabled ? "Desativar bússola" : "Ativar bússola"}
+                    </Button>
+                  )}
+                  {compass.error && (
+                    <p className="text-xs text-destructive">{compass.error}</p>
+                  )}
+                </div>
+                <BearingCompass
+                  userLat={userLocation.latitude}
+                  userLon={userLocation.longitude}
+                  targetLat={r.latitude}
+                  targetLon={r.longitude}
+                  size="lg"
+                  deviceHeading={compass.heading}
+                  isCompassActive={compass.isEnabled}
+                />
+              </div>
+            </Section>
+          ) : (
+            r.latitude &&
+            r.longitude && (
+              <Section title="Direção para o repetidor">
+                <div className="flex flex-col items-start justify-between gap-3 rounded-lg border border-dashed border-border bg-muted/30 p-4 sm:flex-row sm:items-center">
+                  <p className="text-sm text-muted-foreground">
+                    Partilhe a sua localização para ver a direção a partir do seu QTH.
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => requestLocation()}
+                    disabled={isLocating}
+                  >
+                    <MapPin className="h-4 w-4" />
+                    {isLocating ? "A localizar..." : "Obter localização"}
+                  </Button>
+                </div>
+              </Section>
+            )
           )}
-        >
-          <div className="space-y-4">
-            {/* DMR Details */}
-            {r.modes?.includes('DMR') && (
-              <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800/50">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="px-2 py-0.5 rounded text-xs font-bold bg-purple-500 text-white">
-                    DMR
-                  </span>
-                  {r.dmr?.colorCode && (
-                    <span className="text-sm text-purple-700 dark:text-purple-300 font-mono">
-                      Color Code {r.dmr.colorCode}
-                    </span>
-                  )}
-                  {r.dmr?.network && (
-                    <span className="text-xs text-purple-600 dark:text-purple-400">
-                      {r.dmr.network}
-                    </span>
-                  )}
-                  {(() => {
-                    const bmSource = autoStatus?.sources.find(s => s.source === 'brandmeister');
-                    if (!bmSource) return null;
-                    return (
-                      <span className="ml-auto inline-flex items-center gap-1.5 text-xs text-purple-600 dark:text-purple-400">
-                        <span className={cn(
-                          "h-2 w-2 rounded-full",
-                          bmSource.isOnline ? "bg-emerald-500" : "bg-red-500"
-                        )} />
-                        {bmSource.lastSeen && formatRelativeTime(bmSource.lastSeen)}
-                      </span>
-                    );
-                  })()}
-                </div>
 
-                {/* Timeslot Columns */}
-                <div className="grid grid-cols-2 gap-3">
-                  {/* Timeslot 1 */}
-                  <TimeslotColumn
-                    label="TS1"
-                    slot="1"
-                    liveTalkgroups={bmProfile?.ts1}
-                    cmsTalkgroups={r.dmr?.ts1Talkgroups}
-                    blockedTalkgroups={bmProfile?.blocked ?? r.dmr?.blockedTalkgroups}
-                    loading={bmLoading}
-                  />
-
-                  {/* Timeslot 2 */}
-                  <TimeslotColumn
-                    label="TS2"
-                    slot="2"
-                    liveTalkgroups={bmProfile?.ts2}
-                    cmsTalkgroups={r.dmr?.ts2Talkgroups}
-                    blockedTalkgroups={bmProfile?.blocked ?? r.dmr?.blockedTalkgroups}
-                    loading={bmLoading}
-                  />
-                </div>
-
-                {/* Live data indicator */}
-                {bmProfile && r.dmr?.dmrId && (
-                  <div className="mt-3 flex items-center gap-2 text-xs text-purple-600 dark:text-purple-400">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span>Dados ao vivo do Brandmeister</span>
+          {/* Owner / Association */}
+          {hasOwnerInfo && (
+            <Section title="Proprietário">
+              <ul className="divide-y divide-border">
+                {(r.association || r.owner) && (
+                  <li>
+                    {r.association ? (
+                      <Link
+                        href={`/association/${r.association.slug}/`}
+                        className="group flex items-center gap-3 py-2.5 transition-colors hover:bg-azulejo-50/40 dark:hover:bg-azulejo-950/20"
+                      >
+                        <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted">
+                          <Building2
+                            className="h-4 w-4 text-muted-foreground"
+                            aria-hidden="true"
+                          />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="font-mono text-sm font-semibold text-foreground transition-colors group-hover:text-azulejo-700 dark:group-hover:text-azulejo-300">
+                            {r.association.abbreviation}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {r.association.name}
+                          </div>
+                        </div>
+                        <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
+                      </Link>
+                    ) : (
+                      <div className="flex items-center gap-3 py-2.5">
+                        <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted">
+                          <Building2
+                            className="h-4 w-4 text-muted-foreground"
+                            aria-hidden="true"
+                          />
+                        </div>
+                        <div className="text-sm text-foreground">{r.owner}</div>
+                      </div>
+                    )}
+                  </li>
+                )}
+                {r.website && (
+                  <li>
                     <a
-                      href={`https://brandmeister.network/?page=repeater&id=${r.dmr.dmrId}`}
+                      href={r.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 hover:underline"
+                      className="group flex items-center gap-3 py-2.5 transition-colors hover:bg-azulejo-50/40 dark:hover:bg-azulejo-950/20"
                     >
-                      <ExternalLink className="h-3 w-3" />
-                      Ver perfil
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted">
+                        <Globe
+                          className="h-4 w-4 text-muted-foreground"
+                          aria-hidden="true"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1 truncate font-mono text-[12.5px] text-azulejo-600 transition-colors group-hover:text-azulejo-700 dark:text-azulejo-400 dark:group-hover:text-azulejo-300">
+                        {r.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                      </div>
+                      <ExternalLink
+                        className="h-3.5 w-3.5 shrink-0 text-muted-foreground"
+                        aria-hidden="true"
+                      />
                     </a>
+                  </li>
+                )}
+              </ul>
+            </Section>
+          )}
+
+          {/* Technical specs */}
+          {hasTechSpecs && (
+            <Section title="Especificações técnicas" icon={Zap}>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {r.power && <TechSpec label="Potência" value={`${r.power} W`} />}
+                {r.antennaHeight && (
+                  <TechSpec label="Altura da antena" value={`${r.antennaHeight} m AGL`} />
+                )}
+                {r.coverage && <TechSpec label="Cobertura" value={r.coverage} capitalize />}
+                {r.operatingHours && (
+                  <TechSpec label="Horário" value={r.operatingHours} />
+                )}
+              </div>
+            </Section>
+          )}
+
+          {/* Digital modes + linking */}
+          {hasDigitalModes && (
+            <Section
+              title="Modos digitais e linking"
+              icon={Wifi}
+              trailing={
+                autoStatus && (
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px]",
+                      autoStatus.isOnline
+                        ? "border-[oklch(0.55_0.13_145/0.3)] bg-[oklch(0.55_0.13_145/0.08)] text-[oklch(0.45_0.13_145)] dark:text-[oklch(0.75_0.13_145)]"
+                        : "border-destructive/30 bg-destructive/10 text-destructive"
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "size-1.5 shrink-0 rounded-full",
+                        autoStatus.isOnline ? "bg-[oklch(0.55_0.13_145)]" : "bg-destructive"
+                      )}
+                    />
+                    {autoStatus.isOnline ? t("autoStatus.online") : t("autoStatus.offline")}
+                  </span>
+                )
+              }
+            >
+              <div className="space-y-3">
+                {r.modes?.includes("DMR") && (
+                  <DMRBlock
+                    repeater={r}
+                    autoStatus={autoStatus}
+                    bmProfile={bmProfile}
+                    bmLoading={bmLoading}
+                  />
+                )}
+
+                {r.modes?.includes("DSTAR") && (
+                  <ModeBlock
+                    label="D-STAR"
+                    details={[
+                      r.dstar?.module ? { label: "Módulo", value: r.dstar.module, mono: true } : null,
+                      r.dstar?.reflector
+                        ? { label: "Reflector", value: r.dstar.reflector, mono: true }
+                        : null,
+                      r.dstar?.gateway
+                        ? { label: "Gateway", value: r.dstar.gateway, mono: true }
+                        : null,
+                    ].filter(Boolean) as { label: string; value: string; mono?: boolean }[]}
+                  />
+                )}
+
+                {r.modes?.includes("C4FM") && (
+                  <ModeBlock
+                    label="C4FM"
+                    details={[
+                      r.c4fm?.network
+                        ? { label: "Rede", value: r.c4fm.network.toUpperCase(), mono: true }
+                        : null,
+                      r.c4fm?.room ? { label: "Sala", value: r.c4fm.room } : null,
+                      r.c4fm?.node ? { label: "Node", value: r.c4fm.node, mono: true } : null,
+                    ].filter(Boolean) as { label: string; value: string; mono?: boolean }[]}
+                  />
+                )}
+
+                {r.modes?.includes("TETRA") && r.tetra && (
+                  <ModeBlock
+                    label="TETRA"
+                    details={[
+                      r.tetra.talkgroups && r.tetra.talkgroups.length > 0
+                        ? {
+                            label: "Talkgroups",
+                            value: r.tetra.talkgroups.join(", "),
+                            mono: true,
+                          }
+                        : null,
+                      r.tetra.network ? { label: "Rede", value: r.tetra.network } : null,
+                    ].filter(Boolean) as { label: string; value: string; mono?: boolean }[]}
+                  />
+                )}
+
+                {(r.echolink?.enabled || r.allstarNode) && (
+                  <div className="flex flex-wrap gap-2">
+                    {r.echolink?.enabled && r.echolink.nodeNumber && (() => {
+                      const elSource = autoStatus?.sources.find(
+                        (s) => s.source === "echolink"
+                      );
+                      return (
+                        <a
+                          href={`echolink://${r.echolink.nodeNumber}`}
+                          className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5 text-sm text-foreground transition-colors hover:border-azulejo-300 hover:text-azulejo-700 dark:hover:border-azulejo-800/60 dark:hover:text-azulejo-300"
+                        >
+                          {elSource ? (
+                            <span
+                              className={cn(
+                                "size-2 shrink-0 rounded-full",
+                                elSource.isOnline
+                                  ? "bg-[oklch(0.55_0.13_145)]"
+                                  : "bg-destructive"
+                              )}
+                            />
+                          ) : (
+                            <Wifi className="h-3.5 w-3.5 text-muted-foreground" />
+                          )}
+                          <span className="font-mono text-sm">
+                            EchoLink #{r.echolink.nodeNumber}
+                          </span>
+                          {r.echolink.conference && (
+                            <span className="text-xs text-muted-foreground">
+                              ({r.echolink.conference})
+                            </span>
+                          )}
+                          {elSource?.lastSeen && (
+                            <span className="text-xs text-muted-foreground">
+                              · {formatRelativeTime(elSource.lastSeen)}
+                            </span>
+                          )}
+                        </a>
+                      );
+                    })()}
+                    {r.allstarNode && (() => {
+                      const asSource = autoStatus?.sources.find(
+                        (s) => s.source === "allstar"
+                      );
+                      return (
+                        <div className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5 text-sm text-foreground">
+                          {asSource ? (
+                            <span
+                              className={cn(
+                                "size-2 shrink-0 rounded-full",
+                                asSource.isOnline
+                                  ? "bg-[oklch(0.55_0.13_145)]"
+                                  : "bg-destructive"
+                              )}
+                            />
+                          ) : (
+                            <Radio className="h-3.5 w-3.5 text-muted-foreground" />
+                          )}
+                          <span className="font-mono text-sm">
+                            AllStar #{r.allstarNode}
+                          </span>
+                          {asSource?.lastSeen && (
+                            <span className="text-xs text-muted-foreground">
+                              · {formatRelativeTime(asSource.lastSeen)}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
                 )}
               </div>
-            )}
+            </Section>
+          )}
 
-            {/* D-STAR Details */}
-            {r.modes?.includes('DSTAR') && (
-              <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="px-2 py-0.5 rounded text-xs font-bold bg-blue-500 text-white">
-                    D-STAR
-                  </span>
-                  {r.dstar?.module && (
-                    <span className="text-sm text-blue-700 dark:text-blue-300 font-mono">
-                      Module {r.dstar.module}
-                    </span>
-                  )}
-                </div>
-                {r.dstar?.reflector && (
-                  <p className="text-sm text-blue-600 dark:text-blue-400">
-                    Reflector: {r.dstar.reflector}
-                  </p>
-                )}
-                {r.dstar?.gateway && (
-                  <p className="text-sm text-blue-600 dark:text-blue-400">
-                    Gateway: {r.dstar.gateway}
-                  </p>
-                )}
-              </div>
-            )}
+          {/* Notes */}
+          {r.notes && (
+            <Section title="Notas" icon={FileText}>
+              <p className="whitespace-pre-wrap text-sm text-foreground">{r.notes}</p>
+            </Section>
+          )}
 
-            {/* C4FM Details */}
-            {r.modes?.includes('C4FM') && (
-              <div className="p-4 rounded-lg bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800/50">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="px-2 py-0.5 rounded text-xs font-bold bg-orange-500 text-white">
-                    C4FM
-                  </span>
-                  {r.c4fm?.network && (
-                    <span className="text-sm text-orange-700 dark:text-orange-300 font-mono uppercase">
-                      {r.c4fm.network}
-                    </span>
-                  )}
-                </div>
-                {r.c4fm?.room && (
-                  <p className="text-sm text-orange-600 dark:text-orange-400">
-                    Sala: {r.c4fm.room}
-                  </p>
-                )}
-                {r.c4fm?.node && (
-                  <p className="text-sm text-orange-600 dark:text-orange-400">
-                    Node: {r.c4fm.node}
-                  </p>
-                )}
-              </div>
-            )}
+          {/* Nearby repeaters */}
+          {nearbyRepeaters.length > 0 && (
+            <Section title="Repetidores próximos" icon={Navigation}>
+              <ol className="divide-y divide-border border-t border-border">
+                {nearbyRepeaters.map((nearby) => {
+                  const nearbyPrimary = getPrimaryFrequency(nearby);
+                  const nearbyStatus = statusDot(nearby.status);
+                  const nearbyModes =
+                    nearby.modes
+                      ?.map((m) => (m === "DSTAR" ? "D-STAR" : m))
+                      .join(" · ") || "FM";
 
-            {/* TETRA Details */}
-            {r.modes?.includes('TETRA') && r.tetra && (
-              <div className="p-4 rounded-lg bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800/50">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="px-2 py-0.5 rounded text-xs font-bold bg-cyan-500 text-white">
-                    TETRA
-                  </span>
-                </div>
-                {r.tetra.talkgroups && r.tetra.talkgroups.length > 0 && (
-                  <p className="text-sm text-cyan-600 dark:text-cyan-400">
-                    Talkgroups: {r.tetra.talkgroups.join(', ')}
-                  </p>
-                )}
-                {r.tetra.network && (
-                  <p className="text-sm text-cyan-600 dark:text-cyan-400">
-                    Rede: {r.tetra.network}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* EchoLink & AllStar */}
-            {(r.echolink?.enabled || r.allstarNode) && (
-              <div className="flex flex-wrap gap-3">
-                {r.echolink?.enabled && r.echolink.nodeNumber && (() => {
-                  const elSource = autoStatus?.sources.find(s => s.source === 'echolink');
                   return (
-                    <a
-                      href={`echolink://${r.echolink.nodeNumber}`}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-azulejo-200 dark:border-azulejo-700 text-sm font-medium text-azulejo-700 dark:text-azulejo-300 hover:bg-azulejo-50 dark:hover:bg-azulejo-800 transition-colors"
-                    >
-                      {elSource ? (
-                        <span className={cn(
-                          "h-2 w-2 rounded-full shrink-0",
-                          elSource.isOnline ? "bg-emerald-500" : "bg-red-500"
-                        )} />
-                      ) : (
-                        <Wifi className="h-4 w-4" />
-                      )}
-                      EchoLink #{r.echolink.nodeNumber}
-                      {r.echolink.conference && ` (${r.echolink.conference})`}
-                      {elSource?.lastSeen && (
-                        <span className="text-xs text-azulejo-500">
-                          · {formatRelativeTime(elSource.lastSeen)}
+                    <li key={nearby.callsign}>
+                      <Link
+                        href={`/repeater/${encodeURIComponent(nearby.callsign)}/`}
+                        className="group flex items-center gap-3 py-2.5 transition-colors hover:bg-azulejo-50/40 dark:hover:bg-azulejo-950/20"
+                      >
+                        <span
+                          className={cn(
+                            "size-2 shrink-0 rounded-full",
+                            nearbyStatus ? nearbyStatus.color : "bg-muted-foreground/40"
+                          )}
+                          aria-hidden="true"
+                          title={nearbyStatus?.label}
+                        />
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-baseline gap-2">
+                            <span className="font-mono text-sm font-semibold tabular-nums text-foreground transition-colors group-hover:text-azulejo-700 dark:group-hover:text-azulejo-300">
+                              {nearby.callsign}
+                            </span>
+                            <span className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                              {nearbyModes}
+                            </span>
+                          </div>
+                          {nearbyPrimary && (
+                            <div className="mt-0.5 font-mono text-[12.5px] tabular-nums text-muted-foreground">
+                              {nearbyPrimary.outputFrequency.toFixed(3)}
+                              <span className="text-muted-foreground/70"> MHz</span>
+                            </div>
+                          )}
+                        </div>
+                        <span className="shrink-0 font-mono text-[12.5px] tabular-nums text-muted-foreground">
+                          {formatDistance(nearby.distance)}
                         </span>
-                      )}
-                    </a>
+                      </Link>
+                    </li>
                   );
-                })()}
-                {r.allstarNode && (() => {
-                  const asSource = autoStatus?.sources.find(s => s.source === 'allstar');
-                  return (
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-azulejo-200 dark:border-azulejo-700 text-sm font-medium text-azulejo-700 dark:text-azulejo-300">
-                      {asSource ? (
-                        <span className={cn(
-                          "h-2 w-2 rounded-full shrink-0",
-                          asSource.isOnline ? "bg-emerald-500" : "bg-red-500"
-                        )} />
-                      ) : (
-                        <Radio className="h-4 w-4" />
-                      )}
-                      AllStar #{r.allstarNode}
-                      {asSource?.lastSeen && (
-                        <span className="text-xs text-azulejo-500">
-                          · {formatRelativeTime(asSource.lastSeen)}
-                        </span>
-                      )}
-                    </div>
-                  );
-                })()}
-              </div>
-            )}
-          </div>
-        </EquipmentPanel>
-      )}
-
-      {/* Notes */}
-      {r.notes && (
-        <EquipmentPanel title="Notas" icon={FileText}>
-          <p className="text-sm text-azulejo-700 dark:text-azulejo-300 whitespace-pre-wrap">
-            {r.notes}
-          </p>
-        </EquipmentPanel>
-      )}
-
-      {/* Nearby Repeaters */}
-      {nearbyRepeaters.length > 0 && (
-        <EquipmentPanel title="Repetidores Próximos" icon={Navigation}>
-          <div className="space-y-2">
-            {nearbyRepeaters.map((nearby, index) => (
-              <Link
-                key={nearby.callsign}
-                href={`/repeater/${encodeURIComponent(nearby.callsign)}/`}
-                className="flex items-center gap-4 p-3 rounded-lg border border-azulejo-100 dark:border-azulejo-800/50 hover:border-azulejo-300 dark:hover:border-azulejo-700 bg-white dark:bg-azulejo-900/30 hover:bg-azulejo-50 dark:hover:bg-azulejo-900/50 transition-all group animate-in fade-in slide-in-from-bottom-1 fill-mode-both"
-                style={{ animationDelay: `${index * 30}ms` }}
-              >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-800 group-hover:bg-azulejo-200 dark:group-hover:bg-azulejo-700 transition-colors">
-                  <Radio className="h-5 w-5 text-azulejo-600 dark:text-azulejo-400" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-mono font-bold text-azulejo-900 dark:text-azulejo-100">
-                    {nearby.callsign}
-                  </p>
-                  <p className="text-xs text-azulejo-500 font-mono">
-                    {(() => {
-                      const nearbyPrimary = getPrimaryFrequency(nearby);
-                      return nearbyPrimary ? `${nearbyPrimary.outputFrequency.toFixed(3)} MHz` : '';
-                    })()}
-                    {nearby.modes?.length ? ` · ${nearby.modes.map(m => m === 'DSTAR' ? 'D-STAR' : m).join(', ')}` : ''}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-azulejo-500">
-                  <span className="font-mono tabular-nums">{formatDistance(nearby.distance)}</span>
-                  <ChevronRight className="h-4 w-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-                </div>
-              </Link>
-            ))}
-          </div>
-        </EquipmentPanel>
-      )}
-
-    </div>
+                })}
+              </ol>
+            </Section>
+          )}
+        </CardContent>
+      </Card>
+    </>
   );
 }
 
-// --- Reusable Components ---
+// --- Building-block components ---
 
-function EquipmentPanel({
+function Divider() {
+  return <div className="border-t border-border" />;
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="text-[11px] font-semibold tracking-[0.04em] text-muted-foreground">
+      {children}
+    </h2>
+  );
+}
+
+function Section({
   title,
   icon: Icon,
+  trailing,
   children,
-  titleExtra,
 }: {
   title: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon?: React.ComponentType<{ className?: string }>;
+  trailing?: React.ReactNode;
   children: React.ReactNode;
-  titleExtra?: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-white dark:bg-azulejo-950">
-      <div className="p-5">
-        <h3 className="flex items-center gap-2.5 text-base font-semibold text-azulejo-900 dark:text-azulejo-100 mb-4">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-800">
-            <Icon className="h-4 w-4 text-azulejo-600 dark:text-azulejo-400" />
-          </div>
-          {title}
-          {titleExtra && <span className="ml-auto">{titleExtra}</span>}
-        </h3>
-        {children}
+    <section className="mt-5 border-t border-border pt-5">
+      <div className="mb-3 flex items-center gap-2">
+        {Icon && <Icon className="h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />}
+        <SectionLabel>{title}</SectionLabel>
+        {trailing && <span className="ml-auto">{trailing}</span>}
       </div>
-    </div>
+      {children}
+    </section>
   );
 }
 
@@ -787,23 +777,37 @@ function FrequencyDisplay({
   return (
     <div
       onClick={handleCopy}
+      role={isCopyable ? "button" : undefined}
+      tabIndex={isCopyable ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (!isCopyable) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleCopy();
+        }
+      }}
       className={cn(
-        "group p-3 rounded-lg bg-azulejo-50 dark:bg-azulejo-900/50 transition-all",
-        isCopyable && "cursor-pointer hover:bg-azulejo-100 dark:hover:bg-azulejo-800/50 active:scale-[0.98]"
+        "group rounded-lg border border-border bg-muted/30 px-3 py-2.5 transition-colors",
+        isCopyable && "cursor-pointer hover:border-azulejo-300 hover:bg-muted/60"
       )}
     >
-      <p className="text-xs uppercase tracking-wider text-azulejo-500 mb-1">{label}</p>
-      <div className="flex items-center gap-2">
-        <span className="font-mono text-lg font-bold text-azulejo-900 dark:text-azulejo-100 tabular-nums">
+      <p className="text-[11px] text-muted-foreground">{label}</p>
+      <div className="mt-0.5 flex items-center gap-2">
+        <span className="font-mono text-base font-semibold tabular-nums text-foreground">
           {value}
         </span>
-        {isCopyable && (
-          copied ? (
-            <Check className="h-4 w-4 text-emerald-500" />
+        {isCopyable &&
+          (copied ? (
+            <Check
+              className="h-3.5 w-3.5 text-[oklch(0.55_0.13_145)]"
+              aria-hidden="true"
+            />
           ) : (
-            <Copy className="h-4 w-4 text-azulejo-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-          )
-        )}
+            <Copy
+              className="h-3.5 w-3.5 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
+              aria-hidden="true"
+            />
+          ))}
       </div>
     </div>
   );
@@ -819,26 +823,151 @@ function TechSpec({
   capitalize?: boolean;
 }) {
   return (
-    <div className="p-3 rounded-lg bg-azulejo-50 dark:bg-azulejo-900/50">
-      <p className="text-xs text-azulejo-500 mb-1">{label}</p>
-      <p className={cn(
-        "font-medium text-azulejo-900 dark:text-azulejo-100",
-        capitalize && "capitalize"
-      )}>
+    <div className="rounded-lg border border-border bg-muted/30 px-3 py-2.5">
+      <p className="text-[11px] text-muted-foreground">{label}</p>
+      <p
+        className={cn(
+          "mt-0.5 text-sm font-medium text-foreground",
+          capitalize && "capitalize"
+        )}
+      >
         {value}
       </p>
     </div>
   );
 }
 
-// --- DMR Talkgroup Sub-components ---
+function ModeChip({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full bg-azulejo-100 px-2 py-0.5 font-mono text-[11px] font-semibold tracking-wide text-azulejo-700 dark:bg-azulejo-950/50 dark:text-azulejo-300">
+      {children}
+    </span>
+  );
+}
 
-const TYPE_BADGE_STYLES = {
-  static: "bg-purple-500 text-white",
-  cluster: "border border-purple-400 dark:border-purple-500 text-purple-600 dark:text-purple-300 border-dashed",
-  timed: "border border-purple-400 dark:border-purple-500 text-purple-600 dark:text-purple-300",
-  dynamic: "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300",
-} as const;
+function ModeBlock({
+  label,
+  details,
+}: {
+  label: string;
+  details: { label: string; value: string; mono?: boolean }[];
+}) {
+  return (
+    <div className="rounded-lg border border-border bg-muted/30 p-4">
+      <div className="mb-3 flex items-center gap-2">
+        <ModeChip>{label}</ModeChip>
+      </div>
+      {details.length > 0 ? (
+        <dl className="grid grid-cols-1 gap-x-4 gap-y-1.5 text-sm sm:grid-cols-2">
+          {details.map((d) => (
+            <div key={d.label} className="flex items-baseline gap-2">
+              <dt className="text-[11px] text-muted-foreground">{d.label}</dt>
+              <dd
+                className={cn(
+                  "text-foreground",
+                  d.mono && "font-mono text-sm tabular-nums"
+                )}
+              >
+                {d.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      ) : (
+        <p className="text-xs text-muted-foreground">Sem detalhes adicionais.</p>
+      )}
+    </div>
+  );
+}
+
+function DMRBlock({
+  repeater: r,
+  autoStatus,
+  bmProfile,
+  bmLoading,
+}: {
+  repeater: Repeater;
+  autoStatus: RepeaterAutoStatus | null;
+  bmProfile: BMProfileBySlot | null;
+  bmLoading: boolean;
+}) {
+  const bmSource = autoStatus?.sources.find((s) => s.source === "brandmeister");
+
+  return (
+    <div className="rounded-lg border border-border bg-muted/30 p-4">
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <ModeChip>DMR</ModeChip>
+        {r.dmr?.colorCode && (
+          <span className="font-mono text-[12.5px] text-muted-foreground">
+            CC{r.dmr.colorCode}
+          </span>
+        )}
+        {r.dmr?.network && (
+          <span className="text-[12.5px] text-muted-foreground">{r.dmr.network}</span>
+        )}
+        {bmSource && (
+          <span className="ml-auto inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            <span
+              className={cn(
+                "size-1.5 shrink-0 rounded-full",
+                bmSource.isOnline
+                  ? "bg-[oklch(0.55_0.13_145)]"
+                  : "bg-destructive"
+              )}
+            />
+            {bmSource.lastSeen && formatRelativeTime(bmSource.lastSeen)}
+          </span>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <TimeslotColumn
+          label="TS1"
+          slot="1"
+          liveTalkgroups={bmProfile?.ts1}
+          cmsTalkgroups={r.dmr?.ts1Talkgroups}
+          blockedTalkgroups={bmProfile?.blocked ?? r.dmr?.blockedTalkgroups}
+          loading={bmLoading}
+        />
+        <TimeslotColumn
+          label="TS2"
+          slot="2"
+          liveTalkgroups={bmProfile?.ts2}
+          cmsTalkgroups={r.dmr?.ts2Talkgroups}
+          blockedTalkgroups={bmProfile?.blocked ?? r.dmr?.blockedTalkgroups}
+          loading={bmLoading}
+        />
+      </div>
+
+      {bmProfile && r.dmr?.dmrId && (
+        <div className="mt-3 flex items-center gap-2 text-[11px] text-muted-foreground">
+          <span className="size-1.5 shrink-0 rounded-full bg-azulejo-500" />
+          <span>Dados ao vivo do Brandmeister</span>
+          <a
+            href={`https://brandmeister.network/?page=repeater&id=${r.dmr.dmrId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-auto inline-flex items-center gap-1 text-azulejo-600 transition-colors hover:text-azulejo-700 dark:text-azulejo-400 dark:hover:text-azulejo-300"
+          >
+            <ExternalLink className="h-3 w-3" />
+            Ver perfil
+          </a>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// --- DMR talkgroup sub-components ---
+
+const TYPE_BADGE_STYLES: Record<string, string> = {
+  static: "bg-azulejo-100 text-azulejo-700 dark:bg-azulejo-950/50 dark:text-azulejo-300",
+  cluster: "border border-border text-muted-foreground",
+  timed:
+    "border border-[oklch(0.72_0.13_75/0.4)] text-[oklch(0.55_0.13_75)] dark:text-[oklch(0.78_0.13_75)]",
+  dynamic:
+    "bg-[oklch(0.55_0.13_145/0.12)] text-[oklch(0.45_0.13_145)] dark:text-[oklch(0.75_0.13_145)]",
+};
 
 const TYPE_LABELS: Record<string, string> = {
   static: "Estático",
@@ -849,53 +978,77 @@ const TYPE_LABELS: Record<string, string> = {
 
 function translateDays(days: string): string {
   return days
-    .replace(/Mon/g, 'Seg').replace(/Tue/g, 'Ter').replace(/Wed/g, 'Qua')
-    .replace(/Thu/g, 'Qui').replace(/Fri/g, 'Sex').replace(/Sat/g, 'Sáb').replace(/Sun/g, 'Dom');
+    .replace(/Mon/g, "Seg")
+    .replace(/Tue/g, "Ter")
+    .replace(/Wed/g, "Qua")
+    .replace(/Thu/g, "Qui")
+    .replace(/Fri/g, "Sex")
+    .replace(/Sat/g, "Sáb")
+    .replace(/Sun/g, "Dom");
 }
 
-function formatScheduleTooltip(entry: { tgId: number; name?: string; days?: string; startTime?: string; endTime?: string }): string {
+function formatScheduleTooltip(entry: {
+  tgId: number;
+  name?: string;
+  days?: string;
+  startTime?: string;
+  endTime?: string;
+}): string {
   const parts = [entry.name || `TG ${entry.tgId}`];
   const schedule: string[] = [];
   if (entry.days) schedule.push(translateDays(entry.days));
-  if (entry.startTime) schedule.push(`${entry.startTime}${entry.endTime ? `-${entry.endTime}` : ''}`);
-  if (schedule.length) parts.push(`Horário: ${schedule.join(' ')}`);
-  return parts.join(' — ');
+  if (entry.startTime)
+    schedule.push(`${entry.startTime}${entry.endTime ? `-${entry.endTime}` : ""}`);
+  if (schedule.length) parts.push(`Horário: ${schedule.join(" ")}`);
+  return parts.join(" — ");
 }
 
-function TalkgroupEntry({ entry }: { entry: { tgId: number; name?: string; type: string; extTalkgroup?: number; days?: string; startTime?: string; endTime?: string } }) {
-  const tooltip = entry.type === 'timed' ? formatScheduleTooltip(entry) : (entry.name || `TG ${entry.tgId}`);
+function TalkgroupEntry({
+  entry,
+}: {
+  entry: {
+    tgId: number;
+    name?: string;
+    type: string;
+    extTalkgroup?: number;
+    days?: string;
+    startTime?: string;
+    endTime?: string;
+  };
+}) {
+  const tooltip =
+    entry.type === "timed" ? formatScheduleTooltip(entry) : entry.name || `TG ${entry.tgId}`;
   return (
     <div
-      className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white/70 dark:bg-purple-900/40 border border-purple-200/60 dark:border-purple-700/40"
+      className="flex items-center gap-1.5 rounded-md border border-border bg-card px-2 py-1"
       title={tooltip}
     >
-      <span className="font-mono text-sm font-semibold text-purple-800 dark:text-purple-200">
-        {entry.tgId}{entry.type === 'cluster' && entry.extTalkgroup ? ` → ${entry.extTalkgroup}` : ''}
+      <span className="font-mono text-sm font-semibold tabular-nums text-foreground">
+        {entry.tgId}
+        {entry.type === "cluster" && entry.extTalkgroup ? ` → ${entry.extTalkgroup}` : ""}
       </span>
       {entry.name && (
-        <span className="text-xs text-purple-600 dark:text-purple-400 truncate">{entry.name}</span>
+        <span className="truncate text-xs text-muted-foreground">{entry.name}</span>
       )}
-      <span className={cn(
-        "ml-auto shrink-0 px-1.5 py-0.5 rounded text-[10px] font-semibold leading-none",
-        TYPE_BADGE_STYLES[entry.type as keyof typeof TYPE_BADGE_STYLES] || TYPE_BADGE_STYLES.static
-      )}>
-        {entry.type === 'dynamic' && <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse mr-1 align-middle" />}
+      <span
+        className={cn(
+          "ml-auto inline-flex shrink-0 items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-medium leading-none",
+          TYPE_BADGE_STYLES[entry.type] || TYPE_BADGE_STYLES.static
+        )}
+      >
+        {entry.type === "dynamic" && (
+          <span className="size-1 shrink-0 rounded-full bg-[oklch(0.55_0.13_145)]" />
+        )}
         {TYPE_LABELS[entry.type] || entry.type}
       </span>
-      {entry.type === 'timed' && (entry.days || entry.startTime) && (
-        <span className="text-[10px] text-purple-500 dark:text-purple-400 whitespace-nowrap">
-          {entry.days && translateDays(entry.days)}
-          {entry.startTime && ` ${entry.startTime}`}{entry.endTime && `-${entry.endTime}`}
-        </span>
-      )}
     </div>
   );
 }
 
 function BlockedEntry({ talkgroup }: { talkgroup: { tgId: number; slot?: string } }) {
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-xs font-mono">
-      <Ban className="h-3 w-3 shrink-0" />
+    <span className="inline-flex items-center gap-1 rounded-md border border-destructive/20 bg-destructive/10 px-2 py-0.5 font-mono text-xs text-destructive">
+      <Ban className="h-3 w-3 shrink-0" aria-hidden="true" />
       {talkgroup.tgId}
     </span>
   );
@@ -910,14 +1063,20 @@ function TimeslotColumn({
   loading,
 }: {
   label: string;
-  slot: '1' | '2';
+  slot: "1" | "2";
   liveTalkgroups?: BMTalkgroupEntry[];
-  cmsTalkgroups?: Array<{ tgId: number; name?: string; type: string; extTalkgroup?: number; days?: string; startTime?: string; endTime?: string }>;
+  cmsTalkgroups?: Array<{
+    tgId: number;
+    name?: string;
+    type: string;
+    extTalkgroup?: number;
+    days?: string;
+    startTime?: string;
+    endTime?: string;
+  }>;
   blockedTalkgroups?: Array<{ tgId: number; slot?: string }>;
   loading: boolean;
 }) {
-  // Use live data if available, otherwise fall back to CMS data.
-  // When using live data, merge in names from CMS since the BM API often omits them.
   const talkgroups = React.useMemo(() => {
     if (!liveTalkgroups) return cmsTalkgroups;
     if (!cmsTalkgroups || cmsTalkgroups.length === 0) return liveTalkgroups;
@@ -930,33 +1089,34 @@ function TimeslotColumn({
       name: tg.name || cmsNameMap.get(tg.tgId),
     }));
   }, [liveTalkgroups, cmsTalkgroups]);
-  const slotBlocked = blockedTalkgroups?.filter(tg => tg.slot === slot || tg.slot === 'both');
+
+  const slotBlocked = blockedTalkgroups?.filter(
+    (tg) => tg.slot === slot || tg.slot === "both"
+  );
 
   return (
-    <div className="rounded-lg bg-purple-100/60 dark:bg-purple-800/30 border border-purple-200/80 dark:border-purple-700/40 p-3">
-      <div className="flex items-center gap-2 mb-2.5">
-        <span className="font-mono text-xs font-bold text-purple-600 dark:text-purple-300 uppercase tracking-wider">
+    <div className="rounded-md border border-border bg-card p-3">
+      <div className="mb-2 flex items-center gap-2">
+        <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
           {label}
         </span>
-        <div className="flex-1 h-px bg-purple-200 dark:bg-purple-700/50" />
+        <div className="h-px flex-1 bg-border" />
         {loading && (
-          <span className="h-3 w-3 border-2 border-purple-300 border-t-purple-600 rounded-full animate-spin" />
+          <span className="size-2.5 shrink-0 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground" />
         )}
       </div>
       {talkgroups && talkgroups.length > 0 ? (
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           {talkgroups.map((tg, idx) => (
             <TalkgroupEntry key={idx} entry={tg} />
           ))}
         </div>
       ) : (
-        <p className="text-xs text-purple-400 dark:text-purple-500 italic">
-          Sem talkgroups
-        </p>
+        <p className="text-[11px] italic text-muted-foreground">Sem talkgroups</p>
       )}
       {slotBlocked && slotBlocked.length > 0 && (
-        <div className="mt-2 pt-2 border-t border-purple-200/60 dark:border-purple-700/40">
-          <div className="flex flex-wrap gap-1.5">
+        <div className="mt-2 border-t border-border pt-2">
+          <div className="flex flex-wrap gap-1">
             {slotBlocked.map((tg, idx) => (
               <BlockedEntry key={idx} talkgroup={tg} />
             ))}
@@ -996,18 +1156,18 @@ function ShareButton({ callsign }: { callsign: string }) {
   };
 
   return (
-    <button
+    <Button
+      variant="ghost"
+      size="icon-sm"
       onClick={handleShare}
-      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 text-white font-medium text-sm hover:bg-white/20 transition-colors"
       aria-label={t("share")}
+      title={t("share")}
     >
       {copied ? (
-        <Check className="h-4 w-4 text-emerald-300" />
+        <Check className="h-4 w-4 text-[oklch(0.55_0.13_145)]" />
       ) : (
-        <Share2 className="h-4 w-4" />
+        <Share2 className="h-4 w-4 text-muted-foreground" />
       )}
-      {t("share")}
-    </button>
+    </Button>
   );
 }
-
