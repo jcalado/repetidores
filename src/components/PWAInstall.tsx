@@ -103,8 +103,8 @@ export default function PWAInstall() {
   return (
     <div className="fixed bottom-20 md:bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm z-50 animate-in slide-in-from-bottom-2">
       <div className="flex items-start gap-3 p-4 rounded-xl bg-white dark:bg-slate-800 shadow-xl border border-gray-200 dark:border-slate-700">
-        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-900">
-          <Download className="h-5 w-5 text-ship-cove-600 dark:text-ship-cove-400" />
+        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-900">
+          <Download className="h-5 w-5 text-azulejo-600 dark:text-azulejo-400" />
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-medium text-sm">Instalar Radioamador.info</p>

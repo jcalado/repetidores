@@ -12,13 +12,13 @@ interface SectionCardProps {
  */
 export function SectionCard({ icon: Icon, title, titleExtra, children }: SectionCardProps) {
   return (
-    <div className="rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-white dark:bg-ship-cove-950">
+    <div className="rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-white dark:bg-azulejo-950">
       {/* Header */}
       <div className="flex items-center gap-2.5 px-3 sm:px-4 pt-3 pb-2">
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800">
-          <Icon className="h-3.5 w-3.5 text-ship-cove-600 dark:text-ship-cove-400" />
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-800">
+          <Icon className="h-3.5 w-3.5 text-azulejo-600 dark:text-azulejo-400" />
         </div>
-        <span className="text-sm font-semibold text-ship-cove-900 dark:text-ship-cove-100">
+        <span className="text-sm font-semibold text-azulejo-900 dark:text-azulejo-100">
           {title}
         </span>
         {titleExtra && <span className="ml-auto">{titleExtra}</span>}

@@ -25,7 +25,7 @@ export function RepeaterHeader({ repeater: r }: RepeaterHeaderProps) {
   const mapsUrl = `https://www.google.com/maps?q=${encodeURIComponent(r.latitude + "," + r.longitude)}`;
 
   return (
-    <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-ship-cove-600 via-ship-cove-700 to-ship-cove-800 dark:from-ship-cove-800 dark:via-ship-cove-900 dark:to-ship-cove-950 p-4 shadow-lg shadow-ship-cove-500/20">
+    <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-azulejo-600 via-azulejo-700 to-azulejo-800 dark:from-azulejo-800 dark:via-azulejo-900 dark:to-azulejo-950 p-4 shadow-lg shadow-azulejo-500/20">
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-10">
         <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -39,13 +39,13 @@ export function RepeaterHeader({ repeater: r }: RepeaterHeaderProps) {
       </div>
 
       {/* Decorative blur */}
-      <div className="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-ship-cove-500/20 blur-xl" />
+      <div className="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-azulejo-500/20 blur-xl" />
 
       <div className="relative flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           {/* Callsign */}
           <div className="flex items-center gap-2 mb-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 backdrop-blur-sm">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
               <Radio className="h-4 w-4 text-white" />
             </div>
             <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight font-mono truncate">
@@ -55,7 +55,7 @@ export function RepeaterHeader({ repeater: r }: RepeaterHeaderProps) {
 
           {/* Badges */}
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="px-2 py-0.5 rounded-md bg-white/10 text-white text-xs font-medium backdrop-blur-sm">
+            <span className="px-2 py-0.5 rounded-md bg-white/10 text-white text-xs font-medium">
               {band}
             </span>
             {r.modes?.map((mode) => (
@@ -67,7 +67,7 @@ export function RepeaterHeader({ repeater: r }: RepeaterHeaderProps) {
                   mode === 'DSTAR' && "bg-blue-500/30 text-blue-100",
                   mode === 'C4FM' && "bg-orange-500/30 text-orange-100",
                   mode === 'TETRA' && "bg-cyan-500/30 text-cyan-100",
-                  mode === 'FM' && "bg-ship-cove-500/30 text-ship-cove-100",
+                  mode === 'FM' && "bg-azulejo-500/30 text-azulejo-100",
                   mode === 'Digipeater' && "bg-green-500/30 text-green-100"
                 )}
               >
@@ -75,7 +75,7 @@ export function RepeaterHeader({ repeater: r }: RepeaterHeaderProps) {
               </span>
             ))}
             {r.qthLocator && (
-              <span className="px-2 py-0.5 rounded-md bg-white/10 text-white text-xs font-mono backdrop-blur-sm">
+              <span className="px-2 py-0.5 rounded-md bg-white/10 text-white text-xs font-mono">
                 {r.qthLocator}
               </span>
             )}

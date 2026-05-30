@@ -19,17 +19,17 @@ export default async function NewsPage() {
   ])
 
   return (
-    <div className="min-h-screen bg-white dark:bg-ship-cove-950">
+    <div className="min-h-screen bg-white dark:bg-azulejo-950">
       <div className="container mx-auto px-4 py-8 sm:py-12 lg:py-16">
         {/* Header */}
         <header className="mb-10 sm:mb-14 lg:mb-16">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-ship-cove-900 dark:text-ship-cove-50 tracking-tight mb-3">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-azulejo-900 dark:text-azulejo-50 tracking-tight mb-3">
             {t("title")}
           </h1>
-          <p className="text-lg sm:text-xl text-ship-cove-600 dark:text-ship-cove-400 max-w-2xl">
+          <p className="text-lg sm:text-xl text-azulejo-600 dark:text-azulejo-400 max-w-2xl">
             {t("description")}
           </p>
-          <div className="mt-6 h-1 w-16 bg-ship-cove-600 dark:bg-ship-cove-400 rounded-full" />
+          <div className="mt-6 h-1 w-16 bg-azulejo-600 dark:bg-azulejo-400 rounded-full" />
         </header>
 
         {/* News */}

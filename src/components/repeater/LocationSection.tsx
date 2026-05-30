@@ -34,26 +34,26 @@ export function LocationSection({ repeater: r, userLocation, websiteUrl }: Locat
         {r.association ? (
           <Link
             href={`/association/${r.association.slug}/`}
-            className="group flex items-center gap-3 rounded-lg p-2.5 sm:p-3 bg-ship-cove-50 dark:bg-ship-cove-900/50 hover:bg-ship-cove-100 dark:hover:bg-ship-cove-800/50 transition-colors"
+            className="group flex items-center gap-3 rounded-lg p-2.5 sm:p-3 bg-azulejo-50 dark:bg-azulejo-900/50 hover:bg-azulejo-100 dark:hover:bg-azulejo-800/50 transition-colors"
           >
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800">
-              <Building2 className="h-4 w-4 text-ship-cove-600 dark:text-ship-cove-400" />
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-800">
+              <Building2 className="h-4 w-4 text-azulejo-600 dark:text-azulejo-400" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-[10px] sm:text-xs uppercase tracking-wider text-ship-cove-500 mb-0.5">
+              <div className="text-[10px] sm:text-xs uppercase tracking-wider text-azulejo-500 mb-0.5">
                 {t("owner")}
               </div>
               <div className="flex items-center gap-2 text-sm">
-                <span className="font-medium text-ship-cove-900 dark:text-ship-cove-100">
+                <span className="font-medium text-azulejo-900 dark:text-azulejo-100">
                   {r.association.abbreviation}
                 </span>
-                <span className="text-ship-cove-400">-</span>
-                <span className="truncate text-ship-cove-600 dark:text-ship-cove-400">
+                <span className="text-azulejo-400">-</span>
+                <span className="truncate text-azulejo-600 dark:text-azulejo-400">
                   {r.association.name}
                 </span>
               </div>
             </div>
-            <ChevronRight className="h-4 w-4 text-ship-cove-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <ChevronRight className="h-4 w-4 text-azulejo-400 opacity-0 group-hover:opacity-100 transition-opacity" />
           </Link>
         ) : (
           <InfoCard label={t("owner")} value={r.owner || "–"} />
@@ -69,7 +69,7 @@ export function LocationSection({ repeater: r, userLocation, websiteUrl }: Locat
                     href={osmUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex h-7 w-7 items-center justify-center rounded-md bg-ship-cove-100 dark:bg-ship-cove-800 text-ship-cove-600 dark:text-ship-cove-400 hover:bg-ship-cove-200 dark:hover:bg-ship-cove-700 transition-colors"
+                    className="flex h-7 w-7 items-center justify-center rounded-md bg-azulejo-100 dark:bg-azulejo-800 text-azulejo-600 dark:text-azulejo-400 hover:bg-azulejo-200 dark:hover:bg-azulejo-700 transition-colors"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <MapPin className="h-3.5 w-3.5" />
@@ -81,9 +81,9 @@ export function LocationSection({ repeater: r, userLocation, websiteUrl }: Locat
           }
         />
         {hasValidLocations && (
-          <div className="rounded-lg bg-gradient-to-r from-ship-cove-100 to-ship-cove-50 dark:from-ship-cove-800/50 dark:to-ship-cove-900/30 p-2.5 sm:p-3 border border-ship-cove-200/50 dark:border-ship-cove-700/50">
+          <div className="rounded-lg bg-gradient-to-r from-azulejo-100 to-azulejo-50 dark:from-azulejo-800/50 dark:to-azulejo-900/30 p-2.5 sm:p-3 border border-azulejo-200/50 dark:border-azulejo-700/50">
             <div className="flex items-center justify-between gap-2">
-              <span className="text-xs sm:text-sm text-ship-cove-600 dark:text-ship-cove-400">
+              <span className="text-xs sm:text-sm text-azulejo-600 dark:text-azulejo-400">
                 Direção:
               </span>
               <BearingIndicator
@@ -100,20 +100,20 @@ export function LocationSection({ repeater: r, userLocation, websiteUrl }: Locat
             href={websiteUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex items-center gap-3 rounded-lg p-2.5 sm:p-3 bg-ship-cove-50 dark:bg-ship-cove-900/50 hover:bg-ship-cove-100 dark:hover:bg-ship-cove-800/50 transition-colors"
+            className="group flex items-center gap-3 rounded-lg p-2.5 sm:p-3 bg-azulejo-50 dark:bg-azulejo-900/50 hover:bg-azulejo-100 dark:hover:bg-azulejo-800/50 transition-colors"
           >
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800">
-              <Globe className="h-4 w-4 text-ship-cove-600 dark:text-ship-cove-400" />
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-800">
+              <Globe className="h-4 w-4 text-azulejo-600 dark:text-azulejo-400" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-[10px] sm:text-xs uppercase tracking-wider text-ship-cove-500 mb-0.5">
+              <div className="text-[10px] sm:text-xs uppercase tracking-wider text-azulejo-500 mb-0.5">
                 Website
               </div>
-              <div className="text-sm font-medium text-ship-cove-900 dark:text-ship-cove-100 truncate">
+              <div className="text-sm font-medium text-azulejo-900 dark:text-azulejo-100 truncate">
                 {websiteUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')}
               </div>
             </div>
-            <ExternalLink className="h-4 w-4 text-ship-cove-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <ExternalLink className="h-4 w-4 text-azulejo-400 opacity-0 group-hover:opacity-100 transition-opacity" />
           </a>
         )}
       </div>

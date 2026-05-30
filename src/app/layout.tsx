@@ -1,6 +1,7 @@
 import Footer from "@/components/Footer";
 import UmamiAnalytics from "@/components/UmamiAnalytics";
 import Header from "@/components/Header";
+import { CommandPaletteProvider } from "@/components/CommandPalette";
 import OfflineIndicator from "@/components/OfflineIndicator";
 import PWAInstall from "@/components/PWAInstall";
 import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/seo";
@@ -116,13 +117,15 @@ export default async function RootLayout({
         <UmamiAnalytics />
         <NextIntlClientProvider messages={messages}>
           <UserLocationProvider>
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-              <Header />
-              <main>{children}</main>
-              <Footer />
-              <OfflineIndicator />
-              <PWAInstall />
-            </div>
+            <CommandPaletteProvider>
+              <div className="min-h-screen bg-background">
+                <Header />
+                <main>{children}</main>
+                <Footer />
+                <OfflineIndicator />
+                <PWAInstall />
+              </div>
+            </CommandPaletteProvider>
           </UserLocationProvider>
         </NextIntlClientProvider>
       </body>

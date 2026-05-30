@@ -28,7 +28,7 @@ function TabErrorFallback({ resetErrorBoundary }: { error: unknown; resetErrorBo
       </p>
       <button
         onClick={resetErrorBoundary}
-        className="mt-3 text-sm text-ship-cove-600 dark:text-ship-cove-400 hover:underline"
+        className="mt-3 text-sm text-azulejo-600 dark:text-azulejo-400 hover:underline"
       >
         Tentar novamente
       </button>

@@ -148,10 +148,10 @@ export default function BearingCompass({
           <div className="flex flex-col items-center">
             <Navigation2
               className={cn(
-                'fill-ship-cove-500 dark:fill-ship-cove-500',
+                'fill-azulejo-500 dark:fill-azulejo-500',
                 isCompassActive
                   ? 'text-green-600 dark:text-green-400'
-                  : 'text-ship-cove-600 dark:text-ship-cove-400',
+                  : 'text-azulejo-600 dark:text-azulejo-400',
                 sizes.arrow
               )}
             />
@@ -202,10 +202,10 @@ export function BearingIndicator({
   return (
     <div className={cn('flex items-center gap-2 text-sm', className)}>
       <div
-        className="flex items-center justify-center w-6 h-6 rounded-full bg-ship-cove-100 dark:bg-ship-cove-900/50"
+        className="flex items-center justify-center w-6 h-6 rounded-full bg-azulejo-100 dark:bg-azulejo-900/50"
         style={{ transform: `rotate(${bearing}deg)` }}
       >
-        <Navigation2 className="h-4 w-4 text-ship-cove-600 dark:text-ship-cove-400 fill-ship-cove-500" />
+        <Navigation2 className="h-4 w-4 text-azulejo-600 dark:text-azulejo-400 fill-azulejo-500" />
       </div>
       <span className="font-mono font-medium">
         {Math.round(bearing)}° {cardinal}

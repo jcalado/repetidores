@@ -162,20 +162,20 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
 
       {/* Location Status Panel */}
       {userLocation && (
-        <div className="relative overflow-hidden rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-gradient-to-br from-white via-white to-ship-cove-50/50 dark:from-ship-cove-950 dark:via-ship-cove-950 dark:to-ship-cove-900/30 shadow-sm">
+        <div className="relative overflow-hidden rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-gradient-to-br from-white via-white to-azulejo-50/50 dark:from-azulejo-950 dark:via-azulejo-950 dark:to-azulejo-900/30 shadow-sm">
           <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-60" />
 
           <div className="p-3 sm:p-4">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800">
-                  <MapPin className="h-5 w-5 text-ship-cove-600 dark:text-ship-cove-400" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-800">
+                  <MapPin className="h-5 w-5 text-azulejo-600 dark:text-azulejo-400" />
                 </div>
                 <div>
-                  <div className="text-xs uppercase tracking-wider text-ship-cove-500 mb-0.5">
+                  <div className="text-xs uppercase tracking-wider text-azulejo-500 mb-0.5">
                     Posição Atual
                   </div>
-                  <div className="font-mono text-sm sm:text-base font-medium text-ship-cove-900 dark:text-ship-cove-100">
+                  <div className="font-mono text-sm sm:text-base font-medium text-azulejo-900 dark:text-azulejo-100">
                     {userLocation.qthLocator || `${userLocation.latitude.toFixed(5)}°, ${userLocation.longitude.toFixed(5)}°`}
                   </div>
                 </div>
@@ -200,17 +200,17 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
 
       {/* Loading State */}
       {isLocating && !userLocation && (
-        <div className="relative overflow-hidden rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-gradient-to-br from-white via-white to-ship-cove-50/50 dark:from-ship-cove-950 dark:via-ship-cove-950 dark:to-ship-cove-900/30 shadow-sm">
-          <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-ship-cove-500 to-transparent opacity-60" />
+        <div className="relative overflow-hidden rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-gradient-to-br from-white via-white to-azulejo-50/50 dark:from-azulejo-950 dark:via-azulejo-950 dark:to-azulejo-900/30 shadow-sm">
+          <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-azulejo-500 to-transparent opacity-60" />
 
           <div className="py-12 sm:py-16 text-center">
-            <div className="flex h-16 w-16 mx-auto mb-4 items-center justify-center rounded-2xl bg-ship-cove-100 dark:bg-ship-cove-800">
-              <Loader2 className="h-8 w-8 animate-spin text-ship-cove-600 dark:text-ship-cove-400" />
+            <div className="flex h-16 w-16 mx-auto mb-4 items-center justify-center rounded-2xl bg-azulejo-100 dark:bg-azulejo-800">
+              <Loader2 className="h-8 w-8 animate-spin text-azulejo-600 dark:text-azulejo-400" />
             </div>
-            <p className="text-sm sm:text-base text-ship-cove-600 dark:text-ship-cove-400 font-medium">
+            <p className="text-sm sm:text-base text-azulejo-600 dark:text-azulejo-400 font-medium">
               {t('locating')}
             </p>
-            <p className="text-xs text-ship-cove-500 mt-1">
+            <p className="text-xs text-azulejo-500 mt-1">
               A obter coordenadas GPS...
             </p>
           </div>
@@ -219,22 +219,22 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
 
       {/* No Location State */}
       {!userLocation && !isLocating && (
-        <div className="relative overflow-hidden rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-gradient-to-br from-white via-white to-ship-cove-50/50 dark:from-ship-cove-950 dark:via-ship-cove-950 dark:to-ship-cove-900/30 shadow-sm">
+        <div className="relative overflow-hidden rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-gradient-to-br from-white via-white to-azulejo-50/50 dark:from-azulejo-950 dark:via-azulejo-950 dark:to-azulejo-900/30 shadow-sm">
           <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-60" />
 
           <div className="py-12 sm:py-16 text-center">
             <div className="flex h-16 w-16 mx-auto mb-4 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-900/30">
               <MapPin className="h-8 w-8 text-amber-600 dark:text-amber-400" />
             </div>
-            <p className="text-sm sm:text-base text-ship-cove-900 dark:text-ship-cove-100 font-medium mb-1">
+            <p className="text-sm sm:text-base text-azulejo-900 dark:text-azulejo-100 font-medium mb-1">
               {t('noLocation')}
             </p>
-            <p className="text-xs text-ship-cove-500 max-w-xs mx-auto">
+            <p className="text-xs text-azulejo-500 max-w-xs mx-auto">
               {t('setLocationHint')}
             </p>
             <button
               onClick={() => requestLocation(true)}
-              className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-ship-cove-600 text-white hover:bg-ship-cove-700 transition-colors text-sm font-medium"
+              className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-azulejo-600 text-white hover:bg-azulejo-700 transition-colors text-sm font-medium"
             >
               <Crosshair className="h-4 w-4" />
               Obter Localização
@@ -266,7 +266,7 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
 
           {sortedRepeaters.length > 20 && (
             <div className="text-center py-3">
-              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-ship-cove-100 dark:bg-ship-cove-800/50 text-sm text-ship-cove-600 dark:text-ship-cove-400">
+              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-azulejo-100 dark:bg-azulejo-800/50 text-sm text-azulejo-600 dark:text-azulejo-400">
                 <Signal className="h-3.5 w-3.5" />
                 {t('showingCount', { shown: 20, total: sortedRepeaters.length })}
               </span>
@@ -277,9 +277,9 @@ export default function NearestRepeater({ repeaters }: NearestRepeaterProps) {
 
       {/* Info Panel */}
       {userLocation && (
-        <div className="relative overflow-hidden rounded-xl border border-ship-cove-200/50 dark:border-ship-cove-800/30 bg-ship-cove-50/50 dark:bg-ship-cove-900/20">
+        <div className="relative overflow-hidden rounded-xl border border-azulejo-200/50 dark:border-azulejo-800/30 bg-azulejo-50/50 dark:bg-azulejo-900/20">
           <div className="p-3 sm:p-4">
-            <div className="flex items-start gap-3 text-xs sm:text-sm text-ship-cove-600 dark:text-ship-cove-400">
+            <div className="flex items-start gap-3 text-xs sm:text-sm text-azulejo-600 dark:text-azulejo-400">
               <Signal className="h-4 w-4 mt-0.5 flex-shrink-0" />
               <p>{t('info')}</p>
             </div>
@@ -313,14 +313,14 @@ function RepeaterCard({
       className={cn(
         'group block relative overflow-hidden rounded-xl border transition-all hover:shadow-md',
         isFirst
-          ? 'border-ship-cove-300 dark:border-ship-cove-700 bg-gradient-to-br from-ship-cove-50 via-white to-ship-cove-50/50 dark:from-ship-cove-900/50 dark:via-ship-cove-950 dark:to-ship-cove-900/30 ring-1 ring-ship-cove-200 dark:ring-ship-cove-800'
-          : 'border-ship-cove-200 dark:border-ship-cove-800/50 bg-gradient-to-br from-white via-white to-ship-cove-50/30 dark:from-ship-cove-950 dark:via-ship-cove-950 dark:to-ship-cove-900/20'
+          ? 'border-azulejo-300 dark:border-azulejo-700 bg-gradient-to-br from-azulejo-50 via-white to-azulejo-50/50 dark:from-azulejo-900/50 dark:via-azulejo-950 dark:to-azulejo-900/30 ring-1 ring-azulejo-200 dark:ring-azulejo-800'
+          : 'border-azulejo-200 dark:border-azulejo-800/50 bg-gradient-to-br from-white via-white to-azulejo-50/30 dark:from-azulejo-950 dark:via-azulejo-950 dark:to-azulejo-900/20'
       )}
     >
       {/* Top accent */}
       <div className={cn(
         'absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent to-transparent opacity-60',
-        isFirst ? 'via-ship-cove-500' : 'via-ship-cove-400/50'
+        isFirst ? 'via-azulejo-500' : 'via-azulejo-400/50'
       )} />
 
       <div className="p-3 sm:p-4">
@@ -330,11 +330,11 @@ function RepeaterCard({
           <div className="flex flex-col items-center min-w-[70px]">
             <div className={cn(
               'text-2xl font-bold font-mono',
-              isFirst ? 'text-ship-cove-600 dark:text-ship-cove-400' : 'text-ship-cove-400 dark:text-ship-cove-600'
+              isFirst ? 'text-azulejo-600 dark:text-azulejo-400' : 'text-azulejo-400 dark:text-azulejo-600'
             )}>
               #{index + 1}
             </div>
-            <div className="text-sm font-medium text-ship-cove-600 dark:text-ship-cove-300 bg-ship-cove-100 dark:bg-ship-cove-800 px-2 py-0.5 rounded-md">
+            <div className="text-sm font-medium text-azulejo-600 dark:text-azulejo-300 bg-azulejo-100 dark:bg-azulejo-800 px-2 py-0.5 rounded-md">
               {formatDistance(repeater.distance)}
             </div>
           </div>
@@ -344,14 +344,14 @@ function RepeaterCard({
             'flex-shrink-0 w-16 h-16 rounded-xl flex items-center justify-center transition-all',
             compassEnabled
               ? 'bg-emerald-100 dark:bg-emerald-900/30 ring-2 ring-emerald-400 dark:ring-emerald-600'
-              : 'bg-ship-cove-100 dark:bg-ship-cove-800'
+              : 'bg-azulejo-100 dark:bg-azulejo-800'
           )}>
             <Navigation
               className={cn(
                 'h-8 w-8 transition-transform duration-300',
                 compassEnabled
                   ? 'text-emerald-600 dark:text-emerald-400'
-                  : 'text-ship-cove-500 dark:text-ship-cove-400'
+                  : 'text-azulejo-500 dark:text-azulejo-400'
               )}
               style={{
                 transform: `rotate(${
@@ -366,13 +366,13 @@ function RepeaterCard({
           {/* Repeater Info */}
           <div className="flex-grow min-w-0">
             <div className="flex items-center gap-2 flex-wrap mb-1">
-              <span className="text-lg font-bold font-mono text-ship-cove-900 dark:text-ship-cove-100 group-hover:text-ship-cove-600 dark:group-hover:text-ship-cove-300 transition-colors">
+              <span className="text-lg font-bold font-mono text-azulejo-900 dark:text-azulejo-100 group-hover:text-azulejo-600 dark:group-hover:text-azulejo-300 transition-colors">
                 {repeater.callsign}
               </span>
               {(() => {
                 const primary = getPrimaryFrequency(repeater);
                 return primary ? (
-                  <span className="px-2 py-0.5 rounded-md bg-ship-cove-100 dark:bg-ship-cove-800 text-ship-cove-600 dark:text-ship-cove-400 text-xs font-medium">
+                  <span className="px-2 py-0.5 rounded-md bg-azulejo-100 dark:bg-azulejo-800 text-azulejo-600 dark:text-azulejo-400 text-xs font-medium">
                     {getBandFromFrequency(primary.outputFrequency)}
                   </span>
                 ) : null;
@@ -384,7 +384,7 @@ function RepeaterCard({
                     "px-2 py-0.5 rounded-md text-xs font-medium",
                     mode === 'DMR' && "bg-purple-500/20 text-purple-600 dark:text-purple-400",
                     mode === 'DSTAR' && "bg-blue-500/20 text-blue-600 dark:text-blue-400",
-                    mode === 'FM' && "bg-ship-cove-50 dark:bg-ship-cove-800/50 text-ship-cove-500 ring-1 ring-ship-cove-200 dark:ring-ship-cove-700",
+                    mode === 'FM' && "bg-azulejo-50 dark:bg-azulejo-800/50 text-azulejo-500 ring-1 ring-azulejo-200 dark:ring-azulejo-700",
                     mode === 'C4FM' && "bg-orange-500/20 text-orange-600 dark:text-orange-400",
                     mode === 'TETRA' && "bg-red-500/20 text-red-600 dark:text-red-400"
                   )}
@@ -393,7 +393,7 @@ function RepeaterCard({
                 </span>
               ))}
             </div>
-            <div className="text-sm text-ship-cove-600 dark:text-ship-cove-400">
+            <div className="text-sm text-azulejo-600 dark:text-azulejo-400">
               {(() => {
                 const primary = getPrimaryFrequency(repeater);
                 return primary ? (
@@ -404,14 +404,14 @@ function RepeaterCard({
                 ) : null;
               })()}
             </div>
-            <div className="text-sm text-ship-cove-500">
+            <div className="text-sm text-azulejo-500">
               {repeater.owner ?? ''} • <span className="font-mono">{repeater.qthLocator}</span>
             </div>
           </div>
 
           {/* Bearing & Direction */}
           <div className="flex flex-col items-end text-right min-w-[100px]">
-            <div className="text-lg font-bold font-mono text-ship-cove-900 dark:text-ship-cove-100">
+            <div className="text-lg font-bold font-mono text-azulejo-900 dark:text-azulejo-100">
               {Math.round(repeater.bearing)}° {bearingToCardinal(repeater.bearing)}
             </div>
             {compassEnabled && relativeBearing !== null && (
@@ -427,7 +427,7 @@ function RepeaterCard({
           </div>
 
           {/* Arrow */}
-          <ChevronRight className="h-5 w-5 text-ship-cove-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <ChevronRight className="h-5 w-5 text-azulejo-400 opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
 
         {/* Mobile Layout */}
@@ -439,14 +439,14 @@ function RepeaterCard({
                 'w-14 h-14 rounded-xl flex items-center justify-center',
                 compassEnabled
                   ? 'bg-emerald-100 dark:bg-emerald-900/30 ring-2 ring-emerald-400'
-                  : 'bg-ship-cove-100 dark:bg-ship-cove-800'
+                  : 'bg-azulejo-100 dark:bg-azulejo-800'
               )}>
                 <Navigation
                   className={cn(
                     'h-7 w-7 transition-transform duration-300',
                     compassEnabled
                       ? 'text-emerald-600 dark:text-emerald-400'
-                      : 'text-ship-cove-500 dark:text-ship-cove-400'
+                      : 'text-azulejo-500 dark:text-azulejo-400'
                   )}
                   style={{
                     transform: `rotate(${
@@ -461,8 +461,8 @@ function RepeaterCard({
               <div className={cn(
                 'absolute -top-1 -left-1 min-w-[1.25rem] h-5 px-1.5 rounded-md text-xs font-bold flex items-center justify-center',
                 isFirst
-                  ? 'bg-ship-cove-600 text-white'
-                  : 'bg-ship-cove-200 dark:bg-ship-cove-700 text-ship-cove-600 dark:text-ship-cove-300'
+                  ? 'bg-azulejo-600 text-white'
+                  : 'bg-azulejo-200 dark:bg-azulejo-700 text-azulejo-600 dark:text-azulejo-300'
               )}>
                 {index + 1}
               </div>
@@ -474,13 +474,13 @@ function RepeaterCard({
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="font-bold font-mono text-ship-cove-900 dark:text-ship-cove-100">
+                    <span className="font-bold font-mono text-azulejo-900 dark:text-azulejo-100">
                       {repeater.callsign}
                     </span>
                     {(() => {
                       const primary = getPrimaryFrequency(repeater);
                       return primary ? (
-                        <span className="px-1.5 py-0.5 rounded bg-ship-cove-100 dark:bg-ship-cove-800 text-ship-cove-600 dark:text-ship-cove-400 text-xs">
+                        <span className="px-1.5 py-0.5 rounded bg-azulejo-100 dark:bg-azulejo-800 text-azulejo-600 dark:text-azulejo-400 text-xs">
                           {getBandFromFrequency(primary.outputFrequency)}
                         </span>
                       ) : null;
@@ -498,14 +498,14 @@ function RepeaterCard({
                   </div>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <div className="text-sm font-semibold text-ship-cove-900 dark:text-ship-cove-100 bg-ship-cove-100 dark:bg-ship-cove-800 px-1.5 py-0.5 rounded">
+                  <div className="text-sm font-semibold text-azulejo-900 dark:text-azulejo-100 bg-azulejo-100 dark:bg-azulejo-800 px-1.5 py-0.5 rounded">
                     {formatDistance(repeater.distance)}
                   </div>
                 </div>
               </div>
 
               {/* Middle row */}
-              <div className="mt-1 flex items-center justify-between text-xs text-ship-cove-600 dark:text-ship-cove-400">
+              <div className="mt-1 flex items-center justify-between text-xs text-azulejo-600 dark:text-azulejo-400">
                 <div className="font-mono">
                   {(() => {
                     const primary = getPrimaryFrequency(repeater);
@@ -524,7 +524,7 @@ function RepeaterCard({
 
               {/* Bottom row */}
               <div className="mt-1 flex items-center justify-between">
-                <span className="text-xs text-ship-cove-500 font-mono">{repeater.qthLocator}</span>
+                <span className="text-xs text-azulejo-500 font-mono">{repeater.qthLocator}</span>
                 {compassEnabled && relativeBearing !== null && (
                   <span className={cn(
                     'text-xs font-medium px-1.5 py-0.5 rounded',

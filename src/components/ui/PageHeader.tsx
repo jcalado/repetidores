@@ -46,7 +46,7 @@ export function PageHeader({
   return (
     <header
       className={cn(
-        "relative overflow-hidden rounded-2xl bg-gradient-to-br from-ship-cove-600 via-ship-cove-700 to-ship-cove-800 dark:from-ship-cove-800 dark:via-ship-cove-900 dark:to-ship-cove-950 shadow-xl shadow-ship-cove-500/20",
+        "relative overflow-hidden rounded-2xl bg-gradient-to-br from-azulejo-600 via-azulejo-700 to-azulejo-800 dark:from-azulejo-800 dark:via-azulejo-900 dark:to-azulejo-950 shadow-xl shadow-azulejo-500/20",
         compact ? "p-4 sm:p-6" : "p-6 sm:p-8",
         !noMargin && "mb-8",
         className
@@ -80,8 +80,8 @@ export function PageHeader({
       </div>
 
       {/* Decorative blur circles */}
-      <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-ship-cove-500/20 blur-2xl" />
-      <div className="absolute -left-4 -bottom-4 w-24 h-24 rounded-full bg-ship-cove-400/20 blur-xl" />
+      <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-azulejo-500/20 blur-2xl" />
+      <div className="absolute -left-4 -bottom-4 w-24 h-24 rounded-full bg-azulejo-400/20 blur-xl" />
 
       {/* Floating icons (desktop only) */}
       {floatingIcons && floatingIcons.length > 0 && (
@@ -118,7 +118,7 @@ export function PageHeaderIcon({ icon, size = "md" }: PageHeaderIconProps) {
   return (
     <div
       className={cn(
-        "flex items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm ring-1 ring-white/20 text-white shrink-0",
+        "flex items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/20 text-white shrink-0",
         sizeClasses[size],
         iconSizeClasses[size]
       )}
@@ -150,7 +150,7 @@ export function PageHeaderTitle({
           {title}
         </h1>
         {subtitle && (
-          <p className="text-ship-cove-200 text-sm sm:text-base mt-1">
+          <p className="text-azulejo-200 text-sm sm:text-base mt-1">
             {subtitle}
           </p>
         )}
@@ -166,7 +166,7 @@ interface PageHeaderDescriptionProps {
 
 export function PageHeaderDescription({ children }: PageHeaderDescriptionProps) {
   return (
-    <p className="text-ship-cove-100 text-base sm:text-lg max-w-2xl mb-6">
+    <p className="text-azulejo-100 text-base sm:text-lg max-w-2xl mb-6">
       {children}
     </p>
   );
@@ -184,7 +184,7 @@ export function PageHeaderStats({ stats }: PageHeaderStatsProps) {
         <div
           key={index}
           className={cn(
-            "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg backdrop-blur-sm",
+            "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg",
             stat.variant === "success"
               ? "bg-emerald-500/20 text-emerald-100"
               : "bg-white/10 text-white"
@@ -197,7 +197,7 @@ export function PageHeaderStats({ stats }: PageHeaderStatsProps) {
               "text-sm",
               stat.variant === "success"
                 ? "text-emerald-200/80"
-                : "text-ship-cove-200"
+                : "text-azulejo-200"
             )}
           >
             {stat.label}
@@ -241,7 +241,7 @@ export function StandardPageHeader({
       )}
     >
       <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-900/40 text-ship-cove-600 dark:text-ship-cove-400 shrink-0 [&>svg]:h-5 [&>svg]:w-5">
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-900/40 text-azulejo-600 dark:text-azulejo-400 shrink-0 [&>svg]:h-5 [&>svg]:w-5">
           {icon}
         </div>
         <div>

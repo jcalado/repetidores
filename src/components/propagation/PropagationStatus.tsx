@@ -114,7 +114,7 @@ export function PropagationStatus() {
         <button
           onClick={handleManualRefresh}
           disabled={isRefreshing}
-          className="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium text-ship-cove-600 hover:bg-ship-cove-50 disabled:opacity-50 dark:text-ship-cove-400 dark:hover:bg-ship-cove-900/20"
+          className="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium text-azulejo-600 hover:bg-azulejo-50 disabled:opacity-50 dark:text-azulejo-400 dark:hover:bg-azulejo-900/20"
         >
           <ArrowPathIcon className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
           {t('refreshNow')}

@@ -46,7 +46,7 @@ export default function SimplexBrowser({ data }: Props) {
               onClick={() => setActiveTab("table")}
               className={`inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
                 activeTab === "table"
-                  ? "bg-ship-cove-600 text-white dark:bg-ship-cove-500"
+                  ? "bg-azulejo-600 text-white dark:bg-azulejo-500"
                   : "bg-muted text-muted-foreground hover:bg-muted/80"
               }`}
             >
@@ -57,7 +57,7 @@ export default function SimplexBrowser({ data }: Props) {
               onClick={() => setActiveTab("map")}
               className={`inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
                 activeTab === "map"
-                  ? "bg-ship-cove-600 text-white dark:bg-ship-cove-500"
+                  ? "bg-azulejo-600 text-white dark:bg-azulejo-500"
                   : "bg-muted text-muted-foreground hover:bg-muted/80"
               }`}
             >

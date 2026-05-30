@@ -214,35 +214,35 @@ function RepeaterPageSkeleton() {
   return (
     <div className="space-y-6">
       {/* Back link skeleton */}
-      <div className="h-5 w-32 bg-ship-cove-100 dark:bg-ship-cove-900 rounded animate-pulse" />
+      <div className="h-5 w-32 bg-azulejo-100 dark:bg-azulejo-900 rounded animate-pulse" />
 
       {/* Hero skeleton */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-ship-cove-100 to-ship-cove-50 dark:from-ship-cove-900 dark:to-ship-cove-950 p-8 animate-pulse">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-azulejo-100 to-azulejo-50 dark:from-azulejo-900 dark:to-azulejo-950 p-8 animate-pulse">
         <div className="flex flex-col sm:flex-row gap-6">
           <div className="flex-1 space-y-4">
-            <div className="h-10 w-48 bg-ship-cove-200 dark:bg-ship-cove-800 rounded" />
+            <div className="h-10 w-48 bg-azulejo-200 dark:bg-azulejo-800 rounded" />
             <div className="flex gap-2">
-              <div className="h-6 w-16 bg-ship-cove-200 dark:bg-ship-cove-800 rounded-full" />
-              <div className="h-6 w-20 bg-ship-cove-200 dark:bg-ship-cove-800 rounded-full" />
-              <div className="h-6 w-24 bg-ship-cove-200 dark:bg-ship-cove-800 rounded-full" />
+              <div className="h-6 w-16 bg-azulejo-200 dark:bg-azulejo-800 rounded-full" />
+              <div className="h-6 w-20 bg-azulejo-200 dark:bg-azulejo-800 rounded-full" />
+              <div className="h-6 w-24 bg-azulejo-200 dark:bg-azulejo-800 rounded-full" />
             </div>
           </div>
           <div className="flex gap-3">
-            <div className="h-10 w-24 bg-ship-cove-200 dark:bg-ship-cove-800 rounded-lg" />
-            <div className="h-10 w-28 bg-ship-cove-200 dark:bg-ship-cove-800 rounded-lg" />
+            <div className="h-10 w-24 bg-azulejo-200 dark:bg-azulejo-800 rounded-lg" />
+            <div className="h-10 w-28 bg-azulejo-200 dark:bg-azulejo-800 rounded-lg" />
           </div>
         </div>
       </div>
 
       {/* Grid skeleton */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="h-56 bg-ship-cove-100 dark:bg-ship-cove-900 rounded-xl animate-pulse" />
-        <div className="h-56 bg-ship-cove-100 dark:bg-ship-cove-900 rounded-xl animate-pulse" />
+        <div className="h-56 bg-azulejo-100 dark:bg-azulejo-900 rounded-xl animate-pulse" />
+        <div className="h-56 bg-azulejo-100 dark:bg-azulejo-900 rounded-xl animate-pulse" />
       </div>
 
       {/* Additional cards skeleton */}
-      <div className="h-32 bg-ship-cove-100 dark:bg-ship-cove-900 rounded-xl animate-pulse" />
-      <div className="h-40 bg-ship-cove-100 dark:bg-ship-cove-900 rounded-xl animate-pulse" />
+      <div className="h-32 bg-azulejo-100 dark:bg-azulejo-900 rounded-xl animate-pulse" />
+      <div className="h-40 bg-azulejo-100 dark:bg-azulejo-900 rounded-xl animate-pulse" />
     </div>
   );
 }

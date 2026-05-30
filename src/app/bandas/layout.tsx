@@ -6,13 +6,13 @@ export const metadata: Metadata = {
   description: "Informação sobre as bandas de radioamador e suas frequências em Portugal. QNAF, IARU R1 e potências máximas.",
   keywords: ["bandas", "frequências", "QNAF", "IARU", "HF", "VHF", "UHF", "radioamador", "Portugal"],
   alternates: {
-    canonical: "/bands/",
+    canonical: "/bandas/",
   },
   openGraph: {
     title: "Plano de Bandas",
     description: "Informação sobre as bandas de radioamador e suas frequências em Portugal. QNAF, IARU R1 e potências máximas.",
     type: "website",
-    url: "/bands/",
+    url: "/bandas/",
     siteName: "Radioamador.info",
     locale: "pt_PT",
     images: [{ url: "/og-default.jpg", width: 1200, height: 630, alt: "Plano de Bandas" }],
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 
 const breadcrumbs = [
   { name: "Início", url: "https://www.radioamador.info/" },
-  { name: "Plano de Bandas", url: "https://www.radioamador.info/bands/" },
+  { name: "Plano de Bandas", url: "https://www.radioamador.info/bandas/" },
 ];
 
 const faqItems = [
@@ -55,7 +55,7 @@ export default function BandsLayout({
       <WebPageJsonLd
         name="Plano de Bandas"
         description="Informação sobre as bandas de radioamador e suas frequências em Portugal. QNAF, IARU R1 e potências máximas."
-        url="https://www.radioamador.info/bands/"
+        url="https://www.radioamador.info/bandas/"
         breadcrumb={breadcrumbs}
       />
       <BreadcrumbJsonLd items={breadcrumbs} />

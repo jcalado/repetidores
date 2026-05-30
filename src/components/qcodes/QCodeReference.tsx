@@ -82,7 +82,7 @@ export function QCodeReference() {
               size="sm"
               onClick={() => setSelectedCategory(null)}
               className={cn(
-                selectedCategory === null && 'bg-ship-cove-600 hover:bg-ship-cove-700'
+                selectedCategory === null && 'bg-azulejo-600 hover:bg-azulejo-700'
               )}
             >
               <Filter className="h-4 w-4 mr-1" />
@@ -95,7 +95,7 @@ export function QCodeReference() {
                 size="sm"
                 onClick={() => setSelectedCategory(category)}
                 className={cn(
-                  selectedCategory === category && 'bg-ship-cove-600 hover:bg-ship-cove-700'
+                  selectedCategory === category && 'bg-azulejo-600 hover:bg-azulejo-700'
                 )}
               >
                 {CATEGORY_LABELS[category]}
@@ -122,7 +122,7 @@ export function QCodeReference() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xl font-mono font-bold text-ship-cove-700 dark:text-ship-cove-400">
+                      <span className="text-xl font-mono font-bold text-azulejo-700 dark:text-azulejo-400">
                         {highlightMatch(qcode.code, searchQuery)}
                       </span>
                       <Badge

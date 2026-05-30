@@ -58,15 +58,15 @@ export function CommunitySection({ repeaterId }: CommunitySectionProps) {
 
   if (voting.isStatsLoading) {
     return (
-      <div className="rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-white dark:bg-ship-cove-950 px-4 py-3">
-        <div className="h-5 w-40 rounded bg-ship-cove-100 dark:bg-ship-cove-800 animate-pulse" />
+      <div className="rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-white dark:bg-azulejo-950 px-4 py-3">
+        <div className="h-5 w-40 rounded bg-azulejo-100 dark:bg-azulejo-800 animate-pulse" />
       </div>
     );
   }
 
   return (
     <>
-      <div className="rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-white dark:bg-ship-cove-950">
+      <div className="rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-white dark:bg-azulejo-950">
         {/* Compact status row */}
         <div className="flex items-center gap-2.5 px-4 py-3">
           <span className={cn("h-2.5 w-2.5 rounded-full shrink-0", dotColor[voting.status])} />
@@ -74,7 +74,7 @@ export function CommunitySection({ repeaterId }: CommunitySectionProps) {
             {t(cfg.labelKey)}
           </span>
           {upPercent !== null && (
-            <span className="text-xs text-ship-cove-400 dark:text-ship-cove-500 tabular-nums">
+            <span className="text-xs text-azulejo-400 dark:text-azulejo-500 tabular-nums">
               {upPercent}% {t("positive")}
             </span>
           )}
@@ -82,7 +82,7 @@ export function CommunitySection({ repeaterId }: CommunitySectionProps) {
             {(hasFeedback || voting.isFeedbackLoading) && (
               <button
                 onClick={() => setReportsOpen(true)}
-                className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs text-ship-cove-500 hover:text-ship-cove-700 dark:hover:text-ship-cove-300 hover:bg-ship-cove-100 dark:hover:bg-ship-cove-800 transition-colors"
+                className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs text-azulejo-500 hover:text-azulejo-700 dark:hover:text-azulejo-300 hover:bg-azulejo-100 dark:hover:bg-azulejo-800 transition-colors"
               >
                 <MessageSquare className="h-3 w-3" />
                 {voting.totalCount}
@@ -95,7 +95,7 @@ export function CommunitySection({ repeaterId }: CommunitySectionProps) {
                 "p-1.5 rounded-md transition-colors",
                 voting.vote?.vote === "up"
                   ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400"
-                  : "text-ship-cove-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:text-emerald-400 dark:hover:bg-emerald-900/30"
+                  : "text-azulejo-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:text-emerald-400 dark:hover:bg-emerald-900/30"
               )}
               aria-label={t("reportWorking")}
             >
@@ -108,7 +108,7 @@ export function CommunitySection({ repeaterId }: CommunitySectionProps) {
                 "p-1.5 rounded-md transition-colors",
                 voting.vote?.vote === "down"
                   ? "bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-400"
-                  : "text-ship-cove-400 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-900/30"
+                  : "text-azulejo-400 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-900/30"
               )}
               aria-label={t("reportIssues")}
             >

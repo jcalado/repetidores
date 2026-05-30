@@ -36,17 +36,17 @@ function AssociationsPageSkeleton() {
   return (
     <div className="space-y-8">
       {/* Header skeleton */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-ship-cove-100 to-ship-cove-50 dark:from-ship-cove-900 dark:to-ship-cove-950 p-8 animate-pulse">
-        <div className="h-8 w-64 bg-ship-cove-200 dark:bg-ship-cove-800 rounded mb-3" />
-        <div className="h-5 w-96 bg-ship-cove-200 dark:bg-ship-cove-800 rounded" />
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-azulejo-100 to-azulejo-50 dark:from-azulejo-900 dark:to-azulejo-950 p-8 animate-pulse">
+        <div className="h-8 w-64 bg-azulejo-200 dark:bg-azulejo-800 rounded mb-3" />
+        <div className="h-5 w-96 bg-azulejo-200 dark:bg-azulejo-800 rounded" />
       </div>
 
       {/* Search skeleton */}
       <div className="flex justify-between items-center">
-        <div className="h-10 w-80 bg-ship-cove-100 dark:bg-ship-cove-900 rounded-lg" />
+        <div className="h-10 w-80 bg-azulejo-100 dark:bg-azulejo-900 rounded-lg" />
         <div className="flex gap-3">
-          <div className="h-8 w-20 bg-ship-cove-100 dark:bg-ship-cove-900 rounded-full" />
-          <div className="h-8 w-32 bg-ship-cove-100 dark:bg-ship-cove-900 rounded-full" />
+          <div className="h-8 w-20 bg-azulejo-100 dark:bg-azulejo-900 rounded-full" />
+          <div className="h-8 w-32 bg-azulejo-100 dark:bg-azulejo-900 rounded-full" />
         </div>
       </div>
 
@@ -55,7 +55,7 @@ function AssociationsPageSkeleton() {
         {Array.from({ length: 9 }).map((_, i) => (
           <div
             key={i}
-            className="h-44 bg-ship-cove-100 dark:bg-ship-cove-900 rounded-xl"
+            className="h-44 bg-azulejo-100 dark:bg-azulejo-900 rounded-xl"
             style={{ animationDelay: `${i * 50}ms` }}
           />
         ))}

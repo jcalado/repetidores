@@ -36,9 +36,9 @@ function SimplexPageSkeleton() {
   return (
     <div className="space-y-8">
       {/* Header skeleton */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-ship-cove-100 to-ship-cove-50 dark:from-ship-cove-900 dark:to-ship-cove-950 p-8 animate-pulse">
-        <div className="h-8 w-64 bg-ship-cove-200 dark:bg-ship-cove-800 rounded mb-3" />
-        <div className="h-5 w-96 bg-ship-cove-200 dark:bg-ship-cove-800 rounded" />
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-azulejo-100 to-azulejo-50 dark:from-azulejo-900 dark:to-azulejo-950 p-8 animate-pulse">
+        <div className="h-8 w-64 bg-azulejo-200 dark:bg-azulejo-800 rounded mb-3" />
+        <div className="h-5 w-96 bg-azulejo-200 dark:bg-azulejo-800 rounded" />
       </div>
 
       {/* Table skeleton */}

@@ -284,10 +284,10 @@ export default function QNAFPortugalHamBands() {
     const renderPowerBars = (powerList: PowerEntry[]) => (
         <div className="space-y-4">
             {filteredSpectrum.map((band) => (
-                <div key={band.id} className="rounded-xl border border-ship-cove-200 dark:border-ship-cove-800 bg-ship-cove-50/50 dark:bg-ship-cove-900/30 p-4">
+                <div key={band.id} className="rounded-xl border border-azulejo-200 dark:border-azulejo-800 bg-azulejo-50/50 dark:bg-azulejo-900/30 p-4">
                     <div className="mb-3 flex items-center gap-2 text-sm">
-                        <span className="font-semibold text-ship-cove-900 dark:text-ship-cove-100">{band.title}</span>
-                        <span className="text-xs font-mono text-ship-cove-500 dark:text-ship-cove-400">{band.rangeLabel}</span>
+                        <span className="font-semibold text-azulejo-900 dark:text-azulejo-100">{band.title}</span>
+                        <span className="text-xs font-mono text-azulejo-500 dark:text-azulejo-400">{band.rangeLabel}</span>
                     </div>
                     <div className="space-y-3">
                         {band.segments.map((seg, idx) => {
@@ -301,11 +301,11 @@ export default function QNAFPortugalHamBands() {
                                 .sort((a, b) => a.start - b.start);
                             return (
                                 <div key={idx}>
-                                    <div className="mb-1 text-xs text-ship-cove-600 dark:text-ship-cove-400">{seg.label}</div>
-                                    <div className="relative h-12 rounded-xl bg-ship-cove-100 dark:bg-ship-cove-900/50 overflow-hidden">
+                                    <div className="mb-1 text-xs text-azulejo-600 dark:text-azulejo-400">{seg.label}</div>
+                                    <div className="relative h-12 rounded-xl bg-azulejo-100 dark:bg-azulejo-900/50 overflow-hidden">
                                         <div className="absolute inset-0">
-                                            <div className="absolute left-2 top-1 text-[10px] font-mono text-ship-cove-500 dark:text-ship-cove-400">{seg.startMHz.toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
-                                            <div className="absolute right-2 bottom-1 text-[10px] font-mono text-ship-cove-500 dark:text-ship-cove-400">{seg.endMHz.toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
+                                            <div className="absolute left-2 top-1 text-[10px] font-mono text-azulejo-500 dark:text-azulejo-400">{seg.startMHz.toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
+                                            <div className="absolute right-2 bottom-1 text-[10px] font-mono text-azulejo-500 dark:text-azulejo-400">{seg.endMHz.toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
                                         </div>
                                         {pOver.map((o, j) => {
                                             const left = percentPos(o.start, seg.startMHz, seg.endMHz);
@@ -325,8 +325,8 @@ export default function QNAFPortugalHamBands() {
                     </div>
                 </div>
             ))}
-            <div className="flex flex-wrap items-center gap-3 text-xs mt-4 p-3 rounded-lg bg-ship-cove-50 dark:bg-ship-cove-900/30">
-                <span className="font-medium text-ship-cove-700 dark:text-ship-cove-300">Legenda:</span>
+            <div className="flex flex-wrap items-center gap-3 text-xs mt-4 p-3 rounded-lg bg-azulejo-50 dark:bg-azulejo-900/30">
+                <span className="font-medium text-azulejo-700 dark:text-azulejo-300">Legenda:</span>
                 {[
                     "1500W",
                     "300W",
@@ -339,7 +339,7 @@ export default function QNAFPortugalHamBands() {
                     "1W",
                     "Sob pedido",
                 ].map((p) => (
-                    <span key={p} className="inline-flex items-center gap-1.5 text-ship-cove-600 dark:text-ship-cove-400">
+                    <span key={p} className="inline-flex items-center gap-1.5 text-azulejo-600 dark:text-azulejo-400">
                         <span className={`h-2.5 w-4 rounded ${powerColor(p)}`}></span>
                         {p}
                     </span>
@@ -387,7 +387,7 @@ export default function QNAFPortugalHamBands() {
             {/* Filters Row */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
                 <Tabs value={view} onValueChange={(v) => setView(v as typeof view)} className="w-full sm:w-auto">
-                    <TabsList className="grid grid-cols-4 w-full sm:w-auto bg-ship-cove-100 dark:bg-ship-cove-800/50">
+                    <TabsList className="grid grid-cols-4 w-full sm:w-auto bg-azulejo-100 dark:bg-azulejo-800/50">
                         <TabsTrigger value="spectrum" className="text-xs sm:text-sm">QNAF</TabsTrigger>
                         <TabsTrigger value="named" className="text-xs sm:text-sm">Bandas</TabsTrigger>
                         <TabsTrigger value="iaru" className="text-xs sm:text-sm">IARU</TabsTrigger>
@@ -395,10 +395,10 @@ export default function QNAFPortugalHamBands() {
                     </TabsList>
                 </Tabs>
                 <div className="relative w-full sm:w-auto">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ship-cove-400 pointer-events-none" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-azulejo-400 pointer-events-none" />
                     <Input
                         placeholder="Procurar… (ex.: 144, CW, 1500W)"
-                        className="w-full sm:w-72 pl-10 pr-10 h-10 rounded-lg border-ship-cove-200 dark:border-ship-cove-800 bg-white dark:bg-ship-cove-950/50"
+                        className="w-full sm:w-72 pl-10 pr-10 h-10 rounded-lg border-azulejo-200 dark:border-azulejo-800 bg-white dark:bg-azulejo-950/50"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         aria-label="Pesquisar"
@@ -406,7 +406,7 @@ export default function QNAFPortugalHamBands() {
                     {query && (
                         <button
                             onClick={() => setQuery("")}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center rounded-full bg-ship-cove-100 dark:bg-ship-cove-800 text-ship-cove-500 hover:bg-ship-cove-200 dark:hover:bg-ship-cove-700 transition-colors"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center rounded-full bg-azulejo-100 dark:bg-azulejo-800 text-azulejo-500 hover:bg-azulejo-200 dark:hover:bg-azulejo-700 transition-colors"
                         >
                             <X className="h-3 w-3" />
                         </button>
@@ -421,7 +421,7 @@ export default function QNAFPortugalHamBands() {
                         const max = Math.max(...band.segments.map((s) => s.endMHz));
                         const colors = getBandColor(band.id);
                         return (
-                            <div key={band.id} className={`relative overflow-hidden rounded-xl border ${colors.border} bg-white dark:bg-ship-cove-950/50 shadow-sm`}>
+                            <div key={band.id} className={`relative overflow-hidden rounded-xl border ${colors.border} bg-white dark:bg-azulejo-950/50 shadow-sm`}>
                                 <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent ${colors.accent} to-transparent`} />
                                 <div className="p-5">
                                     <div className="flex items-center gap-3 mb-4">
@@ -429,19 +429,19 @@ export default function QNAFPortugalHamBands() {
                                             <Radio className={`h-5 w-5 ${colors.iconText}`} />
                                         </div>
                                         <div className="flex-1">
-                                            <h3 className="text-lg font-semibold text-ship-cove-900 dark:text-ship-cove-100">{band.title}</h3>
+                                            <h3 className="text-lg font-semibold text-azulejo-900 dark:text-azulejo-100">{band.title}</h3>
                                             <div className="flex items-center gap-2">
                                                 <span className={`inline-flex items-center rounded-md ${colors.icon} ${colors.iconText} px-2 py-0.5 text-xs font-medium`}>{band.rangeLabel}</span>
-                                                <span className="text-xs text-ship-cove-500 dark:text-ship-cove-400">{band.segments.length} subfaixa{band.segments.length > 1 ? 's' : ''} QNAF</span>
+                                                <span className="text-xs text-azulejo-500 dark:text-azulejo-400">{band.segments.length} subfaixa{band.segments.length > 1 ? 's' : ''} QNAF</span>
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* Visualization bar */}
-                                    <div className="relative h-14 rounded-xl bg-ship-cove-100 dark:bg-ship-cove-900/50 overflow-hidden mb-4">
+                                    <div className="relative h-14 rounded-xl bg-azulejo-100 dark:bg-azulejo-900/50 overflow-hidden mb-4">
                                         <div className="absolute inset-0 pointer-events-none">
-                                            <div className="absolute left-2 top-1 text-[10px] font-mono text-ship-cove-500 dark:text-ship-cove-400">{min.toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
-                                            <div className="absolute right-2 bottom-1 text-[10px] font-mono text-ship-cove-500 dark:text-ship-cove-400">{max.toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
+                                            <div className="absolute left-2 top-1 text-[10px] font-mono text-azulejo-500 dark:text-azulejo-400">{min.toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
+                                            <div className="absolute right-2 bottom-1 text-[10px] font-mono text-azulejo-500 dark:text-azulejo-400">{max.toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
                                         </div>
                                         {band.segments.map((seg, idx) => {
                                             const segmentId = `${band.id}-${idx}`;
@@ -466,7 +466,7 @@ export default function QNAFPortugalHamBands() {
                                                 >
                                                     {showLabel && (
                                                         <div className="flex h-full items-center justify-center px-1">
-                                                            <span className={`text-[10px] font-medium drop-shadow-sm truncate ${isHovered ? 'text-white' : 'text-ship-cove-900 dark:text-white'}`}>{seg.label}</span>
+                                                            <span className={`text-[10px] font-medium drop-shadow-sm truncate ${isHovered ? 'text-white' : 'text-azulejo-900 dark:text-white'}`}>{seg.label}</span>
                                                         </div>
                                                     )}
                                                 </div>
@@ -485,15 +485,15 @@ export default function QNAFPortugalHamBands() {
                                                     className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer ${
                                                         isHovered
                                                             ? `${colors.icon} ring-2 ring-offset-1 ${colors.border}`
-                                                            : 'bg-ship-cove-50 dark:bg-ship-cove-900/30 hover:bg-ship-cove-100 dark:hover:bg-ship-cove-900/50'
+                                                            : 'bg-azulejo-50 dark:bg-azulejo-900/30 hover:bg-azulejo-100 dark:hover:bg-azulejo-900/50'
                                                     }`}
                                                     onMouseEnter={() => setHoveredSegment(segmentId)}
                                                     onMouseLeave={() => setHoveredSegment(null)}
                                                 >
                                                     <div className={`h-3 w-3 rounded-sm shrink-0 transition-transform duration-200 ${colors.dot} ${isHovered ? 'scale-125' : ''}`} />
                                                     <div className="flex-1 min-w-0">
-                                                        <div className={`text-sm font-medium truncate ${isHovered ? colors.iconText : 'text-ship-cove-900 dark:text-ship-cove-100'}`}>{seg.label}</div>
-                                                        <div className="text-xs font-mono text-ship-cove-500 dark:text-ship-cove-400">
+                                                        <div className={`text-sm font-medium truncate ${isHovered ? colors.iconText : 'text-azulejo-900 dark:text-azulejo-100'}`}>{seg.label}</div>
+                                                        <div className="text-xs font-mono text-azulejo-500 dark:text-azulejo-400">
                                                             {seg.startMHz.toLocaleString("pt-PT", { maximumFractionDigits: 4 })}–{seg.endMHz.toLocaleString("pt-PT", { maximumFractionDigits: 4 })} MHz
                                                         </div>
                                                     </div>
@@ -505,42 +505,42 @@ export default function QNAFPortugalHamBands() {
                             </div>
                         );
                     })}
-                    {filteredSpectrum.length === 0 && <p className="text-sm text-ship-cove-500 dark:text-ship-cove-400">Sem resultados para &quot;{query}&quot;.</p>}
+                    {filteredSpectrum.length === 0 && <p className="text-sm text-azulejo-500 dark:text-azulejo-400">Sem resultados para &quot;{query}&quot;.</p>}
                 </TabsContent>
 
                 <TabsContent value="named">
-                    <div className="relative overflow-hidden rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-white dark:bg-ship-cove-950/50 shadow-sm">
-                        <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-ship-cove-500 to-transparent opacity-60" />
+                    <div className="relative overflow-hidden rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-white dark:bg-azulejo-950/50 shadow-sm">
+                        <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-azulejo-500 to-transparent opacity-60" />
                         <div className="p-5">
                             <div className="flex items-center gap-3 mb-4">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800">
-                                    <Antenna className="h-5 w-5 text-ship-cove-600 dark:text-ship-cove-400" />
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-800">
+                                    <Antenna className="h-5 w-5 text-azulejo-600 dark:text-azulejo-400" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-semibold text-ship-cove-900 dark:text-ship-cove-100">Nomes das bandas</h3>
-                                    <p className="text-sm text-ship-cove-500 dark:text-ship-cove-400">Designações comuns das bandas de radioamador</p>
+                                    <h3 className="text-lg font-semibold text-azulejo-900 dark:text-azulejo-100">Nomes das bandas</h3>
+                                    <p className="text-sm text-azulejo-500 dark:text-azulejo-400">Designações comuns das bandas de radioamador</p>
                                 </div>
                             </div>
-                            <div className="w-full overflow-x-auto rounded-xl border border-ship-cove-200 dark:border-ship-cove-800">
+                            <div className="w-full overflow-x-auto rounded-xl border border-azulejo-200 dark:border-azulejo-800">
                                 <Table>
                                     <TableHeader>
-                                        <TableRow className="bg-ship-cove-50 dark:bg-ship-cove-900/50">
-                                            <TableHead className="w-[180px] font-semibold text-ship-cove-700 dark:text-ship-cove-300">Banda</TableHead>
-                                            <TableHead className="font-semibold text-ship-cove-700 dark:text-ship-cove-300">Intervalo (texto)</TableHead>
-                                            <TableHead className="w-[220px] font-semibold text-ship-cove-700 dark:text-ship-cove-300">Intervalo (MHz)</TableHead>
+                                        <TableRow className="bg-azulejo-50 dark:bg-azulejo-900/50">
+                                            <TableHead className="w-[180px] font-semibold text-azulejo-700 dark:text-azulejo-300">Banda</TableHead>
+                                            <TableHead className="font-semibold text-azulejo-700 dark:text-azulejo-300">Intervalo (texto)</TableHead>
+                                            <TableHead className="w-[220px] font-semibold text-azulejo-700 dark:text-azulejo-300">Intervalo (MHz)</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {filteredNamed.slice().sort((a, b) => (a.startMHz ?? Infinity) - (b.startMHz ?? Infinity)).map((b, idx) => (
-                                            <TableRow key={idx} className="hover:bg-ship-cove-50 dark:hover:bg-ship-cove-900/30">
-                                                <TableCell className="font-medium text-ship-cove-900 dark:text-ship-cove-100">{b.name}</TableCell>
-                                                <TableCell className="text-ship-cove-700 dark:text-ship-cove-300">{b.rangeLabel}</TableCell>
-                                                <TableCell className="font-mono text-sm text-ship-cove-500 dark:text-ship-cove-400">{b.startMHz !== undefined && b.endMHz !== undefined ? `${b.startMHz.toLocaleString("pt-PT", { maximumFractionDigits: 3 })}–${b.endMHz.toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz` : "—"}</TableCell>
+                                            <TableRow key={idx} className="hover:bg-azulejo-50 dark:hover:bg-azulejo-900/30">
+                                                <TableCell className="font-medium text-azulejo-900 dark:text-azulejo-100">{b.name}</TableCell>
+                                                <TableCell className="text-azulejo-700 dark:text-azulejo-300">{b.rangeLabel}</TableCell>
+                                                <TableCell className="font-mono text-sm text-azulejo-500 dark:text-azulejo-400">{b.startMHz !== undefined && b.endMHz !== undefined ? `${b.startMHz.toLocaleString("pt-PT", { maximumFractionDigits: 3 })}–${b.endMHz.toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz` : "—"}</TableCell>
                                             </TableRow>
                                         ))}
                                         {filteredNamed.length === 0 && (
                                             <TableRow>
-                                                <TableCell colSpan={3} className="text-sm text-ship-cove-500 dark:text-ship-cove-400">Sem resultados para &quot;{query}&quot;.</TableCell>
+                                                <TableCell colSpan={3} className="text-sm text-azulejo-500 dark:text-azulejo-400">Sem resultados para &quot;{query}&quot;.</TableCell>
                                             </TableRow>
                                         )}
                                     </TableBody>
@@ -555,7 +555,7 @@ export default function QNAFPortugalHamBands() {
                         const min = band.minKHz;
                         const max = band.maxKHz;
                         return (
-                            <div key={band.label + i} className="relative overflow-hidden rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-white dark:bg-ship-cove-950/50 shadow-sm">
+                            <div key={band.label + i} className="relative overflow-hidden rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-white dark:bg-azulejo-950/50 shadow-sm">
                                 <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-60" />
                                 <div className="p-5">
                                     <div className="flex items-center gap-3 mb-4">
@@ -563,14 +563,14 @@ export default function QNAFPortugalHamBands() {
                                             <Waves className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                                         </div>
                                         <div>
-                                            <h3 className="text-lg font-semibold text-ship-cove-900 dark:text-ship-cove-100">{band.label}</h3>
-                                            <p className="text-sm text-ship-cove-500 dark:text-ship-cove-400">Plano IARU R1 — {toMHz(min).toLocaleString("pt-PT", { maximumFractionDigits: 4 })}–{toMHz(max).toLocaleString("pt-PT", { maximumFractionDigits: 4 })} MHz</p>
+                                            <h3 className="text-lg font-semibold text-azulejo-900 dark:text-azulejo-100">{band.label}</h3>
+                                            <p className="text-sm text-azulejo-500 dark:text-azulejo-400">Plano IARU R1 — {toMHz(min).toLocaleString("pt-PT", { maximumFractionDigits: 4 })}–{toMHz(max).toLocaleString("pt-PT", { maximumFractionDigits: 4 })} MHz</p>
                                         </div>
                                     </div>
-                                    <div className="relative h-12 rounded-xl bg-ship-cove-100 dark:bg-ship-cove-900/50 overflow-hidden">
+                                    <div className="relative h-12 rounded-xl bg-azulejo-100 dark:bg-azulejo-900/50 overflow-hidden">
                                         <div className="absolute inset-0">
-                                            <div className="absolute left-2 top-1 text-[10px] font-mono text-ship-cove-500 dark:text-ship-cove-400">{toMHz(min).toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
-                                            <div className="absolute right-2 bottom-1 text-[10px] font-mono text-ship-cove-500 dark:text-ship-cove-400">{toMHz(max).toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
+                                            <div className="absolute left-2 top-1 text-[10px] font-mono text-azulejo-500 dark:text-azulejo-400">{toMHz(min).toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
+                                            <div className="absolute right-2 bottom-1 text-[10px] font-mono text-azulejo-500 dark:text-azulejo-400">{toMHz(max).toLocaleString("pt-PT", { maximumFractionDigits: 3 })} MHz</div>
                                         </div>
                                         {band.segments.map((s, idx) => {
                                             const left = percentPos(s.fromKHz, min, max);
@@ -581,39 +581,39 @@ export default function QNAFPortugalHamBands() {
                                         })}
                                     </div>
                                     <div className="mt-3 flex flex-wrap gap-2">
-                                        <span className="inline-flex items-center gap-1.5 text-xs text-ship-cove-600 dark:text-ship-cove-400">
+                                        <span className="inline-flex items-center gap-1.5 text-xs text-azulejo-600 dark:text-azulejo-400">
                                             <span className="h-2.5 w-4 rounded bg-emerald-500/80"></span>CW
                                         </span>
-                                        <span className="inline-flex items-center gap-1.5 text-xs text-ship-cove-600 dark:text-ship-cove-400">
+                                        <span className="inline-flex items-center gap-1.5 text-xs text-azulejo-600 dark:text-azulejo-400">
                                             <span className="h-2.5 w-4 rounded bg-indigo-500/80"></span>Narrow band
                                         </span>
-                                        <span className="inline-flex items-center gap-1.5 text-xs text-ship-cove-600 dark:text-ship-cove-400">
+                                        <span className="inline-flex items-center gap-1.5 text-xs text-azulejo-600 dark:text-azulejo-400">
                                             <span className="h-2.5 w-4 rounded bg-sky-500/80"></span>All modes
                                         </span>
-                                        <span className="inline-flex items-center gap-1.5 text-xs text-ship-cove-600 dark:text-ship-cove-400">
+                                        <span className="inline-flex items-center gap-1.5 text-xs text-azulejo-600 dark:text-azulejo-400">
                                             <span className="h-2.5 w-4 rounded bg-amber-500/80"></span>Beacons
                                         </span>
-                                        <span className="inline-flex items-center gap-1.5 text-xs text-ship-cove-600 dark:text-ship-cove-400">
+                                        <span className="inline-flex items-center gap-1.5 text-xs text-azulejo-600 dark:text-azulejo-400">
                                             <span className="h-2.5 w-4 rounded bg-purple-500/80"></span>Weak-signal
                                         </span>
                                     </div>
-                                    <div className="mt-4 w-full overflow-x-auto rounded-xl border border-ship-cove-200 dark:border-ship-cove-800">
+                                    <div className="mt-4 w-full overflow-x-auto rounded-xl border border-azulejo-200 dark:border-azulejo-800">
                                         <Table>
                                             <TableHeader>
-                                                <TableRow className="bg-ship-cove-50 dark:bg-ship-cove-900/50">
-                                                    <TableHead className="font-semibold text-ship-cove-700 dark:text-ship-cove-300">Intervalo (kHz)</TableHead>
-                                                    <TableHead className="font-semibold text-ship-cove-700 dark:text-ship-cove-300">Modo recomendado</TableHead>
-                                                    <TableHead className="font-semibold text-ship-cove-700 dark:text-ship-cove-300">Larg. máx. (Hz)</TableHead>
-                                                    <TableHead className="font-semibold text-ship-cove-700 dark:text-ship-cove-300">Notas</TableHead>
+                                                <TableRow className="bg-azulejo-50 dark:bg-azulejo-900/50">
+                                                    <TableHead className="font-semibold text-azulejo-700 dark:text-azulejo-300">Intervalo (kHz)</TableHead>
+                                                    <TableHead className="font-semibold text-azulejo-700 dark:text-azulejo-300">Modo recomendado</TableHead>
+                                                    <TableHead className="font-semibold text-azulejo-700 dark:text-azulejo-300">Larg. máx. (Hz)</TableHead>
+                                                    <TableHead className="font-semibold text-azulejo-700 dark:text-azulejo-300">Notas</TableHead>
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
                                                 {band.segments.map((s, idx) => (
-                                                    <TableRow key={idx} className="hover:bg-ship-cove-50 dark:hover:bg-ship-cove-900/30">
-                                                        <TableCell className="font-mono text-sm text-ship-cove-700 dark:text-ship-cove-300">{s.fromKHz}–{s.toKHz}</TableCell>
-                                                        <TableCell className="text-ship-cove-700 dark:text-ship-cove-300">{s.mode}</TableCell>
-                                                        <TableCell className="font-mono text-sm text-ship-cove-500 dark:text-ship-cove-400">{s.maxBWHz ? s.maxBWHz.toLocaleString("pt-PT") : "—"}</TableCell>
-                                                        <TableCell className="text-sm text-ship-cove-500 dark:text-ship-cove-400">{s.notes && s.notes.length ? s.notes.join("; ") : "—"}</TableCell>
+                                                    <TableRow key={idx} className="hover:bg-azulejo-50 dark:hover:bg-azulejo-900/30">
+                                                        <TableCell className="font-mono text-sm text-azulejo-700 dark:text-azulejo-300">{s.fromKHz}–{s.toKHz}</TableCell>
+                                                        <TableCell className="text-azulejo-700 dark:text-azulejo-300">{s.mode}</TableCell>
+                                                        <TableCell className="font-mono text-sm text-azulejo-500 dark:text-azulejo-400">{s.maxBWHz ? s.maxBWHz.toLocaleString("pt-PT") : "—"}</TableCell>
+                                                        <TableCell className="text-sm text-azulejo-500 dark:text-azulejo-400">{s.notes && s.notes.length ? s.notes.join("; ") : "—"}</TableCell>
                                                     </TableRow>
                                                 ))}
                                             </TableBody>
@@ -623,11 +623,11 @@ export default function QNAFPortugalHamBands() {
                             </div>
                         );
                     })}
-                    {filteredIARU.length === 0 && <p className="text-sm text-ship-cove-500 dark:text-ship-cove-400">Sem resultados para &quot;{query}&quot;.</p>}
+                    {filteredIARU.length === 0 && <p className="text-sm text-azulejo-500 dark:text-azulejo-400">Sem resultados para &quot;{query}&quot;.</p>}
                 </TabsContent>
 
                 <TabsContent value="power">
-                    <div className="relative overflow-hidden rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-white dark:bg-ship-cove-950/50 shadow-sm">
+                    <div className="relative overflow-hidden rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-white dark:bg-azulejo-950/50 shadow-sm">
                         <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-60" />
                         <div className="p-5">
                             <div className="flex items-center gap-3 mb-4">
@@ -635,35 +635,35 @@ export default function QNAFPortugalHamBands() {
                                     <Zap className="h-5 w-5 text-orange-600 dark:text-orange-400" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-semibold text-ship-cove-900 dark:text-ship-cove-100">Potências máximas permitidas (Portugal)</h3>
-                                    <p className="text-sm text-ship-cove-500 dark:text-ship-cove-400">Anexo 6 QNAF — Limites de potência por banda e categoria</p>
+                                    <h3 className="text-lg font-semibold text-azulejo-900 dark:text-azulejo-100">Potências máximas permitidas (Portugal)</h3>
+                                    <p className="text-sm text-azulejo-500 dark:text-azulejo-400">Anexo 6 QNAF — Limites de potência por banda e categoria</p>
                                 </div>
                             </div>
                             <Tabs defaultValue="cat1" className="w-full">
-                                <TabsList className="bg-ship-cove-100 dark:bg-ship-cove-800/50 mb-4">
+                                <TabsList className="bg-azulejo-100 dark:bg-azulejo-800/50 mb-4">
                                     <TabsTrigger value="cat1">Categoria 1</TabsTrigger>
                                     <TabsTrigger value="cat2">Categoria 2</TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="cat1">
                                     {renderPowerBars(filteredPower1)}
-                                    <div className="w-full overflow-x-auto rounded-xl border border-ship-cove-200 dark:border-ship-cove-800 mt-6">
+                                    <div className="w-full overflow-x-auto rounded-xl border border-azulejo-200 dark:border-azulejo-800 mt-6">
                                         <Table>
                                             <TableHeader>
-                                                <TableRow className="bg-ship-cove-50 dark:bg-ship-cove-900/50">
-                                                    <TableHead className="font-semibold text-ship-cove-700 dark:text-ship-cove-300">Intervalo (MHz)</TableHead>
-                                                    <TableHead className="font-semibold text-ship-cove-700 dark:text-ship-cove-300">Potência máx.</TableHead>
+                                                <TableRow className="bg-azulejo-50 dark:bg-azulejo-900/50">
+                                                    <TableHead className="font-semibold text-azulejo-700 dark:text-azulejo-300">Intervalo (MHz)</TableHead>
+                                                    <TableHead className="font-semibold text-azulejo-700 dark:text-azulejo-300">Potência máx.</TableHead>
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
                                                 {filteredPower1.slice().sort((a, b) => a.fromMHz - b.fromMHz).map((p, idx) => (
-                                                    <TableRow key={idx} className="hover:bg-ship-cove-50 dark:hover:bg-ship-cove-900/30">
-                                                        <TableCell className="font-mono text-sm text-ship-cove-700 dark:text-ship-cove-300">{fmtRangeMHz(p.fromMHz, p.toMHz)}</TableCell>
-                                                        <TableCell className="font-semibold text-ship-cove-900 dark:text-ship-cove-100">{p.power}</TableCell>
+                                                    <TableRow key={idx} className="hover:bg-azulejo-50 dark:hover:bg-azulejo-900/30">
+                                                        <TableCell className="font-mono text-sm text-azulejo-700 dark:text-azulejo-300">{fmtRangeMHz(p.fromMHz, p.toMHz)}</TableCell>
+                                                        <TableCell className="font-semibold text-azulejo-900 dark:text-azulejo-100">{p.power}</TableCell>
                                                     </TableRow>
                                                 ))}
                                                 {filteredPower1.length === 0 && (
                                                     <TableRow>
-                                                        <TableCell colSpan={2} className="text-sm text-ship-cove-500 dark:text-ship-cove-400">Sem resultados para &quot;{query}&quot;.</TableCell>
+                                                        <TableCell colSpan={2} className="text-sm text-azulejo-500 dark:text-azulejo-400">Sem resultados para &quot;{query}&quot;.</TableCell>
                                                     </TableRow>
                                                 )}
                                             </TableBody>
@@ -672,24 +672,24 @@ export default function QNAFPortugalHamBands() {
                                 </TabsContent>
                                 <TabsContent value="cat2">
                                     {renderPowerBars(filteredPower2)}
-                                    <div className="w-full overflow-x-auto rounded-xl border border-ship-cove-200 dark:border-ship-cove-800 mt-6">
+                                    <div className="w-full overflow-x-auto rounded-xl border border-azulejo-200 dark:border-azulejo-800 mt-6">
                                         <Table>
                                             <TableHeader>
-                                                <TableRow className="bg-ship-cove-50 dark:bg-ship-cove-900/50">
-                                                    <TableHead className="font-semibold text-ship-cove-700 dark:text-ship-cove-300">Intervalo (MHz)</TableHead>
-                                                    <TableHead className="font-semibold text-ship-cove-700 dark:text-ship-cove-300">Potência máx.</TableHead>
+                                                <TableRow className="bg-azulejo-50 dark:bg-azulejo-900/50">
+                                                    <TableHead className="font-semibold text-azulejo-700 dark:text-azulejo-300">Intervalo (MHz)</TableHead>
+                                                    <TableHead className="font-semibold text-azulejo-700 dark:text-azulejo-300">Potência máx.</TableHead>
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
                                                 {filteredPower2.slice().sort((a, b) => a.fromMHz - b.fromMHz).map((p, idx) => (
-                                                    <TableRow key={idx} className="hover:bg-ship-cove-50 dark:hover:bg-ship-cove-900/30">
-                                                        <TableCell className="font-mono text-sm text-ship-cove-700 dark:text-ship-cove-300">{fmtRangeMHz(p.fromMHz, p.toMHz)}</TableCell>
-                                                        <TableCell className="font-semibold text-ship-cove-900 dark:text-ship-cove-100">{p.power}</TableCell>
+                                                    <TableRow key={idx} className="hover:bg-azulejo-50 dark:hover:bg-azulejo-900/30">
+                                                        <TableCell className="font-mono text-sm text-azulejo-700 dark:text-azulejo-300">{fmtRangeMHz(p.fromMHz, p.toMHz)}</TableCell>
+                                                        <TableCell className="font-semibold text-azulejo-900 dark:text-azulejo-100">{p.power}</TableCell>
                                                     </TableRow>
                                                 ))}
                                                 {filteredPower2.length === 0 && (
                                                     <TableRow>
-                                                        <TableCell colSpan={2} className="text-sm text-ship-cove-500 dark:text-ship-cove-400">Sem resultados para &quot;{query}&quot;.</TableCell>
+                                                        <TableCell colSpan={2} className="text-sm text-azulejo-500 dark:text-azulejo-400">Sem resultados para &quot;{query}&quot;.</TableCell>
                                                     </TableRow>
                                                 )}
                                             </TableBody>

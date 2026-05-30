@@ -39,7 +39,7 @@ export const callsignColumns: ColumnDef<Callsign>[] = [
     accessorKey: "indicativo",
     header: "Indicativo",
     cell: ({ row }) => (
-      <span className="font-mono font-semibold text-ship-cove-700 dark:text-ship-cove-400">
+      <span className="font-mono font-semibold text-azulejo-700 dark:text-azulejo-400">
         {row.getValue("indicativo")}
       </span>
     ),

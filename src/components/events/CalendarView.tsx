@@ -155,13 +155,13 @@ export function CalendarView({ events, t }: CalendarViewProps) {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           {/* View mode toggle */}
-          <div className="flex rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800/50 p-1">
+          <div className="flex rounded-lg bg-azulejo-100 dark:bg-azulejo-800/50 p-1">
             <button
               onClick={() => setViewMode("month")}
               className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                 viewMode === "month"
-                  ? "bg-white dark:bg-ship-cove-900 text-ship-cove-900 dark:text-ship-cove-100 shadow-sm"
-                  : "text-ship-cove-600 dark:text-ship-cove-400 hover:text-ship-cove-900 dark:hover:text-ship-cove-200"
+                  ? "bg-white dark:bg-azulejo-900 text-azulejo-900 dark:text-azulejo-100 shadow-sm"
+                  : "text-azulejo-600 dark:text-azulejo-400 hover:text-azulejo-900 dark:hover:text-azulejo-200"
               }`}
             >
               {t("monthView") || "Mês"}
@@ -170,8 +170,8 @@ export function CalendarView({ events, t }: CalendarViewProps) {
               onClick={() => setViewMode("week")}
               className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                 viewMode === "week"
-                  ? "bg-white dark:bg-ship-cove-900 text-ship-cove-900 dark:text-ship-cove-100 shadow-sm"
-                  : "text-ship-cove-600 dark:text-ship-cove-400 hover:text-ship-cove-900 dark:hover:text-ship-cove-200"
+                  ? "bg-white dark:bg-azulejo-900 text-azulejo-900 dark:text-azulejo-100 shadow-sm"
+                  : "text-azulejo-600 dark:text-azulejo-400 hover:text-azulejo-900 dark:hover:text-azulejo-200"
               }`}
             >
               {t("weekView") || "Semana"}
@@ -199,7 +199,7 @@ export function CalendarView({ events, t }: CalendarViewProps) {
           </div>
 
           {/* Current period */}
-          <h2 className="text-xl font-bold text-ship-cove-900 dark:text-ship-cove-100">
+          <h2 className="text-xl font-bold text-azulejo-900 dark:text-azulejo-100">
             {viewMode === "month" ? (
               `${MONTHS_PT[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`
             ) : (
@@ -216,13 +216,13 @@ export function CalendarView({ events, t }: CalendarViewProps) {
 
       {/* Month View */}
       {viewMode === "month" && (
-        <div className="rounded-xl border border-ship-cove-200 dark:border-ship-cove-800 overflow-hidden bg-white dark:bg-ship-cove-950/50">
+        <div className="rounded-xl border border-azulejo-200 dark:border-azulejo-800 overflow-hidden bg-white dark:bg-azulejo-950/50">
           {/* Week day headers */}
-          <div className="grid grid-cols-7 bg-ship-cove-50 dark:bg-ship-cove-900/50 border-b border-ship-cove-200 dark:border-ship-cove-800">
+          <div className="grid grid-cols-7 bg-azulejo-50 dark:bg-azulejo-900/50 border-b border-azulejo-200 dark:border-azulejo-800">
             {WEEK_DAYS_PT.map((day) => (
               <div
                 key={day}
-                className="px-2 py-3 text-center text-xs font-semibold text-ship-cove-600 dark:text-ship-cove-400 uppercase tracking-wider"
+                className="px-2 py-3 text-center text-xs font-semibold text-azulejo-600 dark:text-azulejo-400 uppercase tracking-wider"
               >
                 {day}
               </div>
@@ -241,25 +241,25 @@ export function CalendarView({ events, t }: CalendarViewProps) {
                 <div
                   key={index}
                   onClick={() => setSelectedDate(date)}
-                  className={`min-h-[100px] sm:min-h-[120px] p-1.5 border-b border-r border-ship-cove-100 dark:border-ship-cove-800/50 cursor-pointer transition-colors ${
-                    !isCurrentMonth ? "bg-ship-cove-50/50 dark:bg-ship-cove-900/20" : ""
-                  } ${isSelected ? "bg-ship-cove-100 dark:bg-ship-cove-800/50" : "hover:bg-ship-cove-50 dark:hover:bg-ship-cove-900/30"}`}
+                  className={`min-h-[100px] sm:min-h-[120px] p-1.5 border-b border-r border-azulejo-100 dark:border-azulejo-800/50 cursor-pointer transition-colors ${
+                    !isCurrentMonth ? "bg-azulejo-50/50 dark:bg-azulejo-900/20" : ""
+                  } ${isSelected ? "bg-azulejo-100 dark:bg-azulejo-800/50" : "hover:bg-azulejo-50 dark:hover:bg-azulejo-900/30"}`}
                 >
                   {/* Day number */}
                   <div className="flex items-center justify-between mb-1">
                     <span
                       className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-sm font-medium ${
                         isToday
-                          ? "bg-ship-cove-600 text-white"
+                          ? "bg-azulejo-600 text-white"
                           : isCurrentMonth
-                            ? "text-ship-cove-900 dark:text-ship-cove-100"
-                            : "text-ship-cove-400 dark:text-ship-cove-600"
+                            ? "text-azulejo-900 dark:text-azulejo-100"
+                            : "text-azulejo-400 dark:text-azulejo-600"
                       }`}
                     >
                       {date.getDate()}
                     </span>
                     {dayEvents.length > 3 && (
-                      <span className="text-[10px] text-ship-cove-500 dark:text-ship-cove-400 font-medium">
+                      <span className="text-[10px] text-azulejo-500 dark:text-azulejo-400 font-medium">
                         +{dayEvents.length - 3}
                       </span>
                     )}
@@ -280,26 +280,26 @@ export function CalendarView({ events, t }: CalendarViewProps) {
 
       {/* Week View */}
       {viewMode === "week" && (
-        <div className="rounded-xl border border-ship-cove-200 dark:border-ship-cove-800 overflow-hidden bg-white dark:bg-ship-cove-950/50">
+        <div className="rounded-xl border border-azulejo-200 dark:border-azulejo-800 overflow-hidden bg-white dark:bg-azulejo-950/50">
           {/* Week header */}
-          <div className="grid grid-cols-7 bg-ship-cove-50 dark:bg-ship-cove-900/50 border-b border-ship-cove-200 dark:border-ship-cove-800">
+          <div className="grid grid-cols-7 bg-azulejo-50 dark:bg-azulejo-900/50 border-b border-azulejo-200 dark:border-azulejo-800">
             {weekDays.map((day, idx) => {
               const isToday = dateKeyLocal(day) === todayKey;
               return (
                 <div
                   key={dateKeyLocal(day)}
-                  className={`px-2 py-3 text-center border-r last:border-r-0 border-ship-cove-200 dark:border-ship-cove-800 ${
-                    isToday ? "bg-ship-cove-100 dark:bg-ship-cove-800/50" : ""
+                  className={`px-2 py-3 text-center border-r last:border-r-0 border-azulejo-200 dark:border-azulejo-800 ${
+                    isToday ? "bg-azulejo-100 dark:bg-azulejo-800/50" : ""
                   }`}
                 >
-                  <div className="text-xs font-medium text-ship-cove-500 dark:text-ship-cove-400 uppercase tracking-wider">
+                  <div className="text-xs font-medium text-azulejo-500 dark:text-azulejo-400 uppercase tracking-wider">
                     {WEEK_DAYS_PT[idx]}
                   </div>
                   <div
                     className={`text-2xl font-bold mt-1 ${
                       isToday
-                        ? "text-ship-cove-600 dark:text-ship-cove-300"
-                        : "text-ship-cove-900 dark:text-ship-cove-100"
+                        ? "text-azulejo-600 dark:text-azulejo-300"
+                        : "text-azulejo-900 dark:text-azulejo-100"
                     }`}
                   >
                     {day.getDate()}
@@ -319,12 +319,12 @@ export function CalendarView({ events, t }: CalendarViewProps) {
               return (
                 <div
                   key={`events-${dayKey}`}
-                  className={`p-2 border-r last:border-r-0 border-ship-cove-100 dark:border-ship-cove-800/50 ${
-                    isToday ? "bg-ship-cove-50/50 dark:bg-ship-cove-900/20" : ""
+                  className={`p-2 border-r last:border-r-0 border-azulejo-100 dark:border-azulejo-800/50 ${
+                    isToday ? "bg-azulejo-50/50 dark:bg-azulejo-900/20" : ""
                   }`}
                 >
                   {dayEvents.length === 0 ? (
-                    <div className="h-full flex items-center justify-center text-sm text-ship-cove-400 dark:text-ship-cove-600">
+                    <div className="h-full flex items-center justify-center text-sm text-azulejo-400 dark:text-azulejo-600">
                       —
                     </div>
                   ) : (
@@ -343,8 +343,8 @@ export function CalendarView({ events, t }: CalendarViewProps) {
 
       {/* Selected date events panel */}
       {selectedDate && selectedEvents.length > 0 && viewMode === "month" && (
-        <div className="mt-6 rounded-xl border border-ship-cove-200 dark:border-ship-cove-800 bg-white dark:bg-ship-cove-950/50 p-4">
-          <h3 className="text-lg font-bold text-ship-cove-900 dark:text-ship-cove-100 mb-4">
+        <div className="mt-6 rounded-xl border border-azulejo-200 dark:border-azulejo-800 bg-white dark:bg-azulejo-950/50 p-4">
+          <h3 className="text-lg font-bold text-azulejo-900 dark:text-azulejo-100 mb-4">
             {t("eventsOn") || "Eventos em"}{" "}
             {selectedDate.toLocaleDateString("pt-PT", {
               weekday: "long",
@@ -392,12 +392,12 @@ function WeekEventCard({ event }: { event: EventItem }) {
       <div className={`${iconBgClass} px-2 py-1`}>
         <span className="text-[10px] font-bold text-white/90">{time}</span>
       </div>
-      <div className="bg-ship-cove-50 dark:bg-ship-cove-900/50 px-2 py-1.5">
-        <span className="text-xs font-medium text-ship-cove-900 dark:text-ship-cove-100 line-clamp-2">
+      <div className="bg-azulejo-50 dark:bg-azulejo-900/50 px-2 py-1.5">
+        <span className="text-xs font-medium text-azulejo-900 dark:text-azulejo-100 line-clamp-2">
           {event.title}
         </span>
         {event.location && (
-          <span className="text-[10px] text-ship-cove-500 dark:text-ship-cove-400 truncate block mt-0.5">
+          <span className="text-[10px] text-azulejo-500 dark:text-azulejo-400 truncate block mt-0.5">
             {event.location}
           </span>
         )}
@@ -414,7 +414,7 @@ function SelectedDayEventCard({ event }: { event: EventItem }) {
   return (
     <Link
       href={`/events/${encodeURIComponent(event.id)}/`}
-      className="flex gap-3 p-3 rounded-lg bg-ship-cove-50 dark:bg-ship-cove-900/30 hover:bg-ship-cove-100 dark:hover:bg-ship-cove-800/50 transition-colors group"
+      className="flex gap-3 p-3 rounded-lg bg-azulejo-50 dark:bg-azulejo-900/30 hover:bg-azulejo-100 dark:hover:bg-azulejo-800/50 transition-colors group"
     >
       {/* Time badge */}
       <div className={`${iconBgClass} px-3 py-2 rounded-lg text-center shrink-0`}>
@@ -423,10 +423,10 @@ function SelectedDayEventCard({ event }: { event: EventItem }) {
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <h4 className="font-semibold text-ship-cove-900 dark:text-ship-cove-100 group-hover:text-ship-cove-600 dark:group-hover:text-ship-cove-300 transition-colors">
+        <h4 className="font-semibold text-azulejo-900 dark:text-azulejo-100 group-hover:text-azulejo-600 dark:group-hover:text-azulejo-300 transition-colors">
           {event.title}
         </h4>
-        <div className="flex items-center gap-3 mt-1 text-sm text-ship-cove-500 dark:text-ship-cove-400">
+        <div className="flex items-center gap-3 mt-1 text-sm text-azulejo-500 dark:text-azulejo-400">
           <span className="font-medium">{event.tag}</span>
           {event.location && (
             <>

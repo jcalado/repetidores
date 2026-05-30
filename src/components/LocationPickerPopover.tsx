@@ -135,7 +135,7 @@ export default function LocationPickerPopover({ compact = false }: LocationPicke
           className={cn(
             'flex items-center justify-center rounded-md p-2 transition-colors',
             'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-slate-800',
-            userLocation && 'text-ship-cove-600 dark:text-ship-cove-400'
+            userLocation && 'text-azulejo-600 dark:text-azulejo-400'
           )}
         >
           <MapPinIcon className="h-5 w-5" />
@@ -175,7 +175,7 @@ export default function LocationPickerPopover({ compact = false }: LocationPicke
       <PopoverButton
         className={cn(
           'inline-flex h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground',
-          userLocation && 'text-ship-cove-600 dark:text-ship-cove-400'
+          userLocation && 'text-azulejo-600 dark:text-azulejo-400'
         )}
         title={userLocation?.qthLocator || t('locationPicker.setLocation')}
       >
@@ -270,10 +270,10 @@ function PopoverContent({
 
       {/* Current Location Display */}
       {userLocation && (
-        <div className="rounded-lg bg-ship-cove-50 dark:bg-ship-cove-900/20 p-3 space-y-1">
+        <div className="rounded-lg bg-azulejo-50 dark:bg-azulejo-900/20 p-3 space-y-1">
           <div className="flex items-center gap-2">
-            <MapPinIcon className="h-4 w-4 text-ship-cove-600 dark:text-ship-cove-400 shrink-0" />
-            <span className="text-sm font-medium text-ship-cove-700 dark:text-ship-cove-300">
+            <MapPinIcon className="h-4 w-4 text-azulejo-600 dark:text-azulejo-400 shrink-0" />
+            <span className="text-sm font-medium text-azulejo-700 dark:text-azulejo-300">
               {userLocation.qthLocator}
             </span>
           </div>

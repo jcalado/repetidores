@@ -102,7 +102,7 @@ export function CallsignTable({
                   {onClearFilters && (
                     <button
                       onClick={onClearFilters}
-                      className="mt-2 text-sm text-ship-cove-600 dark:text-ship-cove-400 hover:underline"
+                      className="mt-2 text-sm text-azulejo-600 dark:text-azulejo-400 hover:underline"
                     >
                       Limpar filtros
                     </button>

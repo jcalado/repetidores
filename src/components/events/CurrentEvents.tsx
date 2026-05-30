@@ -142,7 +142,7 @@ export function CurrentEvents({ events, t }: CurrentEventsProps) {
             {/* Countdown */}
             <div className="shrink-0 text-right hidden sm:block">
               {heroEvent.end && heroTimeUntilEnd > 0 && (
-                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm">
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10">
                   <Clock className="w-4 h-4 text-emerald-200" />
                   <div>
                     <span className="text-xl font-bold text-white tabular-nums font-mono">
@@ -201,14 +201,14 @@ export function CurrentEvents({ events, t }: CurrentEventsProps) {
                       <TagIcon className="w-4 h-4" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <span className="font-semibold text-sm text-ship-cove-900 dark:text-ship-cove-100 truncate block group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                      <span className="font-semibold text-sm text-azulejo-900 dark:text-azulejo-100 truncate block group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                         {event.isFeatured && (
                           <Star className="w-3 h-3 text-amber-500 fill-amber-500 inline mr-1" />
                         )}
                         {event.title}
                       </span>
                       {event.location && (
-                        <span className="text-xs text-ship-cove-500 dark:text-ship-cove-400 flex items-center gap-1 mt-0.5">
+                        <span className="text-xs text-azulejo-500 dark:text-azulejo-400 flex items-center gap-1 mt-0.5">
                           <MapPin className="w-3 h-3" />
                           {event.location}
                         </span>
@@ -220,7 +220,7 @@ export function CurrentEvents({ events, t }: CurrentEventsProps) {
                           {formatSmartCountdown(timeUntilEnd, t)}
                         </span>
                       )}
-                      <ChevronRight className="w-4 h-4 text-ship-cove-400 group-hover:text-emerald-500 group-hover:translate-x-0.5 transition-all" />
+                      <ChevronRight className="w-4 h-4 text-azulejo-400 group-hover:text-emerald-500 group-hover:translate-x-0.5 transition-all" />
                     </div>
                   </div>
                 </div>

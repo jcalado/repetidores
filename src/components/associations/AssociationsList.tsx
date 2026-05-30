@@ -46,22 +46,22 @@ export function AssociationsList({ associations }: AssociationsListProps) {
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         {/* Search */}
         <div className="relative w-full sm:max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ship-cove-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-azulejo-400" />
           <Input
             type="search"
             placeholder={t("search")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-white dark:bg-ship-cove-950 border-ship-cove-200 dark:border-ship-cove-800 focus:border-ship-cove-400 focus:ring-ship-cove-400/20 placeholder:text-ship-cove-400"
+            className="pl-10 bg-white dark:bg-azulejo-950 border-azulejo-200 dark:border-azulejo-800 focus:border-azulejo-400 focus:ring-azulejo-400/20 placeholder:text-azulejo-400"
           />
         </div>
 
         {/* Stats pills */}
         <div className="flex items-center gap-3 text-sm">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-ship-cove-100 dark:bg-ship-cove-900/50 text-ship-cove-700 dark:text-ship-cove-300 font-medium">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-azulejo-100 dark:bg-azulejo-900/50 text-azulejo-700 dark:text-azulejo-300 font-medium">
             <SlidersHorizontal className="h-3.5 w-3.5" />
             <span className="tabular-nums">{sortedAssociations.length}</span>
-            <span className="text-ship-cove-500 dark:text-ship-cove-500">/</span>
+            <span className="text-azulejo-500 dark:text-azulejo-500">/</span>
             <span className="tabular-nums">{associations.length}</span>
           </div>
           <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium">
@@ -74,7 +74,7 @@ export function AssociationsList({ associations }: AssociationsListProps) {
 
       {/* Results count when searching */}
       {searchQuery && (
-        <p className="text-sm text-ship-cove-600 dark:text-ship-cove-400 -mt-4">
+        <p className="text-sm text-azulejo-600 dark:text-azulejo-400 -mt-4">
           {t("resultsCount", {
             shown: sortedAssociations.length,
             total: associations.length,
@@ -95,13 +95,13 @@ export function AssociationsList({ associations }: AssociationsListProps) {
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="w-16 h-16 rounded-full bg-ship-cove-100 dark:bg-ship-cove-900/50 flex items-center justify-center mb-4">
-            <Search className="h-8 w-8 text-ship-cove-400" />
+          <div className="w-16 h-16 rounded-full bg-azulejo-100 dark:bg-azulejo-900/50 flex items-center justify-center mb-4">
+            <Search className="h-8 w-8 text-azulejo-400" />
           </div>
-          <p className="text-lg font-medium text-ship-cove-700 dark:text-ship-cove-300 mb-1">
+          <p className="text-lg font-medium text-azulejo-700 dark:text-azulejo-300 mb-1">
             {t("noResults")}
           </p>
-          <p className="text-sm text-ship-cove-500">
+          <p className="text-sm text-azulejo-500">
             Tente pesquisar por outro termo
           </p>
         </div>

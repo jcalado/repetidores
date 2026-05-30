@@ -98,7 +98,7 @@ const SimplexMapView = ({ frequencies, onFrequencyClick }: Props) => {
       </MapContainer>
 
       {/* Frequency count badge */}
-      <div className="absolute bottom-4 left-4 z-[1000] bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-md text-sm text-gray-700 border border-gray-200">
+      <div className="absolute bottom-4 left-4 z-[1000] bg-background/95 px-3 py-1.5 rounded-full text-sm text-foreground border border-border">
         {frequencies.length} {t("frequencies")}
       </div>
     </div>

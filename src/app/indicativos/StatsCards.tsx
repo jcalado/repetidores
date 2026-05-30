@@ -73,8 +73,8 @@ export function StatsCards({ stats, loading }: StatsCardsProps) {
         icon={<Users className="h-5 w-5" />}
         value={stats.total}
         label="Total Indicativos"
-        iconBgClass="bg-ship-cove-100 dark:bg-ship-cove-900/50"
-        iconTextClass="text-ship-cove-600 dark:text-ship-cove-400"
+        iconBgClass="bg-azulejo-100 dark:bg-azulejo-900/50"
+        iconTextClass="text-azulejo-600 dark:text-azulejo-400"
       />
       <StatCard
         icon={<UserCheck className="h-5 w-5" />}

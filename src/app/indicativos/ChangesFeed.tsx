@@ -66,7 +66,7 @@ function ChangeEntry({ change }: { change: CallsignChange }) {
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className="font-mono font-semibold text-sm text-ship-cove-700 dark:text-ship-cove-400">
+          <span className="font-mono font-semibold text-sm text-azulejo-700 dark:text-azulejo-400">
             {change.indicativo}
           </span>
           <span className={`text-xs font-medium ${config.labelClass}`}>

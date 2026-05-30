@@ -23,11 +23,11 @@ export function OperationalStatusCard({ status, lastVerified }: OperationalStatu
   const cfg = operationalStatusConfig[status];
 
   return (
-    <div className="flex items-center gap-2.5 rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-white dark:bg-ship-cove-950 px-4 py-3">
+    <div className="flex items-center gap-2.5 rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-white dark:bg-azulejo-950 px-4 py-3">
       <span className={cn("h-2.5 w-2.5 rounded-full shrink-0", dotColor[status])} />
       <span className={cn("text-sm font-medium", cfg.textClass)}>{cfg.label}</span>
       {lastVerified && (
-        <span className="ml-auto text-xs text-ship-cove-400 dark:text-ship-cove-500">
+        <span className="ml-auto text-xs text-azulejo-400 dark:text-azulejo-500">
           {new Date(lastVerified).toLocaleDateString("pt-PT", {
             day: "numeric",
             month: "short",

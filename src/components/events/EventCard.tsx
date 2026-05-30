@@ -79,11 +79,11 @@ function EventCardComponent({ event, t }: EventCardProps) {
 
   return (
     <Link href={`/events/${encodeURIComponent(event.id)}/`} className="block group">
-      <article className="relative flex gap-4 p-4 rounded-xl bg-white dark:bg-ship-cove-950/50 border border-ship-cove-200/80 dark:border-ship-cove-800/80 hover:border-ship-cove-300 dark:hover:border-ship-cove-700 hover:shadow-lg hover:shadow-ship-cove-200/50 dark:hover:shadow-ship-cove-950/50 transition-all duration-200 h-full">
+      <article className="relative flex gap-4 p-4 rounded-xl bg-white dark:bg-azulejo-950/50 border border-azulejo-200/80 dark:border-azulejo-800/80 hover:border-azulejo-300 dark:hover:border-azulejo-700 hover:shadow-lg hover:shadow-azulejo-200/50 dark:hover:shadow-azulejo-950/50 transition-all duration-200 h-full">
 
         {/* Left: Date badge */}
         <div className="flex flex-col items-center shrink-0">
-          <div className={`w-14 rounded-lg overflow-hidden shadow-sm ${countdown.isInProgress ? 'ring-2 ring-emerald-500 ring-offset-2 dark:ring-offset-ship-cove-950' : ''}`}>
+          <div className={`w-14 rounded-lg overflow-hidden shadow-sm ${countdown.isInProgress ? 'ring-2 ring-emerald-500 ring-offset-2 dark:ring-offset-azulejo-950' : ''}`}>
             {/* Month header */}
             <div className={`${iconBgClass} px-2 py-1 text-center`}>
               <span className="text-[10px] font-bold text-white uppercase tracking-wider">
@@ -91,15 +91,15 @@ function EventCardComponent({ event, t }: EventCardProps) {
               </span>
             </div>
             {/* Day */}
-            <div className="bg-ship-cove-50 dark:bg-ship-cove-900 px-2 py-2 text-center">
-              <span className="text-2xl font-bold text-ship-cove-900 dark:text-ship-cove-100 leading-none">
+            <div className="bg-azulejo-50 dark:bg-azulejo-900 px-2 py-2 text-center">
+              <span className="text-2xl font-bold text-azulejo-900 dark:text-azulejo-100 leading-none">
                 {day}
               </span>
             </div>
           </div>
 
           {/* Time below date */}
-          <span className="mt-2 text-xs font-medium text-ship-cove-500 dark:text-ship-cove-400 tabular-nums">
+          <span className="mt-2 text-xs font-medium text-azulejo-500 dark:text-azulejo-400 tabular-nums">
             {time}
           </span>
         </div>
@@ -126,7 +126,7 @@ function EventCardComponent({ event, t }: EventCardProps) {
           </div>
 
           {/* Title */}
-          <h3 className="text-base font-semibold text-ship-cove-900 dark:text-ship-cove-100 leading-snug line-clamp-2 group-hover:text-ship-cove-600 dark:group-hover:text-ship-cove-300 transition-colors mb-2">
+          <h3 className="text-base font-semibold text-azulejo-900 dark:text-azulejo-100 leading-snug line-clamp-2 group-hover:text-azulejo-600 dark:group-hover:text-azulejo-300 transition-colors mb-2">
             {event.title}
           </h3>
 
@@ -134,8 +134,8 @@ function EventCardComponent({ event, t }: EventCardProps) {
           <div className="flex-1" />
 
           {/* Bottom row: Location, DMR, Countdown */}
-          <div className="flex items-center justify-between gap-3 mt-auto pt-2 border-t border-ship-cove-100 dark:border-ship-cove-800/50">
-            <div className="flex items-center gap-3 min-w-0 text-ship-cove-500 dark:text-ship-cove-400">
+          <div className="flex items-center justify-between gap-3 mt-auto pt-2 border-t border-azulejo-100 dark:border-azulejo-800/50">
+            <div className="flex items-center gap-3 min-w-0 text-azulejo-500 dark:text-azulejo-400">
               {event.location && (
                 <span className="inline-flex items-center gap-1 text-xs truncate">
                   <MapPin className="w-3 h-3 shrink-0" />
@@ -153,11 +153,11 @@ function EventCardComponent({ event, t }: EventCardProps) {
             {/* Countdown or Arrow */}
             <div className="flex items-center gap-2 shrink-0">
               {!countdown.isInProgress && !countdown.hasEnded && (
-                <span className="text-xs font-semibold text-ship-cove-600 dark:text-ship-cove-300 font-mono tabular-nums">
+                <span className="text-xs font-semibold text-azulejo-600 dark:text-azulejo-300 font-mono tabular-nums">
                   {countdown.formatted}
                 </span>
               )}
-              <ChevronRight className="w-4 h-4 text-ship-cove-400 group-hover:text-ship-cove-600 dark:group-hover:text-ship-cove-300 group-hover:translate-x-0.5 transition-all" />
+              <ChevronRight className="w-4 h-4 text-azulejo-400 group-hover:text-azulejo-600 dark:group-hover:text-azulejo-300 group-hover:translate-x-0.5 transition-all" />
             </div>
           </div>
         </div>

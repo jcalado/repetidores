@@ -133,7 +133,7 @@ export function UTCClock() {
         <Card className="md:col-span-2">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-lg">
-              <Globe className="h-5 w-5 text-ship-cove-600 dark:text-ship-cove-400" />
+              <Globe className="h-5 w-5 text-azulejo-600 dark:text-azulejo-400" />
               {t('utcTime')}
             </CardTitle>
             <button
@@ -148,7 +148,7 @@ export function UTCClock() {
           </CardHeader>
           <CardContent className="pt-4">
             <div className="text-center">
-              <div className="inline-flex items-center justify-center px-6 py-4 rounded-2xl bg-gradient-to-br from-ship-cove-500 to-ship-cove-700 text-white shadow-xl">
+              <div className="inline-flex items-center justify-center px-6 py-4 rounded-2xl bg-gradient-to-br from-azulejo-500 to-azulejo-700 text-white shadow-xl">
                 <span className="text-5xl sm:text-7xl md:text-8xl font-mono font-bold tracking-wider">
                   {formatTime(currentTime, 'UTC')}
                 </span>
@@ -167,7 +167,7 @@ export function UTCClock() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-lg">
-              <MapPin className="h-5 w-5 text-ship-cove-600 dark:text-ship-cove-400" />
+              <MapPin className="h-5 w-5 text-azulejo-600 dark:text-azulejo-400" />
               {t('localTime')}
             </CardTitle>
           </CardHeader>
@@ -192,7 +192,7 @@ export function UTCClock() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-lg">
-              <Clock className="h-5 w-5 text-ship-cove-600 dark:text-ship-cove-400" />
+              <Clock className="h-5 w-5 text-azulejo-600 dark:text-azulejo-400" />
               {t('dayInfo')}
             </CardTitle>
           </CardHeader>

@@ -162,7 +162,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     // Reference tools
     {
-      url: `${BASE_URL}/bands/`,
+      url: `${BASE_URL}/bandas/`,
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.6,
@@ -192,7 +192,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     },
     {
-      url: `${BASE_URL}/qcodes/`,
+      url: `${BASE_URL}/codigoq/`,
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.5,

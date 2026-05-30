@@ -124,7 +124,7 @@ export default function About() {
 
                 {/* About the Project */}
                 <section className="mb-20">
-                    <div className="overflow-hidden rounded-3xl border border-slate-200/60 bg-white/80 shadow-xl backdrop-blur-sm dark:border-slate-700/60 dark:bg-slate-800/80">
+                    <div className="overflow-hidden rounded-3xl border border-border bg-card">
                         <div className="grid lg:grid-cols-2">
                             <div className="p-8 sm:p-10 lg:p-12">
                                 <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
@@ -176,7 +176,7 @@ export default function About() {
                         {featureCategories.map((category) => (
                             <div
                                 key={category.title}
-                                className="overflow-hidden rounded-2xl border border-slate-200/60 bg-white/80 backdrop-blur-sm dark:border-slate-700/60 dark:bg-slate-800/80"
+                                className="overflow-hidden rounded-2xl border border-border bg-card"
                             >
                                 <div className={`bg-gradient-to-r ${category.color} px-6 py-4`}>
                                     <h3 className="text-lg font-semibold text-white">{category.title}</h3>
@@ -211,7 +211,7 @@ export default function About() {
                             <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
                             <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
                             <div className="relative">
-                                <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm">
+                                <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-medium text-white">
                                     <Radio className="h-4 w-4" />
                                     Radioamadorismo
                                 </div>
@@ -221,7 +221,7 @@ export default function About() {
                                 <p className="mb-8 max-w-3xl text-lg leading-relaxed text-blue-100">
                                     {t('hamRadio.description')}
                                 </p>
-                                <div className="inline-flex items-start gap-3 rounded-2xl bg-white/10 p-5 backdrop-blur-sm">
+                                <div className="inline-flex items-start gap-3 rounded-2xl bg-white/10 p-5">
                                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/20">
                                         <Rocket className="h-4 w-4 text-white" />
                                     </div>
@@ -235,7 +235,7 @@ export default function About() {
                 {/* Contact & Radio School */}
                 <section className="grid gap-8 lg:grid-cols-2">
                     {/* Contact */}
-                    <div className="overflow-hidden rounded-3xl border border-slate-200/60 bg-white/80 p-8 backdrop-blur-sm dark:border-slate-700/60 dark:bg-slate-800/80">
+                    <div className="overflow-hidden rounded-3xl border border-border bg-card p-8">
                         <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 text-white shadow-lg">
                             <MessageCircle className="h-7 w-7" />
                         </div>
@@ -282,7 +282,7 @@ export default function About() {
                         <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-white/10 blur-3xl" />
                         <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-white/10 blur-3xl" />
                         <div className="relative flex h-full flex-col">
-                            <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
+                            <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-white/20">
                                 <BookOpen className="h-8 w-8 text-white" />
                             </div>
                             <h2 className="mb-4 text-2xl font-bold text-white sm:text-3xl">

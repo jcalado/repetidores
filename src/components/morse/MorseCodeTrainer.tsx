@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Volume2, VolumeX, Keyboard, Play, RotateCcw, CheckCircle, XCircle, Radio } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -22,6 +22,51 @@ import {
 
 type PracticeState = 'idle' | 'playing' | 'waiting' | 'correct' | 'incorrect';
 
+type CharacterButtonProps = {
+  char: MorseCharacter;
+  isSelected: boolean;
+  onSelect: (char: MorseCharacter) => void;
+};
+
+const CharacterButton = memo(function CharacterButton({
+  char,
+  isSelected,
+  onSelect,
+}: CharacterButtonProps) {
+  const handleClick = useCallback(() => onSelect(char), [char, onSelect]);
+  return (
+    <button
+      onClick={handleClick}
+      aria-label={`${char.char}, ${char.code}`}
+      className={cn(
+        'flex flex-col items-center justify-center p-2 sm:p-3 rounded-xl border transition-all duration-150',
+        'hover:bg-azulejo-50 hover:border-azulejo-300 dark:hover:bg-azulejo-900/20 dark:hover:border-azulejo-700',
+        'focus:outline-none focus:ring-2 focus:ring-azulejo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900',
+        isSelected
+          ? 'bg-gradient-to-br from-azulejo-500 to-azulejo-700 text-white border-azulejo-600 shadow-lg scale-105'
+          : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700'
+      )}
+    >
+      <span
+        className={cn(
+          'text-xl sm:text-2xl font-bold',
+          isSelected ? 'text-white' : 'text-slate-900 dark:text-white'
+        )}
+      >
+        {char.char}
+      </span>
+      <span
+        className={cn(
+          'text-[10px] sm:text-xs mt-0.5 sm:mt-1 font-mono',
+          isSelected ? 'text-white/90' : 'text-muted-foreground'
+        )}
+      >
+        {char.code}
+      </span>
+    </button>
+  );
+});
+
 export function MorseCodeTrainer() {
   const t = useTranslations('morse');
 
@@ -41,6 +86,21 @@ export function MorseCodeTrainer() {
   const [userInput, setUserInput] = useState('');
 
   const audioPlayerRef = useRef<MorseAudioPlayer | null>(null);
+  const wpmRef = useRef(wpm);
+  const isAudioEnabledRef = useRef(isAudioEnabled);
+  const showNumbersRef = useRef(showNumbers);
+
+  useEffect(() => {
+    wpmRef.current = wpm;
+  }, [wpm]);
+
+  useEffect(() => {
+    isAudioEnabledRef.current = isAudioEnabled;
+  }, [isAudioEnabled]);
+
+  useEffect(() => {
+    showNumbersRef.current = showNumbers;
+  }, [showNumbers]);
 
   // Initialize audio player
   useEffect(() => {
@@ -67,21 +127,18 @@ export function MorseCodeTrainer() {
     }
   }, [frequency]);
 
-  const playMorse = useCallback(
-    async (char: MorseCharacter) => {
-      if (!isAudioEnabled || !audioPlayerRef.current) return;
+  const playMorse = useCallback(async (char: MorseCharacter) => {
+    if (!isAudioEnabledRef.current || !audioPlayerRef.current) return;
 
-      setIsPlaying(true);
-      try {
-        await audioPlayerRef.current.playMorseCode(char.code, wpm);
-      } catch {
-        // Playback was stopped or failed
-      } finally {
-        setIsPlaying(false);
-      }
-    },
-    [isAudioEnabled, wpm]
-  );
+    setIsPlaying(true);
+    try {
+      await audioPlayerRef.current.playMorseCode(char.code, wpmRef.current);
+    } catch {
+      // Playback was stopped or failed
+    } finally {
+      setIsPlaying(false);
+    }
+  }, []);
 
   const handleCharClick = useCallback(
     (char: MorseCharacter) => {
@@ -105,7 +162,7 @@ export function MorseCodeTrainer() {
 
       const char = getMorseCode(e.key);
       if (char) {
-        if (char.type === 'number' && !showNumbers) return;
+        if (char.type === 'number' && !showNumbersRef.current) return;
         setCurrentChar(char);
         playMorse(char);
       }
@@ -113,35 +170,35 @@ export function MorseCodeTrainer() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [mode, playMorse, showNumbers]);
+  }, [mode, playMorse]);
 
   // Practice mode functions
   const startPractice = useCallback(() => {
-    const char = getRandomCharacter(showNumbers);
+    const char = getRandomCharacter(showNumbersRef.current);
     setPracticeChar(char);
     setPracticeState('playing');
     setUserInput('');
 
     // Play the morse code
-    if (audioPlayerRef.current && isAudioEnabled) {
+    if (audioPlayerRef.current && isAudioEnabledRef.current) {
       setIsPlaying(true);
-      audioPlayerRef.current.playMorseCode(char.code, wpm).then(() => {
+      audioPlayerRef.current.playMorseCode(char.code, wpmRef.current).then(() => {
         setIsPlaying(false);
         setPracticeState('waiting');
       });
     } else {
       setPracticeState('waiting');
     }
-  }, [showNumbers, wpm, isAudioEnabled]);
+  }, []);
 
   const replayPractice = useCallback(() => {
-    if (!practiceChar || !audioPlayerRef.current || !isAudioEnabled) return;
+    if (!practiceChar || !audioPlayerRef.current || !isAudioEnabledRef.current) return;
 
     setIsPlaying(true);
-    audioPlayerRef.current.playMorseCode(practiceChar.code, wpm).then(() => {
+    audioPlayerRef.current.playMorseCode(practiceChar.code, wpmRef.current).then(() => {
       setIsPlaying(false);
     });
-  }, [practiceChar, wpm, isAudioEnabled]);
+  }, [practiceChar]);
 
   // Keyboard handler for practice mode
   useEffect(() => {
@@ -184,9 +241,10 @@ export function MorseCodeTrainer() {
     setPracticeChar(null);
   };
 
-  const characters = showNumbers
-    ? [...MORSE_ALPHABET, ...MORSE_NUMBERS]
-    : MORSE_ALPHABET;
+  const characters = useMemo(
+    () => (showNumbers ? [...MORSE_ALPHABET, ...MORSE_NUMBERS] : MORSE_ALPHABET),
+    [showNumbers]
+  );
 
   return (
     <div className="w-full max-w-7xl mx-auto p-4 sm:p-6">
@@ -293,7 +351,7 @@ export function MorseCodeTrainer() {
             <CardContent className="py-8 sm:py-12">
               {currentChar ? (
                 <div className="text-center space-y-4">
-                  <div className="inline-flex items-center justify-center h-24 w-24 sm:h-32 sm:w-32 rounded-2xl bg-gradient-to-br from-ship-cove-500 to-ship-cove-700 text-white text-5xl sm:text-6xl font-bold shadow-xl">
+                  <div className="inline-flex items-center justify-center h-24 w-24 sm:h-32 sm:w-32 rounded-2xl bg-gradient-to-br from-azulejo-500 to-azulejo-700 text-white text-5xl sm:text-6xl font-bold shadow-xl">
                     {currentChar.char}
                   </div>
                   <div>
@@ -304,8 +362,8 @@ export function MorseCodeTrainer() {
                           className={cn(
                             'flex items-center justify-center',
                             symbol === '.'
-                              ? 'w-4 h-4 bg-ship-cove-600 rounded-full'
-                              : 'w-10 h-4 bg-ship-cove-600 rounded-full'
+                              ? 'w-4 h-4 bg-azulejo-600 rounded-full'
+                              : 'w-10 h-4 bg-azulejo-600 rounded-full'
                           )}
                         />
                       ))}
@@ -346,40 +404,12 @@ export function MorseCodeTrainer() {
             <CardContent>
               <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-9 gap-2 sm:gap-3">
                 {characters.map((char) => (
-                  <button
+                  <CharacterButton
                     key={char.char}
-                    onClick={() => handleCharClick(char)}
-                    aria-label={`${char.char}, ${char.code}`}
-                    className={cn(
-                      'flex flex-col items-center justify-center p-2 sm:p-3 rounded-xl border transition-all duration-150',
-                      'hover:bg-ship-cove-50 hover:border-ship-cove-300 dark:hover:bg-ship-cove-900/20 dark:hover:border-ship-cove-700',
-                      'focus:outline-none focus:ring-2 focus:ring-ship-cove-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900',
-                      currentChar?.char === char.char
-                        ? 'bg-gradient-to-br from-ship-cove-500 to-ship-cove-700 text-white border-ship-cove-600 shadow-lg scale-105'
-                        : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700'
-                    )}
-                  >
-                    <span
-                      className={cn(
-                        'text-xl sm:text-2xl font-bold',
-                        currentChar?.char === char.char
-                          ? 'text-white'
-                          : 'text-slate-900 dark:text-white'
-                      )}
-                    >
-                      {char.char}
-                    </span>
-                    <span
-                      className={cn(
-                        'text-[10px] sm:text-xs mt-0.5 sm:mt-1 font-mono',
-                        currentChar?.char === char.char
-                          ? 'text-white/90'
-                          : 'text-muted-foreground'
-                      )}
-                    >
-                      {char.code}
-                    </span>
-                  </button>
+                    char={char}
+                    isSelected={currentChar?.char === char.char}
+                    onSelect={handleCharClick}
+                  />
                 ))}
               </div>
             </CardContent>
@@ -407,7 +437,7 @@ export function MorseCodeTrainer() {
                   </div>
                   {score.total > 0 && (
                     <div className="text-center">
-                      <p className="text-2xl font-bold text-ship-cove-600 dark:text-ship-cove-400">
+                      <p className="text-2xl font-bold text-azulejo-600 dark:text-azulejo-400">
                         {Math.round((score.correct / score.total) * 100)}%
                       </p>
                       <p className="text-xs text-muted-foreground">{t('accuracy')}</p>
@@ -439,7 +469,7 @@ export function MorseCodeTrainer() {
                 {practiceState === 'playing' && (
                   <div className="space-y-4">
                     <div className="inline-flex items-center justify-center h-24 w-24 rounded-2xl bg-gray-100 dark:bg-slate-800 border-2 border-dashed border-gray-300 dark:border-slate-600">
-                      <Volume2 className="h-10 w-10 text-ship-cove-600 animate-pulse" />
+                      <Volume2 className="h-10 w-10 text-azulejo-600 animate-pulse" />
                     </div>
                     <p className="text-lg text-muted-foreground">{t('listening')}</p>
                   </div>
@@ -447,7 +477,7 @@ export function MorseCodeTrainer() {
 
                 {practiceState === 'waiting' && (
                   <div className="space-y-4">
-                    <div className="inline-flex items-center justify-center h-24 w-24 rounded-2xl bg-gray-100 dark:bg-slate-800 border-2 border-ship-cove-500 text-4xl font-bold text-muted-foreground">
+                    <div className="inline-flex items-center justify-center h-24 w-24 rounded-2xl bg-gray-100 dark:bg-slate-800 border-2 border-azulejo-500 text-4xl font-bold text-muted-foreground">
                       ?
                     </div>
                     <p className="text-lg text-muted-foreground">{t('typeAnswer')}</p>

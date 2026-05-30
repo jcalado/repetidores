@@ -7,11 +7,12 @@ Portuguese amateur radio operators (radioamadores) of all experience levels. The
 **Community, open, warm** — but expressed through a calm, technically precise interface. The warmth comes from serving the community well, not from playful visuals. Users should feel confident in the data, find what they need without friction, and sense that this is *their* community tool.
 
 ### Aesthetic Direction
-- **Visual tone**: Calm, functional, data-dense when needed but never cluttered. Technical precision over decoration.
-- **Theme**: Light + dark mode. Ship Cove blue (`#839bd1`) as brand color. Slate gradients for backgrounds. Glassmorphism header.
-- **Typography**: Geist Sans (body), Geist Mono (data/callsigns). Monospace for all callsign displays.
-- **References**: FlightRadar24 / MarineTraffic style data density with clean filtering. NOT the dated look of QRZ.com.
-- **Anti-pattern**: Avoid looking like a generic SaaS dashboard. Avoid overly playful/startup aesthetics. This is a reference tool, not an app trying to maximize engagement.
+- **System name**: Calm Console. See `DESIGN.md` for the full system.
+- **Visual tone**: Contemporary software language (soft elevation, rounded surfaces, single confident accent) held in restraint by the trust mission.
+- **Theme**: Light + dark mode at parity. Azulejo blue (`#1d65a8`) as brand accent. Cool tinted neutrals at hue 250. Controlled glass on Header + overlays only.
+- **Typography**: Geist Sans (body), Geist Mono (callsigns, frequencies, locators, timestamps). The Callsign Rule is non-negotiable.
+- **References**: Linear / Stripe / Vercel modern-soft polish, tuned for a Portuguese ham-radio reference tool with confident data density.
+- **Anti-pattern**: Avoid looking like a generic indistinguishable Linear clone. Avoid the hero-metric SaaS template. Two gradient placements permitted (wordmark accent + hero noun); no others.
 
 ### Design Principles
 1. **Data first** — Information density is a feature, not a problem. Show users what they need without making them click through layers.

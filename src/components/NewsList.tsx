@@ -20,15 +20,15 @@ export default function NewsList({ news, isLoading = false, showFeaturedBadge = 
     return (
       <div className="space-y-8">
         {/* Hero skeleton */}
-        <div className="relative aspect-[21/9] rounded-2xl bg-ship-cove-100 dark:bg-ship-cove-800 animate-pulse" />
+        <div className="relative aspect-[21/9] rounded-2xl bg-azulejo-100 dark:bg-azulejo-800 animate-pulse" />
         {/* Grid skeleton */}
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
             <div key={i} className="space-y-3">
-              <div className="aspect-[16/10] rounded-xl bg-ship-cove-100 dark:bg-ship-cove-800 animate-pulse" />
-              <div className="h-4 w-24 bg-ship-cove-100 dark:bg-ship-cove-800 rounded animate-pulse" />
-              <div className="h-6 w-full bg-ship-cove-100 dark:bg-ship-cove-800 rounded animate-pulse" />
-              <div className="h-4 w-3/4 bg-ship-cove-100 dark:bg-ship-cove-800 rounded animate-pulse" />
+              <div className="aspect-[16/10] rounded-xl bg-azulejo-100 dark:bg-azulejo-800 animate-pulse" />
+              <div className="h-4 w-24 bg-azulejo-100 dark:bg-azulejo-800 rounded animate-pulse" />
+              <div className="h-6 w-full bg-azulejo-100 dark:bg-azulejo-800 rounded animate-pulse" />
+              <div className="h-4 w-3/4 bg-azulejo-100 dark:bg-azulejo-800 rounded animate-pulse" />
             </div>
           ))}
         </div>
@@ -39,8 +39,8 @@ export default function NewsList({ news, isLoading = false, showFeaturedBadge = 
   if (news.length === 0) {
     return (
       <div className="py-16 sm:py-24 text-center">
-        <Newspaper className="h-12 w-12 mx-auto mb-4 text-ship-cove-300 dark:text-ship-cove-700" />
-        <p className="text-lg text-ship-cove-500 dark:text-ship-cove-400">
+        <Newspaper className="h-12 w-12 mx-auto mb-4 text-azulejo-300 dark:text-azulejo-700" />
+        <p className="text-lg text-azulejo-500 dark:text-azulejo-400">
           {t("noNews")}
         </p>
       </div>
@@ -71,13 +71,13 @@ export default function NewsList({ news, isLoading = false, showFeaturedBadge = 
 
       {/* Divider */}
       {remainingArticles.length > 0 && (
-        <div className="border-t border-ship-cove-200 dark:border-ship-cove-800" />
+        <div className="border-t border-azulejo-200 dark:border-azulejo-800" />
       )}
 
       {/* Remaining Articles Grid */}
       {remainingArticles.length > 0 && (
         <section>
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-ship-cove-500 dark:text-ship-cove-400 mb-6">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-azulejo-500 dark:text-azulejo-400 mb-6">
             Mais Notícias
           </h2>
           <div className="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
@@ -125,7 +125,7 @@ function HeroArticle({ item, showFeaturedBadge }: { item: NewsItem; showFeatured
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
           </div>
         ) : (
-          <div className="aspect-[16/9] lg:aspect-[21/12] rounded-2xl bg-gradient-to-br from-ship-cove-100 to-ship-cove-200 dark:from-ship-cove-800 dark:to-ship-cove-900 mb-5" />
+          <div className="aspect-[16/9] lg:aspect-[21/12] rounded-2xl bg-gradient-to-br from-azulejo-100 to-azulejo-200 dark:from-azulejo-800 dark:to-azulejo-900 mb-5" />
         )}
 
         {/* Content */}
@@ -133,17 +133,17 @@ function HeroArticle({ item, showFeaturedBadge }: { item: NewsItem; showFeatured
           {/* Meta line */}
           <div className="flex items-center gap-3 text-sm">
             {categoryLabel && (
-              <span className="font-semibold text-ship-cove-600 dark:text-ship-cove-400 uppercase tracking-wide text-xs">
+              <span className="font-semibold text-azulejo-600 dark:text-azulejo-400 uppercase tracking-wide text-xs">
                 {categoryLabel}
               </span>
             )}
-            {categoryLabel && <span className="text-ship-cove-300 dark:text-ship-cove-600">•</span>}
-            <time className="text-ship-cove-500 dark:text-ship-cove-400">
+            {categoryLabel && <span className="text-azulejo-300 dark:text-azulejo-600">•</span>}
+            <time className="text-azulejo-500 dark:text-azulejo-400">
               {formattedDate}
             </time>
             {showFeaturedBadge && item.featured && (
               <>
-                <span className="text-ship-cove-300 dark:text-ship-cove-600">•</span>
+                <span className="text-azulejo-300 dark:text-azulejo-600">•</span>
                 <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-medium">
                   <Star className="h-3.5 w-3.5" />
                   {t("featured")}
@@ -153,19 +153,19 @@ function HeroArticle({ item, showFeaturedBadge }: { item: NewsItem; showFeatured
           </div>
 
           {/* Title */}
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-ship-cove-900 dark:text-ship-cove-50 leading-tight tracking-tight group-hover:text-ship-cove-600 dark:group-hover:text-ship-cove-300 transition-colors">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-azulejo-900 dark:text-azulejo-50 leading-tight tracking-tight group-hover:text-azulejo-600 dark:group-hover:text-azulejo-300 transition-colors">
             {item.title}
           </h2>
 
           {/* Excerpt */}
-          <p className="text-base sm:text-lg text-ship-cove-600 dark:text-ship-cove-400 leading-relaxed line-clamp-3">
+          <p className="text-base sm:text-lg text-azulejo-600 dark:text-azulejo-400 leading-relaxed line-clamp-3">
             {item.excerpt}
           </p>
 
           {/* Author */}
           {item.author && (
-            <p className="text-sm text-ship-cove-500 dark:text-ship-cove-500">
-              Por <span className="font-medium text-ship-cove-700 dark:text-ship-cove-300">{item.author}</span>
+            <p className="text-sm text-azulejo-500 dark:text-azulejo-500">
+              Por <span className="font-medium text-azulejo-700 dark:text-azulejo-300">{item.author}</span>
             </p>
           )}
         </div>
@@ -205,19 +205,19 @@ function SecondaryArticle({ item, showFeaturedBadge }: { item: NewsItem; showFea
             />
           </div>
         ) : (
-          <div className="w-full aspect-[16/9] rounded-xl bg-gradient-to-br from-ship-cove-100 to-ship-cove-200 dark:from-ship-cove-800 dark:to-ship-cove-900" />
+          <div className="w-full aspect-[16/9] rounded-xl bg-gradient-to-br from-azulejo-100 to-azulejo-200 dark:from-azulejo-800 dark:to-azulejo-900" />
         )}
 
         {/* Content */}
         <div className="flex flex-col flex-1 min-w-0">
           {/* Meta */}
-          <div className="flex items-center gap-2 text-xs text-ship-cove-500 dark:text-ship-cove-400 mb-1.5">
+          <div className="flex items-center gap-2 text-xs text-azulejo-500 dark:text-azulejo-400 mb-1.5">
             {categoryLabel && (
-              <span className="font-semibold uppercase tracking-wide text-ship-cove-600 dark:text-ship-cove-400">
+              <span className="font-semibold uppercase tracking-wide text-azulejo-600 dark:text-azulejo-400">
                 {categoryLabel}
               </span>
             )}
-            {categoryLabel && <span className="text-ship-cove-300 dark:text-ship-cove-600">·</span>}
+            {categoryLabel && <span className="text-azulejo-300 dark:text-azulejo-600">·</span>}
             <time>{formattedDate}</time>
             {showFeaturedBadge && item.featured && (
               <Star className="h-3 w-3 text-amber-500 ml-auto" />
@@ -225,7 +225,7 @@ function SecondaryArticle({ item, showFeaturedBadge }: { item: NewsItem; showFea
           </div>
 
           {/* Title */}
-          <h3 className="text-base font-semibold text-ship-cove-900 dark:text-ship-cove-100 leading-tight line-clamp-2 group-hover:text-ship-cove-600 dark:group-hover:text-ship-cove-300 transition-colors tracking-tight">
+          <h3 className="text-base font-semibold text-azulejo-900 dark:text-azulejo-100 leading-tight line-clamp-2 group-hover:text-azulejo-600 dark:group-hover:text-azulejo-300 transition-colors tracking-tight">
             {item.title}
           </h3>
         </div>
@@ -265,17 +265,17 @@ function ArticleCard({ item, showFeaturedBadge }: { item: NewsItem; showFeatured
             />
           </div>
         ) : (
-          <div className="aspect-[16/10] rounded-xl bg-gradient-to-br from-ship-cove-100 to-ship-cove-200 dark:from-ship-cove-800 dark:to-ship-cove-900 mb-4" />
+          <div className="aspect-[16/10] rounded-xl bg-gradient-to-br from-azulejo-100 to-azulejo-200 dark:from-azulejo-800 dark:to-azulejo-900 mb-4" />
         )}
 
         {/* Meta */}
-        <div className="flex items-center gap-2 text-xs text-ship-cove-500 dark:text-ship-cove-400 mb-2">
+        <div className="flex items-center gap-2 text-xs text-azulejo-500 dark:text-azulejo-400 mb-2">
           {categoryLabel && (
-            <span className="font-semibold uppercase tracking-wide text-ship-cove-600 dark:text-ship-cove-400">
+            <span className="font-semibold uppercase tracking-wide text-azulejo-600 dark:text-azulejo-400">
               {categoryLabel}
             </span>
           )}
-          {categoryLabel && <span className="text-ship-cove-300 dark:text-ship-cove-600">•</span>}
+          {categoryLabel && <span className="text-azulejo-300 dark:text-azulejo-600">•</span>}
           <time>{formattedDate}</time>
           {showFeaturedBadge && item.featured && (
             <Star className="h-3 w-3 text-amber-500 ml-auto" />
@@ -283,19 +283,19 @@ function ArticleCard({ item, showFeaturedBadge }: { item: NewsItem; showFeatured
         </div>
 
         {/* Title */}
-        <h3 className="text-lg font-bold text-ship-cove-900 dark:text-ship-cove-100 leading-snug mb-2 group-hover:text-ship-cove-600 dark:group-hover:text-ship-cove-300 transition-colors line-clamp-2">
+        <h3 className="text-lg font-bold text-azulejo-900 dark:text-azulejo-100 leading-snug mb-2 group-hover:text-azulejo-600 dark:group-hover:text-azulejo-300 transition-colors line-clamp-2">
           {item.title}
         </h3>
 
         {/* Excerpt */}
-        <p className="text-sm text-ship-cove-600 dark:text-ship-cove-400 leading-relaxed line-clamp-2">
+        <p className="text-sm text-azulejo-600 dark:text-azulejo-400 leading-relaxed line-clamp-2">
           {item.excerpt}
         </p>
 
         {/* Author */}
         {item.author && (
-          <p className="text-xs text-ship-cove-500 dark:text-ship-cove-500 mt-3">
-            Por <span className="font-medium text-ship-cove-700 dark:text-ship-cove-300">{item.author}</span>
+          <p className="text-xs text-azulejo-500 dark:text-azulejo-500 mt-3">
+            Por <span className="font-medium text-azulejo-700 dark:text-azulejo-300">{item.author}</span>
           </p>
         )}
       </article>
@@ -310,13 +310,13 @@ export function NewsListCompact({ news }: { news: NewsItem[] }) {
   if (news.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-sm text-ship-cove-500">{t("noNews")}</p>
+        <p className="text-sm text-azulejo-500">{t("noNews")}</p>
       </div>
     )
   }
 
   return (
-    <div className="divide-y divide-ship-cove-100 dark:divide-ship-cove-800">
+    <div className="divide-y divide-azulejo-100 dark:divide-azulejo-800">
       {news.map((item) => (
         <Link
           key={item.id}
@@ -342,10 +342,10 @@ export function NewsListCompact({ news }: { news: NewsItem[] }) {
 
           {/* Content */}
           <div className="flex-1 min-w-0">
-            <h4 className="font-semibold text-sm text-ship-cove-900 dark:text-ship-cove-100 line-clamp-2 group-hover:text-ship-cove-600 dark:group-hover:text-ship-cove-300 transition-colors leading-snug">
+            <h4 className="font-semibold text-sm text-azulejo-900 dark:text-azulejo-100 line-clamp-2 group-hover:text-azulejo-600 dark:group-hover:text-azulejo-300 transition-colors leading-snug">
               {item.title}
             </h4>
-            <p className="text-xs text-ship-cove-500 mt-1.5">
+            <p className="text-xs text-azulejo-500 mt-1.5">
               {new Date(item.publishedDate).toLocaleDateString("pt-PT", {
                 day: "numeric",
                 month: "short",

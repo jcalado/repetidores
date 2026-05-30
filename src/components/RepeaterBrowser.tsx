@@ -392,7 +392,7 @@ export default function RepeaterBrowser({
                   { mode: 'DMR', label: 'DMR', color: 'bg-purple-500/10 text-purple-700 border-purple-500/30 hover:bg-purple-500/20 dark:text-purple-400' },
                   { mode: 'DSTAR', label: 'D-STAR', color: 'bg-sky-500/10 text-sky-700 border-sky-500/30 hover:bg-sky-500/20 dark:text-sky-400' },
                   { mode: 'C4FM', label: 'C4FM', color: 'bg-rose-500/10 text-rose-700 border-rose-500/30 hover:bg-rose-500/20 dark:text-rose-400' },
-                  { mode: 'FM', label: 'FM', color: 'bg-ship-cove-500/10 text-ship-cove-700 border-ship-cove-500/30 hover:bg-ship-cove-500/20 dark:text-ship-cove-400' },
+                  { mode: 'FM', label: 'FM', color: 'bg-azulejo-500/10 text-azulejo-700 border-azulejo-500/30 hover:bg-azulejo-500/20 dark:text-azulejo-400' },
                   { mode: 'TETRA', label: 'TETRA', color: 'bg-amber-500/10 text-amber-700 border-amber-500/30 hover:bg-amber-500/20 dark:text-amber-400' },
                 ].map(({ mode, label, color }) => {
                   const currentModes = (columnFilters.find((f) => f.id === "modes")?.value as string[] | undefined) || []

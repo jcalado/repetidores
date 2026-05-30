@@ -117,23 +117,23 @@ function AssociationPageSkeleton() {
   return (
     <div className="space-y-6">
       {/* Back link skeleton */}
-      <div className="h-5 w-40 bg-ship-cove-100 dark:bg-ship-cove-900 rounded animate-pulse" />
+      <div className="h-5 w-40 bg-azulejo-100 dark:bg-azulejo-900 rounded animate-pulse" />
 
       {/* Hero skeleton */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-ship-cove-100 to-ship-cove-50 dark:from-ship-cove-900 dark:to-ship-cove-950 p-8 animate-pulse">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-azulejo-100 to-azulejo-50 dark:from-azulejo-900 dark:to-azulejo-950 p-8 animate-pulse">
         <div className="flex items-center gap-6">
-          <div className="h-20 w-20 bg-ship-cove-200 dark:bg-ship-cove-800 rounded-xl" />
+          <div className="h-20 w-20 bg-azulejo-200 dark:bg-azulejo-800 rounded-xl" />
           <div className="space-y-3">
-            <div className="h-6 w-24 bg-ship-cove-200 dark:bg-ship-cove-800 rounded" />
-            <div className="h-8 w-64 bg-ship-cove-200 dark:bg-ship-cove-800 rounded" />
+            <div className="h-6 w-24 bg-azulejo-200 dark:bg-azulejo-800 rounded" />
+            <div className="h-8 w-64 bg-azulejo-200 dark:bg-azulejo-800 rounded" />
           </div>
         </div>
       </div>
 
       {/* Cards skeleton */}
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="h-48 bg-ship-cove-100 dark:bg-ship-cove-900 rounded-xl animate-pulse" />
-        <div className="lg:col-span-2 h-64 bg-ship-cove-100 dark:bg-ship-cove-900 rounded-xl animate-pulse" />
+        <div className="h-48 bg-azulejo-100 dark:bg-azulejo-900 rounded-xl animate-pulse" />
+        <div className="lg:col-span-2 h-64 bg-azulejo-100 dark:bg-azulejo-900 rounded-xl animate-pulse" />
       </div>
     </div>
   )
@@ -282,7 +282,7 @@ async function AssociationContent({
       {/* Back Link */}
       <Link
         href="/associations"
-        className="inline-flex items-center gap-2 text-ship-cove-600 dark:text-ship-cove-400 hover:text-ship-cove-900 dark:hover:text-ship-cove-100 mb-6 transition-colors group"
+        className="inline-flex items-center gap-2 text-azulejo-600 dark:text-azulejo-400 hover:text-azulejo-900 dark:hover:text-azulejo-100 mb-6 transition-colors group"
       >
         <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
         <span>Voltar às associações</span>
@@ -297,7 +297,7 @@ async function AssociationContent({
       >
         <div className="flex flex-col sm:flex-row items-start gap-6">
           {/* Logo */}
-          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-white/10 backdrop-blur-sm ring-1 ring-white/20 overflow-hidden">
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/20 overflow-hidden">
             {logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -312,7 +312,7 @@ async function AssociationContent({
 
           <div className="flex-1">
             {/* Abbreviation badge */}
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/10 backdrop-blur-sm text-white font-mono text-sm font-bold tracking-wider mb-3 ring-1 ring-white/20">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/10 text-white font-mono text-sm font-bold tracking-wider mb-3 ring-1 ring-white/20">
               <Radio className="h-3.5 w-3.5" />
               {association.abbreviation}
             </div>
@@ -324,7 +324,7 @@ async function AssociationContent({
             {/* Stats row */}
             <div className="flex flex-wrap items-center gap-4">
               {/* Signal meter */}
-              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10">
                 <Signal className="h-4 w-4 text-white/70" />
                 <div
                   className="flex items-end gap-0.5 h-4"
@@ -345,19 +345,19 @@ async function AssociationContent({
                 <span className="font-mono font-bold text-white tabular-nums">
                   {association.repeaters.length}
                 </span>
-                <span className="text-ship-cove-200 text-sm">repetidores</span>
+                <span className="text-azulejo-200 text-sm">repetidores</span>
               </div>
 
               {/* Modulation badges */}
               {Object.entries(modulationCounts).map(([mod, count]) => (
                 <div
                   key={mod}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-ship-cove-500/30 text-ship-cove-100 text-sm"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-azulejo-500/30 text-azulejo-100 text-sm"
                 >
                   <span className="font-mono font-bold tabular-nums">
                     {count}
                   </span>
-                  <span className="text-ship-cove-200">{mod}</span>
+                  <span className="text-azulejo-200">{mod}</span>
                 </div>
               ))}
             </div>
@@ -369,23 +369,23 @@ async function AssociationContent({
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Contact Info Panel */}
         {hasContactInfo && (
-          <div className="relative overflow-hidden rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-gradient-to-br from-white via-white to-ship-cove-50/50 dark:from-ship-cove-950 dark:via-ship-cove-950 dark:to-ship-cove-900/30 shadow-sm">
+          <div className="relative overflow-hidden rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-gradient-to-br from-white via-white to-azulejo-50/50 dark:from-azulejo-950 dark:via-azulejo-950 dark:to-azulejo-900/30 shadow-sm">
             {/* Top accent */}
-            <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-ship-cove-500 to-transparent opacity-60" />
+            <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-azulejo-500 to-transparent opacity-60" />
 
             <div className="p-5">
-              <h2 className="flex items-center gap-2 text-lg font-semibold text-ship-cove-900 dark:text-ship-cove-100 mb-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800">
-                  <MapPin className="h-4 w-4 text-ship-cove-600 dark:text-ship-cove-400" />
+              <h2 className="flex items-center gap-2 text-lg font-semibold text-azulejo-900 dark:text-azulejo-100 mb-4">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-800">
+                  <MapPin className="h-4 w-4 text-azulejo-600 dark:text-azulejo-400" />
                 </div>
                 {t("contactInfo")}
               </h2>
 
               <div className="space-y-4">
                 {association.address && (
-                  <div className="flex items-start gap-3 p-3 rounded-lg bg-ship-cove-50 dark:bg-ship-cove-900/50">
-                    <MapPin className="h-4 w-4 text-ship-cove-500 shrink-0 mt-0.5" />
-                    <p className="text-sm text-ship-cove-700 dark:text-ship-cove-300 whitespace-pre-wrap">
+                  <div className="flex items-start gap-3 p-3 rounded-lg bg-azulejo-50 dark:bg-azulejo-900/50">
+                    <MapPin className="h-4 w-4 text-azulejo-500 shrink-0 mt-0.5" />
+                    <p className="text-sm text-azulejo-700 dark:text-azulejo-300 whitespace-pre-wrap">
                       {association.address}
                     </p>
                   </div>
@@ -396,23 +396,23 @@ async function AssociationContent({
                     href={association.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-3 rounded-lg bg-ship-cove-50 dark:bg-ship-cove-900/50 hover:bg-ship-cove-100 dark:hover:bg-ship-cove-800/50 transition-colors group"
+                    className="flex items-center gap-3 p-3 rounded-lg bg-azulejo-50 dark:bg-azulejo-900/50 hover:bg-azulejo-100 dark:hover:bg-azulejo-800/50 transition-colors group"
                   >
-                    <Globe className="h-4 w-4 text-ship-cove-500" />
-                    <span className="text-sm text-ship-cove-700 dark:text-ship-cove-300 group-hover:text-ship-cove-900 dark:group-hover:text-ship-cove-100 truncate flex-1">
+                    <Globe className="h-4 w-4 text-azulejo-500" />
+                    <span className="text-sm text-azulejo-700 dark:text-azulejo-300 group-hover:text-azulejo-900 dark:group-hover:text-azulejo-100 truncate flex-1">
                       {association.website.replace(/^https?:\/\//, "")}
                     </span>
-                    <ExternalLink className="h-3.5 w-3.5 text-ship-cove-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <ExternalLink className="h-3.5 w-3.5 text-azulejo-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </a>
                 )}
 
                 {association.email && (
                   <a
                     href={`mailto:${association.email}`}
-                    className="flex items-center gap-3 p-3 rounded-lg bg-ship-cove-50 dark:bg-ship-cove-900/50 hover:bg-ship-cove-100 dark:hover:bg-ship-cove-800/50 transition-colors group"
+                    className="flex items-center gap-3 p-3 rounded-lg bg-azulejo-50 dark:bg-azulejo-900/50 hover:bg-azulejo-100 dark:hover:bg-azulejo-800/50 transition-colors group"
                   >
-                    <Mail className="h-4 w-4 text-ship-cove-500" />
-                    <span className="text-sm text-ship-cove-700 dark:text-ship-cove-300 group-hover:text-ship-cove-900 dark:group-hover:text-ship-cove-100 truncate">
+                    <Mail className="h-4 w-4 text-azulejo-500" />
+                    <span className="text-sm text-azulejo-700 dark:text-azulejo-300 group-hover:text-azulejo-900 dark:group-hover:text-azulejo-100 truncate">
                       {association.email}
                     </span>
                   </a>
@@ -427,28 +427,28 @@ async function AssociationContent({
 
         {/* Repeaters Panel */}
         <div
-          className={`relative overflow-hidden rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-gradient-to-br from-white via-white to-ship-cove-50/50 dark:from-ship-cove-950 dark:via-ship-cove-950 dark:to-ship-cove-900/30 shadow-sm ${hasContactInfo ? "lg:col-span-2" : "lg:col-span-3"}`}
+          className={`relative overflow-hidden rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-gradient-to-br from-white via-white to-azulejo-50/50 dark:from-azulejo-950 dark:via-azulejo-950 dark:to-azulejo-900/30 shadow-sm ${hasContactInfo ? "lg:col-span-2" : "lg:col-span-3"}`}
         >
           {/* Top accent */}
-          <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-ship-cove-500 to-transparent opacity-60" />
+          <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-azulejo-500 to-transparent opacity-60" />
 
           <div className="p-5">
-            <h2 className="flex items-center gap-2 text-lg font-semibold text-ship-cove-900 dark:text-ship-cove-100 mb-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800">
-                <Radio className="h-4 w-4 text-ship-cove-600 dark:text-ship-cove-400" />
+            <h2 className="flex items-center gap-2 text-lg font-semibold text-azulejo-900 dark:text-azulejo-100 mb-4">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-800">
+                <Radio className="h-4 w-4 text-azulejo-600 dark:text-azulejo-400" />
               </div>
               {t("repeaters")}
-              <span className="ml-auto text-sm font-mono font-normal text-ship-cove-500 tabular-nums">
+              <span className="ml-auto text-sm font-mono font-normal text-azulejo-500 tabular-nums">
                 {association.repeaters.length}
               </span>
             </h2>
 
             {association.repeaters.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="w-12 h-12 rounded-full bg-ship-cove-100 dark:bg-ship-cove-900/50 flex items-center justify-center mb-3">
-                  <Radio className="h-6 w-6 text-ship-cove-400" />
+                <div className="w-12 h-12 rounded-full bg-azulejo-100 dark:bg-azulejo-900/50 flex items-center justify-center mb-3">
+                  <Radio className="h-6 w-6 text-azulejo-400" />
                 </div>
-                <p className="text-ship-cove-600 dark:text-ship-cove-400">
+                <p className="text-azulejo-600 dark:text-azulejo-400">
                   {t("noRepeaters")}
                 </p>
               </div>
@@ -462,7 +462,7 @@ async function AssociationContent({
                     <Link
                       key={repeater.callsign}
                       href={`/repeater/${encodeURIComponent(repeater.callsign)}/`}
-                      className="flex items-center gap-4 p-4 rounded-lg border border-ship-cove-100 dark:border-ship-cove-800/50 hover:border-ship-cove-300 dark:hover:border-ship-cove-700 bg-white dark:bg-ship-cove-900/30 hover:bg-ship-cove-50 dark:hover:bg-ship-cove-900/50 transition-all group animate-in fade-in slide-in-from-bottom-1 fill-mode-both"
+                      className="flex items-center gap-4 p-4 rounded-lg border border-azulejo-100 dark:border-azulejo-800/50 hover:border-azulejo-300 dark:hover:border-azulejo-700 bg-white dark:bg-azulejo-900/30 hover:bg-azulejo-50 dark:hover:bg-azulejo-900/50 transition-all group animate-in fade-in slide-in-from-bottom-1 fill-mode-both"
                       style={{ animationDelay: `${index * 30}ms` }}
                     >
                       {/* Status indicator */}
@@ -474,14 +474,14 @@ async function AssociationContent({
                       {/* Main info */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-mono font-bold text-ship-cove-900 dark:text-ship-cove-100">
+                          <span className="font-mono font-bold text-azulejo-900 dark:text-azulejo-100">
                             {repeater.callsign}
                           </span>
-                          <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-ship-cove-100 dark:bg-ship-cove-800 text-ship-cove-600 dark:text-ship-cove-400">
+                          <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-azulejo-100 dark:bg-azulejo-800 text-azulejo-600 dark:text-azulejo-400">
                             {modesStr}
                           </span>
                         </div>
-                        <div className="flex items-center gap-3 text-sm text-ship-cove-600 dark:text-ship-cove-400">
+                        <div className="flex items-center gap-3 text-sm text-azulejo-600 dark:text-azulejo-400">
                           {primary && (
                             <span className="font-mono tabular-nums">
                               {primary.outputFrequency.toFixed(3)} MHz
@@ -489,7 +489,7 @@ async function AssociationContent({
                           )}
                           {primary?.tone && (
                             <>
-                              <span className="text-ship-cove-300 dark:text-ship-cove-700">
+                              <span className="text-azulejo-300 dark:text-azulejo-700">
                                 •
                               </span>
                               <span className="font-mono tabular-nums">
@@ -502,13 +502,13 @@ async function AssociationContent({
 
                       {/* QTH Locator */}
                       {repeater.qthLocator && (
-                        <span className="hidden sm:inline-flex px-2.5 py-1 rounded-md text-xs font-mono font-medium bg-ship-cove-900 dark:bg-ship-cove-100 text-ship-cove-100 dark:text-ship-cove-900">
+                        <span className="hidden sm:inline-flex px-2.5 py-1 rounded-md text-xs font-mono font-medium bg-azulejo-900 dark:bg-azulejo-100 text-azulejo-100 dark:text-azulejo-900">
                           {repeater.qthLocator}
                         </span>
                       )}
 
                       {/* Arrow */}
-                      <ChevronRight className="h-4 w-4 text-ship-cove-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                      <ChevronRight className="h-4 w-4 text-azulejo-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
                     </Link>
                   )
                 })}

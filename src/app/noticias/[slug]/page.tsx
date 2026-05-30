@@ -149,7 +149,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
   const breadcrumbs = generateBreadcrumbs(news)
 
   return (
-    <div className="min-h-screen bg-white dark:bg-ship-cove-950">
+    <div className="min-h-screen bg-white dark:bg-azulejo-950">
       {jsonLd && (
         <script
           type="application/ld+json"
@@ -162,7 +162,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
         {/* Back Link */}
         <Link
           href="/noticias"
-          className="inline-flex items-center gap-2 text-ship-cove-500 hover:text-ship-cove-700 dark:text-ship-cove-400 dark:hover:text-ship-cove-200 mb-8 transition-colors text-sm font-medium"
+          className="inline-flex items-center gap-2 text-azulejo-500 hover:text-azulejo-700 dark:text-azulejo-400 dark:hover:text-azulejo-200 mb-8 transition-colors text-sm font-medium"
         >
           <ArrowLeft className="h-4 w-4" />
           {t("backToNews")}
@@ -174,17 +174,17 @@ export default async function NewsDetailPage({ params }: PageProps) {
             {/* Meta line */}
             <div className="flex items-center gap-3 text-sm mb-4">
               {categoryLabel && (
-                <span className="font-semibold text-ship-cove-600 dark:text-ship-cove-400 uppercase tracking-wide text-xs">
+                <span className="font-semibold text-azulejo-600 dark:text-azulejo-400 uppercase tracking-wide text-xs">
                   {categoryLabel}
                 </span>
               )}
-              {categoryLabel && <span className="text-ship-cove-300 dark:text-ship-cove-600">•</span>}
-              <time className="text-ship-cove-500 dark:text-ship-cove-400">
+              {categoryLabel && <span className="text-azulejo-300 dark:text-azulejo-600">•</span>}
+              <time className="text-azulejo-500 dark:text-azulejo-400">
                 {formattedDate}
               </time>
               {news.featured && (
                 <>
-                  <span className="text-ship-cove-300 dark:text-ship-cove-600">•</span>
+                  <span className="text-azulejo-300 dark:text-azulejo-600">•</span>
                   <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-medium">
                     <Star className="h-3.5 w-3.5" />
                     {t("featured")}
@@ -194,14 +194,14 @@ export default async function NewsDetailPage({ params }: PageProps) {
             </div>
 
             {/* Title */}
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-ship-cove-900 dark:text-ship-cove-50 leading-tight tracking-tight mb-6">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-azulejo-900 dark:text-azulejo-50 leading-tight tracking-tight mb-6">
               {news.title}
             </h1>
 
             {/* Author */}
             {news.author && (
-              <p className="text-base text-ship-cove-600 dark:text-ship-cove-400">
-                Por <span className="font-semibold text-ship-cove-800 dark:text-ship-cove-200">{news.author}</span>
+              <p className="text-base text-azulejo-600 dark:text-azulejo-400">
+                Por <span className="font-semibold text-azulejo-800 dark:text-azulejo-200">{news.author}</span>
               </p>
             )}
           </header>
@@ -219,7 +219,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
                 />
               </div>
               {news.featuredImage?.alt && (
-                <figcaption className="mt-3 text-sm text-ship-cove-500 dark:text-ship-cove-400 text-center italic">
+                <figcaption className="mt-3 text-sm text-azulejo-500 dark:text-azulejo-400 text-center italic">
                   {news.featuredImage.alt}
                 </figcaption>
               )}
@@ -227,37 +227,37 @@ export default async function NewsDetailPage({ params }: PageProps) {
           )}
 
           {/* Lead / Excerpt */}
-          <p className="text-xl sm:text-2xl text-ship-cove-700 dark:text-ship-cove-300 leading-relaxed mb-8 font-serif italic">
+          <p className="text-xl sm:text-2xl text-azulejo-700 dark:text-azulejo-300 leading-relaxed mb-8 font-serif italic">
             {news.excerpt}
           </p>
 
           {/* Divider */}
-          <div className="h-px bg-ship-cove-200 dark:bg-ship-cove-800 mb-8" />
+          <div className="h-px bg-azulejo-200 dark:bg-azulejo-800 mb-8" />
 
           {/* Content */}
-          <div className="prose prose-lg prose-ship-cove dark:prose-invert max-w-none
+          <div className="prose prose-lg prose-azulejo dark:prose-invert max-w-none
             prose-headings:font-bold prose-headings:tracking-tight
             prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
             prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
-            prose-p:text-ship-cove-700 prose-p:dark:text-ship-cove-300 prose-p:leading-relaxed
-            prose-a:text-ship-cove-600 prose-a:dark:text-ship-cove-400 prose-a:underline prose-a:underline-offset-2
-            prose-strong:text-ship-cove-900 prose-strong:dark:text-ship-cove-100
-            prose-blockquote:border-l-ship-cove-300 prose-blockquote:dark:border-l-ship-cove-700 prose-blockquote:italic prose-blockquote:text-ship-cove-600 prose-blockquote:dark:text-ship-cove-400
-            prose-ul:text-ship-cove-700 prose-ul:dark:text-ship-cove-300
-            prose-ol:text-ship-cove-700 prose-ol:dark:text-ship-cove-300
-            prose-li:marker:text-ship-cove-400
+            prose-p:text-azulejo-700 prose-p:dark:text-azulejo-300 prose-p:leading-relaxed
+            prose-a:text-azulejo-600 prose-a:dark:text-azulejo-400 prose-a:underline prose-a:underline-offset-2
+            prose-strong:text-azulejo-900 prose-strong:dark:text-azulejo-100
+            prose-blockquote:border-l-azulejo-300 prose-blockquote:dark:border-l-azulejo-700 prose-blockquote:italic prose-blockquote:text-azulejo-600 prose-blockquote:dark:text-azulejo-400
+            prose-ul:text-azulejo-700 prose-ul:dark:text-azulejo-300
+            prose-ol:text-azulejo-700 prose-ol:dark:text-azulejo-300
+            prose-li:marker:text-azulejo-400
           ">
             <RichTextContent content={news.content} />
           </div>
 
           {/* External Link */}
           {news.externalLink && (
-            <div className="mt-10 pt-6 border-t border-ship-cove-200 dark:border-ship-cove-800">
+            <div className="mt-10 pt-6 border-t border-azulejo-200 dark:border-azulejo-800">
               <a
                 href={news.externalLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-ship-cove-600 dark:text-ship-cove-400 hover:text-ship-cove-800 dark:hover:text-ship-cove-200 transition-colors font-medium"
+                className="inline-flex items-center gap-2 text-azulejo-600 dark:text-azulejo-400 hover:text-azulejo-800 dark:hover:text-azulejo-200 transition-colors font-medium"
               >
                 <ExternalLink className="h-4 w-4" />
                 {t("externalLink")}
@@ -266,7 +266,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
           )}
 
           {/* Share */}
-          <div className="mt-10 pt-6 border-t border-ship-cove-200 dark:border-ship-cove-800">
+          <div className="mt-10 pt-6 border-t border-azulejo-200 dark:border-azulejo-800">
             <NewsDetailClient title={news.title} slug={news.slug} />
           </div>
         </article>

@@ -8,11 +8,11 @@ import type L from "leaflet"
 import "leaflet/dist/leaflet.css"
 
 const COLOR_SCALE = [
-  "#e7f0f8", // ship-cove-100
-  "#b8cfe9", // ship-cove-300
-  "#839bd1", // ship-cove-500
-  "#5869aa", // ship-cove-700
-  "#404c6f", // ship-cove-900
+  "#f4ddd7", // azulejo-100
+  "#d9988a", // azulejo-300
+  "#7d2e26", // azulejo-500
+  "#5d211a", // azulejo-700
+  "#371310", // azulejo-900
 ]
 
 function getColor(value: number, breaks: number[]): string {
@@ -73,7 +73,7 @@ export default function DistritoMap({ data, geojson, highlightedDistrito, onHove
       fillColor: getColor(value, breaks),
       weight: isHighlighted ? 2 : 1,
       opacity: 1,
-      color: isHighlighted ? "#5869aa" : "#94a3b8",
+      color: isHighlighted ? "#5d211a" : "#94a3b8",
       fillOpacity: isHighlighted ? 0.9 : 0.7,
     }
   }

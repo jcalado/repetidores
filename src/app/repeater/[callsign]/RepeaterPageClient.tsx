@@ -53,8 +53,8 @@ import { operationalStatusConfig } from "@/components/repeater/utils/statusConfi
 const MiniMap = dynamic(() => import("./MiniMap"), {
   ssr: false,
   loading: () => (
-    <div className="h-64 bg-ship-cove-100 dark:bg-ship-cove-900/50 animate-pulse rounded-lg flex items-center justify-center">
-      <span className="text-ship-cove-500 text-sm">A carregar mapa...</span>
+    <div className="h-64 bg-azulejo-100 dark:bg-azulejo-900/50 animate-pulse rounded-lg flex items-center justify-center">
+      <span className="text-azulejo-500 text-sm">A carregar mapa...</span>
     </div>
   ),
 });
@@ -157,7 +157,7 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
       {/* Back Navigation */}
       <Link
         href="/repetidores"
-        className="inline-flex items-center gap-2 text-ship-cove-600 dark:text-ship-cove-400 hover:text-ship-cove-900 dark:hover:text-ship-cove-100 transition-colors group"
+        className="inline-flex items-center gap-2 text-azulejo-600 dark:text-azulejo-400 hover:text-azulejo-900 dark:hover:text-azulejo-100 transition-colors group"
       >
         <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
         <span>{tNav("repeaters")}</span>
@@ -194,7 +194,7 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
 
             {/* Badges */}
             <div className="flex flex-wrap items-center gap-2">
-              <span className="px-3 py-1 rounded-md bg-white/10 text-white text-sm font-medium backdrop-blur-sm">
+              <span className="px-3 py-1 rounded-md bg-white/10 text-white text-sm font-medium">
                 {band}
               </span>
               {r.modes?.map((mode) => (
@@ -206,7 +206,7 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
                     mode === 'DSTAR' && "bg-blue-500/30 text-blue-100",
                     mode === 'C4FM' && "bg-orange-500/30 text-orange-100",
                     mode === 'TETRA' && "bg-cyan-500/30 text-cyan-100",
-                    mode === 'FM' && "bg-ship-cove-500/30 text-ship-cove-100",
+                    mode === 'FM' && "bg-azulejo-500/30 text-azulejo-100",
                     mode === 'Digipeater' && "bg-green-500/30 text-green-100"
                   )}
                 >
@@ -214,7 +214,7 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
                 </span>
               ))}
               {r.qthLocator && (
-                <span className="px-3 py-1 rounded-md bg-white/10 text-white text-sm font-mono backdrop-blur-sm">
+                <span className="px-3 py-1 rounded-md bg-white/10 text-white text-sm font-mono">
                   {r.qthLocator}
                 </span>
               )}
@@ -228,7 +228,7 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
               href={mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-ship-cove-900 font-medium text-sm hover:bg-ship-cove-50 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-azulejo-900 font-medium text-sm hover:bg-azulejo-50 transition-colors"
             >
               <MapPin className="h-4 w-4" />
               {t("maps")}
@@ -305,7 +305,7 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
             userLongitude={userLocation?.longitude}
           />
           <div className="flex items-center justify-between text-sm mt-3">
-            <span className="font-mono text-ship-cove-600 dark:text-ship-cove-400 text-xs">
+            <span className="font-mono text-azulejo-600 dark:text-azulejo-400 text-xs">
               {r.latitude?.toFixed(5)}, {r.longitude?.toFixed(5)}
             </span>
             {osmUrl && (
@@ -313,7 +313,7 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
                 href={osmUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs text-ship-cove-600 dark:text-ship-cove-400 hover:text-ship-cove-900 dark:hover:text-ship-cove-100 transition-colors"
+                className="inline-flex items-center gap-1 text-xs text-azulejo-600 dark:text-azulejo-400 hover:text-azulejo-900 dark:hover:text-azulejo-100 transition-colors"
               >
                 <ExternalLink className="h-3 w-3" />
                 OpenStreetMap
@@ -331,7 +331,7 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
         >
           <div className="flex items-center justify-between gap-4">
             <div className="space-y-2">
-              <p className="text-sm text-ship-cove-600 dark:text-ship-cove-400">
+              <p className="text-sm text-azulejo-600 dark:text-azulejo-400">
                 {compass.isEnabled
                   ? "Aponte o dispositivo para a direção indicada"
                   : "Baseado na sua localização atual"}
@@ -343,7 +343,7 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
                     "inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
                     compass.isEnabled
                       ? "bg-emerald-500 text-white hover:bg-emerald-600"
-                      : "bg-ship-cove-100 dark:bg-ship-cove-800 text-ship-cove-700 dark:text-ship-cove-300 hover:bg-ship-cove-200 dark:hover:bg-ship-cove-700"
+                      : "bg-azulejo-100 dark:bg-azulejo-800 text-azulejo-700 dark:text-azulejo-300 hover:bg-azulejo-200 dark:hover:bg-azulejo-700"
                   )}
                 >
                   <Compass className="h-4 w-4" />
@@ -366,20 +366,20 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
           </div>
         </EquipmentPanel>
       ) : (
-        <div className="relative overflow-hidden rounded-xl border border-dashed border-ship-cove-300 dark:border-ship-cove-700 bg-ship-cove-50/50 dark:bg-ship-cove-900/20 p-5">
+        <div className="relative overflow-hidden rounded-xl border border-dashed border-azulejo-300 dark:border-azulejo-700 bg-azulejo-50/50 dark:bg-azulejo-900/20 p-5">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
-              <h3 className="font-medium text-ship-cove-700 dark:text-ship-cove-300">
+              <h3 className="font-medium text-azulejo-700 dark:text-azulejo-300">
                 Direção para o Repetidor
               </h3>
-              <p className="text-sm text-ship-cove-500">
+              <p className="text-sm text-azulejo-500">
                 Partilhe a sua localização para ver a direção
               </p>
             </div>
             <button
               onClick={() => requestLocation()}
               disabled={isLocating}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800 text-ship-cove-700 dark:text-ship-cove-300 font-medium text-sm hover:bg-ship-cove-200 dark:hover:bg-ship-cove-700 transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-azulejo-100 dark:bg-azulejo-800 text-azulejo-700 dark:text-azulejo-300 font-medium text-sm hover:bg-azulejo-200 dark:hover:bg-azulejo-700 transition-colors disabled:opacity-50"
             >
               <MapPin className="h-4 w-4" />
               {isLocating ? "A localizar..." : "Obter localização"}
@@ -393,24 +393,24 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
         <EquipmentPanel title="Proprietário" icon={Building2}>
           {(r.association || r.owner) && (
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800">
-                <Building2 className="h-6 w-6 text-ship-cove-600 dark:text-ship-cove-400" />
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-800">
+                <Building2 className="h-6 w-6 text-azulejo-600 dark:text-azulejo-400" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-ship-cove-500 mb-1">{t("owner")}</p>
+                <p className="text-xs text-azulejo-500 mb-1">{t("owner")}</p>
                 {r.association ? (
                   <Link
                     href={`/association/${r.association.slug}/`}
-                    className="font-medium text-ship-cove-900 dark:text-ship-cove-100 hover:text-ship-cove-600 dark:hover:text-ship-cove-300 transition-colors"
+                    className="font-medium text-azulejo-900 dark:text-azulejo-100 hover:text-azulejo-600 dark:hover:text-azulejo-300 transition-colors"
                   >
                     {r.association.abbreviation} - {r.association.name}
                   </Link>
                 ) : (
-                  <p className="font-medium text-ship-cove-900 dark:text-ship-cove-100">{r.owner}</p>
+                  <p className="font-medium text-azulejo-900 dark:text-azulejo-100">{r.owner}</p>
                 )}
               </div>
               {r.association && (
-                <ChevronRight className="h-5 w-5 text-ship-cove-400" />
+                <ChevronRight className="h-5 w-5 text-azulejo-400" />
               )}
             </div>
           )}
@@ -421,19 +421,19 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
               rel="noopener noreferrer"
               className={cn(
                 "flex items-center gap-4 group",
-                (r.association || r.owner) && "mt-3 pt-3 border-t border-ship-cove-100 dark:border-ship-cove-800/50"
+                (r.association || r.owner) && "mt-3 pt-3 border-t border-azulejo-100 dark:border-azulejo-800/50"
               )}
             >
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800">
-                <Globe className="h-6 w-6 text-ship-cove-600 dark:text-ship-cove-400" />
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-800">
+                <Globe className="h-6 w-6 text-azulejo-600 dark:text-azulejo-400" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-ship-cove-500 mb-1">Website</p>
-                <p className="font-medium text-ship-cove-900 dark:text-ship-cove-100 group-hover:text-ship-cove-600 dark:group-hover:text-ship-cove-300 transition-colors truncate">
+                <p className="text-xs text-azulejo-500 mb-1">Website</p>
+                <p className="font-medium text-azulejo-900 dark:text-azulejo-100 group-hover:text-azulejo-600 dark:group-hover:text-azulejo-300 transition-colors truncate">
                   {r.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
                 </p>
               </div>
-              <ExternalLink className="h-5 w-5 text-ship-cove-400" />
+              <ExternalLink className="h-5 w-5 text-azulejo-400" />
             </a>
           )}
         </EquipmentPanel>
@@ -636,7 +636,7 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
                   return (
                     <a
                       href={`echolink://${r.echolink.nodeNumber}`}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-ship-cove-200 dark:border-ship-cove-700 text-sm font-medium text-ship-cove-700 dark:text-ship-cove-300 hover:bg-ship-cove-50 dark:hover:bg-ship-cove-800 transition-colors"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-azulejo-200 dark:border-azulejo-700 text-sm font-medium text-azulejo-700 dark:text-azulejo-300 hover:bg-azulejo-50 dark:hover:bg-azulejo-800 transition-colors"
                     >
                       {elSource ? (
                         <span className={cn(
@@ -649,7 +649,7 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
                       EchoLink #{r.echolink.nodeNumber}
                       {r.echolink.conference && ` (${r.echolink.conference})`}
                       {elSource?.lastSeen && (
-                        <span className="text-xs text-ship-cove-500">
+                        <span className="text-xs text-azulejo-500">
                           · {formatRelativeTime(elSource.lastSeen)}
                         </span>
                       )}
@@ -659,7 +659,7 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
                 {r.allstarNode && (() => {
                   const asSource = autoStatus?.sources.find(s => s.source === 'allstar');
                   return (
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-ship-cove-200 dark:border-ship-cove-700 text-sm font-medium text-ship-cove-700 dark:text-ship-cove-300">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-azulejo-200 dark:border-azulejo-700 text-sm font-medium text-azulejo-700 dark:text-azulejo-300">
                       {asSource ? (
                         <span className={cn(
                           "h-2 w-2 rounded-full shrink-0",
@@ -670,7 +670,7 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
                       )}
                       AllStar #{r.allstarNode}
                       {asSource?.lastSeen && (
-                        <span className="text-xs text-ship-cove-500">
+                        <span className="text-xs text-azulejo-500">
                           · {formatRelativeTime(asSource.lastSeen)}
                         </span>
                       )}
@@ -686,7 +686,7 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
       {/* Notes */}
       {r.notes && (
         <EquipmentPanel title="Notas" icon={FileText}>
-          <p className="text-sm text-ship-cove-700 dark:text-ship-cove-300 whitespace-pre-wrap">
+          <p className="text-sm text-azulejo-700 dark:text-azulejo-300 whitespace-pre-wrap">
             {r.notes}
           </p>
         </EquipmentPanel>
@@ -700,17 +700,17 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
               <Link
                 key={nearby.callsign}
                 href={`/repeater/${encodeURIComponent(nearby.callsign)}/`}
-                className="flex items-center gap-4 p-3 rounded-lg border border-ship-cove-100 dark:border-ship-cove-800/50 hover:border-ship-cove-300 dark:hover:border-ship-cove-700 bg-white dark:bg-ship-cove-900/30 hover:bg-ship-cove-50 dark:hover:bg-ship-cove-900/50 transition-all group animate-in fade-in slide-in-from-bottom-1 fill-mode-both"
+                className="flex items-center gap-4 p-3 rounded-lg border border-azulejo-100 dark:border-azulejo-800/50 hover:border-azulejo-300 dark:hover:border-azulejo-700 bg-white dark:bg-azulejo-900/30 hover:bg-azulejo-50 dark:hover:bg-azulejo-900/50 transition-all group animate-in fade-in slide-in-from-bottom-1 fill-mode-both"
                 style={{ animationDelay: `${index * 30}ms` }}
               >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800 group-hover:bg-ship-cove-200 dark:group-hover:bg-ship-cove-700 transition-colors">
-                  <Radio className="h-5 w-5 text-ship-cove-600 dark:text-ship-cove-400" />
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-800 group-hover:bg-azulejo-200 dark:group-hover:bg-azulejo-700 transition-colors">
+                  <Radio className="h-5 w-5 text-azulejo-600 dark:text-azulejo-400" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-mono font-bold text-ship-cove-900 dark:text-ship-cove-100">
+                  <p className="font-mono font-bold text-azulejo-900 dark:text-azulejo-100">
                     {nearby.callsign}
                   </p>
-                  <p className="text-xs text-ship-cove-500 font-mono">
+                  <p className="text-xs text-azulejo-500 font-mono">
                     {(() => {
                       const nearbyPrimary = getPrimaryFrequency(nearby);
                       return nearbyPrimary ? `${nearbyPrimary.outputFrequency.toFixed(3)} MHz` : '';
@@ -718,7 +718,7 @@ export default function RepeaterPageClient({ repeater: r, allRepeaters }: Repeat
                     {nearby.modes?.length ? ` · ${nearby.modes.map(m => m === 'DSTAR' ? 'D-STAR' : m).join(', ')}` : ''}
                   </p>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-ship-cove-500">
+                <div className="flex items-center gap-2 text-sm text-azulejo-500">
                   <span className="font-mono tabular-nums">{formatDistance(nearby.distance)}</span>
                   <ChevronRight className="h-4 w-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
                 </div>
@@ -746,11 +746,11 @@ function EquipmentPanel({
   titleExtra?: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-ship-cove-200 dark:border-ship-cove-800/50 bg-white dark:bg-ship-cove-950">
+    <div className="rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-white dark:bg-azulejo-950">
       <div className="p-5">
-        <h3 className="flex items-center gap-2.5 text-base font-semibold text-ship-cove-900 dark:text-ship-cove-100 mb-4">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-ship-cove-100 dark:bg-ship-cove-800">
-            <Icon className="h-4 w-4 text-ship-cove-600 dark:text-ship-cove-400" />
+        <h3 className="flex items-center gap-2.5 text-base font-semibold text-azulejo-900 dark:text-azulejo-100 mb-4">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-800">
+            <Icon className="h-4 w-4 text-azulejo-600 dark:text-azulejo-400" />
           </div>
           {title}
           {titleExtra && <span className="ml-auto">{titleExtra}</span>}
@@ -788,20 +788,20 @@ function FrequencyDisplay({
     <div
       onClick={handleCopy}
       className={cn(
-        "group p-3 rounded-lg bg-ship-cove-50 dark:bg-ship-cove-900/50 transition-all",
-        isCopyable && "cursor-pointer hover:bg-ship-cove-100 dark:hover:bg-ship-cove-800/50 active:scale-[0.98]"
+        "group p-3 rounded-lg bg-azulejo-50 dark:bg-azulejo-900/50 transition-all",
+        isCopyable && "cursor-pointer hover:bg-azulejo-100 dark:hover:bg-azulejo-800/50 active:scale-[0.98]"
       )}
     >
-      <p className="text-xs uppercase tracking-wider text-ship-cove-500 mb-1">{label}</p>
+      <p className="text-xs uppercase tracking-wider text-azulejo-500 mb-1">{label}</p>
       <div className="flex items-center gap-2">
-        <span className="font-mono text-lg font-bold text-ship-cove-900 dark:text-ship-cove-100 tabular-nums">
+        <span className="font-mono text-lg font-bold text-azulejo-900 dark:text-azulejo-100 tabular-nums">
           {value}
         </span>
         {isCopyable && (
           copied ? (
             <Check className="h-4 w-4 text-emerald-500" />
           ) : (
-            <Copy className="h-4 w-4 text-ship-cove-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Copy className="h-4 w-4 text-azulejo-400 opacity-0 group-hover:opacity-100 transition-opacity" />
           )
         )}
       </div>
@@ -819,10 +819,10 @@ function TechSpec({
   capitalize?: boolean;
 }) {
   return (
-    <div className="p-3 rounded-lg bg-ship-cove-50 dark:bg-ship-cove-900/50">
-      <p className="text-xs text-ship-cove-500 mb-1">{label}</p>
+    <div className="p-3 rounded-lg bg-azulejo-50 dark:bg-azulejo-900/50">
+      <p className="text-xs text-azulejo-500 mb-1">{label}</p>
       <p className={cn(
-        "font-medium text-ship-cove-900 dark:text-ship-cove-100",
+        "font-medium text-azulejo-900 dark:text-azulejo-100",
         capitalize && "capitalize"
       )}>
         {value}
@@ -998,7 +998,7 @@ function ShareButton({ callsign }: { callsign: string }) {
   return (
     <button
       onClick={handleShare}
-      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 text-white font-medium text-sm hover:bg-white/20 transition-colors backdrop-blur-sm"
+      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 text-white font-medium text-sm hover:bg-white/20 transition-colors"
       aria-label={t("share")}
     >
       {copied ? (

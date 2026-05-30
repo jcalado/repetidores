@@ -208,16 +208,16 @@ const tagColorMap: Record<string, {
     ring: 'ring-emerald-400/30',
   },
   Default: {
-    text: 'text-ship-cove-600 dark:text-ship-cove-400',
-    textLight: 'text-ship-cove-100',
-    bg: 'bg-ship-cove-50 dark:bg-ship-cove-900/30',
-    bgHover: 'hover:bg-ship-cove-100 dark:hover:bg-ship-cove-800/40',
-    border: 'border-ship-cove-200 dark:border-ship-cove-700',
-    gradient: 'from-ship-cove-500/20 via-ship-cove-500/5 to-transparent',
-    heroGradient: 'from-ship-cove-600 via-ship-cove-700 to-ship-cove-800 dark:from-ship-cove-800 dark:via-ship-cove-900 dark:to-ship-cove-950',
-    solid: 'bg-ship-cove-500',
-    accent: 'bg-ship-cove-400',
-    ring: 'ring-ship-cove-400/30',
+    text: 'text-azulejo-600 dark:text-azulejo-400',
+    textLight: 'text-azulejo-100',
+    bg: 'bg-azulejo-50 dark:bg-azulejo-900/30',
+    bgHover: 'hover:bg-azulejo-100 dark:hover:bg-azulejo-800/40',
+    border: 'border-azulejo-200 dark:border-azulejo-700',
+    gradient: 'from-azulejo-500/20 via-azulejo-500/5 to-transparent',
+    heroGradient: 'from-azulejo-600 via-azulejo-700 to-azulejo-800 dark:from-azulejo-800 dark:via-azulejo-900 dark:to-azulejo-950',
+    solid: 'bg-azulejo-500',
+    accent: 'bg-azulejo-400',
+    ring: 'ring-azulejo-400/30',
   },
 };
 
@@ -334,7 +334,7 @@ function EventProgressBar({ start, end }: { start: string; end: string }) {
         <span className="text-white/70">Progresso</span>
         <span className="font-mono font-bold text-white">{Math.round(progress)}%</span>
       </div>
-      <div className="relative w-full h-3 bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
+      <div className="relative w-full h-3 bg-white/20 rounded-full overflow-hidden">
         <div
           className="absolute inset-y-0 left-0 bg-gradient-to-r from-emerald-400 to-green-500 rounded-full transition-all duration-700 ease-out"
           style={{ width: `${progress}%` }}
@@ -354,20 +354,20 @@ function CountdownUnit({ value, label, isLight = false }: { value: string; label
     <div className="flex flex-col items-center">
       <div className={`relative px-3 sm:px-4 py-2 sm:py-3 rounded-xl ${
         isLight
-          ? 'bg-white/10 backdrop-blur-sm'
-          : 'bg-ship-cove-100 dark:bg-ship-cove-900/50'
+          ? 'bg-white/10'
+          : 'bg-azulejo-100 dark:bg-azulejo-900/50'
       }`}>
         <span
           key={value}
           className={`block text-3xl sm:text-4xl md:text-5xl font-bold tabular-nums tracking-tight transition-all duration-150 ${
-            isLight ? 'text-white' : 'text-ship-cove-900 dark:text-ship-cove-100'
+            isLight ? 'text-white' : 'text-azulejo-900 dark:text-azulejo-100'
           }`}
         >
           {value}
         </span>
       </div>
       <span className={`text-[10px] sm:text-xs uppercase tracking-wider mt-2 font-medium ${
-        isLight ? 'text-white/70' : 'text-ship-cove-500 dark:text-ship-cove-400'
+        isLight ? 'text-white/70' : 'text-azulejo-500 dark:text-azulejo-400'
       }`}>
         {label}
       </span>
@@ -379,8 +379,8 @@ function CountdownUnit({ value, label, isLight = false }: { value: string; label
 function CountdownSeparator({ isLight = false }: { isLight?: boolean }) {
   return (
     <div className="flex flex-col justify-center gap-1.5 px-1">
-      <div className={`w-1.5 h-1.5 rounded-full ${isLight ? 'bg-white/40' : 'bg-ship-cove-300 dark:bg-ship-cove-600'}`} />
-      <div className={`w-1.5 h-1.5 rounded-full ${isLight ? 'bg-white/40' : 'bg-ship-cove-300 dark:bg-ship-cove-600'}`} />
+      <div className={`w-1.5 h-1.5 rounded-full ${isLight ? 'bg-white/40' : 'bg-azulejo-300 dark:bg-azulejo-600'}`} />
+      <div className={`w-1.5 h-1.5 rounded-full ${isLight ? 'bg-white/40' : 'bg-azulejo-300 dark:bg-azulejo-600'}`} />
     </div>
   );
 }
@@ -400,7 +400,7 @@ function CountdownDisplay({
   return (
     <div className="text-center">
       <div className={`text-sm font-medium uppercase tracking-wider mb-4 ${
-        isLight ? 'text-white/70' : 'text-ship-cove-500 dark:text-ship-cove-400'
+        isLight ? 'text-white/70' : 'text-azulejo-500 dark:text-azulejo-400'
       }`}>
         {label}
       </div>
@@ -685,14 +685,14 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
             {/* Event Meta Row */}
             <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
               {/* Tag badge */}
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-white/20 text-white backdrop-blur-sm border border-white/20">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-white/20 text-white border border-white/20">
                 <TagIcon tag={event.tag} className="w-3.5 h-3.5" />
                 {event.tag ?? t('event')}
               </span>
 
               {/* Category badge */}
               {event.category && (
-                <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold backdrop-blur-sm border ${
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold border ${
                   event.category === 'international'
                     ? 'bg-sky-500/30 text-white border-sky-400/30'
                     : 'bg-emerald-500/30 text-white border-emerald-400/30'
@@ -723,7 +723,7 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
                   )}
                 </div>
               ) : hasEnded ? (
-                <div className="flex items-center justify-center gap-3 py-6 px-6 rounded-2xl bg-white/10 backdrop-blur-sm">
+                <div className="flex items-center justify-center gap-3 py-6 px-6 rounded-2xl bg-white/10">
                   <Clock className="w-6 h-6 text-white/70" />
                   <span className="text-xl font-semibold text-white/90">{t('ended')}</span>
                 </div>
@@ -810,9 +810,9 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
         <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
           {/* Location */}
           {event.location && (
-            <div className="flex items-center gap-4 p-4 sm:p-5 rounded-2xl bg-ship-cove-50 dark:bg-ship-cove-900/30 border border-ship-cove-200 dark:border-ship-cove-800 transition-transform hover:scale-[1.01]">
-              <div className="shrink-0 p-3 rounded-xl bg-ship-cove-100 dark:bg-ship-cove-800/50">
-                <MapPin className="w-6 h-6 text-ship-cove-600 dark:text-ship-cove-400" />
+            <div className="flex items-center gap-4 p-4 sm:p-5 rounded-2xl bg-azulejo-50 dark:bg-azulejo-900/30 border border-azulejo-200 dark:border-azulejo-800 transition-transform hover:scale-[1.01]">
+              <div className="shrink-0 p-3 rounded-xl bg-azulejo-100 dark:bg-azulejo-800/50">
+                <MapPin className="w-6 h-6 text-azulejo-600 dark:text-azulejo-400" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-0.5">
@@ -863,14 +863,14 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
               <Info className={`w-5 h-5 ${tagColors.text}`} />
               {tDetails('description') || 'Descrição'}
             </h2>
-            <div className="prose prose-ship-cove dark:prose-invert max-w-none p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-ship-cove-50 to-slate-50 dark:from-ship-cove-950/50 dark:to-slate-900/50 border border-ship-cove-200/50 dark:border-ship-cove-800/50">
+            <div className="prose prose-azulejo dark:prose-invert max-w-none p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-azulejo-50 to-slate-50 dark:from-azulejo-950/50 dark:to-slate-900/50 border border-azulejo-200/50 dark:border-azulejo-800/50">
               <RichTextContent content={event.description} />
             </div>
           </div>
         )}
 
         {/* Action buttons - Refined magazine style */}
-        <div className="flex flex-wrap gap-3 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-ship-cove-50 via-slate-50 to-ship-cove-50 dark:from-ship-cove-950/50 dark:via-slate-900/50 dark:to-ship-cove-950/50 border border-ship-cove-200/50 dark:border-ship-cove-800/50 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="flex flex-wrap gap-3 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-azulejo-50 via-slate-50 to-azulejo-50 dark:from-azulejo-950/50 dark:via-slate-900/50 dark:to-azulejo-950/50 border border-azulejo-200/50 dark:border-azulejo-800/50 animate-in fade-in slide-in-from-bottom-2 duration-300">
           {/* Visit Website */}
           {event.url && (
             <a href={event.url} target="_blank" rel="noreferrer">
@@ -885,7 +885,7 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
           {/* Add to Calendar dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="default" className="gap-2 border-2 hover:bg-ship-cove-50 dark:hover:bg-ship-cove-900/50">
+              <Button variant="outline" size="default" className="gap-2 border-2 hover:bg-azulejo-50 dark:hover:bg-azulejo-900/50">
                 <CalendarPlus className="w-4 h-4" />
                 <span className="hidden sm:inline">{tDetails('addToCalendar')}</span>
                 <span className="sm:hidden">Calendário</span>
@@ -915,7 +915,7 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
           {/* Share dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="default" className="gap-2 border-2 hover:bg-ship-cove-50 dark:hover:bg-ship-cove-900/50">
+              <Button variant="outline" size="default" className="gap-2 border-2 hover:bg-azulejo-50 dark:hover:bg-azulejo-900/50">
                 <Share2 className="w-4 h-4" />
                 <span className="hidden sm:inline">{tDetails('share')}</span>
               </Button>
@@ -948,7 +948,7 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
           {/* QR Code dialog */}
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline" size="default" className="gap-2 border-2 hover:bg-ship-cove-50 dark:hover:bg-ship-cove-900/50">
+              <Button variant="outline" size="default" className="gap-2 border-2 hover:bg-azulejo-50 dark:hover:bg-azulejo-900/50">
                 <QrCode className="w-4 h-4" />
                 <span className="hidden sm:inline">{tDetails('qrCode')}</span>
               </Button>
@@ -999,13 +999,13 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
           <div className="grid grid-cols-2 gap-4">
             {prevEvent ? (
               <Link href={`/events/${encodeURIComponent(prevEvent.id)}/`} className="group block">
-                <div className="relative p-4 sm:p-5 rounded-2xl border-2 border-ship-cove-200 dark:border-ship-cove-800 bg-gradient-to-br from-ship-cove-50 to-white dark:from-ship-cove-950/50 dark:to-slate-900/50 transition-all duration-200 overflow-hidden hover:-translate-x-1">
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-ship-cove-400 dark:bg-ship-cove-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="relative p-4 sm:p-5 rounded-2xl border-2 border-azulejo-200 dark:border-azulejo-800 bg-gradient-to-br from-azulejo-50 to-white dark:from-azulejo-950/50 dark:to-slate-900/50 transition-all duration-200 overflow-hidden hover:-translate-x-1">
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-azulejo-400 dark:bg-azulejo-600 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2">
                     <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
                     {tDetails('previousEvent')}
                   </div>
-                  <div className="font-semibold text-sm sm:text-base line-clamp-2 group-hover:text-ship-cove-700 dark:group-hover:text-ship-cove-300 transition-colors">
+                  <div className="font-semibold text-sm sm:text-base line-clamp-2 group-hover:text-azulejo-700 dark:group-hover:text-azulejo-300 transition-colors">
                     {prevEvent.title}
                   </div>
                 </div>
@@ -1013,13 +1013,13 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
             ) : <div />}
             {nextEvent ? (
               <Link href={`/events/${encodeURIComponent(nextEvent.id)}/`} className="group block">
-                <div className="relative p-4 sm:p-5 rounded-2xl border-2 border-ship-cove-200 dark:border-ship-cove-800 bg-gradient-to-bl from-ship-cove-50 to-white dark:from-ship-cove-950/50 dark:to-slate-900/50 text-right transition-all duration-200 overflow-hidden hover:translate-x-1">
-                  <div className="absolute right-0 top-0 bottom-0 w-1 bg-ship-cove-400 dark:bg-ship-cove-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="relative p-4 sm:p-5 rounded-2xl border-2 border-azulejo-200 dark:border-azulejo-800 bg-gradient-to-bl from-azulejo-50 to-white dark:from-azulejo-950/50 dark:to-slate-900/50 text-right transition-all duration-200 overflow-hidden hover:translate-x-1">
+                  <div className="absolute right-0 top-0 bottom-0 w-1 bg-azulejo-400 dark:bg-azulejo-600 opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-center justify-end gap-2 text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2">
                     {tDetails('nextEvent')}
                     <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
                   </div>
-                  <div className="font-semibold text-sm sm:text-base line-clamp-2 group-hover:text-ship-cove-700 dark:group-hover:text-ship-cove-300 transition-colors">
+                  <div className="font-semibold text-sm sm:text-base line-clamp-2 group-hover:text-azulejo-700 dark:group-hover:text-azulejo-300 transition-colors">
                     {nextEvent.title}
                   </div>
                 </div>

@@ -59,7 +59,7 @@ export function AntennaCalculator() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
-              <Radio className="h-5 w-5 text-ship-cove-600 dark:text-ship-cove-400" />
+              <Radio className="h-5 w-5 text-azulejo-600 dark:text-azulejo-400" />
               {t('frequency')}
             </CardTitle>
             <CardDescription>{t('frequencyDescription')}</CardDescription>
@@ -95,7 +95,7 @@ export function AntennaCalculator() {
                     onClick={() => handleBandSelect(band.freq, band.label)}
                     className={cn(
                       'font-mono',
-                      selectedBand === band.label && 'bg-ship-cove-600 hover:bg-ship-cove-700'
+                      selectedBand === band.label && 'bg-azulejo-600 hover:bg-azulejo-700'
                     )}
                   >
                     {band.label}
@@ -113,17 +113,17 @@ export function AntennaCalculator() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <Ruler className="h-5 w-5 text-ship-cove-600 dark:text-ship-cove-400" />
+                  <Ruler className="h-5 w-5 text-azulejo-600 dark:text-azulejo-400" />
                   {t('dipole')}
                 </CardTitle>
                 <CardDescription>{t('dipoleDescription')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Total length */}
-                <div className="p-4 rounded-xl bg-gradient-to-br from-ship-cove-50 to-ship-cove-100 dark:from-ship-cove-900/20 dark:to-ship-cove-800/20 border border-ship-cove-200 dark:border-ship-cove-800">
+                <div className="p-4 rounded-xl bg-gradient-to-br from-azulejo-50 to-azulejo-100 dark:from-azulejo-900/20 dark:to-azulejo-800/20 border border-azulejo-200 dark:border-azulejo-800">
                   <p className="text-sm text-muted-foreground mb-1">{t('totalLength')}</p>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-mono font-bold text-ship-cove-700 dark:text-ship-cove-400">
+                    <span className="text-3xl font-mono font-bold text-azulejo-700 dark:text-azulejo-400">
                       {formatNumber(result.halfWaveDipole)}
                     </span>
                     <span className="text-lg text-muted-foreground">{t('meters')}</span>
@@ -150,9 +150,9 @@ export function AntennaCalculator() {
                 {/* Diagram */}
                 <div className="mt-4 p-4 rounded-lg bg-gray-50 dark:bg-slate-800/30">
                   <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
-                    <div className="flex-1 h-1 bg-ship-cove-500 rounded-l-full"></div>
+                    <div className="flex-1 h-1 bg-azulejo-500 rounded-l-full"></div>
                     <div className="w-2 h-2 bg-slate-400 rounded-full"></div>
-                    <div className="flex-1 h-1 bg-ship-cove-500 rounded-r-full"></div>
+                    <div className="flex-1 h-1 bg-azulejo-500 rounded-r-full"></div>
                   </div>
                   <div className="flex justify-between mt-2 text-xs text-muted-foreground">
                     <span>{formatNumber(result.halfWaveDipoleLeg)}m</span>
@@ -167,17 +167,17 @@ export function AntennaCalculator() {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <Ruler className="h-5 w-5 text-ship-cove-600 dark:text-ship-cove-400" />
+                  <Ruler className="h-5 w-5 text-azulejo-600 dark:text-azulejo-400" />
                   {t('vertical')}
                 </CardTitle>
                 <CardDescription>{t('verticalDescription')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Vertical length */}
-                <div className="p-4 rounded-xl bg-gradient-to-br from-ship-cove-50 to-ship-cove-100 dark:from-ship-cove-900/20 dark:to-ship-cove-800/20 border border-ship-cove-200 dark:border-ship-cove-800">
+                <div className="p-4 rounded-xl bg-gradient-to-br from-azulejo-50 to-azulejo-100 dark:from-azulejo-900/20 dark:to-azulejo-800/20 border border-azulejo-200 dark:border-azulejo-800">
                   <p className="text-sm text-muted-foreground mb-1">{t('height')}</p>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-mono font-bold text-ship-cove-700 dark:text-ship-cove-400">
+                    <span className="text-3xl font-mono font-bold text-azulejo-700 dark:text-azulejo-400">
                       {formatNumber(result.quarterWaveVertical)}
                     </span>
                     <span className="text-lg text-muted-foreground">{t('meters')}</span>
@@ -201,7 +201,7 @@ export function AntennaCalculator() {
                 {/* Vertical diagram */}
                 <div className="mt-4 p-4 rounded-lg bg-gray-50 dark:bg-slate-800/30">
                   <div className="flex flex-col items-center">
-                    <div className="w-1 h-16 bg-ship-cove-500 rounded-t-full"></div>
+                    <div className="w-1 h-16 bg-azulejo-500 rounded-t-full"></div>
                     <div className="w-16 h-1 bg-slate-400"></div>
                   </div>
                   <div className="flex justify-center mt-2 text-xs text-muted-foreground">
@@ -218,7 +218,7 @@ export function AntennaCalculator() {
                 <div className="flex items-center justify-between flex-wrap gap-4">
                   <div>
                     <CardTitle className="flex items-center gap-2 text-lg">
-                      <Ruler className="h-5 w-5 text-ship-cove-600 dark:text-ship-cove-400" />
+                      <Ruler className="h-5 w-5 text-azulejo-600 dark:text-azulejo-400" />
                       {t('yagi')}
                     </CardTitle>
                     <CardDescription>{t('yagiDescription')}</CardDescription>
@@ -232,7 +232,7 @@ export function AntennaCalculator() {
                         max={10}
                         value={numElements}
                         onChange={(e) => setNumElements(parseInt(e.target.value))}
-                        className="w-24 accent-ship-cove-600"
+                        className="w-24 accent-azulejo-600"
                       />
                       <span className="font-mono text-lg font-bold w-6 text-center">{numElements}</span>
                     </div>
@@ -242,10 +242,10 @@ export function AntennaCalculator() {
               <CardContent className="space-y-4">
                 {/* Summary stats */}
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="p-4 rounded-xl bg-gradient-to-br from-ship-cove-50 to-ship-cove-100 dark:from-ship-cove-900/20 dark:to-ship-cove-800/20 border border-ship-cove-200 dark:border-ship-cove-800">
+                  <div className="p-4 rounded-xl bg-gradient-to-br from-azulejo-50 to-azulejo-100 dark:from-azulejo-900/20 dark:to-azulejo-800/20 border border-azulejo-200 dark:border-azulejo-800">
                     <p className="text-sm text-muted-foreground mb-1">{t('boomLength')}</p>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-mono font-bold text-ship-cove-700 dark:text-ship-cove-400">
+                      <span className="text-3xl font-mono font-bold text-azulejo-700 dark:text-azulejo-400">
                         {formatNumber(yagiResult.boomLength)}
                       </span>
                       <span className="text-lg text-muted-foreground">{t('meters')}</span>
@@ -254,10 +254,10 @@ export function AntennaCalculator() {
                       ({formatNumber(yagiResult.boomLengthFeet)} {t('feet')})
                     </p>
                   </div>
-                  <div className="p-4 rounded-xl bg-gradient-to-br from-ship-cove-50 to-ship-cove-100 dark:from-ship-cove-900/20 dark:to-ship-cove-800/20 border border-ship-cove-200 dark:border-ship-cove-800">
+                  <div className="p-4 rounded-xl bg-gradient-to-br from-azulejo-50 to-azulejo-100 dark:from-azulejo-900/20 dark:to-azulejo-800/20 border border-azulejo-200 dark:border-azulejo-800">
                     <p className="text-sm text-muted-foreground mb-1">{t('estimatedGain')}</p>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-mono font-bold text-ship-cove-700 dark:text-ship-cove-400">
+                      <span className="text-3xl font-mono font-bold text-azulejo-700 dark:text-azulejo-400">
                         {formatNumber(yagiResult.estimatedGainDbd, 1)}
                       </span>
                       <span className="text-lg text-muted-foreground">dBd</span>
@@ -327,7 +327,7 @@ export function AntennaCalculator() {
                           <div
                             className={cn(
                               'rounded-full',
-                              el.type === 'driven' ? 'w-1 bg-ship-cove-500' : el.type === 'reflector' ? 'w-0.5 bg-amber-500' : 'w-0.5 bg-slate-500 dark:bg-slate-400'
+                              el.type === 'driven' ? 'w-1 bg-azulejo-500' : el.type === 'reflector' ? 'w-0.5 bg-amber-500' : 'w-0.5 bg-slate-500 dark:bg-slate-400'
                             )}
                             style={{ height: `${halfHeight * 2}px` }}
                           />
@@ -344,7 +344,7 @@ export function AntennaCalculator() {
                   </div>
                   <div className="flex justify-center gap-4 text-[10px] text-muted-foreground mt-1">
                     <span className="flex items-center gap-1"><span className="inline-block w-3 h-0.5 bg-amber-500 rounded-full" /> {t('reflector')}</span>
-                    <span className="flex items-center gap-1"><span className="inline-block w-3 h-1 bg-ship-cove-500 rounded-full" /> {t('drivenElement')}</span>
+                    <span className="flex items-center gap-1"><span className="inline-block w-3 h-1 bg-azulejo-500 rounded-full" /> {t('drivenElement')}</span>
                     <span className="flex items-center gap-1"><span className="inline-block w-3 h-0.5 bg-slate-500 dark:bg-slate-400 rounded-full" /> {t('director')}</span>
                   </div>
                 </div>

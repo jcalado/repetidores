@@ -26,7 +26,7 @@ export function HFBandMatrix({ hamQSL }: HFBandMatrixProps) {
     <Card>
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-lg">
-          <SignalIcon className="h-5 w-5 text-ship-cove-500" />
+          <SignalIcon className="h-5 w-5 text-azulejo-500" />
           {t('hf.title')}
         </CardTitle>
       </CardHeader>

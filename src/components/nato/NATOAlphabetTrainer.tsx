@@ -156,7 +156,7 @@ export function NATOAlphabetTrainer() {
         <CardContent className="py-8 sm:py-12">
           {currentLetter ? (
             <div className="text-center space-y-4">
-              <div className="inline-flex items-center justify-center h-24 w-24 sm:h-32 sm:w-32 rounded-2xl bg-gradient-to-br from-ship-cove-500 to-ship-cove-700 text-white text-5xl sm:text-6xl font-bold shadow-xl">
+              <div className="inline-flex items-center justify-center h-24 w-24 sm:h-32 sm:w-32 rounded-2xl bg-gradient-to-br from-azulejo-500 to-azulejo-700 text-white text-5xl sm:text-6xl font-bold shadow-xl">
                 {currentLetter.letter}
               </div>
               <div>
@@ -204,10 +204,10 @@ export function NATOAlphabetTrainer() {
                 aria-label={`${entry.letter}, ${entry.word}`}
                 className={cn(
                   'flex flex-col items-center justify-center p-2 sm:p-3 rounded-xl border transition-all duration-150',
-                  'hover:bg-ship-cove-50 hover:border-ship-cove-300 dark:hover:bg-ship-cove-900/20 dark:hover:border-ship-cove-700',
-                  'focus:outline-none focus:ring-2 focus:ring-ship-cove-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900',
+                  'hover:bg-azulejo-50 hover:border-azulejo-300 dark:hover:bg-azulejo-900/20 dark:hover:border-azulejo-700',
+                  'focus:outline-none focus:ring-2 focus:ring-azulejo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900',
                   currentLetter?.letter === entry.letter
-                    ? 'bg-gradient-to-br from-ship-cove-500 to-ship-cove-700 text-white border-ship-cove-600 shadow-lg scale-105'
+                    ? 'bg-gradient-to-br from-azulejo-500 to-azulejo-700 text-white border-azulejo-600 shadow-lg scale-105'
                     : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700'
                 )}
               >

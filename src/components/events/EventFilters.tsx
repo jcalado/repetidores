@@ -88,19 +88,19 @@ export function EventFilters({
       <div className="flex flex-col sm:flex-row gap-3">
         {/* Search input */}
         <div className="relative flex-1">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-ship-cove-400 pointer-events-none" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-azulejo-400 pointer-events-none" />
           <input
             ref={searchInputRef}
             type="text"
             placeholder={t("searchPlaceholder") || "Pesquisar eventos..."}
             value={filters.search}
             onChange={(e) => onFilterChange({ search: e.target.value })}
-            className="w-full h-12 pl-12 pr-12 rounded-xl border border-ship-cove-200 dark:border-ship-cove-800 bg-white dark:bg-ship-cove-950/50 text-ship-cove-900 dark:text-ship-cove-100 placeholder:text-ship-cove-400 dark:placeholder:text-ship-cove-500 focus:outline-none focus:ring-2 focus:ring-ship-cove-500/20 focus:border-ship-cove-400 dark:focus:border-ship-cove-600 transition-all"
+            className="w-full h-12 pl-12 pr-12 rounded-xl border border-azulejo-200 dark:border-azulejo-800 bg-white dark:bg-azulejo-950/50 text-azulejo-900 dark:text-azulejo-100 placeholder:text-azulejo-400 dark:placeholder:text-azulejo-500 focus:outline-none focus:ring-2 focus:ring-azulejo-500/20 focus:border-azulejo-400 dark:focus:border-azulejo-600 transition-all"
           />
           {filters.search && (
             <button
               onClick={() => onFilterChange({ search: "" })}
-              className="absolute right-4 top-1/2 -translate-y-1/2 h-6 w-6 flex items-center justify-center rounded-full bg-ship-cove-100 dark:bg-ship-cove-800 text-ship-cove-500 dark:text-ship-cove-400 hover:bg-ship-cove-200 dark:hover:bg-ship-cove-700 transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 h-6 w-6 flex items-center justify-center rounded-full bg-azulejo-100 dark:bg-azulejo-800 text-azulejo-500 dark:text-azulejo-400 hover:bg-azulejo-200 dark:hover:bg-azulejo-700 transition-colors"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -114,7 +114,7 @@ export function EventFilters({
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className="h-12 px-4 gap-2 border-ship-cove-200 dark:border-ship-cove-800 bg-white dark:bg-ship-cove-950/50"
+                className="h-12 px-4 gap-2 border-azulejo-200 dark:border-azulejo-800 bg-white dark:bg-azulejo-950/50"
               >
                 <ArrowUpDown className="h-4 w-4" />
                 <span className="hidden sm:inline">{t("sortBy") || "Ordenar"}</span>
@@ -123,21 +123,21 @@ export function EventFilters({
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuItem
                 onClick={() => onFilterChange({ sort: "startAsc" })}
-                className={filters.sort === "startAsc" ? "bg-ship-cove-100 dark:bg-ship-cove-800" : ""}
+                className={filters.sort === "startAsc" ? "bg-azulejo-100 dark:bg-azulejo-800" : ""}
               >
                 <Calendar className="h-4 w-4 mr-2" />
                 {t("soonestFirst") || "Mais próximos"}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onFilterChange({ sort: "startDesc" })}
-                className={filters.sort === "startDesc" ? "bg-ship-cove-100 dark:bg-ship-cove-800" : ""}
+                className={filters.sort === "startDesc" ? "bg-azulejo-100 dark:bg-azulejo-800" : ""}
               >
                 <Calendar className="h-4 w-4 mr-2" />
                 {t("latestFirst") || "Mais distantes"}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onFilterChange({ sort: "title" })}
-                className={filters.sort === "title" ? "bg-ship-cove-100 dark:bg-ship-cove-800" : ""}
+                className={filters.sort === "title" ? "bg-azulejo-100 dark:bg-azulejo-800" : ""}
               >
                 <ArrowDownAZ className="h-4 w-4 mr-2" />
                 {t("titleAZ") || "Título A-Z"}
@@ -151,7 +151,7 @@ export function EventFilters({
               <Button
                 variant="outline"
                 size="icon"
-                className="h-12 w-12 border-ship-cove-200 dark:border-ship-cove-800 bg-white dark:bg-ship-cove-950/50"
+                className="h-12 w-12 border-azulejo-200 dark:border-azulejo-800 bg-white dark:bg-azulejo-950/50"
               >
                 <Download className="h-4 w-4" />
               </Button>
@@ -172,7 +172,7 @@ export function EventFilters({
             size="icon"
             onClick={onRefresh}
             disabled={isRefreshing}
-            className="h-12 w-12 border-ship-cove-200 dark:border-ship-cove-800 bg-white dark:bg-ship-cove-950/50"
+            className="h-12 w-12 border-azulejo-200 dark:border-azulejo-800 bg-white dark:bg-azulejo-950/50"
           >
             <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
           </Button>
@@ -188,7 +188,7 @@ export function EventFilters({
       <div className="flex flex-wrap items-center gap-2">
         {/* Category filters */}
         <div className="flex items-center gap-1.5 mr-2">
-          <span className="text-xs font-medium text-ship-cove-500 dark:text-ship-cove-400 uppercase tracking-wider mr-1">
+          <span className="text-xs font-medium text-azulejo-500 dark:text-azulejo-400 uppercase tracking-wider mr-1">
             {t("scope") || "Âmbito"}:
           </span>
           <FilterChip
@@ -213,12 +213,12 @@ export function EventFilters({
         </div>
 
         {/* Divider */}
-        <div className="hidden sm:block w-px h-6 bg-ship-cove-200 dark:bg-ship-cove-800" />
+        <div className="hidden sm:block w-px h-6 bg-azulejo-200 dark:bg-azulejo-800" />
 
         {/* Tag filters */}
         {tags.length > 0 && (
           <div className="flex items-center gap-1.5">
-            <span className="text-xs font-medium text-ship-cove-500 dark:text-ship-cove-400 uppercase tracking-wider mr-1">
+            <span className="text-xs font-medium text-azulejo-500 dark:text-azulejo-400 uppercase tracking-wider mr-1">
               {t("type") || "Tipo"}:
             </span>
             <FilterChip
@@ -237,7 +237,7 @@ export function EventFilters({
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                     filters.tag === tag
                       ? `${iconBgClass} text-white shadow-sm`
-                      : "bg-ship-cove-100 dark:bg-ship-cove-800/50 text-ship-cove-600 dark:text-ship-cove-400 hover:bg-ship-cove-200 dark:hover:bg-ship-cove-800"
+                      : "bg-azulejo-100 dark:bg-azulejo-800/50 text-azulejo-600 dark:text-azulejo-400 hover:bg-azulejo-200 dark:hover:bg-azulejo-800"
                   }`}
                 >
                   <TagIcon className="w-3.5 h-3.5" />
@@ -253,13 +253,13 @@ export function EventFilters({
           {hasActiveFilters && (
             <button
               onClick={clearFilters}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-ship-cove-600 dark:text-ship-cove-400 hover:bg-ship-cove-100 dark:hover:bg-ship-cove-800/50 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-azulejo-600 dark:text-azulejo-400 hover:bg-azulejo-100 dark:hover:bg-azulejo-800/50 transition-colors"
             >
               <X className="h-3.5 w-3.5" />
               {t("clearFilters") || "Limpar"}
             </button>
           )}
-          <span className="text-sm text-ship-cove-500 dark:text-ship-cove-400 tabular-nums">
+          <span className="text-sm text-azulejo-500 dark:text-azulejo-400 tabular-nums">
             {filteredCount} {filteredCount === 1 ? (t("event") || "evento") : (t("events") || "eventos")}
           </span>
         </div>
@@ -278,7 +278,7 @@ function FilterChip({
   onClick,
   label,
   icon,
-  activeClass = "bg-ship-cove-600 text-white border-ship-cove-600",
+  activeClass = "bg-azulejo-600 text-white border-azulejo-600",
 }: {
   isActive: boolean;
   onClick: () => void;
@@ -292,7 +292,7 @@ function FilterChip({
       className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
         isActive
           ? activeClass
-          : "bg-ship-cove-100 dark:bg-ship-cove-800/50 text-ship-cove-600 dark:text-ship-cove-400 hover:bg-ship-cove-200 dark:hover:bg-ship-cove-800"
+          : "bg-azulejo-100 dark:bg-azulejo-800/50 text-azulejo-600 dark:text-azulejo-400 hover:bg-azulejo-200 dark:hover:bg-azulejo-800"
       }`}
     >
       {icon}

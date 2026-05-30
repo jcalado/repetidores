@@ -70,7 +70,7 @@ export function DistritoRanking({ data, highlightedDistrito, onHover }: Distrito
                 onMouseLeave={() => onHover(null)}
                 className={`border-t border-slate-50 dark:border-slate-800 transition-colors cursor-default ${
                   highlightedDistrito === row.distrito
-                    ? "bg-ship-cove-50 dark:bg-ship-cove-950/30"
+                    ? "bg-azulejo-50 dark:bg-azulejo-950/30"
                     : "hover:bg-slate-50 dark:hover:bg-slate-800/50"
                 }`}
               >

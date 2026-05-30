@@ -65,7 +65,7 @@ export function FacetedFilter({ icon, title, options, selected, onChange, disabl
             border shadow-xs transition-all duration-150
             disabled:opacity-50 disabled:cursor-not-allowed
             ${isActive
-              ? "bg-ship-cove-50 dark:bg-ship-cove-950/50 border-ship-cove-200 dark:border-ship-cove-800 text-ship-cove-800 dark:text-ship-cove-200"
+              ? "bg-azulejo-50 dark:bg-azulejo-950/50 border-azulejo-200 dark:border-azulejo-800 text-azulejo-800 dark:text-azulejo-200"
               : "bg-transparent dark:bg-input/30 border-input text-muted-foreground hover:text-foreground"
             }
             ${isActive ? "pl-2.5 pr-1.5" : "px-2.5"}
@@ -75,10 +75,10 @@ export function FacetedFilter({ icon, title, options, selected, onChange, disabl
           <span>{title}</span>
           {isActive && (
             <>
-              <span className="h-3.5 w-px bg-ship-cove-300 dark:bg-ship-cove-700 mx-0.5" />
+              <span className="h-3.5 w-px bg-azulejo-300 dark:bg-azulejo-700 mx-0.5" />
               <Badge
                 variant="secondary"
-                className="h-5 min-w-5 px-1 rounded text-[10px] font-semibold bg-ship-cove-500 dark:bg-ship-cove-600 text-white border-0"
+                className="h-5 min-w-5 px-1 rounded text-[10px] font-semibold bg-azulejo-500 dark:bg-azulejo-600 text-white border-0"
               >
                 {selected.length}
               </Badge>
@@ -140,7 +140,7 @@ export function FacetedFilter({ icon, title, options, selected, onChange, disabl
                   >
                     <Checkbox
                       checked={checked}
-                      className="h-3.5 w-3.5 rounded-[3px] border-slate-300 dark:border-slate-600 data-[state=checked]:bg-ship-cove-500 data-[state=checked]:border-ship-cove-500"
+                      className="h-3.5 w-3.5 rounded-[3px] border-slate-300 dark:border-slate-600 data-[state=checked]:bg-azulejo-500 data-[state=checked]:border-azulejo-500"
                       tabIndex={-1}
                     />
                     <span className="flex-1 truncate">{option.label}</span>

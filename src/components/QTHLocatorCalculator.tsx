@@ -272,7 +272,7 @@ export default function QTHLocatorCalculator() {
                       {t('result.qth6char')}
                     </h3>
                     <div className="flex items-center gap-2">
-                      <div className="flex-1 p-6 bg-gradient-to-br from-ship-cove-500 to-ship-cove-600 rounded-lg text-white">
+                      <div className="flex-1 p-6 bg-gradient-to-br from-azulejo-500 to-azulejo-600 rounded-lg text-white">
                         <div className="text-4xl font-bold font-mono tracking-wider">
                           {qth6char}
                         </div>

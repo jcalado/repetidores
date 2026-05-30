@@ -311,9 +311,9 @@ export default function HamRadioEventsCountdown({
     return (
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-6">
         {/* Header skeleton */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-ship-cove-100 to-ship-cove-50 dark:from-ship-cove-900 dark:to-ship-cove-950 p-8 mb-8 animate-pulse">
-          <div className="h-8 w-64 bg-ship-cove-200 dark:bg-ship-cove-800 rounded mb-3" />
-          <div className="h-5 w-96 bg-ship-cove-200 dark:bg-ship-cove-800 rounded" />
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-azulejo-100 to-azulejo-50 dark:from-azulejo-900 dark:to-azulejo-950 p-8 mb-8 animate-pulse">
+          <div className="h-8 w-64 bg-azulejo-200 dark:bg-azulejo-800 rounded mb-3" />
+          <div className="h-5 w-96 bg-azulejo-200 dark:bg-azulejo-800 rounded" />
         </div>
         <FilterSkeleton />
         <div className="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
@@ -378,7 +378,7 @@ export default function HamRadioEventsCountdown({
           }
           className="w-full"
         >
-          <TabsList className="grid grid-cols-3 w-full max-w-sm mb-6 bg-ship-cove-100 dark:bg-ship-cove-800/50">
+          <TabsList className="grid grid-cols-3 w-full max-w-sm mb-6 bg-azulejo-100 dark:bg-azulejo-800/50">
             <TabsTrigger value="cards" className="inline-flex items-center gap-2">
               <LayoutGrid className="w-4 h-4" />
               <span className="hidden sm:inline">{t("tabs.cards")}</span>
@@ -400,7 +400,7 @@ export default function HamRadioEventsCountdown({
 
             {/* Section divider */}
             {visibleEvents.length > 0 && (
-              <div className="border-t border-ship-cove-200 dark:border-ship-cove-800 my-8" />
+              <div className="border-t border-azulejo-200 dark:border-azulejo-800 my-8" />
             )}
 
             <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">

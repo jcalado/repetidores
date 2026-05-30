@@ -21,32 +21,32 @@ export default function Footer({ className }: FooterProps) {
   const t = useTranslations('footer');
 
   return (
-    <footer className={cn("border-t border-gray-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm", className)}>
+    <footer className={cn("border-t border-border bg-background", className)}>
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         {/* Link sections */}
         <nav className="grid grid-cols-2 sm:grid-cols-3 gap-8 mb-8">
           <div>
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">
+            <h3 className="text-sm font-semibold text-foreground mb-3">
               {t('frequencies')}
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/repetidores" className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+                <Link href="/repetidores" className="text-sm text-muted-foreground hover:text-azulejo-600 dark:hover:text-azulejo-400 transition-colors">
                   {t('list')}
                 </Link>
               </li>
               <li>
-                <Link href="/repetidores/mapa" className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+                <Link href="/repetidores/mapa" className="text-sm text-muted-foreground hover:text-azulejo-600 dark:hover:text-azulejo-400 transition-colors">
                   {t('map')}
                 </Link>
               </li>
               <li>
-                <Link href="/repetidores/proximo" className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+                <Link href="/repetidores/proximo" className="text-sm text-muted-foreground hover:text-azulejo-600 dark:hover:text-azulejo-400 transition-colors">
                   {t('nearest')}
                 </Link>
               </li>
               <li>
-                <Link href="/simplex" className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+                <Link href="/simplex" className="text-sm text-muted-foreground hover:text-azulejo-600 dark:hover:text-azulejo-400 transition-colors">
                   {t('simplex')}
                 </Link>
               </li>
@@ -54,42 +54,42 @@ export default function Footer({ className }: FooterProps) {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">
+            <h3 className="text-sm font-semibold text-foreground mb-3">
               {t('tools')}
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/calculadoras" className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+                <Link href="/calculadoras" className="text-sm text-muted-foreground hover:text-azulejo-600 dark:hover:text-azulejo-400 transition-colors">
                   {t('calculators')}
                 </Link>
               </li>
               <li>
-                <Link href="/propagation" className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+                <Link href="/propagation" className="text-sm text-muted-foreground hover:text-azulejo-600 dark:hover:text-azulejo-400 transition-colors">
                   {t('propagation')}
                 </Link>
               </li>
               <li>
-                <Link href="/bands" className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+                <Link href="/bandas" className="text-sm text-muted-foreground hover:text-azulejo-600 dark:hover:text-azulejo-400 transition-colors">
                   {t('bands')}
                 </Link>
               </li>
               <li>
-                <Link href="/qth" className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+                <Link href="/qth" className="text-sm text-muted-foreground hover:text-azulejo-600 dark:hover:text-azulejo-400 transition-colors">
                   {t('qth')}
                 </Link>
               </li>
               <li>
-                <Link href="/morse" className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+                <Link href="/morse" className="text-sm text-muted-foreground hover:text-azulejo-600 dark:hover:text-azulejo-400 transition-colors">
                   {t('morse')}
                 </Link>
               </li>
               <li>
-                <Link href="/nato" className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+                <Link href="/nato" className="text-sm text-muted-foreground hover:text-azulejo-600 dark:hover:text-azulejo-400 transition-colors">
                   {t('nato')}
                 </Link>
               </li>
               <li>
-                <Link href="/qcodes" className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+                <Link href="/codigoq" className="text-sm text-muted-foreground hover:text-azulejo-600 dark:hover:text-azulejo-400 transition-colors">
                   {t('qcodes')}
                 </Link>
               </li>
@@ -97,22 +97,22 @@ export default function Footer({ className }: FooterProps) {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-3">
+            <h3 className="text-sm font-semibold text-foreground mb-3">
               {t('community')}
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/events" className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+                <Link href="/events" className="text-sm text-muted-foreground hover:text-azulejo-600 dark:hover:text-azulejo-400 transition-colors">
                   {t('events')}
                 </Link>
               </li>
               <li>
-                <Link href="/noticias" className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+                <Link href="/noticias" className="text-sm text-muted-foreground hover:text-azulejo-600 dark:hover:text-azulejo-400 transition-colors">
                   {t('news')}
                 </Link>
               </li>
               <li>
-                <Link href="/associations" className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+                <Link href="/associations" className="text-sm text-muted-foreground hover:text-azulejo-600 dark:hover:text-azulejo-400 transition-colors">
                   {t('associations')}
                 </Link>
               </li>
@@ -121,13 +121,13 @@ export default function Footer({ className }: FooterProps) {
         </nav>
 
         {/* Bottom bar */}
-        <div className="border-t border-gray-200 dark:border-slate-700 pt-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
-          <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400">
-            <RadioTowerIcon className="h-5 w-5" />
-            <span className="text-sm font-medium">
+        <div className="border-t border-border pt-6 flex flex-col items-center justify-between gap-4 sm:flex-row">
+          <div className="flex items-center gap-3 text-muted-foreground">
+            <RadioTowerIcon className="h-5 w-5 text-azulejo-500" />
+            <span className="text-sm font-medium text-foreground">
               © {new Date().getFullYear()} {t('copyright')}
             </span>
-            <span className="text-xs text-slate-400 dark:text-slate-500">
+            <span className="text-xs text-muted-foreground/70 font-mono">
               v{APP_VERSION} ({GIT_HASH})
             </span>
           </div>
@@ -135,7 +135,7 @@ export default function Footer({ className }: FooterProps) {
           <div className="flex items-center gap-6">
             <Link
               href="/about"
-              className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+              className="text-sm text-muted-foreground hover:text-azulejo-600 dark:hover:text-azulejo-400 transition-colors"
             >
               {t('about')}
             </Link>
@@ -143,12 +143,12 @@ export default function Footer({ className }: FooterProps) {
               href="https://github.com/jcalado/repetidores"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+              className="text-sm text-muted-foreground hover:text-azulejo-600 dark:hover:text-azulejo-400 transition-colors"
             >
               {t('github')}
             </Link>
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+              <DropdownMenuTrigger className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-azulejo-600 dark:hover:text-azulejo-400 transition-colors">
                 <Rss className="h-4 w-4" />
                 {t('rss')}
               </DropdownMenuTrigger>
