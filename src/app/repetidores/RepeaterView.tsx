@@ -229,27 +229,6 @@ export default function RepeaterView({ view }: Props) {
       <LocationTip />
       <Card className="w-full max-w-7xl">
         <CardContent>
-          {/* Quick search — always above the view toggle so lookup is the primary action */}
-          <div className="mb-4">
-            <SearchAutocomplete
-              repeaters={data}
-              value={(columnFilters.find((f) => f.id === "callsign")?.value as string) ?? ""}
-              onChange={(v) => {
-                setColumnFilters((prev) => {
-                  const next = prev.filter((f) => f.id !== "callsign")
-                  if (v) next.push({ id: "callsign", value: v })
-                  return next
-                })
-              }}
-              onSelect={(repeater) => {
-                setSelected(repeater)
-                setOpen(true)
-              }}
-              className="w-full"
-              placeholder={t("filters.callsign")}
-            />
-          </div>
-
           {/* View toggle tabs */}
           <div className="flex items-center gap-2 mb-4">
             <div className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
