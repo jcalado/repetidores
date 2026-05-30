@@ -70,29 +70,6 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
       minSize: 32,
       maxSize: 48,
     },
-    {
-      id: "status",
-      header: t("status"),
-      cell: ({ row }) => {
-        const r = row.original as Repeater
-        return <StatusCell repeaterId={r.callsign} />
-      },
-      enableSorting: false,
-      enableColumnFilter: true,
-      // Filter by community status category
-      filterFn: (row, _id, value) => {
-        if (!value) return true
-        const r = row.original as Repeater
-        const s = voteCache.get(r.callsign)
-        const cat = s?.category ?? "unknown"
-        // If filtering for "bad" (Não funciona), also include repeaters with offline operational status
-        if (value === "bad" && r.status === "offline") return true
-        return cat === value
-      },
-      size: 36,
-      minSize: 32,
-      maxSize: 48,
-    },
     // Operational status (admin-set)
     {
       id: "opStatus",
@@ -112,6 +89,29 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
           return value.includes(r.status ?? 'unknown')
         }
         return r.status === value
+      },
+      size: 36,
+      minSize: 32,
+      maxSize: 48,
+    },
+    {
+      id: "status",
+      header: t("status"),
+      cell: ({ row }) => {
+        const r = row.original as Repeater
+        return <StatusCell repeaterId={r.callsign} />
+      },
+      enableSorting: false,
+      enableColumnFilter: true,
+      // Filter by community status category
+      filterFn: (row, _id, value) => {
+        if (!value) return true
+        const r = row.original as Repeater
+        const s = voteCache.get(r.callsign)
+        const cat = s?.category ?? "unknown"
+        // If filtering for "bad" (Não funciona), also include repeaters with offline operational status
+        if (value === "bad" && r.status === "offline") return true
+        return cat === value
       },
       size: 36,
       minSize: 32,
