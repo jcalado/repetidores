@@ -631,12 +631,12 @@ export function DataTable<TData, TValue>({
                               className="h-8 text-xs w-full"
                             />
                           )}
-                          {header.column.id === "qth_locator" && (
+                          {header.column.id === "qthLocator" && (
                             <Input
                               placeholder=""
-                              value={(table.getColumn("qth_locator")?.getFilterValue() as string) ?? ""}
+                              value={(table.getColumn("qthLocator")?.getFilterValue() as string) ?? ""}
                               onChange={(event) =>
-                                table.getColumn("qth_locator")?.setFilterValue(event.target.value)
+                                table.getColumn("qthLocator")?.setFilterValue(event.target.value)
                               }
                               className="h-8 text-xs w-full"
                             />
