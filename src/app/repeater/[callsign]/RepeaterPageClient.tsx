@@ -109,6 +109,20 @@ export default function RepeaterPageClient({
   const { sign, offsetDisplay, offsetCopy } = primary
     ? duplex(primary.outputFrequency, primary.inputFrequency)
     : { sign: "", offsetDisplay: "—", offsetCopy: "" };
+
+  // Derived RF-meta surfaced near the frequency tiles.
+  const isSimplex = r.nodeType === "simplex";
+  const showCrossband = Boolean(r.isCrossband);
+  const fmBandwidthLabel =
+    r.modes?.includes("FM") && r.fmBandwidth
+      ? r.fmBandwidth === "narrow"
+        ? "NFM (12.5 kHz)"
+        : "WFM (25 kHz)"
+      : null;
+
+  const allFreqPairs = r.frequencies ?? [];
+  const primaryIdx = primary ? allFreqPairs.indexOf(primary) : -1;
+  const secondaryPairs = allFreqPairs.filter((_, i) => i !== primaryIdx);
   const [favorite, setFavorite] = React.useState(() => isFavorite(r.callsign));
   const [autoStatus, setAutoStatus] = React.useState<RepeaterAutoStatus | null>(null);
   const [bmProfile, setBmProfile] = React.useState<BMProfileBySlot | null>(null);
@@ -299,29 +313,117 @@ export default function RepeaterPageClient({
           {/* Frequencies + Location */}
           <div className="grid gap-6 pt-5 lg:grid-cols-3 lg:gap-8">
             <section className="lg:col-span-2 lg:border-r lg:border-border lg:pr-8">
-              <SectionLabel>Frequências</SectionLabel>
-              <div className="mt-3 grid grid-cols-2 gap-2">
-                <FrequencyDisplay
-                  label={t("output")}
-                  value={primary ? fmtMHzDisplay(primary.outputFrequency) : "—"}
-                  copyValue={primary ? fmtMHzCopy(primary.outputFrequency) : undefined}
-                />
-                <FrequencyDisplay
-                  label={t("input")}
-                  value={primary ? fmtMHzDisplay(primary.inputFrequency) : "—"}
-                  copyValue={primary ? fmtMHzCopy(primary.inputFrequency) : undefined}
-                />
-                <FrequencyDisplay
-                  label={t("offset")}
-                  value={`${sign}${sign ? " " : ""}${offsetDisplay}`}
-                  copyValue={`${sign}${offsetCopy}`}
-                />
-                <FrequencyDisplay
-                  label={t("tone")}
-                  value={primary?.tone ? `${Number(primary.tone.toFixed(1))} Hz` : "—"}
-                  copyValue={primary?.tone ? `${Number(primary.tone.toFixed(1))}` : undefined}
-                />
+              <div className="flex flex-wrap items-center gap-2">
+                <SectionLabel>Frequências</SectionLabel>
+                {isSimplex && <MetaPill>Simplex</MetaPill>}
+                {showCrossband && <MetaPill>Crossband</MetaPill>}
               </div>
+
+              {isSimplex ? (
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <FrequencyDisplay
+                    label="Frequência"
+                    value={primary ? fmtMHzDisplay(primary.outputFrequency) : "—"}
+                    copyValue={
+                      primary ? fmtMHzCopy(primary.outputFrequency) : undefined
+                    }
+                  />
+                  <FrequencyDisplay
+                    label={t("tone")}
+                    value={
+                      primary?.tone ? `${Number(primary.tone.toFixed(1))} Hz` : "—"
+                    }
+                    copyValue={
+                      primary?.tone ? `${Number(primary.tone.toFixed(1))}` : undefined
+                    }
+                  />
+                </div>
+              ) : (
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <FrequencyDisplay
+                    label={t("output")}
+                    value={primary ? fmtMHzDisplay(primary.outputFrequency) : "—"}
+                    copyValue={
+                      primary ? fmtMHzCopy(primary.outputFrequency) : undefined
+                    }
+                  />
+                  <FrequencyDisplay
+                    label={t("input")}
+                    value={primary ? fmtMHzDisplay(primary.inputFrequency) : "—"}
+                    copyValue={
+                      primary ? fmtMHzCopy(primary.inputFrequency) : undefined
+                    }
+                  />
+                  <FrequencyDisplay
+                    label={t("offset")}
+                    value={`${sign}${sign ? " " : ""}${offsetDisplay}`}
+                    copyValue={`${sign}${offsetCopy}`}
+                  />
+                  <FrequencyDisplay
+                    label={t("tone")}
+                    value={
+                      primary?.tone ? `${Number(primary.tone.toFixed(1))} Hz` : "—"
+                    }
+                    copyValue={
+                      primary?.tone ? `${Number(primary.tone.toFixed(1))}` : undefined
+                    }
+                  />
+                </div>
+              )}
+
+              {fmBandwidthLabel && (
+                <p className="mt-2 text-[12.5px] text-muted-foreground">
+                  <span className="text-muted-foreground/70">Largura · </span>
+                  <span className="font-mono text-foreground">{fmBandwidthLabel}</span>
+                </p>
+              )}
+
+              {secondaryPairs.length > 0 && (
+                <div className="mt-4 border-t border-border pt-3">
+                  <h3 className="mb-2 text-[11px] font-semibold tracking-[0.04em] text-muted-foreground">
+                    Outras frequências{" "}
+                    <span className="ml-1 font-mono tabular-nums text-foreground/60">
+                      {secondaryPairs.length}
+                    </span>
+                  </h3>
+                  <ul className="divide-y divide-border border-t border-border">
+                    {secondaryPairs.map((pair, idx) => {
+                      const d = duplex(pair.outputFrequency, pair.inputFrequency);
+                      const pairBand = getBandFromFrequency(pair.outputFrequency);
+                      return (
+                        <li
+                          key={idx}
+                          className="flex flex-wrap items-baseline gap-x-2.5 py-2 text-[12.5px] text-muted-foreground"
+                        >
+                          {pairBand !== "unknown" && (
+                            <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground/70">
+                              {pairBand}
+                            </span>
+                          )}
+                          <span className="font-mono tabular-nums text-foreground">
+                            {pair.outputFrequency.toFixed(3)}
+                            <span className="text-muted-foreground/70"> MHz</span>
+                          </span>
+                          {d.sign && (
+                            <span className="font-mono tabular-nums text-muted-foreground/60">
+                              {d.sign}
+                              {d.offsetCopy}
+                            </span>
+                          )}
+                          {pair.tone ? (
+                            <>
+                              <span aria-hidden="true">·</span>
+                              <span className="font-mono tabular-nums">
+                                {Number(pair.tone.toFixed(1))} Hz
+                              </span>
+                            </>
+                          ) : null}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              )}
             </section>
 
             <section>
@@ -725,6 +827,14 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
     <h2 className="text-[11px] font-semibold tracking-[0.04em] text-muted-foreground">
       {children}
     </h2>
+  );
+}
+
+function MetaPill({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">
+      {children}
+    </span>
   );
 }
 
