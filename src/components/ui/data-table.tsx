@@ -14,7 +14,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ChevronDown } from "lucide-react"
+import { ChevronDown, Columns3, Download, FunnelX } from "lucide-react"
 import * as React from "react"
 
 import {
@@ -68,6 +68,8 @@ interface DataTableProps<TData, TValue> {
   isLoading?: boolean
   initialSorting?: SortingState
   leftActions?: React.ReactNode
+  /** Column ids hidden by default below the md: breakpoint. Users can still toggle them back on via the "Colunas" dropdown. */
+  responsiveHiddenColumns?: string[]
 }
 
 export function DataTable<TData, TValue>({
@@ -80,6 +82,7 @@ export function DataTable<TData, TValue>({
   isLoading = false,
   initialSorting,
   leftActions,
+  responsiveHiddenColumns,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>(
     initialSorting ?? [{ id: 'outputFrequency', desc: false }]
@@ -107,6 +110,29 @@ export function DataTable<TData, TValue>({
       latitude: false,
       longitude: false,
     })
+
+  // Apply responsiveHiddenColumns: hide listed columns when viewport is < md (768px),
+  // restore them when crossing to md+. User toggles via the Colunas dropdown still win
+  // for any column not in the responsive list; for listed columns the user's choice is
+  // overridden whenever the breakpoint changes (intentional — these defaults are
+  // viewport-bound, not user preferences).
+  React.useEffect(() => {
+    if (!responsiveHiddenColumns?.length) return
+    const mq = window.matchMedia("(max-width: 767px)")
+    const apply = () => {
+      setColumnVisibility((prev) => {
+        const next = { ...prev }
+        for (const id of responsiveHiddenColumns) {
+          next[id] = !mq.matches
+        }
+        return next
+      })
+    }
+    apply()
+    mq.addEventListener("change", apply)
+    return () => mq.removeEventListener("change", apply)
+  }, [responsiveHiddenColumns])
+
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -476,16 +502,23 @@ export function DataTable<TData, TValue>({
         <div className="flex items-center gap-2">
         <Button
           variant="outline"
-          size="sm"
+          size="icon-sm"
           onClick={handleExportClick}
+          aria-label={t("filters.export")}
+          title={t("filters.export")}
         >
-          {t("filters.export")}
+          <Download className="h-4 w-4" />
         </Button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              {t("table.visibleColumns")}
+            <Button
+              variant="outline"
+              size="icon-sm"
+              aria-label={t("table.visibleColumns")}
+              title={t("table.visibleColumns")}
+            >
+              <Columns3 className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
@@ -514,13 +547,15 @@ export function DataTable<TData, TValue>({
 
         <Button
           variant="outline"
-          size="sm"
+          size="icon-sm"
           onClick={() => {
             table.resetColumnFilters()
             table.setPageIndex(0)
           }}
+          aria-label={t("filters.clear")}
+          title={t("filters.clear")}
         >
-          {t("filters.clear")}
+          <FunnelX className="h-4 w-4" />
         </Button>
         </div>
       </div>
@@ -790,6 +825,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
+      {table.getPageCount() > 0 && (
       <div
         className={`mt-4 flex flex-wrap items-center justify-between gap-3${isLoading ? " pointer-events-none opacity-50" : ""}`}
         aria-hidden={isLoading}
@@ -880,6 +916,7 @@ export function DataTable<TData, TValue>({
           </PaginationContent>
         </Pagination>
       </div>
+      )}
 
       {/* Export Confirmation Modal */}
       <AlertDialog open={showExportModal} onOpenChange={setShowExportModal}>

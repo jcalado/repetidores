@@ -143,7 +143,7 @@ export default function LocationPickerPopover({ compact = false }: LocationPicke
 
         <PopoverPanel
           transition
-          className="absolute right-0 z-50 mt-3 w-80 overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-gray-900/5 transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[enter]:ease-out data-[leave]:duration-150 data-[leave]:ease-in dark:bg-slate-900 dark:ring-white/10"
+          className="absolute left-0 z-50 mt-3 w-[min(20rem,calc(100vw-3rem))] overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-gray-900/5 transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[enter]:ease-out data-[leave]:duration-150 data-[leave]:ease-in dark:bg-slate-900 dark:ring-white/10"
         >
           <PopoverContent
             t={t}

@@ -75,13 +75,9 @@ function Wordmark({ onClick }: { onClick?: () => void }) {
         <Link
             href="/"
             onClick={onClick}
-            className="group inline-flex items-center gap-2 font-mono text-base font-semibold tracking-tight text-foreground rounded-md focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-azulejo-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="inline-flex items-baseline font-mono text-base font-semibold tracking-tight text-foreground rounded-md focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-azulejo-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         >
-            <span
-                aria-hidden="true"
-                className="inline-block size-5 rounded-md bg-gradient-to-br from-azulejo-400 to-azulejo-700 shadow-[0_2px_6px_oklch(0.50_0.137_252/0.45)] transition-transform duration-200 ease-out group-hover:scale-[1.06]"
-            />
-            <span>radioamador<span className="text-azulejo-500">.</span>info</span>
+            <span>radioamador<span className="text-[0.75em] sm:text-[1em]"><span className="text-azulejo-500">.</span>info</span></span>
         </Link>
     )
 }
@@ -233,8 +229,6 @@ export default function Header() {
 
                 <div className="flex lg:hidden items-center gap-0.5">
                     <SearchTrigger variant="mobile" />
-                    <LocationPickerPopover compact />
-                    <NotificationSettings />
                     <ThemeToggle />
                     <button
                         type="button"
@@ -313,6 +307,12 @@ export default function Header() {
                     </div>
 
                     <div className="flex-1 px-4 py-2 divide-y divide-border">
+                        {/* Quick settings: location + notifications, surfaced here instead of the mobile nav strip */}
+                        <div className="flex items-center gap-2 py-3">
+                            <LocationPickerPopover compact />
+                            <NotificationSettings />
+                        </div>
+
                         <div className="py-4">
                             <MobileNavLink
                                 href="/"

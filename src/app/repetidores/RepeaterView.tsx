@@ -38,7 +38,6 @@ import {
   MapIcon,
   MapPin,
   Radio,
-  RefreshCw,
   Shield,
   Signal,
   Star,
@@ -124,7 +123,7 @@ function FilterChip({
 
 export default function RepeaterView({ view }: Props) {
   const t = useTranslations();
-  const { repeaters: data, isRefreshing, fetchError, refreshRepeaters } = useRepeaters();
+  const { repeaters: data, fetchError } = useRepeaters();
   const { userLocation } = useUserLocation();
   const columns = useColumns({ userLocation });
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -230,6 +229,27 @@ export default function RepeaterView({ view }: Props) {
       <LocationTip />
       <Card className="w-full max-w-7xl">
         <CardContent>
+          {/* Quick search — always above the view toggle so lookup is the primary action */}
+          <div className="mb-4">
+            <SearchAutocomplete
+              repeaters={data}
+              value={(columnFilters.find((f) => f.id === "callsign")?.value as string) ?? ""}
+              onChange={(v) => {
+                setColumnFilters((prev) => {
+                  const next = prev.filter((f) => f.id !== "callsign")
+                  if (v) next.push({ id: "callsign", value: v })
+                  return next
+                })
+              }}
+              onSelect={(repeater) => {
+                setSelected(repeater)
+                setOpen(true)
+              }}
+              className="w-full"
+              placeholder={t("filters.callsign")}
+            />
+          </div>
+
           {/* View toggle tabs */}
           <div className="flex items-center gap-2 mb-4">
             <div className="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
@@ -261,24 +281,82 @@ export default function RepeaterView({ view }: Props) {
           {view === "table" && (
             <>
 
-              {/* Mode Filter Presets - Hero Cards */}
-              <div className="mb-6 rounded-xl border bg-gradient-to-br from-muted/30 via-background to-muted/20 p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold text-foreground tracking-tight">{t('filters.quickFilters')}</h3>
-                  {(columnFilters.find((f) => f.id === "modes")?.value as string[] | undefined)?.length ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setColumnFilters((prev) => prev.filter((f) => f.id !== "modes"))
-                      }}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-all"
-                    >
-                      <X className="h-3 w-3" />
-                      {t('filters.clearModes')}
-                    </button>
-                  ) : null}
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-8 gap-2">
+              {/* Mode Filter Presets — chip strip on mobile, tile card on lg+ */}
+              {(() => {
+                const activeModes = (columnFilters.find((f) => f.id === "modes")?.value as string[] | undefined) ?? []
+                const hasActiveFilter = activeModes.length > 0
+                const modes: { mode: string; label: string }[] = [
+                  { mode: 'ALL', label: 'Todos' },
+                  { mode: 'FM', label: 'FM' },
+                  { mode: 'DMR', label: 'DMR' },
+                  { mode: 'DSTAR', label: 'D-STAR' },
+                  { mode: 'C4FM', label: 'C4FM' },
+                  { mode: 'TETRA', label: 'TETRA' },
+                  { mode: 'EchoLink', label: 'EchoLink' },
+                  { mode: 'AllStar', label: 'AllStar' },
+                ]
+                const toggleMode = (mode: string) => {
+                  if (mode === 'ALL') {
+                    setColumnFilters((prev) => prev.filter((f) => f.id !== "modes"))
+                    return
+                  }
+                  const displayMode = mode === 'DSTAR' ? 'D-STAR' : mode
+                  setColumnFilters((prev) => {
+                    const next = prev.filter((f) => f.id !== "modes")
+                    if (activeModes.includes(displayMode)) {
+                      const updated = activeModes.filter((m) => m !== displayMode)
+                      if (updated.length > 0) next.push({ id: "modes", value: updated })
+                    } else {
+                      next.push({ id: "modes", value: [displayMode] })
+                    }
+                    return next
+                  })
+                }
+                return (
+                  <>
+                    {/* Mobile chip strip — single horizontal scroll row, unified azulejo voice */}
+                    <div className="mb-4 lg:hidden">
+                      <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                        {modes.map(({ mode, label }) => {
+                          const displayMode = mode === 'DSTAR' ? 'D-STAR' : mode
+                          const isActive = mode === 'ALL' ? !hasActiveFilter : activeModes.includes(displayMode)
+                          return (
+                            <button
+                              key={mode}
+                              type="button"
+                              onClick={() => toggleMode(mode)}
+                              className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-4 min-h-10 text-sm font-medium transition-colors duration-150 ${
+                                isActive
+                                  ? 'bg-azulejo-500 border-azulejo-600 text-white shadow-[0_1px_3px_oklch(0.50_0.137_252/0.35)]'
+                                  : 'bg-card border-border text-foreground hover:bg-azulejo-50 hover:border-azulejo-300 dark:hover:bg-azulejo-950/30'
+                              }`}
+                            >
+                              {isActive && mode !== 'ALL' && <span className="size-1.5 rounded-full bg-white" />}
+                              {label}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Desktop tile card — preserved as-is at lg+ */}
+                    <div className="hidden lg:block mb-6 rounded-xl border bg-gradient-to-br from-muted/30 via-background to-muted/20 p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-sm font-semibold text-foreground tracking-tight">{t('filters.quickFilters')}</h3>
+                        {hasActiveFilter ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setColumnFilters((prev) => prev.filter((f) => f.id !== "modes"))
+                            }}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-all"
+                          >
+                            <X className="h-3 w-3" />
+                            {t('filters.clearModes')}
+                          </button>
+                        ) : null}
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-8 gap-2">
                   {(() => {
                     const currentModes = (columnFilters.find((f) => f.id === "modes")?.value as string[] | undefined) || []
                     const hasActiveFilter = currentModes.length > 0
@@ -351,8 +429,11 @@ export default function RepeaterView({ view }: Props) {
                       )
                     })
                   })()}
-                </div>
-              </div>
+                      </div>
+                    </div>
+                  </>
+                )
+              })()}
 
               <DataTable
                 columns={columns}
@@ -364,40 +445,47 @@ export default function RepeaterView({ view }: Props) {
                   setOpen(true);
                 }}
                 isLoading={false}
+                // Mobile-default visible columns: callsign + outputFrequency only.
+                // Everything else hidden under md:, user can re-enable via the Colunas dropdown.
+                responsiveHiddenColumns={[
+                  "favorite",
+                  "status",
+                  "opStatus",
+                  "distance",
+                  "band",
+                  "inputFrequency",
+                  "tone",
+                  "modes",
+                  "qthLocator",
+                  "owner",
+                ]}
                 leftActions={
                   <>
-                    <Button
-                      variant={
-                        columnFilters.find((f) => f.id === "favorite")?.value
-                          ? "default"
-                          : "outline"
-                      }
-                      size="sm"
-                      onClick={() => {
-                        setColumnFilters((prev) => {
-                          const hasFavoriteFilter = prev.find((f) => f.id === "favorite");
-                          if (hasFavoriteFilter) {
-                            return prev.filter((f) => f.id !== "favorite");
-                          }
-                          return [...prev, { id: "favorite", value: true }];
-                        });
-                      }}
-                    >
-                      <Heart className="mr-2 h-4 w-4" />
-                      {columnFilters.find((f) => f.id === "favorite")?.value
-                        ? t("favorites.showAll")
-                        : t("favorites.showOnly")}
-                    </Button>
+                    {(() => {
+                      const favOn = !!columnFilters.find((f) => f.id === "favorite")?.value
+                      const label = favOn ? t("favorites.showAll") : t("favorites.showOnly")
+                      return (
+                        <Button
+                          variant={favOn ? "default" : "outline"}
+                          size="icon-sm"
+                          onClick={() => {
+                            setColumnFilters((prev) => {
+                              const hasFavoriteFilter = prev.find((f) => f.id === "favorite");
+                              if (hasFavoriteFilter) {
+                                return prev.filter((f) => f.id !== "favorite");
+                              }
+                              return [...prev, { id: "favorite", value: true }];
+                            });
+                          }}
+                          aria-label={label}
+                          title={label}
+                          aria-pressed={favOn}
+                        >
+                          <Heart className={`h-4 w-4 ${favOn ? "fill-current" : ""}`} />
+                        </Button>
+                      )
+                    })()}
                     <RepeaterSubmitDialog repeaters={data} />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={refreshRepeaters}
-                      disabled={isRefreshing}
-                      title="Refresh repeaters"
-                    >
-                      <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
-                    </Button>
                   </>
                 }
               />
@@ -457,16 +545,6 @@ export default function RepeaterView({ view }: Props) {
                         )}
                       </Button>
                     </CollapsibleTrigger>
-
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={refreshRepeaters}
-                      disabled={isRefreshing}
-                      className="h-10 w-10"
-                    >
-                      <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
-                    </Button>
                   </div>
                 </div>
 

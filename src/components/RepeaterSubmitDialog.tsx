@@ -464,9 +464,13 @@ export default function RepeaterSubmitDialog({ repeaters = [] }: RepeaterSubmitD
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
+        <Button
+          variant="outline"
+          size="icon-sm"
+          aria-label={t('button')}
+          title={t('button')}
+        >
           <PenLine className="h-4 w-4" />
-          {t('button')}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[650px] h-[80vh] max-h-[700px] flex flex-col overflow-hidden">
