@@ -3,7 +3,8 @@ import { getTranslations } from "next-intl/server"
 import { fetchSimplexFrequencies } from "@/lib/simplex-frequencies"
 import SimplexBrowser from "@/components/SimplexBrowser"
 import { StandardPageHeader } from "@/components/ui/PageHeader"
-import { Radio, Antenna } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Radio } from "lucide-react"
 
 export async function generateMetadata() {
   const t = await getTranslations("simplex")
@@ -34,20 +35,20 @@ export async function generateMetadata() {
 
 function SimplexPageSkeleton() {
   return (
-    <div className="space-y-8">
-      {/* Header skeleton */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-azulejo-100 to-azulejo-50 dark:from-azulejo-900 dark:to-azulejo-950 p-8 animate-pulse">
-        <div className="h-8 w-64 bg-azulejo-200 dark:bg-azulejo-800 rounded mb-3" />
-        <div className="h-5 w-96 bg-azulejo-200 dark:bg-azulejo-800 rounded" />
+    <div className="rounded-xl border border-border bg-card p-5 shadow-[0_1px_2px_oklch(0.20_0.012_250/0.06),0_4px_12px_oklch(0.20_0.012_250/0.04)]">
+      <div className="flex items-center gap-3 pb-4">
+        <div className="size-9 animate-pulse rounded-lg bg-muted" />
+        <div className="space-y-2">
+          <div className="h-4 w-48 animate-pulse rounded bg-muted" />
+          <div className="h-3 w-64 animate-pulse rounded bg-muted" />
+        </div>
       </div>
-
-      {/* Table skeleton */}
-      <div className="rounded-md border">
+      <div className="space-y-1 border-t border-border pt-3">
         {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
-            className="h-12 border-b bg-muted/30 animate-pulse"
-            style={{ animationDelay: `${i * 50}ms` }}
+            className="h-10 animate-pulse rounded-md bg-muted"
+            style={{ animationDelay: `${i * 40}ms` }}
           />
         ))}
       </div>
@@ -66,33 +67,34 @@ async function SimplexContent() {
   }
 
   return (
-    <>
-      <StandardPageHeader
-        icon={<Radio className="h-7 w-7" />}
-        title={t("title")}
-        description={t("description")}
-        stats={[
-          {
-            icon: <Radio className="h-4 w-4" />,
-            value: frequencies.length,
-            label: frequencies.length === 1 ? t("frequencySingular") : t("frequencyPlural"),
-          },
-        ]}
-        floatingIcons={[
-          <Radio key="radio" className="h-12 w-12 text-white" />,
-          <Antenna key="antenna" className="h-10 w-10 text-white" />,
-        ]}
-      />
+    <Card>
+      <CardContent>
+        <StandardPageHeader
+          icon={<Radio className="h-5 w-5" />}
+          title={t("title")}
+          description={t("description")}
+          stats={[
+            {
+              icon: <Radio className="h-4 w-4" />,
+              value: frequencies.length,
+              label:
+                frequencies.length === 1
+                  ? t("frequencySingular")
+                  : t("frequencyPlural"),
+            },
+          ]}
+        />
 
-      {frequencies.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <Radio className="h-12 w-12 text-muted-foreground/50 mb-4" />
-          <p className="text-muted-foreground">{t("noFrequencies")}</p>
-        </div>
-      ) : (
-        <SimplexBrowser data={frequencies} />
-      )}
-    </>
+        {frequencies.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <Radio className="mb-4 h-12 w-12 text-muted-foreground/50" />
+            <p className="text-muted-foreground">{t("noFrequencies")}</p>
+          </div>
+        ) : (
+          <SimplexBrowser data={frequencies} />
+        )}
+      </CardContent>
+    </Card>
   )
 }
 
