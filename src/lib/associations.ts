@@ -60,7 +60,48 @@ export async function fetchAssociationBySlug(
     throw new Error(`Failed to fetch association: HTTP ${response.status}`)
   }
 
-  return response.json()
+  const data = await response.json()
+  // The API returns repeaters in a hybrid shape: V2 `frequencies[]` is often
+  // empty, but the V1 flat fields (outputFrequency / inputFrequency / tone /
+  // qth_locator) are populated. Normalize each repeater to a consistent V2
+  // shape so consumers can read `frequencies[0]` and `qthLocator` reliably.
+  if (Array.isArray(data?.repeaters)) {
+    data.repeaters = data.repeaters.map(normalizeRepeater)
+  }
+  return data
+}
+
+type LegacyRepeaterFields = {
+  outputFrequency?: number
+  inputFrequency?: number
+  tone?: number
+  qth_locator?: string
+}
+
+function normalizeRepeater(repeater: Repeater & LegacyRepeaterFields): Repeater {
+  const next: Repeater & LegacyRepeaterFields = { ...repeater }
+
+  if (!Array.isArray(next.frequencies) || next.frequencies.length === 0) {
+    if (typeof next.outputFrequency === 'number') {
+      next.frequencies = [
+        {
+          outputFrequency: next.outputFrequency,
+          inputFrequency:
+            typeof next.inputFrequency === 'number'
+              ? next.inputFrequency
+              : next.outputFrequency,
+          tone: typeof next.tone === 'number' ? next.tone : undefined,
+          isPrimary: true,
+        },
+      ]
+    }
+  }
+
+  if (!next.qthLocator && typeof next.qth_locator === 'string') {
+    next.qthLocator = next.qth_locator
+  }
+
+  return next
 }
 
 export async function fetchAllAssociationSlugs(): Promise<string[]> {
