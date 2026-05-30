@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { cn } from '@/lib/utils';
 import {
   RefreshCw,
   Satellite,
@@ -283,9 +284,9 @@ export function SatelliteTracker({ onSatelliteCount }: SatelliteTrackerProps) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="flex flex-col items-center gap-3">
-          <Satellite className="h-8 w-8 animate-pulse text-slate-400" />
-          <p className="text-slate-600 dark:text-slate-400">
-            Carregando catalogo de satelites...
+          <Satellite className="h-6 w-6 animate-pulse text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">
+            A carregar catálogo de satélites...
           </p>
         </div>
       </div>
@@ -313,7 +314,7 @@ export function SatelliteTracker({ onSatelliteCount }: SatelliteTrackerProps) {
           variant="outline"
           size="sm"
         >
-          <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={cn('h-4 w-4', isLoading && 'animate-spin')} />
           Atualizar TLE
         </Button>
       </div>
@@ -325,27 +326,33 @@ export function SatelliteTracker({ onSatelliteCount }: SatelliteTrackerProps) {
       <Collapsible open={showSatelliteSelector} onOpenChange={setShowSatelliteSelector}>
         {/* Selected satellite summary */}
         {selectedSatellite && (
-          <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="font-semibold">{selectedSatellite.name}</h2>
+          <div className="flex flex-col gap-3 rounded-lg border border-border bg-muted/30 p-3 sm:flex-row sm:items-center">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-sm font-semibold text-foreground">
+                  {selectedSatellite.name}
+                </h2>
                 {selectedSatellite.mode && (
-                  <span className="text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                  <span className="inline-flex items-center rounded-full bg-azulejo-100 px-2 py-0.5 text-[11px] text-azulejo-700 dark:bg-azulejo-950/50 dark:text-azulejo-300">
                     {selectedSatellite.mode}
                   </span>
                 )}
               </div>
-              <div className="flex flex-wrap gap-3 mt-1 text-sm text-slate-600 dark:text-slate-400">
+              <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
                 {selectedSatellite.downlink && (
                   <span className="flex items-center gap-1">
-                    <span className="text-green-600 dark:text-green-400">↓</span>
-                    {selectedSatellite.downlink}
+                    <span className="font-mono text-muted-foreground/70">↓</span>
+                    <span className="font-mono tabular-nums text-foreground">
+                      {selectedSatellite.downlink}
+                    </span>
                   </span>
                 )}
                 {selectedSatellite.uplink && (
                   <span className="flex items-center gap-1">
-                    <span className="text-orange-600 dark:text-orange-400">↑</span>
-                    {selectedSatellite.uplink}
+                    <span className="font-mono text-muted-foreground/70">↑</span>
+                    <span className="font-mono tabular-nums text-foreground">
+                      {selectedSatellite.uplink}
+                    </span>
                   </span>
                 )}
               </div>
@@ -354,13 +361,13 @@ export function SatelliteTracker({ onSatelliteCount }: SatelliteTrackerProps) {
               <Button variant="outline" size="sm">
                 {showSatelliteSelector ? (
                   <>
-                    <ChevronUp className="h-4 w-4 mr-1" />
+                    <ChevronUp className="h-4 w-4" />
                     Fechar
                   </>
                 ) : (
                   <>
-                    <Radio className="h-4 w-4 mr-1" />
-                    Alterar Satelite
+                    <Radio className="h-4 w-4" />
+                    Alterar satélite
                   </>
                 )}
               </Button>
@@ -382,11 +389,11 @@ export function SatelliteTracker({ onSatelliteCount }: SatelliteTrackerProps) {
       {tleAge !== null && (
         <Alert>
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Dados Orbitais</AlertTitle>
+          <AlertTitle>Dados orbitais</AlertTitle>
           <AlertDescription>
-            Ultima atualizacao: {formatBulkCacheAge(tleAge)}
+            Última atualização: {formatBulkCacheAge(tleAge)}
             {tleAge > 48 * 60 * 60 * 1000 && (
-              <span className="text-orange-600 dark:text-orange-400 ml-2">
+              <span className="ml-2 text-[oklch(0.55_0.13_75)] dark:text-[oklch(0.78_0.13_75)]">
                 (recomendamos atualizar)
               </span>
             )}
@@ -473,10 +480,10 @@ export function SatelliteTracker({ onSatelliteCount }: SatelliteTrackerProps) {
       ) : (
         <Alert>
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Configuracao Necessaria</AlertTitle>
+          <AlertTitle>Configuração necessária</AlertTitle>
           <AlertDescription>
-            {!location && 'Por favor, defina sua localizacao para calcular as passagens.'}
-            {!tle && location && 'Carregando dados orbitais...'}
+            {!location && 'Defina a sua localização para calcular as passagens.'}
+            {!tle && location && 'A carregar dados orbitais...'}
           </AlertDescription>
         </Alert>
       )}
