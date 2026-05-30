@@ -49,7 +49,12 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
     // Favorites column
     {
       id: "favorite",
-      header: tFav("column"),
+      header: () => (
+        <Heart
+          className="h-4 w-4 text-muted-foreground"
+          aria-label={tFav("column")}
+        />
+      ),
       cell: ({ row }) => {
         const r = row.original as Repeater
         return <FavoriteCell callsign={r.callsign} onToggle={onFavoriteToggle} />
