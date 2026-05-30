@@ -818,7 +818,11 @@
         "showing": "Mostrando {count} de {total} códigos",
         "noResults": "Nenhum código Q encontrado",
         "about": "Sobre os Códigos Q",
-        "aboutDescription": "Os códigos Q são abreviações de três letras usadas em comunicações de rádio. Originalmente desenvolvidos para telegrafia, continuam a ser usados em voz para comunicações concisas e padronizadas."
+        "aboutDescription": "Os códigos Q são abreviações de três letras usadas em comunicações de rádio. Originalmente desenvolvidos para telegrafia, continuam a ser usados em voz para comunicações concisas e padronizadas. Cada código pode funcionar como pergunta ou como resposta.",
+        "columnCode": "Código",
+        "columnQuestion": "Pergunta",
+        "columnAnswer": "Resposta",
+        "columnCategory": "Categoria"
     },
     "morse": {
         "title": "Treinador de Código Morse",

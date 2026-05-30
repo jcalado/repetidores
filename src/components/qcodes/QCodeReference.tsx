@@ -2,11 +2,19 @@
 
 import { useState, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
-import { Search, BookOpen, Filter } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Search, BookOpen, Filter, HelpCircle, MessageSquare } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import {
   Q_CODES,
@@ -51,19 +59,18 @@ export function QCodeReference() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4 sm:p-6">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">
-          {t('title')}
-        </h1>
-        <p className="text-muted-foreground mt-1">{t('subtitle')}</p>
-      </div>
+    <Card>
+      <CardContent>
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">
+            {t('title')}
+          </h1>
+          <p className="text-muted-foreground mt-1">{t('subtitle')}</p>
+        </div>
 
-      {/* Search and Filters */}
-      <Card className="mb-6">
-        <CardContent className="pt-6 space-y-4">
-          {/* Search */}
+        {/* Search and Filters */}
+        <div className="mb-6 space-y-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -75,7 +82,6 @@ export function QCodeReference() {
             />
           </div>
 
-          {/* Category filters */}
           <div className="flex flex-wrap gap-2">
             <Button
               variant={selectedCategory === null ? 'default' : 'outline'}
@@ -102,67 +108,79 @@ export function QCodeReference() {
               </Button>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* Results count */}
-      <div className="mb-4 text-sm text-muted-foreground">
-        {t('showing', { count: filteredCodes.length, total: Q_CODES.length })}
-      </div>
+        {/* Results count */}
+        <div className="mb-3 text-sm text-muted-foreground">
+          {t('showing', { count: filteredCodes.length, total: Q_CODES.length })}
+        </div>
 
-      {/* Q-Codes Grid */}
-      {filteredCodes.length > 0 ? (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {filteredCodes.map((qcode) => (
-            <Card
-              key={qcode.code}
-              className="hover:shadow-md transition-shadow"
-            >
-              <CardContent className="p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xl font-mono font-bold text-azulejo-700 dark:text-azulejo-400">
-                        {highlightMatch(qcode.code, searchQuery)}
-                      </span>
+        {/* Q-Codes Table */}
+        {filteredCodes.length > 0 ? (
+          <div className="rounded-lg border overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/40 hover:bg-muted/40">
+                  <TableHead className="w-[88px]">{t('columnCode')}</TableHead>
+                  <TableHead>
+                    <span className="inline-flex items-center gap-1.5">
+                      <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                      {t('columnQuestion')}
+                    </span>
+                  </TableHead>
+                  <TableHead>
+                    <span className="inline-flex items-center gap-1.5">
+                      <MessageSquare className="h-3.5 w-3.5 text-muted-foreground" />
+                      {t('columnAnswer')}
+                    </span>
+                  </TableHead>
+                  <TableHead className="hidden md:table-cell w-[180px]">
+                    {t('columnCategory')}
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredCodes.map((qcode) => (
+                  <TableRow key={qcode.code}>
+                    <TableCell className="font-mono font-semibold text-azulejo-700 dark:text-azulejo-400 align-top">
+                      {highlightMatch(qcode.code, searchQuery)}
+                    </TableCell>
+                    <TableCell className="text-sm text-foreground whitespace-normal align-top">
+                      {highlightMatch(qcode.question, searchQuery)}
+                    </TableCell>
+                    <TableCell className="text-sm text-foreground whitespace-normal align-top">
+                      {highlightMatch(qcode.answer, searchQuery)}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell align-top">
                       <Badge
                         variant="secondary"
                         className={cn('text-xs', CATEGORY_COLORS[qcode.category])}
                       >
                         {CATEGORY_LABELS[qcode.category]}
                       </Badge>
-                    </div>
-                    <p className="text-sm text-slate-600 dark:text-slate-300">
-                      {highlightMatch(qcode.meaning, searchQuery)}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <Card>
-          <CardContent className="py-12">
-            <div className="text-center text-muted-foreground">
-              <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>{t('noResults')}</p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        ) : (
+          <div className="py-12 text-center text-muted-foreground">
+            <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p>{t('noResults')}</p>
+          </div>
+        )}
 
-      {/* Reference note */}
-      <Card className="mt-6">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg">{t('about')}</CardTitle>
-        </CardHeader>
-        <CardContent>
+        {/* Reference note */}
+        <div className="mt-8 pt-6 border-t">
+          <h2 className="text-lg font-semibold tracking-tight text-foreground mb-2">
+            {t('about')}
+          </h2>
           <p className="text-sm text-muted-foreground">
             {t('aboutDescription')}
           </p>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
