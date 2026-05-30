@@ -228,11 +228,9 @@ export default function RepeaterPageClient({
 
       <Card>
         <CardContent>
-          {/* Header: icon + identity + chip strip + actions */}
+          {/* Header: band-tile + identity + chip strip + actions */}
           <header className="flex flex-col gap-4 pb-4 sm:flex-row sm:items-start sm:gap-5">
-            <div className="flex size-14 shrink-0 items-center justify-center rounded-lg border border-border bg-muted">
-              <Radio className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
-            </div>
+            <BandTile band={band} primaryMhz={primary?.outputFrequency} />
 
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
@@ -250,13 +248,8 @@ export default function RepeaterPageClient({
                 )}
               </div>
 
-              {/* Chip strip — band + modes + locator + verified. Single voice. */}
+              {/* Chip strip — modes + locator + verified. Band lives in the tile now. */}
               <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
-                {band !== "unknown" && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-azulejo-100 px-2.5 py-0.5 text-xs text-azulejo-700 dark:bg-azulejo-950/50 dark:text-azulejo-300">
-                    {band}
-                  </span>
-                )}
                 {r.modes?.map((mode) => (
                   <span
                     key={mode}
@@ -835,6 +828,72 @@ function MetaPill({ children }: { children: React.ReactNode }) {
     <span className="inline-flex items-center rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">
       {children}
     </span>
+  );
+}
+
+// ITU band class for the 23cm and microwave bands; gives the tile a second
+// line of meaningful context for repeaters whose wavelength label alone
+// isn't recognisable at a glance.
+function ituClassFor(band: string): string | null {
+  switch (band) {
+    case "6m":
+    case "2m":
+      return "VHF";
+    case "70cm":
+      return "UHF";
+    case "23cm":
+    case "13cm":
+      return "SHF";
+    default:
+      return null;
+  }
+}
+
+function BandTile({
+  band,
+  primaryMhz,
+}: {
+  band: string;
+  primaryMhz?: number;
+}) {
+  // Unknown band → keep a generic radio glyph rather than print "unknown".
+  if (band === "unknown" || band === "Other") {
+    return (
+      <div
+        className="flex size-14 shrink-0 items-center justify-center rounded-lg border border-border bg-muted"
+        aria-label={
+          typeof primaryMhz === "number"
+            ? `${primaryMhz.toFixed(3)} MHz`
+            : "Repetidor"
+        }
+        title={
+          typeof primaryMhz === "number"
+            ? `${primaryMhz.toFixed(3)} MHz`
+            : undefined
+        }
+      >
+        <Radio className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
+      </div>
+    );
+  }
+
+  const itu = ituClassFor(band);
+
+  return (
+    <div
+      className="flex size-14 shrink-0 flex-col items-center justify-center rounded-lg border border-border bg-muted leading-none"
+      aria-label={`Banda ${band}`}
+      title={`Banda ${band}`}
+    >
+      <span className="font-mono text-base font-semibold tabular-nums text-foreground">
+        {band}
+      </span>
+      {itu && (
+        <span className="mt-1 font-mono text-[10px] font-medium tracking-wider text-muted-foreground">
+          {itu}
+        </span>
+      )}
+    </div>
   );
 }
 
