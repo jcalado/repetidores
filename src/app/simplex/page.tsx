@@ -100,7 +100,7 @@ async function SimplexContent() {
 
 export default async function SimplexPage() {
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-6">
+    <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
       <Suspense fallback={<SimplexPageSkeleton />}>
         <SimplexContent />
       </Suspense>
