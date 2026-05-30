@@ -587,8 +587,9 @@ export function DataTable<TData, TValue>({
                           {header.column.getIsSorted() === 'desc' && ' ↓'}
                         </div>
 
-                        {/* Column Filter */}
-                        <div className="min-w-0">
+                        {/* Column Filter — always reserves h-7 so column titles
+                            align at the top even when there is no filter input. */}
+                        <div className="min-w-0 h-7">
                           {header.column.id === "callsign" && (
                             <Input
                               placeholder=""
