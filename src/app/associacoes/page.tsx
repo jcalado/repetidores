@@ -58,7 +58,6 @@ export default async function AssociationsPage() {
                 icon: <Radio className="h-4 w-4" />,
                 value: totalRepeaters,
                 label: "repetidores",
-                variant: "success",
               },
             ]}
           />

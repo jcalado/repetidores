@@ -18,7 +18,7 @@ function KIndexBar({ value }: { value: number }) {
     <div className="flex gap-1">
       {segments.map((segment) => {
         const isActive = segment <= Math.round(value);
-        const color = isActive ? K_INDEX_COLORS[segment]?.bg ?? 'bg-gray-300' : 'bg-gray-200 dark:bg-gray-700';
+        const color = isActive ? K_INDEX_COLORS[segment]?.bg ?? 'bg-muted' : 'bg-muted';
 
         return (
           <div
@@ -47,7 +47,7 @@ export function GeomagneticCard({ solarIndices, hamQSL }: GeomagneticCardProps) 
     <Card>
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-lg">
-          <BoltIcon className="h-5 w-5 text-purple-500" />
+          <BoltIcon className="h-5 w-5 text-azulejo-500" />
           {t('geomagnetic.title')}
         </CardTitle>
       </CardHeader>
@@ -55,10 +55,10 @@ export function GeomagneticCard({ solarIndices, hamQSL }: GeomagneticCardProps) 
         <div>
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-muted-foreground">{t('geomagnetic.kIndex')}</span>
-            <span className={`text-2xl font-bold ${statusColor.text}`}>{kIndex.toFixed(1)}</span>
+            <span className={`text-2xl font-bold font-mono ${statusColor.text}`}>{kIndex.toFixed(1)}</span>
           </div>
           <KIndexBar value={kIndex} />
-          <div className="flex justify-between mt-1 text-xs text-muted-foreground">
+          <div className="flex justify-between mt-1 text-xs text-muted-foreground font-mono">
             <span>0</span>
             <span>9</span>
           </div>
@@ -67,7 +67,7 @@ export function GeomagneticCard({ solarIndices, hamQSL }: GeomagneticCardProps) 
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center">
             <div className="text-xs text-muted-foreground">{t('geomagnetic.aIndex')}</div>
-            <div className="text-xl font-semibold">{aIndex}</div>
+            <div className="text-xl font-semibold font-mono">{aIndex}</div>
           </div>
           <div className="text-center">
             <div className="text-xs text-muted-foreground mb-1">{t('geomagnetic.status.title')}</div>

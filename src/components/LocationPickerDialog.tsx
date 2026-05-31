@@ -124,7 +124,7 @@ export default function LocationPickerDialog({
             ) : address ? (
               <p className="text-sm font-medium">{address}</p>
             ) : null}
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground font-mono">
               {selectedLocation.lat.toFixed(5)}, {selectedLocation.lng.toFixed(5)}
             </p>
           </div>

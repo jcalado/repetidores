@@ -153,7 +153,7 @@ export function LocationSelector({ location, onLocationChange }: LocationSelecto
             )}
             {isDetecting ? 'Detectando...' : 'Detectar Localização Automática'}
           </Button>
-          <p className="text-xs text-slate-600 dark:text-slate-400">
+          <p className="text-xs text-muted-foreground">
             Usa GPS do dispositivo. Se não funcionar (limite de requisições), use as outras opções.
           </p>
         </TabsContent>
@@ -171,7 +171,7 @@ export function LocationSelector({ location, onLocationChange }: LocationSelecto
                 maxLength={6}
                 className="font-mono mt-1"
               />
-              <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Formato: AA00 (4 caracteres) ou AA00aa (6 caracteres). Ex: IM58, IM58kr
               </p>
             </div>
@@ -195,7 +195,7 @@ export function LocationSelector({ location, onLocationChange }: LocationSelecto
                 onChange={(e) => setLatInput(e.target.value)}
                 className="mt-1"
               />
-              <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Norte: positivo (+), Sul: negativo (-). Ex: Lisboa = 38.7223
               </p>
             </div>
@@ -210,7 +210,7 @@ export function LocationSelector({ location, onLocationChange }: LocationSelecto
                 onChange={(e) => setLonInput(e.target.value)}
                 className="mt-1"
               />
-              <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Este: positivo (+), Oeste: negativo (-). Ex: Lisboa = -9.1393
               </p>
             </div>
@@ -218,8 +218,8 @@ export function LocationSelector({ location, onLocationChange }: LocationSelecto
               <Globe className="h-4 w-4 mr-2" />
               Usar Coordenadas
             </Button>
-            <p className="text-xs text-slate-600 dark:text-slate-400 mt-2">
-              💡 Encontre suas coordenadas em <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-900 dark:hover:text-slate-200">Google Maps</a> (clique direito → copiar coordenadas)
+            <p className="text-xs text-muted-foreground mt-2">
+              💡 Encontre suas coordenadas em <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">Google Maps</a> (clique direito → copiar coordenadas)
             </p>
           </form>
         </TabsContent>
@@ -232,15 +232,15 @@ export function LocationSelector({ location, onLocationChange }: LocationSelecto
       )}
 
       {location && (
-        <div className="bg-slate-100 dark:bg-slate-800 rounded-lg p-3 text-sm">
+        <div className="bg-muted rounded-lg p-3 text-sm">
           <div className="flex items-start gap-2">
-            <MapPin className="h-4 w-4 mt-0.5 text-slate-600 dark:text-slate-400" />
+            <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground" />
             <div className="flex-1 space-y-1">
               <div className="font-medium">
                 {location.name || 'Localização Atual'}
               </div>
-              <div className="text-slate-600 dark:text-slate-400 space-y-0.5">
-                <div>
+              <div className="text-muted-foreground space-y-0.5">
+                <div className="font-mono">
                   Lat: {location.latitude.toFixed(4)}°,
                   Lon: {location.longitude.toFixed(4)}°
                 </div>

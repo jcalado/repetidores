@@ -19,14 +19,22 @@ function getSFIColor(sfi: number): string {
   return 'text-red-500';
 }
 
+function getSFIFill(sfi: number): string {
+  if (sfi >= SFI_THRESHOLDS.EXCELLENT) return 'bg-green-500';
+  if (sfi >= SFI_THRESHOLDS.HIGH) return 'bg-green-400';
+  if (sfi >= SFI_THRESHOLDS.MODERATE) return 'bg-yellow-500';
+  if (sfi >= SFI_THRESHOLDS.LOW) return 'bg-orange-500';
+  return 'bg-red-500';
+}
+
 function SFIGauge({ value }: { value: number }) {
   // Map SFI (typically 60-300) to percentage (0-100)
   const percentage = Math.min(100, Math.max(0, ((value - 60) / 240) * 100));
 
   return (
-    <div className="relative h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+    <div className="relative h-2 w-full rounded-full bg-muted">
       <div
-        className="absolute left-0 top-0 h-full rounded-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500"
+        className={`absolute left-0 top-0 h-full rounded-full ${getSFIFill(value)}`}
         style={{ width: `${percentage}%` }}
       />
     </div>
@@ -46,7 +54,7 @@ export function SolarIndicesCard({ solarIndices, hamQSL }: SolarIndicesCardProps
     <Card>
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-lg">
-          <SunIcon className="h-5 w-5 text-yellow-500" />
+          <SunIcon className="h-5 w-5 text-azulejo-500" />
           {t('solar.title')}
         </CardTitle>
       </CardHeader>
@@ -54,7 +62,7 @@ export function SolarIndicesCard({ solarIndices, hamQSL }: SolarIndicesCardProps
         <div>
           <div className="flex items-center justify-between mb-1">
             <span className="text-sm text-muted-foreground">{t('solar.flux')}</span>
-            <span className={`text-2xl font-bold ${getSFIColor(sfi)}`}>{sfi}</span>
+            <span className={`text-2xl font-bold font-mono ${getSFIColor(sfi)}`}>{sfi}</span>
           </div>
           <SFIGauge value={sfi} />
         </div>
@@ -62,16 +70,16 @@ export function SolarIndicesCard({ solarIndices, hamQSL }: SolarIndicesCardProps
         <div className="grid grid-cols-3 gap-4">
           <div className="text-center">
             <div className="text-xs text-muted-foreground">{t('solar.sunspots')}</div>
-            <div className="text-xl font-semibold">{ssn}</div>
+            <div className="text-xl font-semibold font-mono">{ssn}</div>
           </div>
           <div className="text-center">
             <div className="text-xs text-muted-foreground">{t('solar.wind')}</div>
-            <div className="text-xl font-semibold">{windSpeed}</div>
+            <div className="text-xl font-semibold font-mono">{windSpeed}</div>
             <div className="text-xs text-muted-foreground">km/s</div>
           </div>
           <div className="text-center">
             <div className="text-xs text-muted-foreground">{t('solar.xray')}</div>
-            <div className="text-xl font-semibold">{xRay}</div>
+            <div className="text-xl font-semibold font-mono">{xRay}</div>
           </div>
         </div>
       </CardContent>

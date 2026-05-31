@@ -333,7 +333,7 @@ function NewsList({ news }: { news: NewsItem[] }) {
                             className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                         />
                     ) : (
-                        <div className="absolute inset-0 bg-gradient-to-br from-azulejo-100 to-azulejo-200 dark:from-azulejo-900/40 dark:to-azulejo-800/30" />
+                        <div className="absolute inset-0 bg-muted" />
                     )}
                 </div>
                 <h3 className="text-sm font-semibold tracking-[-0.005em] leading-snug text-foreground transition-colors group-hover:text-azulejo-700 dark:group-hover:text-azulejo-400">

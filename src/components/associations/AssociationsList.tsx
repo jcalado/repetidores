@@ -52,7 +52,7 @@ export function AssociationsList({ associations }: AssociationsListProps) {
             placeholder={t("search")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-white dark:bg-azulejo-950 border-azulejo-200 dark:border-azulejo-800 focus:border-azulejo-400 focus:ring-azulejo-400/20 placeholder:text-azulejo-400"
+            className="pl-10 bg-background border-input focus:border-azulejo-400 focus:ring-azulejo-500/20 placeholder:text-muted-foreground"
           />
         </div>
 
@@ -64,10 +64,10 @@ export function AssociationsList({ associations }: AssociationsListProps) {
             <span className="text-azulejo-500 dark:text-azulejo-500">/</span>
             <span className="tabular-nums">{associations.length}</span>
           </div>
-          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium">
+          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-azulejo-100 dark:bg-azulejo-900/50 text-azulejo-700 dark:text-azulejo-300 font-medium">
             <Radio className="h-3.5 w-3.5" />
             <span className="tabular-nums">{totalRepeaters}</span>
-            <span className="text-emerald-600/70 dark:text-emerald-500/70">repetidores</span>
+            <span className="text-azulejo-500 dark:text-azulejo-500">repetidores</span>
           </div>
         </div>
       </div>

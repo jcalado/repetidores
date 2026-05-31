@@ -40,7 +40,7 @@ export function LocationSection({ repeater: r, userLocation, websiteUrl }: Locat
               <Building2 className="h-4 w-4 text-azulejo-600 dark:text-azulejo-400" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-[10px] sm:text-xs uppercase tracking-wider text-azulejo-500 mb-0.5">
+              <div className="text-[10px] sm:text-xs tracking-wider text-azulejo-500 mb-0.5">
                 {t("owner")}
               </div>
               <div className="flex items-center gap-2 text-sm">
@@ -81,7 +81,7 @@ export function LocationSection({ repeater: r, userLocation, websiteUrl }: Locat
           }
         />
         {hasValidLocations && (
-          <div className="rounded-lg bg-gradient-to-r from-azulejo-100 to-azulejo-50 dark:from-azulejo-800/50 dark:to-azulejo-900/30 p-2.5 sm:p-3 border border-azulejo-200/50 dark:border-azulejo-700/50">
+          <div className="rounded-lg bg-azulejo-50/60 dark:bg-azulejo-900/30 p-2.5 sm:p-3 border border-azulejo-200/50 dark:border-azulejo-700/50">
             <div className="flex items-center justify-between gap-2">
               <span className="text-xs sm:text-sm text-azulejo-600 dark:text-azulejo-400">
                 Direção:
@@ -106,7 +106,7 @@ export function LocationSection({ repeater: r, userLocation, websiteUrl }: Locat
               <Globe className="h-4 w-4 text-azulejo-600 dark:text-azulejo-400" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-[10px] sm:text-xs uppercase tracking-wider text-azulejo-500 mb-0.5">
+              <div className="text-[10px] sm:text-xs tracking-wider text-azulejo-500 mb-0.5">
                 Website
               </div>
               <div className="text-sm font-medium text-azulejo-900 dark:text-azulejo-100 truncate">

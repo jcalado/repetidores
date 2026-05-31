@@ -387,13 +387,13 @@ export default function RepeaterBrowser({
               <div className="mb-4 flex flex-wrap items-center gap-2">
                 <span className="text-sm text-muted-foreground mr-1">{t('filters.quickFilters')}:</span>
                 {[
-                  { mode: 'EchoLink', label: 'EchoLink', color: 'bg-emerald-500/10 text-emerald-700 border-emerald-500/30 hover:bg-emerald-500/20 dark:text-emerald-400' },
-                  { mode: 'AllStar', label: 'AllStarLink', color: 'bg-orange-500/10 text-orange-700 border-orange-500/30 hover:bg-orange-500/20 dark:text-orange-400' },
-                  { mode: 'DMR', label: 'DMR', color: 'bg-purple-500/10 text-purple-700 border-purple-500/30 hover:bg-purple-500/20 dark:text-purple-400' },
-                  { mode: 'DSTAR', label: 'D-STAR', color: 'bg-sky-500/10 text-sky-700 border-sky-500/30 hover:bg-sky-500/20 dark:text-sky-400' },
-                  { mode: 'C4FM', label: 'C4FM', color: 'bg-rose-500/10 text-rose-700 border-rose-500/30 hover:bg-rose-500/20 dark:text-rose-400' },
+                  { mode: 'EchoLink', label: 'EchoLink', color: 'bg-azulejo-500/10 text-azulejo-700 border-azulejo-500/30 hover:bg-azulejo-500/20 dark:text-azulejo-400' },
+                  { mode: 'AllStar', label: 'AllStarLink', color: 'bg-azulejo-500/10 text-azulejo-700 border-azulejo-500/30 hover:bg-azulejo-500/20 dark:text-azulejo-400' },
+                  { mode: 'DMR', label: 'DMR', color: 'bg-azulejo-500/10 text-azulejo-700 border-azulejo-500/30 hover:bg-azulejo-500/20 dark:text-azulejo-400' },
+                  { mode: 'DSTAR', label: 'D-STAR', color: 'bg-azulejo-500/10 text-azulejo-700 border-azulejo-500/30 hover:bg-azulejo-500/20 dark:text-azulejo-400' },
+                  { mode: 'C4FM', label: 'C4FM', color: 'bg-azulejo-500/10 text-azulejo-700 border-azulejo-500/30 hover:bg-azulejo-500/20 dark:text-azulejo-400' },
                   { mode: 'FM', label: 'FM', color: 'bg-azulejo-500/10 text-azulejo-700 border-azulejo-500/30 hover:bg-azulejo-500/20 dark:text-azulejo-400' },
-                  { mode: 'TETRA', label: 'TETRA', color: 'bg-amber-500/10 text-amber-700 border-amber-500/30 hover:bg-amber-500/20 dark:text-amber-400' },
+                  { mode: 'TETRA', label: 'TETRA', color: 'bg-azulejo-500/10 text-azulejo-700 border-azulejo-500/30 hover:bg-azulejo-500/20 dark:text-azulejo-400' },
                 ].map(({ mode, label, color }) => {
                   const currentModes = (columnFilters.find((f) => f.id === "modes")?.value as string[] | undefined) || []
                   const displayMode = mode === 'DSTAR' ? 'D-STAR' : mode
@@ -516,7 +516,7 @@ export default function RepeaterBrowser({
                     <Filter className="h-4 w-4 mr-1" />
                     {t('filters.filter')}
                     {activeFilterCount > 0 && (
-                      <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-white/20 text-xs">
+                      <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-background/20 text-xs">
                         {activeFilterCount}
                       </span>
                     )}

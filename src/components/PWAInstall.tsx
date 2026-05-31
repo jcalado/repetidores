@@ -102,7 +102,7 @@ export default function PWAInstall() {
 
   return (
     <div className="fixed bottom-20 md:bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm z-50 animate-in slide-in-from-bottom-2">
-      <div className="flex items-start gap-3 p-4 rounded-xl bg-white dark:bg-slate-800 shadow-xl border border-gray-200 dark:border-slate-700">
+      <div className="flex items-start gap-3 p-4 rounded-xl bg-card shadow-sm border border-border">
         <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-900">
           <Download className="h-5 w-5 text-azulejo-600 dark:text-azulejo-400" />
         </div>
@@ -122,7 +122,7 @@ export default function PWAInstall() {
         </div>
         <button
           onClick={handleDismiss}
-          className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+          className="p-1 rounded-md hover:bg-accent transition-colors"
           aria-label="Fechar"
         >
           <X className="h-4 w-4 text-muted-foreground" />

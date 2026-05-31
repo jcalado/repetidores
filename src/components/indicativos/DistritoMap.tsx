@@ -8,11 +8,11 @@ import type L from "leaflet"
 import "leaflet/dist/leaflet.css"
 
 const COLOR_SCALE = [
-  "#f4ddd7", // azulejo-100
-  "#d9988a", // azulejo-300
-  "#7d2e26", // azulejo-500
-  "#5d211a", // azulejo-700
-  "#371310", // azulejo-900
+  "#dde6f0", // azulejo-100
+  "#84a4c7", // azulejo-300
+  "#1d65a8", // azulejo-500
+  "#0a467f", // azulejo-700
+  "#052741", // azulejo-900
 ]
 
 function getColor(value: number, breaks: number[]): string {
@@ -73,7 +73,7 @@ export default function DistritoMap({ data, geojson, highlightedDistrito, onHove
       fillColor: getColor(value, breaks),
       weight: isHighlighted ? 2 : 1,
       opacity: 1,
-      color: isHighlighted ? "#5d211a" : "#94a3b8",
+      color: isHighlighted ? "#0a467f" : "#84a4c7", // azulejo-700 / azulejo-300
       fillOpacity: isHighlighted ? 0.9 : 0.7,
     }
   }
@@ -102,13 +102,13 @@ export default function DistritoMap({ data, geojson, highlightedDistrito, onHove
   }, [highlightedDistrito])
 
   return (
-    <div className="rounded-lg border border-slate-100 dark:border-slate-800 overflow-hidden">
+    <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
       <MapContainer
         center={[39.5, -8]}
         zoom={7}
         style={{ height: "500px", width: "100%" }}
         scrollWheelZoom={false}
-        className="bg-slate-50 dark:bg-slate-900"
+        className="bg-muted"
       >
         <FitBounds geojson={geojson} />
         <GeoJSON
@@ -120,7 +120,7 @@ export default function DistritoMap({ data, geojson, highlightedDistrito, onHove
       </MapContainer>
 
       {/* Legend */}
-      <div className="flex items-center justify-between px-3 py-2 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 text-[10px] text-slate-500">
+      <div className="flex items-center justify-between px-3 py-2 bg-card border-t border-border text-[10px] text-muted-foreground">
         <span>{breaks[0]?.toLocaleString("pt-PT")}</span>
         <div className="flex gap-0.5">
           {COLOR_SCALE.map((color, i) => (

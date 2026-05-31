@@ -41,16 +41,16 @@ const CharacterButton = memo(function CharacterButton({
       className={cn(
         'flex flex-col items-center justify-center p-2 sm:p-3 rounded-xl border transition-all duration-150',
         'hover:bg-azulejo-50 hover:border-azulejo-300 dark:hover:bg-azulejo-900/20 dark:hover:border-azulejo-700',
-        'focus:outline-none focus:ring-2 focus:ring-azulejo-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900',
+        'focus:outline-none focus:ring-2 focus:ring-azulejo-500 focus:ring-offset-2 focus:ring-offset-background',
         isSelected
-          ? 'bg-gradient-to-br from-azulejo-500 to-azulejo-700 text-white border-azulejo-600 shadow-lg scale-105'
-          : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700'
+          ? 'bg-azulejo-600 text-white border-azulejo-600 shadow-lg scale-105'
+          : 'bg-card border-border'
       )}
     >
       <span
         className={cn(
           'text-xl sm:text-2xl font-bold',
-          isSelected ? 'text-white' : 'text-slate-900 dark:text-white'
+          isSelected ? 'text-white' : 'text-foreground'
         )}
       >
         {char.char}
@@ -351,7 +351,7 @@ export function MorseCodeTrainer() {
             <CardContent className="py-8 sm:py-12">
               {currentChar ? (
                 <div className="text-center space-y-4">
-                  <div className="inline-flex items-center justify-center h-24 w-24 sm:h-32 sm:w-32 rounded-2xl bg-gradient-to-br from-azulejo-500 to-azulejo-700 text-white text-5xl sm:text-6xl font-bold shadow-xl">
+                  <div className="inline-flex items-center justify-center h-24 w-24 sm:h-32 sm:w-32 rounded-2xl bg-azulejo-600 text-white text-5xl sm:text-6xl font-bold shadow-xl">
                     {currentChar.char}
                   </div>
                   <div>
@@ -430,7 +430,7 @@ export function MorseCodeTrainer() {
                     <p className="text-xs text-muted-foreground">{t('correct')}</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-slate-600 dark:text-slate-400">
+                    <p className="text-2xl font-bold text-muted-foreground">
                       {score.total}
                     </p>
                     <p className="text-xs text-muted-foreground">{t('total')}</p>
@@ -468,7 +468,7 @@ export function MorseCodeTrainer() {
 
                 {practiceState === 'playing' && (
                   <div className="space-y-4">
-                    <div className="inline-flex items-center justify-center h-24 w-24 rounded-2xl bg-gray-100 dark:bg-slate-800 border-2 border-dashed border-gray-300 dark:border-slate-600">
+                    <div className="inline-flex items-center justify-center h-24 w-24 rounded-2xl bg-muted border-2 border-dashed border-border">
                       <Volume2 className="h-10 w-10 text-azulejo-600 animate-pulse" />
                     </div>
                     <p className="text-lg text-muted-foreground">{t('listening')}</p>
@@ -477,7 +477,7 @@ export function MorseCodeTrainer() {
 
                 {practiceState === 'waiting' && (
                   <div className="space-y-4">
-                    <div className="inline-flex items-center justify-center h-24 w-24 rounded-2xl bg-gray-100 dark:bg-slate-800 border-2 border-azulejo-500 text-4xl font-bold text-muted-foreground">
+                    <div className="inline-flex items-center justify-center h-24 w-24 rounded-2xl bg-muted border-2 border-azulejo-500 text-4xl font-bold text-muted-foreground">
                       ?
                     </div>
                     <p className="text-lg text-muted-foreground">{t('typeAnswer')}</p>

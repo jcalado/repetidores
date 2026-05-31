@@ -98,20 +98,20 @@
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.56 0.014 250);
+  --ring: oklch(0.62 0.11 252);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.21 0.01 25);
-  --sidebar-foreground: oklch(0.985 0.005 25);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0.005 25);
-  --sidebar-accent: oklch(0.27 0.012 25);
-  --sidebar-accent-foreground: oklch(0.985 0.005 25);
+  --sidebar: oklch(0.21 0.01 250);
+  --sidebar-foreground: oklch(0.985 0.005 250);
+  --sidebar-primary: oklch(0.488 0.014 250);
+  --sidebar-primary-foreground: oklch(0.985 0.005 250);
+  --sidebar-accent: oklch(0.27 0.012 250);
+  --sidebar-accent-foreground: oklch(0.985 0.005 250);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.56 0.014 250);
+  --sidebar-ring: oklch(0.62 0.11 252);
 }
 
 @layer base {
@@ -128,24 +128,24 @@
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* Leaflet Marker Cluster styles: Oxblood ramp 300 / 500 / 700 by cluster size. */
+/* Leaflet Marker Cluster styles: Azulejo ramp 300 / 500 / 700 by cluster size. */
 .marker-cluster-small {
-  background-color: rgba(217, 152, 138, 0.6);
+  background-color: rgba(132, 164, 199, 0.6);
 }
 .marker-cluster-small div {
-  background-color: rgba(217, 152, 138, 0.9);
+  background-color: rgba(132, 164, 199, 0.9);
 }
 .marker-cluster-medium {
-  background-color: rgba(125, 46, 38, 0.6);
+  background-color: rgba(29, 101, 168, 0.6);
 }
 .marker-cluster-medium div {
-  background-color: rgba(125, 46, 38, 0.9);
+  background-color: rgba(29, 101, 168, 0.9);
 }
 .marker-cluster-large {
-  background-color: rgba(93, 33, 26, 0.6);
+  background-color: rgba(10, 70, 127, 0.6);
 }
 .marker-cluster-large div {
-  background-color: rgba(93, 33, 26, 0.9);
+  background-color: rgba(10, 70, 127, 0.9);
 }
 .marker-cluster {
   background-clip: padding-box;

@@ -41,8 +41,8 @@ const CATEGORIA_COLORS = [
 
 function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-lg border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
-      <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-300 mb-4">{title}</h3>
+    <div className="rounded-xl border border-border bg-card shadow-sm p-5">
+      <h3 className="text-sm font-semibold text-muted-foreground mb-4">{title}</h3>
       {children}
     </div>
   )
@@ -52,8 +52,8 @@ function ChartCard({ title, children }: { title: string; children: React.ReactNo
 function ChartTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null
   return (
-    <div className="rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 shadow-md text-xs">
-      <p className="font-medium text-slate-700 dark:text-slate-200 mb-1">{label}</p>
+    <div className="rounded-lg border border-border bg-popover px-3 py-2 shadow-md text-xs">
+      <p className="font-medium text-foreground mb-1">{label}</p>
       {payload.map((entry: any, i: number) => (
         <p key={i} style={{ color: entry.color }} className="flex items-center gap-1.5">
           <span className="inline-block h-2 w-2 rounded-full" style={{ background: entry.color }} />
@@ -127,7 +127,7 @@ export function TrendsCharts({ stats, startDate, endDate, onDateRangeChange }: T
     return (
       <div className="space-y-6">
         {filterBar}
-        <div className="flex items-center justify-center py-12 text-slate-400">
+        <div className="flex items-center justify-center py-12 text-muted-foreground">
           <Loader2 className="h-5 w-5 animate-spin mr-2" />
           A carregar tendências...
         </div>
@@ -139,7 +139,7 @@ export function TrendsCharts({ stats, startDate, endDate, onDateRangeChange }: T
     return (
       <div className="space-y-6">
         {filterBar}
-        <div className="text-center py-12 text-slate-400">
+        <div className="text-center py-12 text-muted-foreground">
           Ainda não existem dados suficientes para mostrar tendências.
           <br />
           <span className="text-xs">Os dados acumulam-se com as sincronizações diárias.</span>
@@ -182,11 +182,11 @@ export function TrendsCharts({ stats, startDate, endDate, onDateRangeChange }: T
                   <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-slate-200 dark:stroke-slate-700" />
-              <XAxis dataKey="month" tick={{ fontSize: 12 }} className="text-slate-500" />
+              <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+              <XAxis dataKey="month" tick={{ fontSize: 12 }} className="text-muted-foreground" />
               <YAxis
                 tick={{ fontSize: 12 }}
-                className="text-slate-500"
+                className="text-muted-foreground"
                 tickFormatter={(v) => v.toLocaleString("pt-PT")}
               />
               <Tooltip content={<ChartTooltip />} />
@@ -216,9 +216,9 @@ export function TrendsCharts({ stats, startDate, endDate, onDateRangeChange }: T
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={monthlyData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-slate-200 dark:stroke-slate-700" />
-              <XAxis dataKey="month" tick={{ fontSize: 12 }} className="text-slate-500" />
-              <YAxis tick={{ fontSize: 12 }} className="text-slate-500" />
+              <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+              <XAxis dataKey="month" tick={{ fontSize: 12 }} className="text-muted-foreground" />
+              <YAxis tick={{ fontSize: 12 }} className="text-muted-foreground" />
               <Tooltip content={<ChartTooltip />} />
               <Bar dataKey="added" name="Novos" fill="#10b981" radius={[2, 2, 0, 0]} />
               <Bar dataKey="removed" name="Removidos" fill="#ef4444" radius={[2, 2, 0, 0]} />
@@ -262,9 +262,9 @@ export function TrendsCharts({ stats, startDate, endDate, onDateRangeChange }: T
           <div className="h-[280px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlyData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-slate-200 dark:stroke-slate-700" />
-                <XAxis dataKey="month" tick={{ fontSize: 12 }} className="text-slate-500" />
-                <YAxis tick={{ fontSize: 12 }} className="text-slate-500" />
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                <XAxis dataKey="month" tick={{ fontSize: 12 }} className="text-muted-foreground" />
+                <YAxis tick={{ fontSize: 12 }} className="text-muted-foreground" />
                 <Tooltip content={<ChartTooltip />} />
                 <Bar dataKey="net" name="Variação" radius={[2, 2, 0, 0]}>
                   {monthlyData.map((entry, i) => (

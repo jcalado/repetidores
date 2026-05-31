@@ -162,7 +162,7 @@ export function LocationEditor({ initialLocation, onSave, onCancel }: LocationEd
               )}
               {isLocating ? 'Detectando...' : 'Detectar Localizacao Automatica'}
             </Button>
-            <p className="text-xs text-slate-600 dark:text-slate-400">
+            <p className="text-xs text-muted-foreground">
               Usa GPS do dispositivo. Se nao funcionar, use as outras opcoes.
             </p>
           </TabsContent>
@@ -180,7 +180,7 @@ export function LocationEditor({ initialLocation, onSave, onCancel }: LocationEd
                   maxLength={6}
                   className="font-mono mt-1"
                 />
-                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   Formato: AA00 ou AA00aa. Ex: IM58, IM58kr
                 </p>
               </div>
@@ -219,7 +219,7 @@ export function LocationEditor({ initialLocation, onSave, onCancel }: LocationEd
                   />
                 </div>
               </div>
-              <p className="text-xs text-slate-600 dark:text-slate-400">
+              <p className="text-xs text-muted-foreground">
                 Copie do Google Maps (clique direito → copiar coordenadas)
               </p>
               <Button type="submit" className="w-full">

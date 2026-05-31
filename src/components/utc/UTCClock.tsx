@@ -83,8 +83,8 @@ export function UTCClock() {
     return (
       <div className="w-full max-w-4xl mx-auto p-4 sm:p-6">
         <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-48 mb-4"></div>
-          <div className="h-64 bg-gray-200 dark:bg-slate-700 rounded"></div>
+          <div className="h-8 bg-muted rounded w-48 mb-4"></div>
+          <div className="h-64 bg-muted rounded"></div>
         </div>
       </div>
     );
@@ -94,7 +94,7 @@ export function UTCClock() {
     <div className="w-full max-w-4xl mx-auto p-4 sm:p-6">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">
+        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
           {t('title')}
         </h1>
         <p className="text-muted-foreground mt-1">{t('subtitle')}</p>
@@ -103,12 +103,12 @@ export function UTCClock() {
       {/* Maximized fullscreen overlay */}
       {maximized && (
         <div
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950 cursor-pointer"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-azulejo-950 cursor-pointer"
           onClick={toggleMaximized}
         >
           <button
             onClick={toggleMaximized}
-            className="absolute top-6 right-6 p-2 rounded-lg text-slate-500 hover:text-white hover:bg-slate-800 transition-colors"
+            className="absolute top-6 right-6 p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors"
             aria-label="Exit fullscreen"
           >
             <Minimize2 className="h-6 w-6" />
@@ -116,13 +116,13 @@ export function UTCClock() {
           <span className="text-[12vw] sm:text-[14vw] font-mono font-bold tracking-wider text-white tabular-nums">
             {formatTime(currentTime, 'UTC')}
           </span>
-          <p className="mt-4 text-xl sm:text-2xl text-slate-400 capitalize">
+          <p className="mt-4 text-xl sm:text-2xl text-white/70 capitalize">
             {formatDate(currentTime, 'UTC')}
           </p>
-          <p className="mt-2 text-sm text-slate-500 font-mono">
+          <p className="mt-2 text-sm text-white/60 font-mono">
             {formatDateShort(currentTime, 'UTC')} UTC
           </p>
-          <p className="absolute bottom-6 text-xs text-slate-600">
+          <p className="absolute bottom-6 text-xs text-white/50">
             ESC ou clique para sair
           </p>
         </div>
@@ -139,7 +139,7 @@ export function UTCClock() {
             <button
               data-slot="card-action"
               onClick={toggleMaximized}
-              className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors"
+              className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
               aria-label="Maximize clock"
               title="Maximizar relógio"
             >
@@ -148,7 +148,7 @@ export function UTCClock() {
           </CardHeader>
           <CardContent className="pt-4">
             <div className="text-center">
-              <div className="inline-flex items-center justify-center px-6 py-4 rounded-2xl bg-gradient-to-br from-azulejo-500 to-azulejo-700 text-white shadow-xl">
+              <div className="inline-flex items-center justify-center px-6 py-4 rounded-2xl bg-azulejo-600 text-white shadow-xl">
                 <span className="text-5xl sm:text-7xl md:text-8xl font-mono font-bold tracking-wider">
                   {formatTime(currentTime, 'UTC')}
                 </span>
@@ -173,8 +173,8 @@ export function UTCClock() {
           </CardHeader>
           <CardContent className="pt-4">
             <div className="text-center">
-              <div className="inline-flex items-center justify-center px-4 py-3 rounded-xl bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-700">
-                <span className="text-3xl sm:text-4xl font-mono font-bold text-slate-900 dark:text-white tracking-wider">
+              <div className="inline-flex items-center justify-center px-4 py-3 rounded-xl bg-muted border border-border">
+                <span className="text-3xl sm:text-4xl font-mono font-bold text-foreground tracking-wider">
                   {formatTime(currentTime, Intl.DateTimeFormat().resolvedOptions().timeZone)}
                 </span>
               </div>
@@ -198,21 +198,21 @@ export function UTCClock() {
           </CardHeader>
           <CardContent className="pt-4">
             <div className="space-y-4">
-              <div className="flex justify-between items-center p-3 rounded-lg bg-gray-50 dark:bg-slate-800/50">
+              <div className="flex justify-between items-center p-3 rounded-lg bg-muted">
                 <span className="text-sm text-muted-foreground">{t('dayOfYear')}</span>
-                <span className="font-mono font-semibold text-slate-900 dark:text-white">
+                <span className="font-mono font-semibold text-foreground">
                   {Math.floor((currentTime.getTime() - new Date(currentTime.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24))}
                 </span>
               </div>
-              <div className="flex justify-between items-center p-3 rounded-lg bg-gray-50 dark:bg-slate-800/50">
+              <div className="flex justify-between items-center p-3 rounded-lg bg-muted">
                 <span className="text-sm text-muted-foreground">{t('week')}</span>
-                <span className="font-mono font-semibold text-slate-900 dark:text-white">
+                <span className="font-mono font-semibold text-foreground">
                   {Math.ceil((Math.floor((currentTime.getTime() - new Date(currentTime.getFullYear(), 0, 1).getTime()) / (1000 * 60 * 60 * 24)) + new Date(currentTime.getFullYear(), 0, 1).getDay() + 1) / 7)}
                 </span>
               </div>
-              <div className="flex justify-between items-center p-3 rounded-lg bg-gray-50 dark:bg-slate-800/50">
+              <div className="flex justify-between items-center p-3 rounded-lg bg-muted">
                 <span className="text-sm text-muted-foreground">{t('unixTimestamp')}</span>
-                <span className="font-mono font-semibold text-slate-900 dark:text-white text-sm">
+                <span className="font-mono font-semibold text-foreground text-sm">
                   {Math.floor(currentTime.getTime() / 1000)}
                 </span>
               </div>

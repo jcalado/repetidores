@@ -77,7 +77,7 @@ export const metadata: Metadata = {
     "apple-mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "default",
     "apple-mobile-web-app-title": "Radioamador.info",
-    "msapplication-TileColor": "#1e293b",
+    "msapplication-TileColor": "#1d65a8",
     "msapplication-config": "/browserconfig.xml",
     "geo.region": "PT",
     "geo.placename": "Portugal",
@@ -89,7 +89,7 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: true,
-  themeColor: "#1e293b",
+  themeColor: "#1d65a8",
 };
 
 export default async function RootLayout({

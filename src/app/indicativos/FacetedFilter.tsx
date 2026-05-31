@@ -61,7 +61,7 @@ export function FacetedFilter({ icon, title, options, selected, onChange, disabl
           disabled={disabled}
           title={disabled ? disabledHint : undefined}
           className={`
-            group inline-flex items-center gap-1.5 h-8 rounded-md text-xs font-medium
+            group inline-flex items-center gap-1.5 h-8 rounded-lg text-xs font-medium
             border shadow-xs transition-all duration-150
             disabled:opacity-50 disabled:cursor-not-allowed
             ${isActive
@@ -78,7 +78,7 @@ export function FacetedFilter({ icon, title, options, selected, onChange, disabl
               <span className="h-3.5 w-px bg-azulejo-300 dark:bg-azulejo-700 mx-0.5" />
               <Badge
                 variant="secondary"
-                className="h-5 min-w-5 px-1 rounded text-[10px] font-semibold bg-azulejo-500 dark:bg-azulejo-600 text-white border-0"
+                className="h-5 min-w-5 px-1 rounded-full text-[10px] font-semibold bg-azulejo-500 dark:bg-azulejo-600 text-white border-0"
               >
                 {selected.length}
               </Badge>
@@ -92,26 +92,26 @@ export function FacetedFilter({ icon, title, options, selected, onChange, disabl
           align="start"
           sideOffset={6}
           className={`
-            z-50 w-56 rounded-lg border border-slate-200 dark:border-slate-700
-            bg-white dark:bg-slate-900
-            shadow-lg shadow-slate-200/50 dark:shadow-black/30
+            z-50 w-56 rounded-lg border border-border
+            bg-popover
+            shadow-lg
             animate-in fade-in-0 zoom-in-95
             data-[side=bottom]:slide-in-from-top-2
             data-[side=top]:slide-in-from-bottom-2
           `}
         >
           {/* Search */}
-          <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-100 dark:border-slate-800">
-            <Search className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+          <div className="flex items-center gap-2 px-3 py-2 border-b border-border">
+            <Search className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
             <input
               ref={inputRef}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={`Filtrar ${title.toLowerCase()}...`}
-              className="flex-1 bg-transparent text-sm placeholder:text-slate-400 dark:placeholder:text-slate-500 outline-none text-foreground"
+              className="flex-1 bg-transparent text-sm placeholder:text-muted-foreground outline-none text-foreground"
             />
             {search && (
-              <button onClick={() => setSearch("")} className="text-slate-400 hover:text-slate-600">
+              <button onClick={() => setSearch("")} className="text-muted-foreground hover:text-foreground">
                 <X className="h-3 w-3" />
               </button>
             )}
@@ -120,7 +120,7 @@ export function FacetedFilter({ icon, title, options, selected, onChange, disabl
           {/* Options */}
           <div className="max-h-52 overflow-y-auto py-1 scrollbar-thin">
             {filtered.length === 0 ? (
-              <p className="py-4 text-center text-xs text-slate-400">Sem resultados</p>
+              <p className="py-4 text-center text-xs text-muted-foreground">Sem resultados</p>
             ) : (
               filtered.map((option) => {
                 const checked = selected.includes(option.value)
@@ -133,19 +133,19 @@ export function FacetedFilter({ icon, title, options, selected, onChange, disabl
                       transition-colors duration-75
                       ${checked
                         ? "text-foreground"
-                        : "text-slate-600 dark:text-slate-400"
+                        : "text-muted-foreground"
                       }
-                      hover:bg-slate-50 dark:hover:bg-slate-800/50
+                      hover:bg-accent
                     `}
                   >
                     <Checkbox
                       checked={checked}
-                      className="h-3.5 w-3.5 rounded-[3px] border-slate-300 dark:border-slate-600 data-[state=checked]:bg-azulejo-500 data-[state=checked]:border-azulejo-500"
+                      className="h-3.5 w-3.5 rounded-[3px] border-input data-[state=checked]:bg-azulejo-500 data-[state=checked]:border-azulejo-500"
                       tabIndex={-1}
                     />
                     <span className="flex-1 truncate">{option.label}</span>
                     {option.count != null && (
-                      <span className="text-[10px] font-mono tabular-nums text-slate-400 dark:text-slate-500">
+                      <span className="text-[10px] font-mono tabular-nums text-muted-foreground">
                         {option.count.toLocaleString("pt-PT")}
                       </span>
                     )}
@@ -157,10 +157,10 @@ export function FacetedFilter({ icon, title, options, selected, onChange, disabl
 
           {/* Footer */}
           {selected.length > 0 && (
-            <div className="border-t border-slate-100 dark:border-slate-800 px-3 py-1.5">
+            <div className="border-t border-border px-3 py-1.5">
               <button
                 onClick={() => onChange([])}
-                className="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
                 Limpar seleção
               </button>

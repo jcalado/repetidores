@@ -236,7 +236,7 @@ export function GroundTrack({ currentPosition, observer, orbitPaths = defaultOrb
       <CardContent>
         <div
           ref={mapRef}
-          className="w-full h-[500px] rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800"
+          className="w-full h-[500px] rounded-lg overflow-hidden border border-border"
         />
         <div className="mt-4 flex flex-wrap gap-4 text-sm">
           <div className="flex items-center gap-2">
@@ -248,7 +248,7 @@ export function GroundTrack({ currentPosition, observer, orbitPaths = defaultOrb
             <span>Sua Localização</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-0.5 bg-gray-500 opacity-40" style={{ borderTop: '2px dashed' }}></div>
+            <div className="w-8 h-0.5 bg-muted-foreground opacity-40" style={{ borderTop: '2px dashed' }}></div>
             <span>Órbita Anterior</span>
           </div>
           <div className="flex items-center gap-2">

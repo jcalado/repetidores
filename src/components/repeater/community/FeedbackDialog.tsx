@@ -65,7 +65,7 @@ export function FeedbackDialog({
             </label>
             <input
               type="text"
-              className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring uppercase"
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm font-mono outline-none focus:ring-2 focus:ring-azulejo-500 uppercase"
               placeholder={t("callsignPlaceholder")}
               maxLength={20}
               value={reporterCallsign}

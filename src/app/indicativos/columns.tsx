@@ -7,7 +7,7 @@ import { ColumnDef } from "@tanstack/react-table"
 function EstadoBadge({ estado }: { estado: string }) {
   const normalized = estado?.toLowerCase() || ""
 
-  let className = "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+  let className = "bg-muted text-muted-foreground"
 
   if (normalized === "activo" || normalized === "active") {
     className = "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400"
@@ -25,7 +25,7 @@ function EstadoBadge({ estado }: { estado: string }) {
 }
 
 function CategoriaBadge({ categoria }: { categoria: string }) {
-  if (!categoria) return <span className="text-slate-400">—</span>
+  if (!categoria) return <span className="text-muted-foreground">—</span>
 
   return (
     <Badge variant="secondary" className="font-normal">
@@ -70,7 +70,7 @@ export const callsignColumns: ColumnDef<Callsign>[] = [
     accessorKey: "distrito",
     header: "Distrito",
     cell: ({ row }) => (
-      <span className="text-slate-600 dark:text-slate-300">
+      <span className="text-foreground">
         {row.getValue("distrito") || "—"}
       </span>
     ),
@@ -79,7 +79,7 @@ export const callsignColumns: ColumnDef<Callsign>[] = [
     accessorKey: "concelho",
     header: "Concelho",
     cell: ({ row }) => (
-      <span className="text-slate-600 dark:text-slate-300">
+      <span className="text-foreground">
         {row.getValue("concelho") || "—"}
       </span>
     ),
@@ -88,7 +88,7 @@ export const callsignColumns: ColumnDef<Callsign>[] = [
     accessorKey: "localidade",
     header: "Localidade",
     cell: ({ row }) => (
-      <span className="text-slate-600 dark:text-slate-300">
+      <span className="text-foreground">
         {row.getValue("localidade") || "—"}
       </span>
     ),

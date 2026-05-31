@@ -22,7 +22,7 @@ export function TechnicalSpecsSection({ repeater: r }: TechnicalSpecsSectionProp
       <div className="grid grid-cols-2 gap-2">
         {r.power && (
           <div className="rounded-lg bg-muted/50 p-2.5">
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            <div className="text-[10px] tracking-wider text-muted-foreground">
               Potência
             </div>
             <div className="text-sm font-medium mt-0.5">{r.power}W</div>
@@ -30,7 +30,7 @@ export function TechnicalSpecsSection({ repeater: r }: TechnicalSpecsSectionProp
         )}
         {r.antennaHeight && (
           <div className="rounded-lg bg-muted/50 p-2.5">
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            <div className="text-[10px] tracking-wider text-muted-foreground">
               Antena
             </div>
             <div className="text-sm font-medium mt-0.5">{r.antennaHeight}m AGL</div>
@@ -38,7 +38,7 @@ export function TechnicalSpecsSection({ repeater: r }: TechnicalSpecsSectionProp
         )}
         {r.coverage && (
           <div className="rounded-lg bg-muted/50 p-2.5">
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            <div className="text-[10px] tracking-wider text-muted-foreground">
               Cobertura
             </div>
             <div className="text-sm font-medium mt-0.5 capitalize">{r.coverage}</div>
@@ -46,7 +46,7 @@ export function TechnicalSpecsSection({ repeater: r }: TechnicalSpecsSectionProp
         )}
         {r.operatingHours && (
           <div className="rounded-lg bg-muted/50 p-2.5">
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            <div className="text-[10px] tracking-wider text-muted-foreground">
               Horário
             </div>
             <div className="text-sm font-medium mt-0.5">{r.operatingHours}</div>

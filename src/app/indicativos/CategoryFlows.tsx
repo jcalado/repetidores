@@ -83,14 +83,14 @@ export function CategoryFlows() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-300">
+        <h3 className="text-sm font-semibold text-muted-foreground">
           Movimentos por categoria
         </h3>
         <select
           value={selectedMonth}
           onChange={handleMonthChange}
           disabled={loading && availableMonths.length === 0}
-          className="rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-700 dark:text-slate-200 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+          className="rounded-lg border border-input bg-background text-sm text-foreground px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-azulejo-500 disabled:opacity-50"
         >
           {availableMonths.length > 0 ? (
             availableMonths.map((m) => (
@@ -107,19 +107,19 @@ export function CategoryFlows() {
       <div className="flex items-start gap-2 rounded-md border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/20 px-3 py-2 text-xs text-amber-800 dark:text-amber-300">
         <AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
         <p>
-          <span className="font-semibold">Movimentos sinalizados</span> — Entradas e saídas destacadas a vermelho indicam transições de categoria inesperadas (ex: saltar de Categoria 3 para Categoria 1 sem passar pela 2).
+          <span className="font-semibold">Movimentos sinalizados:</span> Entradas e saídas destacadas a vermelho indicam transições de categoria inesperadas (ex: saltar de Categoria 3 para Categoria 1 sem passar pela 2).
         </p>
       </div>
 
       {loading && (
-        <div className="flex items-center justify-center py-12 text-slate-400">
+        <div className="flex items-center justify-center py-12 text-muted-foreground">
           <Loader2 className="h-5 w-5 animate-spin mr-2" />
           A carregar movimentos...
         </div>
       )}
 
       {error && !loading && (
-        <div className="text-center py-12 text-red-500 dark:text-red-400 text-sm">
+        <div className="text-center py-12 text-destructive text-sm">
           {error}
         </div>
       )}
@@ -135,21 +135,21 @@ export function CategoryFlows() {
             return (
               <div
                 key={cat}
-                className="rounded-lg border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-5"
+                className="rounded-xl border border-border bg-card shadow-sm p-5"
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                  <h4 className="text-sm font-semibold text-foreground">
                     Categoria {cat}
                   </h4>
                   {totalFlow > 0 && (
-                    <span className="inline-flex items-center rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-400">
+                    <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
                       {totalFlow}
                     </span>
                   )}
                 </div>
 
                 {totalFlow === 0 ? (
-                  <p className="text-xs text-slate-400 dark:text-slate-500 italic">
+                  <p className="text-xs text-muted-foreground italic">
                     Sem alterações
                   </p>
                 ) : (
@@ -161,14 +161,14 @@ export function CategoryFlows() {
                       </p>
                       <div className="space-y-1">
                         {entering.length === 0 ? (
-                          <p className="text-xs text-slate-400 dark:text-slate-500 italic">—</p>
+                          <p className="text-xs text-muted-foreground italic">—</p>
                         ) : (
                           entering.map((entry) => (
                             <div key={entry.indicativo} className="text-xs">
-                              <span className="font-medium text-slate-700 dark:text-slate-200">
+                              <span className="font-mono font-medium text-azulejo-700 dark:text-azulejo-400">
                                 {entry.indicativo}
                               </span>
-                              <span className="ml-1 text-slate-400 dark:text-slate-500">
+                              <span className="ml-1 text-muted-foreground">
                                 {formatReason(entry.reason)}
                               </span>
                             </div>
@@ -184,7 +184,7 @@ export function CategoryFlows() {
                       </p>
                       <div className="space-y-1">
                         {leaving.length === 0 ? (
-                          <p className="text-xs text-slate-400 dark:text-slate-500 italic">—</p>
+                          <p className="text-xs text-muted-foreground italic">—</p>
                         ) : (
                           <TooltipProvider>
                             {leaving.map((entry) =>
@@ -192,13 +192,13 @@ export function CategoryFlows() {
                                 <Tooltip key={entry.indicativo}>
                                   <TooltipTrigger asChild>
                                     <div
-                                      className="text-xs bg-red-50 dark:bg-red-950/30 border-l-2 border-red-400 pl-1.5 cursor-help"
+                                      className="text-xs rounded-md border border-destructive/30 bg-destructive/10 px-1.5 py-0.5 cursor-help"
                                     >
-                                      <span className="font-medium text-slate-700 dark:text-slate-200">
-                                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-red-500 mr-1 align-middle" />
+                                      <span className="font-mono font-medium text-foreground">
+                                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-destructive mr-1 align-middle" />
                                         {entry.indicativo}
                                       </span>
-                                      <span className="ml-1 text-slate-400 dark:text-slate-500">
+                                      <span className="ml-1 text-muted-foreground">
                                         {formatReason(entry.reason)}
                                       </span>
                                     </div>
@@ -209,10 +209,10 @@ export function CategoryFlows() {
                                 </Tooltip>
                               ) : (
                                 <div key={entry.indicativo} className="text-xs">
-                                  <span className="font-medium text-slate-700 dark:text-slate-200">
+                                  <span className="font-mono font-medium text-azulejo-700 dark:text-azulejo-400">
                                     {entry.indicativo}
                                   </span>
-                                  <span className="ml-1 text-slate-400 dark:text-slate-500">
+                                  <span className="ml-1 text-muted-foreground">
                                     {formatReason(entry.reason)}
                                   </span>
                                 </div>

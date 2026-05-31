@@ -22,12 +22,12 @@ export function MUFMapEmbed() {
     <Card>
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-lg">
-          <MapIcon className="h-5 w-5 text-emerald-500" />
+          <MapIcon className="h-5 w-5 text-azulejo-500" />
           {t('muf.title')}
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="relative w-full overflow-hidden rounded-lg border bg-slate-900 dark:border-gray-700">
+        <div className="relative w-full overflow-hidden rounded-lg border border-border bg-muted">
           <img
             src={`${MUF_MAP_URL}?t=${refreshKey}`}
             alt="MUF Map - Current Propagation Prediction"

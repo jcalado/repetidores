@@ -4,6 +4,7 @@
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
+import { MODE_BADGE_COLORS } from "@/lib/mode-colors"
 import { type UserLocation } from "@/contexts/UserLocationContext"
 import { calculateDistance, formatDistance } from "@/lib/geolocation"
 import { toggleFavorite, isFavorite } from "@/lib/favorites"
@@ -134,8 +135,8 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
             },
             cell: ({ getValue }: { getValue: () => number }) => {
               const distance = getValue()
-              if (distance === Infinity) return "—"
-              return formatDistance(distance)
+              if (distance === Infinity) return "-"
+              return <span className="font-mono tabular-nums">{formatDistance(distance)}</span>
             },
             sortingFn: "basic",
             enableColumnFilter: false,
@@ -145,6 +146,9 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
     {
       accessorKey: "callsign",
       header: t("callsign"),
+      cell: ({ getValue }) => (
+        <span className="font-mono">{String(getValue() ?? "")}</span>
+      ),
     },
     {
       id: "band",
@@ -169,7 +173,7 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
       },
       cell: ({ getValue }) => {
         const value = getValue() as number
-        return value ? value.toFixed(3) : ""
+        return value ? <span className="font-mono tabular-nums">{value.toFixed(3)}</span> : ""
       },
       filterFn: (row, id, value) => {
         if (!value) return true
@@ -189,7 +193,7 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
       },
       cell: ({ getValue }) => {
         const value = getValue() as number
-        return value ? value.toFixed(3) : ""
+        return value ? <span className="font-mono tabular-nums">{value.toFixed(3)}</span> : ""
       },
       filterFn: (row, id, value) => {
         if (!value) return true
@@ -209,7 +213,7 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
       },
       cell: ({ getValue }) => {
         const value = getValue() as number
-        return value ? value.toFixed(1) : ""
+        return value ? <span className="font-mono tabular-nums">{value.toFixed(1)}</span> : ""
       },
       filterFn: (row, id, value) => {
         if (!value) return true
@@ -259,15 +263,24 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
     {
       accessorKey: "latitude",
       header: t("latitude"),
+      cell: ({ getValue }) => (
+        <span className="font-mono tabular-nums">{String(getValue() ?? "")}</span>
+      ),
     },
     {
       accessorKey: "longitude",
       header: t("longitude"),
+      cell: ({ getValue }) => (
+        <span className="font-mono tabular-nums">{String(getValue() ?? "")}</span>
+      ),
     },
     {
       id: "qthLocator",
       accessorKey: "qthLocator",
       header: t("qthLocator"),
+      cell: ({ getValue }) => (
+        <span className="font-mono">{String(getValue() ?? "")}</span>
+      ),
       // Substring match, case-insensitive
       filterFn: (row, id, value) => {
         if (!value) return true
@@ -373,17 +386,8 @@ export function getOwnerShort(name: string): string {
 }
 
 // ---- Modes Cell ----
-// Mode colors - shared with quick filters in RepeaterView.tsx
-const MODE_COLORS: Record<string, string> = {
-  FM: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  DMR: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
-  DSTAR: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400",
-  C4FM: "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400",
-  TETRA: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-  EchoLink: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-  AllStar: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
-  Digipeater: "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400",
-}
+// Mode colors - shared single source of truth with the quick-filter tiles (see lib/mode-colors).
+const MODE_COLORS = MODE_BADGE_COLORS
 
 function ModesCell({ modes }: { modes: Repeater['modes'] }) {
   if (!modes || modes.length === 0) return null
@@ -395,8 +399,8 @@ function ModesCell({ modes }: { modes: Repeater['modes'] }) {
         <span
           key={mode}
           className={cn(
-            "inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium",
-            MODE_COLORS[mode] ?? "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400"
+            "inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium",
+            MODE_COLORS[mode] ?? "bg-muted text-muted-foreground"
           )}
         >
           {mode === 'DSTAR' ? 'D-STAR' : mode}
@@ -514,7 +518,7 @@ function statusStyle(category: VoteStats["category"]) {
     case "bad":
       return { dotClass: "bg-red-500" }
     default:
-      return { dotClass: "bg-gray-400 dark:bg-gray-500" }
+      return { dotClass: "bg-muted-foreground/40" }
   }
 }
 

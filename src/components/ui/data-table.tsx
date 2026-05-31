@@ -560,7 +560,7 @@ export function DataTable<TData, TValue>({
         </div>
       </div>
 
-      <div className="rounded-md border" aria-busy={isLoading}>
+      <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden" aria-busy={isLoading}>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

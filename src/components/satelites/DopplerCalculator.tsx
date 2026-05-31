@@ -95,7 +95,7 @@ export function DopplerCalculator({
   return (
     <div className="space-y-4">
       {/* Status Banner */}
-      <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-900 border">
+      <div className="flex items-center justify-between p-3 rounded-lg bg-muted border border-border">
         <div className="flex items-center gap-3">
           <Radio className="h-5 w-5 text-primary" />
           <div>
@@ -316,9 +316,9 @@ function DopplerBar({
         <span>0</span>
         <span>+{(maxShift / 1000).toFixed(0)} kHz</span>
       </div>
-      <div className="relative h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+      <div className="relative h-2 bg-muted rounded-full overflow-hidden">
         {/* Center marker */}
-        <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-slate-400 dark:bg-slate-500 -translate-x-1/2 z-10" />
+        <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-border -translate-x-1/2 z-10" />
         {/* Shift bar */}
         <div
           className={`absolute top-0 bottom-0 transition-all ${

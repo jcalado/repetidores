@@ -134,7 +134,7 @@ export default function LocationPickerPopover({ compact = false }: LocationPicke
         <PopoverButton
           className={cn(
             'flex items-center justify-center rounded-md p-2 transition-colors',
-            'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-slate-800',
+            'text-foreground hover:bg-accent',
             userLocation && 'text-azulejo-600 dark:text-azulejo-400'
           )}
         >
@@ -143,7 +143,7 @@ export default function LocationPickerPopover({ compact = false }: LocationPicke
 
         <PopoverPanel
           transition
-          className="absolute left-0 z-50 mt-3 w-[min(20rem,calc(100vw-3rem))] overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-gray-900/5 transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[enter]:ease-out data-[leave]:duration-150 data-[leave]:ease-in dark:bg-slate-900 dark:ring-white/10"
+          className="absolute left-0 z-50 mt-3 w-[min(20rem,calc(100vw-3rem))] overflow-hidden rounded-2xl bg-popover text-popover-foreground shadow-xl border border-border transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[enter]:ease-out data-[leave]:duration-150 data-[leave]:ease-in"
         >
           <PopoverContent
             t={t}
@@ -184,7 +184,7 @@ export default function LocationPickerPopover({ compact = false }: LocationPicke
 
       <PopoverPanel
         transition
-        className="absolute right-0 z-50 mt-3 w-80 overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-gray-900/5 transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[enter]:ease-out data-[leave]:duration-150 data-[leave]:ease-in dark:bg-slate-900 dark:ring-white/10"
+        className="absolute right-0 z-50 mt-3 w-80 overflow-hidden rounded-2xl bg-popover text-popover-foreground shadow-xl border border-border transition data-[closed]:translate-y-1 data-[closed]:opacity-0 data-[enter]:duration-200 data-[enter]:ease-out data-[leave]:duration-150 data-[leave]:ease-in"
       >
         <PopoverContent
           t={t}
@@ -255,13 +255,13 @@ function PopoverContent({
     <div className="p-4 space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+        <h3 className="text-sm font-semibold text-foreground">
           {t('locationPicker.title')}
         </h3>
         {userLocation && (
           <button
             onClick={handleClear}
-            className="text-xs text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 transition-colors"
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             {t('locationPicker.clear')}
           </button>
@@ -278,16 +278,16 @@ function PopoverContent({
             </span>
           </div>
           {isLoadingAddress ? (
-            <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <Loader2 className="h-3 w-3 animate-spin" />
               {t('location.loadingAddress')}
             </div>
           ) : locationAddress ? (
-            <p className="text-xs text-gray-600 dark:text-gray-400 pl-6">
+            <p className="text-xs text-muted-foreground pl-6">
               {locationAddress}
             </p>
           ) : (
-            <p className="text-xs text-gray-500 dark:text-gray-400 pl-6">
+            <p className="text-xs text-muted-foreground pl-6 font-mono">
               {userLocation.latitude.toFixed(4)}, {userLocation.longitude.toFixed(4)}
             </p>
           )}
@@ -301,7 +301,7 @@ function PopoverContent({
 
       {/* QTH Locator Input */}
       <div className="space-y-2">
-        <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+        <label className="text-xs font-medium text-muted-foreground">
           {t('locationPicker.qthLabel')}
         </label>
         <div className="flex gap-2">
@@ -311,7 +311,7 @@ function PopoverContent({
             placeholder={t('locationPicker.qthPlaceholder')}
             className={cn(
               'flex-1 font-mono uppercase',
-              qthError && 'border-red-500 focus-visible:ring-red-500'
+              qthError && 'border-destructive focus-visible:ring-destructive'
             )}
             maxLength={6}
             onKeyDown={(e) => {
@@ -330,14 +330,14 @@ function PopoverContent({
           </Button>
         </div>
         {qthError && (
-          <p className="text-xs text-red-500">{t('locationPicker.qthInvalid')}</p>
+          <p className="text-xs text-destructive">{t('locationPicker.qthInvalid')}</p>
         )}
       </div>
 
       <div className="flex items-center gap-2">
-        <div className="flex-1 border-t border-gray-200 dark:border-gray-700" />
-        <span className="text-xs text-gray-400">{t('location.or')}</span>
-        <div className="flex-1 border-t border-gray-200 dark:border-gray-700" />
+        <div className="flex-1 border-t border-border" />
+        <span className="text-xs text-muted-foreground">{t('location.or')}</span>
+        <div className="flex-1 border-t border-border" />
       </div>
 
       {/* Search by Name */}
@@ -379,9 +379,9 @@ function PopoverContent({
       </div>
 
       <div className="flex items-center gap-2">
-        <div className="flex-1 border-t border-gray-200 dark:border-gray-700" />
-        <span className="text-xs text-gray-400">{t('location.or')}</span>
-        <div className="flex-1 border-t border-gray-200 dark:border-gray-700" />
+        <div className="flex-1 border-t border-border" />
+        <span className="text-xs text-muted-foreground">{t('location.or')}</span>
+        <div className="flex-1 border-t border-border" />
       </div>
 
       {/* GPS and Map buttons */}
@@ -404,9 +404,9 @@ function PopoverContent({
       </div>
 
       <div className="flex items-center gap-2">
-        <div className="flex-1 border-t border-gray-200 dark:border-gray-700" />
-        <span className="text-xs text-gray-400">{t('location.or')}</span>
-        <div className="flex-1 border-t border-gray-200 dark:border-gray-700" />
+        <div className="flex-1 border-t border-border" />
+        <span className="text-xs text-muted-foreground">{t('location.or')}</span>
+        <div className="flex-1 border-t border-border" />
       </div>
       <LocationPickerDialog onLocationSelect={setLocation} />
     </div>

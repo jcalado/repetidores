@@ -21,7 +21,7 @@ type PaginationLinkProps = React.ComponentProps<"a"> & {
 }
 
 const baseLink =
-  "inline-flex h-9 min-w-9 items-center justify-center rounded-md border bg-background px-3 text-sm transition-colors hover:bg-accent aria-disabled:opacity-50 aria-disabled:pointer-events-none"
+  "inline-flex h-9 min-w-9 items-center justify-center rounded-lg border border-input bg-background px-3 text-sm transition-colors hover:bg-accent outline-none focus-visible:border-azulejo-500 focus-visible:ring-azulejo-500/40 focus-visible:ring-[3px] aria-disabled:opacity-50 aria-disabled:pointer-events-none"
 
 const PaginationLink = React.forwardRef<HTMLAnchorElement, PaginationLinkProps>(
   ({ className, isActive, disabled, ...props }, ref) => (
@@ -31,7 +31,7 @@ const PaginationLink = React.forwardRef<HTMLAnchorElement, PaginationLinkProps>(
       aria-disabled={disabled ? true : undefined}
       className={cn(
         baseLink,
-        isActive && "border-primary bg-accent",
+        isActive && "border-azulejo-500 bg-azulejo-100 text-azulejo-700 dark:bg-azulejo-500/15 dark:text-azulejo-300",
         className
       )}
       {...props}

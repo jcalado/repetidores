@@ -77,7 +77,7 @@ export function RepeaterHealthCard({
       maintenance: "bg-amber-500",
       offline: "bg-red-500",
     };
-    dotClass = adminDot[operationalStatus!] || "bg-slate-400";
+    dotClass = adminDot[operationalStatus!] || "bg-muted-foreground";
     label = adminCfg.label;
     textClass = adminCfg.textClass;
   } else if (operationalStatus === "active" && adminCfg) {
@@ -90,9 +90,9 @@ export function RepeaterHealthCard({
       ok: "bg-emerald-500",
       "prob-bad": "bg-amber-500",
       bad: "bg-red-500",
-      unknown: "bg-slate-400",
+      unknown: "bg-muted-foreground",
     };
-    dotClass = communityDot[voting.status] || "bg-slate-400";
+    dotClass = communityDot[voting.status] || "bg-muted-foreground";
     label = t(`status.${voting.status === "prob-bad" ? "probBad" : voting.status}.label`);
     textClass =
       voting.status === "ok"
@@ -101,7 +101,7 @@ export function RepeaterHealthCard({
           ? "text-amber-700 dark:text-amber-300"
           : voting.status === "bad"
             ? "text-red-700 dark:text-red-300"
-            : "text-azulejo-500 dark:text-azulejo-400";
+            : "text-muted-foreground";
   }
 
   // Show community percentage when admin is active or unset
@@ -109,27 +109,27 @@ export function RepeaterHealthCard({
 
   if (voting.isStatsLoading) {
     return (
-      <div className="rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-white dark:bg-azulejo-950 px-4 py-3">
-        <div className="h-5 w-40 rounded bg-azulejo-100 dark:bg-azulejo-800 animate-pulse" />
+      <div className="rounded-xl border border-border bg-card shadow-sm px-4 py-3">
+        <div className="h-5 w-40 rounded bg-muted animate-pulse" />
       </div>
     );
   }
 
   return (
     <>
-      <div className="rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-white dark:bg-azulejo-950">
+      <div className="rounded-xl border border-border bg-card shadow-sm">
         <div className="flex items-center gap-2.5 px-4 py-3">
           <span className={cn("h-2.5 w-2.5 rounded-full shrink-0", dotClass)} />
           <span className={cn("text-sm font-medium", textClass)}>
             {label}
             {showPercent && (
-              <span className="text-azulejo-400 dark:text-azulejo-500 font-normal">
+              <span className="text-muted-foreground font-normal">
                 {" "}({upPercent}%)
               </span>
             )}
           </span>
           {lastVerified && (
-            <span className="text-xs text-azulejo-400 dark:text-azulejo-500">
+            <span className="text-xs text-muted-foreground font-mono">
               {new Date(lastVerified).toLocaleDateString("pt-PT", {
                 day: "numeric",
                 month: "short",

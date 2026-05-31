@@ -34,13 +34,13 @@ export function VoteDistributionBar({ stats, t }: VoteDistributionBarProps) {
           <TrendingDown className="h-3 w-3" />
         </span>
       </div>
-      <div className="relative h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+      <div className="relative h-2 w-full overflow-hidden rounded-full bg-muted">
         <div
-          className="absolute left-0 top-0 h-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-500 ease-out"
+          className="absolute left-0 top-0 h-full bg-[oklch(0.55_0.13_145)] transition-all duration-500 ease-out"
           style={{ width: `${upPercent}%` }}
         />
         <div
-          className="absolute right-0 top-0 h-full bg-gradient-to-l from-red-500 to-red-400 transition-all duration-500 ease-out"
+          className="absolute right-0 top-0 h-full bg-destructive transition-all duration-500 ease-out"
           style={{ width: `${downPercent}%` }}
         />
       </div>

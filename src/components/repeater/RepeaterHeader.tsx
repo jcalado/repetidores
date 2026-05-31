@@ -7,7 +7,6 @@ import Link from "next/link";
 import { ShareButton } from "./ShareButton";
 import { getBandFromFrequency } from "./utils/formatters";
 import { getPrimaryFrequency } from "@/types/repeater-helpers";
-import { cn } from "@/lib/utils";
 import type { Repeater } from "./types";
 
 interface RepeaterHeaderProps {
@@ -25,57 +24,34 @@ export function RepeaterHeader({ repeater: r }: RepeaterHeaderProps) {
   const mapsUrl = `https://www.google.com/maps?q=${encodeURIComponent(r.latitude + "," + r.longitude)}`;
 
   return (
-    <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-azulejo-600 via-azulejo-700 to-azulejo-800 dark:from-azulejo-800 dark:via-azulejo-900 dark:to-azulejo-950 p-4 shadow-lg shadow-azulejo-500/20">
-      {/* Background pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="grid-sidebar" width="24" height="24" patternUnits="userSpaceOnUse">
-              <path d="M 24 0 L 0 0 0 24" fill="none" stroke="currentColor" strokeWidth="0.5"/>
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid-sidebar)" className="text-white" />
-        </svg>
-      </div>
-
-      {/* Decorative blur */}
-      <div className="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-azulejo-500/20 blur-xl" />
-
-      <div className="relative flex items-start justify-between gap-3">
+    <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
+      <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           {/* Callsign */}
           <div className="flex items-center gap-2 mb-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
-              <Radio className="h-4 w-4 text-white" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
+              <Radio className="h-4 w-4 text-azulejo-600 dark:text-azulejo-400" />
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight font-mono truncate">
+            <h3 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight font-mono truncate">
               {r.callsign}
             </h3>
           </div>
 
           {/* Badges */}
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="px-2 py-0.5 rounded-md bg-white/10 text-white text-xs font-medium">
+            <span className="px-2 py-0.5 rounded-full border border-border bg-card text-muted-foreground text-xs font-medium">
               {band}
             </span>
             {r.modes?.map((mode) => (
               <span
                 key={mode}
-                className={cn(
-                  "px-2 py-0.5 rounded-md text-xs font-medium",
-                  mode === 'DMR' && "bg-purple-500/30 text-purple-100",
-                  mode === 'DSTAR' && "bg-blue-500/30 text-blue-100",
-                  mode === 'C4FM' && "bg-orange-500/30 text-orange-100",
-                  mode === 'TETRA' && "bg-cyan-500/30 text-cyan-100",
-                  mode === 'FM' && "bg-azulejo-500/30 text-azulejo-100",
-                  mode === 'Digipeater' && "bg-green-500/30 text-green-100"
-                )}
+                className="px-2 py-0.5 rounded-full border border-border bg-card text-muted-foreground text-xs font-medium"
               >
                 {mode === 'DSTAR' ? 'D-STAR' : mode}
               </span>
             ))}
             {r.qthLocator && (
-              <span className="px-2 py-0.5 rounded-md bg-white/10 text-white text-xs font-mono">
+              <span className="px-2 py-0.5 rounded-full border border-border bg-card text-muted-foreground text-xs font-mono">
                 {r.qthLocator}
               </span>
             )}
@@ -88,7 +64,7 @@ export function RepeaterHeader({ repeater: r }: RepeaterHeaderProps) {
             <TooltipTrigger asChild>
               <Link
                 href={`/repeater/${encodeURIComponent(r.callsign)}/`}
-                className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors"
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground hover:bg-accent transition-colors"
               >
                 <Maximize2 className="h-4 w-4" />
               </Link>
@@ -102,7 +78,7 @@ export function RepeaterHeader({ repeater: r }: RepeaterHeaderProps) {
                 href={mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors"
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground hover:bg-accent transition-colors"
               >
                 <MapPin className="h-4 w-4" />
               </a>
@@ -111,9 +87,6 @@ export function RepeaterHeader({ repeater: r }: RepeaterHeaderProps) {
           </Tooltip>
         </div>
       </div>
-
-      {/* Status LED */}
-      <div className="absolute top-3 right-3 h-2 w-2 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50 animate-pulse" />
     </div>
   );
 }

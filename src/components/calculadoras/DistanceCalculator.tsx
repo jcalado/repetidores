@@ -100,7 +100,7 @@ export default function DistanceCalculator() {
                 placeholder="IM58kr"
                 value={qth1}
                 onChange={(e) => setQth1(e.target.value.toUpperCase())}
-                className={`font-mono uppercase ${error1 ? "border-red-500" : ""}`}
+                className={`font-mono uppercase ${error1 ? "border-destructive focus-visible:ring-destructive" : ""}`}
                 maxLength={6}
               />
               {coord1 && (
@@ -128,7 +128,7 @@ export default function DistanceCalculator() {
                 placeholder="JN19bh"
                 value={qth2}
                 onChange={(e) => setQth2(e.target.value.toUpperCase())}
-                className={`font-mono uppercase ${error2 ? "border-red-500" : ""}`}
+                className={`font-mono uppercase ${error2 ? "border-destructive focus-visible:ring-destructive" : ""}`}
                 maxLength={6}
               />
               {coord2 && (
@@ -142,8 +142,8 @@ export default function DistanceCalculator() {
           {/* Results */}
           {distance !== null && bearing !== null && (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t">
-              <div className="p-4 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
-                <div className="flex items-center gap-2 text-blue-100 text-sm">
+              <div className="p-4 rounded-lg bg-azulejo-600 text-white">
+                <div className="flex items-center gap-2 text-azulejo-100 text-sm">
                   <MapPin className="h-4 w-4" />
                   {t("distance")}
                 </div>
@@ -151,7 +151,7 @@ export default function DistanceCalculator() {
                   {formatNumber(distance, 1)} km
                 </div>
                 {distance >= 1 && (
-                  <div className="text-xs text-blue-100 mt-1">
+                  <div className="text-xs text-azulejo-100 mt-1">
                     {formatNumber(distance * 0.621371, 1)} mi
                   </div>
                 )}
@@ -160,12 +160,12 @@ export default function DistanceCalculator() {
               <div className={cn(
                 "p-4 rounded-lg transition-all",
                 compass.isEnabled
-                  ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white"
+                  ? "bg-azulejo-600 text-white"
                   : "bg-muted"
               )}>
                 <div className={cn(
                   "flex items-center gap-2 text-sm",
-                  compass.isEnabled ? "text-green-100" : "text-muted-foreground"
+                  compass.isEnabled ? "text-azulejo-100" : "text-muted-foreground"
                 )}>
                   <Navigation className="h-4 w-4" style={{
                     transform: compass.isEnabled && relativeBearing !== null
@@ -181,8 +181,8 @@ export default function DistanceCalculator() {
                   <div className={cn(
                     "text-sm font-medium mt-1",
                     Math.abs(relativeBearing) <= 15
-                      ? "text-green-200"
-                      : "text-yellow-200"
+                      ? "text-white"
+                      : "text-azulejo-200"
                   )}>
                     {getDirectionInstruction(relativeBearing)}
                   </div>
@@ -211,10 +211,7 @@ export default function DistanceCalculator() {
                   variant={compass.isEnabled ? "default" : "outline"}
                   size="sm"
                   onClick={() => compass.toggle()}
-                  className={cn(
-                    "gap-2",
-                    compass.isEnabled && "bg-green-600 hover:bg-green-700"
-                  )}
+                  className="gap-2"
                 >
                   <Compass className={cn("h-4 w-4", compass.isEnabled && "animate-pulse")} />
                   {compass.isEnabled ? tCompass("disable") : tCompass("enable")}
@@ -226,7 +223,7 @@ export default function DistanceCalculator() {
                 </p>
               )}
               {compass.error && (
-                <p className="text-sm text-red-500">{compass.error}</p>
+                <p className="text-sm text-destructive">{compass.error}</p>
               )}
             </div>
           )}

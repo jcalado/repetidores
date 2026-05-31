@@ -111,9 +111,9 @@ export default function MiniMap({ latitude, longitude, callsign, userLatitude, u
       <Marker position={[latitude, longitude]} icon={markerIcon}>
         <Popup>
           <div className="text-center">
-            <strong>{callsign}</strong>
+            <strong className="font-mono">{callsign}</strong>
             <br />
-            <span className="text-xs text-gray-600">
+            <span className="text-xs text-muted-foreground font-mono">
               {latitude.toFixed(5)}, {longitude.toFixed(5)}
             </span>
           </div>
@@ -125,7 +125,7 @@ export default function MiniMap({ latitude, longitude, callsign, userLatitude, u
           <Polyline
             positions={[[userLatitude, userLongitude], [latitude, longitude]]}
             pathOptions={{
-              color: '#3b82f6',
+              color: '#1d65a8',
               weight: 2,
               opacity: 0.7,
               dashArray: '8, 8',

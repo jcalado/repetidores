@@ -38,7 +38,7 @@ export function FeedbackEntryItem({ entry }: FeedbackEntryItemProps) {
         <div className="flex-1 min-w-0">
           {/* Reporter and time */}
           <div className="flex items-center gap-2 text-xs">
-            <span className="font-medium text-foreground">
+            <span className="font-mono font-medium text-foreground">
               {entry.reporterCallsign || t("feedbackSection.anonymous")}
             </span>
             <span className="text-muted-foreground">·</span>

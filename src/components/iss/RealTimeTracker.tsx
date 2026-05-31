@@ -65,8 +65,8 @@ export function RealTimeTracker({
     <div className="space-y-4">
       {/* Overhead status */}
       <Card className={isOverhead
-        ? 'bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950 border-green-200 dark:border-green-800'
-        : 'bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950'
+        ? 'bg-[oklch(0.96_0.03_145)] dark:bg-[oklch(0.28_0.05_145/0.4)] border-[oklch(0.85_0.08_145)] dark:border-[oklch(0.45_0.08_145/0.5)]'
+        : undefined
       }>
         <CardHeader>
           <div className="flex items-center justify-between flex-wrap gap-2">
@@ -79,11 +79,8 @@ export function RealTimeTracker({
                 <Button
                   variant={compass.isEnabled ? "default" : "outline"}
                   size="sm"
+                  className="gap-1"
                   onClick={() => compass.toggle()}
-                  className={cn(
-                    "gap-1",
-                    compass.isEnabled && "bg-green-600 hover:bg-green-700"
-                  )}
                 >
                   <Compass className={cn("h-3 w-3", compass.isEnabled && "animate-pulse")} />
                   <span className="hidden sm:inline">
@@ -92,9 +89,9 @@ export function RealTimeTracker({
                 </Button>
               )}
               {isOverhead ? (
-                <Badge className="bg-green-600 hover:bg-green-700 animate-pulse">
+                <Badge variant="success" className="animate-pulse">
                   <Eye className="h-3 w-3 mr-1" />
-                  VISÍVEL AGORA
+                  Visível agora
                 </Badge>
               ) : (
                 <Badge variant="secondary">
@@ -104,27 +101,27 @@ export function RealTimeTracker({
             </div>
           </div>
           {compass.error && (
-            <p className="text-sm text-red-500 mt-1">{compass.error}</p>
+            <p className="text-sm text-destructive mt-1">{compass.error}</p>
           )}
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
             <div className="space-y-1">
-              <div className="text-slate-600 dark:text-slate-400 flex items-center gap-1">
+              <div className="text-muted-foreground flex items-center gap-1">
                 <TrendingUp className="h-3 w-3" />
                 Elevação
               </div>
-              <div className={`text-2xl font-bold font-mono ${isOverhead ? 'text-green-700 dark:text-green-400' : ''}`}>
+              <div className={`text-2xl font-bold font-mono ${isOverhead ? 'text-[oklch(0.45_0.13_145)] dark:text-[oklch(0.78_0.13_145)]' : ''}`}>
                 {currentLookAngles.elevation.toFixed(1)}°
               </div>
             </div>
             <div className={cn(
               "space-y-1 p-2 -m-2 rounded-lg transition-all",
-              compass.isEnabled && "bg-green-100 dark:bg-green-900/30"
+              compass.isEnabled && "bg-azulejo-100 dark:bg-azulejo-950/40"
             )}>
               <div className={cn(
                 "flex items-center gap-1",
-                compass.isEnabled ? "text-green-700 dark:text-green-400" : "text-slate-600 dark:text-slate-400"
+                compass.isEnabled ? "text-azulejo-700 dark:text-azulejo-400" : "text-muted-foreground"
               )}>
                 <Compass className="h-3 w-3" style={{
                   transform: compass.isEnabled && relativeBearing !== null
@@ -139,39 +136,39 @@ export function RealTimeTracker({
               <div className="text-2xl font-bold font-mono">
                 {currentLookAngles.azimuth.toFixed(1)}°
               </div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">
+              <div className="text-xs text-muted-foreground">
                 {azimuthToCardinal(currentLookAngles.azimuth)}
               </div>
               {compass.isEnabled && relativeBearing !== null && (
                 <div className={cn(
                   "text-xs font-medium",
                   Math.abs(relativeBearing) <= 15
-                    ? "text-green-600 dark:text-green-400"
-                    : "text-orange-600 dark:text-orange-400"
+                    ? "text-[oklch(0.45_0.13_145)] dark:text-[oklch(0.78_0.13_145)]"
+                    : "text-[oklch(0.55_0.15_55)] dark:text-[oklch(0.78_0.13_75)]"
                 )}>
                   {getDirectionInstruction(relativeBearing)}
                 </div>
               )}
             </div>
             <div className="space-y-1">
-              <div className="text-slate-600 dark:text-slate-400 flex items-center gap-1">
+              <div className="text-muted-foreground flex items-center gap-1">
                 <Navigation className="h-3 w-3" />
                 Distância
               </div>
               <div className="text-2xl font-bold font-mono">
                 {currentLookAngles.range.toFixed(0)}
               </div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">km</div>
+              <div className="text-xs text-muted-foreground">km</div>
             </div>
             <div className="space-y-1">
-              <div className="text-slate-600 dark:text-slate-400 flex items-center gap-1">
+              <div className="text-muted-foreground flex items-center gap-1">
                 <Satellite className="h-3 w-3" />
                 Altitude
               </div>
               <div className="text-2xl font-bold font-mono">
                 {currentPosition.altitude.toFixed(0)}
               </div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">km</div>
+              <div className="text-xs text-muted-foreground">km</div>
             </div>
           </div>
         </CardContent>
@@ -188,29 +185,29 @@ export function RealTimeTracker({
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
             <div className="space-y-1">
-              <div className="text-slate-600 dark:text-slate-400">Latitude</div>
+              <div className="text-muted-foreground">Latitude</div>
               <div className="text-xl font-mono">
                 {currentPosition.latitude.toFixed(4)}°
               </div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">
+              <div className="text-xs text-muted-foreground">
                 {currentPosition.latitude > 0 ? 'Norte' : 'Sul'}
               </div>
             </div>
             <div className="space-y-1">
-              <div className="text-slate-600 dark:text-slate-400">Longitude</div>
+              <div className="text-muted-foreground">Longitude</div>
               <div className="text-xl font-mono">
                 {currentPosition.longitude.toFixed(4)}°
               </div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">
+              <div className="text-xs text-muted-foreground">
                 {currentPosition.longitude > 0 ? 'Este' : 'Oeste'}
               </div>
             </div>
             <div className="space-y-1">
-              <div className="text-slate-600 dark:text-slate-400">Velocidade</div>
+              <div className="text-muted-foreground">Velocidade</div>
               <div className="text-xl font-mono">
                 {(currentPosition.velocity * 3600).toFixed(0)}
               </div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">km/h</div>
+              <div className="text-xs text-muted-foreground">km/h</div>
             </div>
           </div>
         </CardContent>
@@ -218,18 +215,18 @@ export function RealTimeTracker({
 
       {/* Next Pass Countdown */}
       {!isOverhead && nextPassTime && (
-        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border-blue-200 dark:border-blue-800">
+        <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
+              <Clock className="h-5 w-5 text-azulejo-600 dark:text-azulejo-400" />
               Próxima Passagem
             </CardTitle>
-            <CardDescription className="text-lg font-medium text-blue-900 dark:text-blue-100">
+            <CardDescription className="text-lg font-medium text-foreground">
               {formatDistanceToNow(nextPassTime, { locale: pt, addSuffix: true })}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-slate-700 dark:text-slate-300">
+            <div className="text-sm text-foreground">
               <strong>Dica:</strong> Configure um alarme para não perder a próxima passagem visível!
             </div>
           </CardContent>
@@ -238,10 +235,10 @@ export function RealTimeTracker({
 
       {/* TLE Age Warning */}
       {tle && (
-        <div className="text-xs text-slate-600 dark:text-slate-400 text-center">
-          Dados orbitais de {new Date(tle.fetchedAt).toLocaleString('pt-PT')}
+        <div className="text-xs text-muted-foreground text-center">
+          Dados orbitais de <span className="font-mono">{new Date(tle.fetchedAt).toLocaleString('pt-PT')}</span>
           {Date.now() - tle.fetchedAt > 48 * 60 * 60 * 1000 && (
-            <span className="text-orange-600 dark:text-orange-400 ml-2">
+            <span className="text-[oklch(0.55_0.15_55)] dark:text-[oklch(0.78_0.13_75)] ml-2">
               (atualize os dados para maior precisão)
             </span>
           )}

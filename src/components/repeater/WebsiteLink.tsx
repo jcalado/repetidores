@@ -20,7 +20,7 @@ export function WebsiteLink({ url }: WebsiteLinkProps) {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-2 rounded-xl border p-3 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors"
+      className="flex items-center gap-2 rounded-xl border border-border p-3 text-sm font-medium text-azulejo-600 hover:text-azulejo-700 dark:text-azulejo-400 dark:hover:text-azulejo-300 hover:bg-azulejo-50/40 dark:hover:bg-azulejo-950/30 transition-colors"
     >
       <Globe className="h-4 w-4" />
       Visitar website

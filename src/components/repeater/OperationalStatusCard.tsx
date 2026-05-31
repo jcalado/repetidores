@@ -13,7 +13,7 @@ const dotColor: Record<string, string> = {
   active: "bg-emerald-500",
   maintenance: "bg-amber-500",
   offline: "bg-red-500",
-  unknown: "bg-slate-400",
+  unknown: "bg-muted-foreground",
 };
 
 /**
@@ -23,11 +23,11 @@ export function OperationalStatusCard({ status, lastVerified }: OperationalStatu
   const cfg = operationalStatusConfig[status];
 
   return (
-    <div className="flex items-center gap-2.5 rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-white dark:bg-azulejo-950 px-4 py-3">
+    <div className="flex items-center gap-2.5 rounded-xl border border-border bg-card shadow-sm px-4 py-3">
       <span className={cn("h-2.5 w-2.5 rounded-full shrink-0", dotColor[status])} />
       <span className={cn("text-sm font-medium", cfg.textClass)}>{cfg.label}</span>
       {lastVerified && (
-        <span className="ml-auto text-xs text-azulejo-400 dark:text-azulejo-500">
+        <span className="ml-auto text-xs text-muted-foreground font-mono">
           {new Date(lastVerified).toLocaleDateString("pt-PT", {
             day: "numeric",
             month: "short",

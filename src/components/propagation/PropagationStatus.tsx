@@ -82,7 +82,7 @@ export function PropagationStatus() {
 
       {/* Error Alert */}
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400">
+        <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-destructive">
           {error}
         </div>
       )}
@@ -106,7 +106,7 @@ export function PropagationStatus() {
       <div className="flex flex-col items-center justify-center gap-2 text-sm text-muted-foreground sm:flex-row sm:gap-4">
         {lastUpdated && (
           <span>
-            {t('lastUpdated')}: {lastUpdated.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })} UTC
+            {t('lastUpdated')}: <span className="font-mono">{lastUpdated.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })} UTC</span>
           </span>
         )}
         <span className="hidden sm:inline">•</span>
@@ -114,7 +114,7 @@ export function PropagationStatus() {
         <button
           onClick={handleManualRefresh}
           disabled={isRefreshing}
-          className="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium text-azulejo-600 hover:bg-azulejo-50 disabled:opacity-50 dark:text-azulejo-400 dark:hover:bg-azulejo-900/20"
+          className="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm font-medium text-azulejo-600 hover:bg-azulejo-50 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:text-azulejo-400 dark:hover:bg-azulejo-900/20"
         >
           <ArrowPathIcon className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
           {t('refreshNow')}

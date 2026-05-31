@@ -64,18 +64,18 @@ const SimplexMapView = ({ frequencies, onFrequencyClick }: Props) => {
               <Popup>
                 <div className="min-w-[180px]">
                   <div className="font-bold text-base font-mono">{freq.frequency.toFixed(4)} MHz</div>
-                  <div className="text-sm text-gray-600 mt-1">
+                  <div className="text-sm text-muted-foreground mt-1">
                     {freq.municipality}, {freq.district}
                   </div>
                   <div className="text-sm mt-0.5">
                     <span className={`inline-block rounded px-1.5 py-0.5 text-xs ${MODE_COLORS[freq.mode] || "bg-blue-100 text-blue-800"}`}>{freq.mode}</span>
                     {freq.band && (
-                      <span className="ml-1 inline-block rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-700">{freq.band}</span>
+                      <span className="ml-1 inline-block rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">{freq.band}</span>
                     )}
                   </div>
                   {freq.tone && (
-                    <div className="text-xs text-gray-500 mt-0.5">
-                      {t("tone")}: {freq.tone} Hz
+                    <div className="text-xs text-muted-foreground mt-0.5">
+                      {t("tone")}: <span className="font-mono">{freq.tone} Hz</span>
                     </div>
                   )}
                   {onFrequencyClick && (
@@ -85,7 +85,7 @@ const SimplexMapView = ({ frequencies, onFrequencyClick }: Props) => {
                         e.stopPropagation()
                         onFrequencyClick(freq)
                       }}
-                      className="mt-2 w-full rounded bg-blue-600 px-2 py-1 text-xs text-white hover:bg-blue-700 transition-colors"
+                      className="mt-2 w-full rounded-lg bg-azulejo-600 px-2 py-1 text-xs text-white hover:bg-azulejo-700 transition-colors"
                     >
                       {t("viewDetails")}
                     </button>

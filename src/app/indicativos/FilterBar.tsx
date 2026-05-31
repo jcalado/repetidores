@@ -151,7 +151,7 @@ export function FilterBar({ stats, filters, onFiltersChange, children, onClear, 
             value={filters.searchField}
             onValueChange={(v) => onFiltersChange({ ...filters, searchField: v })}
           >
-            <SelectTrigger className="h-8 w-full sm:w-[110px] text-xs bg-white dark:bg-white/5 border-slate-200 dark:border-slate-700">
+            <SelectTrigger className="h-8 w-full sm:w-[110px] text-xs bg-background border-input">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -162,18 +162,18 @@ export function FilterBar({ stats, filters, onFiltersChange, children, onClear, 
             </SelectContent>
           </Select>
           <div className="relative w-full sm:w-56">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
               placeholder="Pesquisar..."
               value={searchInput}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="pl-9 h-8 text-sm bg-white dark:bg-white/5 border-slate-200 dark:border-slate-700"
+              className="pl-9 h-8 text-sm bg-background border-input"
             />
           </div>
         </div>
 
         {/* Separator */}
-        <div className="hidden sm:block h-5 w-px bg-slate-200 dark:bg-slate-700" />
+        <div className="hidden sm:block h-5 w-px bg-border" />
 
         {/* Faceted Filters */}
         <FacetedFilter
@@ -217,7 +217,7 @@ export function FilterBar({ stats, filters, onFiltersChange, children, onClear, 
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
-            className="inline-flex items-center gap-1 h-8 px-2 rounded-md text-xs text-slate-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+            className="inline-flex items-center gap-1 h-8 px-2 rounded-lg text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
           >
             <X className="h-3.5 w-3.5" />
             Limpar tudo
@@ -231,12 +231,12 @@ export function FilterBar({ stats, filters, onFiltersChange, children, onClear, 
           {activeChips.map((chip) => (
             <span
               key={chip.key}
-              className="inline-flex items-center gap-1 h-6 pl-2 pr-1 rounded-md text-xs font-medium bg-azulejo-50 dark:bg-azulejo-950/40 text-azulejo-700 dark:text-azulejo-300 border border-azulejo-200 dark:border-azulejo-800/60"
+              className="inline-flex items-center gap-1 h-6 pl-2 pr-1 rounded-full text-xs font-medium bg-azulejo-50 dark:bg-azulejo-950/40 text-azulejo-700 dark:text-azulejo-300 border border-azulejo-200 dark:border-azulejo-800/60"
             >
               {chip.label}
               <button
                 onClick={chip.onRemove}
-                className="inline-flex items-center justify-center h-4 w-4 rounded hover:bg-azulejo-200 dark:hover:bg-azulejo-800 transition-colors"
+                className="inline-flex items-center justify-center h-4 w-4 rounded-full hover:bg-azulejo-200 dark:hover:bg-azulejo-800 transition-colors"
               >
                 <X className="h-2.5 w-2.5" />
               </button>

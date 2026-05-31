@@ -13,7 +13,7 @@ const MODE_COLORS: Record<string, string> = {
 
 const STATUS_COLORS: Record<string, string> = {
   active: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  inactive: "bg-gray-100 text-gray-500 dark:bg-gray-800/30 dark:text-gray-400",
+  inactive: "bg-muted text-muted-foreground",
 }
 
 export function useSimplexColumns(): ColumnDef<SimplexFrequency>[] {

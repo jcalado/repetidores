@@ -37,7 +37,7 @@ export default function IndicativosPage() {
       />
 
       <Suspense fallback={
-        <div className="flex items-center justify-center py-24 text-slate-400">
+        <div className="flex items-center justify-center py-24 text-muted-foreground">
           <Loader2 className="h-5 w-5 animate-spin mr-2" />
           A carregar...
         </div>

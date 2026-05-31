@@ -109,15 +109,15 @@ export function LocationDisplay({ onLocationChange }: LocationDisplayProps) {
   if (!userLocation) return null;
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-3 bg-slate-100 dark:bg-slate-800 rounded-lg">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-3 bg-muted rounded-lg">
       <div className="flex items-center gap-2 flex-1 min-w-0">
-        <MapPin className="h-4 w-4 flex-shrink-0 text-slate-600 dark:text-slate-400" />
+        <MapPin className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
-          <span className="text-slate-700 dark:text-slate-300">
+          <span className="font-mono text-foreground">
             {userLocation.latitude.toFixed(4)}°, {userLocation.longitude.toFixed(4)}°
           </span>
           {qth && (
-            <span className="font-mono text-slate-600 dark:text-slate-400 bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded">
+            <span className="font-mono text-muted-foreground bg-background border border-border px-2 py-0.5 rounded">
               {qth}
             </span>
           )}

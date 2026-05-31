@@ -90,7 +90,7 @@ export function NextUpCard({ events, t }: NextUpCardProps) {
 
             {/* Content */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-azulejo-200 uppercase tracking-wider mb-1">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-azulejo-200 tracking-wider mb-1">
                 <CalendarClock className="w-3.5 h-3.5" />
                 {t("nextUp")}
               </div>

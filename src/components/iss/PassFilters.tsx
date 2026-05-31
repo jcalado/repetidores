@@ -49,16 +49,16 @@ export function PassFilters({ filters, onFiltersChange }: PassFiltersProps) {
   };
 
   return (
-    <div className="space-y-6 p-4 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
+    <div className="space-y-6 p-4 bg-muted rounded-lg border border-border">
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Mountain className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+            <Mountain className="h-4 w-4 text-muted-foreground" />
             <Label htmlFor="min-elevation" className="text-sm font-medium">
               Elevação Mínima
             </Label>
           </div>
-          <span className="text-sm font-mono text-slate-700 dark:text-slate-300">
+          <span className="text-sm font-mono text-foreground">
             {localMinElevation}°
           </span>
         </div>
@@ -72,19 +72,19 @@ export function PassFilters({ filters, onFiltersChange }: PassFiltersProps) {
           step={5}
           className="w-full"
         />
-        <p className="text-xs text-slate-600 dark:text-slate-400">
+        <p className="text-xs text-muted-foreground">
           Filtra passagens com elevação máxima abaixo de {localMinElevation}°
         </p>
       </div>
 
-      <div className="flex items-center justify-between space-x-3 pt-3 border-t border-slate-200 dark:border-slate-800">
+      <div className="flex items-center justify-between space-x-3 pt-3 border-t border-border">
         <div className="flex items-center gap-2 flex-1">
-          <Eye className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+          <Eye className="h-4 w-4 text-muted-foreground" />
           <div className="flex flex-col">
             <Label htmlFor="visible-only" className="text-sm font-medium">
               Apenas Passagens Visíveis
             </Label>
-            <span className="text-xs text-slate-600 dark:text-slate-400">
+            <span className="text-xs text-muted-foreground">
               ISS iluminado pelo sol + céu escuro
             </span>
           </div>
@@ -96,14 +96,14 @@ export function PassFilters({ filters, onFiltersChange }: PassFiltersProps) {
         />
       </div>
 
-      <div className="flex items-center justify-between space-x-3 pt-3 border-t border-slate-200 dark:border-slate-800">
+      <div className="flex items-center justify-between space-x-3 pt-3 border-t border-border">
         <div className="flex items-center gap-2 flex-1">
-          <CloudSun className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+          <CloudSun className="h-4 w-4 text-muted-foreground" />
           <div className="flex flex-col">
             <Label htmlFor="good-weather-only" className="text-sm font-medium">
               Apenas Bom Tempo
             </Label>
-            <span className="text-xs text-slate-600 dark:text-slate-400">
+            <span className="text-xs text-muted-foreground">
               Céu limpo (&lt; 30% nuvens) sem precipitação
             </span>
           </div>

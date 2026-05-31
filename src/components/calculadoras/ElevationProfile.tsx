@@ -64,17 +64,17 @@ export default function ElevationProfile({
     clear: {
       los: "#22c55e",
       fresnel: "rgba(34, 197, 94, 0.2)",
-      terrain: "#64748b",
+      terrain: "var(--muted-foreground)",
     },
     marginal: {
       los: "#eab308",
       fresnel: "rgba(234, 179, 8, 0.2)",
-      terrain: "#64748b",
+      terrain: "var(--muted-foreground)",
     },
     blocked: {
       los: "#ef4444",
       fresnel: "rgba(239, 68, 68, 0.2)",
-      terrain: "#64748b",
+      terrain: "var(--muted-foreground)",
     },
   };
 
@@ -177,20 +177,20 @@ export default function ElevationProfile({
           {/* Start and end markers */}
           <ReferenceLine
             x={chartData[0]?.distance}
-            stroke="#3b82f6"
+            stroke="#1d65a8"
             strokeWidth={2}
           />
           <ReferenceLine
             x={chartData[chartData.length - 1]?.distance}
-            stroke="#3b82f6"
+            stroke="#1d65a8"
             strokeWidth={2}
           />
 
           {/* Gradient definitions */}
           <defs>
             <linearGradient id="terrainGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#64748b" stopOpacity={0.4} />
-              <stop offset="100%" stopColor="#64748b" stopOpacity={0.1} />
+              <stop offset="0%" stopColor="var(--muted-foreground)" stopOpacity={0.4} />
+              <stop offset="100%" stopColor="var(--muted-foreground)" stopOpacity={0.1} />
             </linearGradient>
           </defs>
         </ComposedChart>

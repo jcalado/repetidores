@@ -25,7 +25,7 @@ const dotColor: Record<string, string> = {
   ok: "bg-emerald-500",
   "prob-bad": "bg-amber-500",
   bad: "bg-red-500",
-  unknown: "bg-slate-400",
+  unknown: "bg-muted-foreground",
 };
 
 /**
@@ -58,15 +58,15 @@ export function CommunitySection({ repeaterId }: CommunitySectionProps) {
 
   if (voting.isStatsLoading) {
     return (
-      <div className="rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-white dark:bg-azulejo-950 px-4 py-3">
-        <div className="h-5 w-40 rounded bg-azulejo-100 dark:bg-azulejo-800 animate-pulse" />
+      <div className="rounded-xl border border-border bg-card shadow-sm px-4 py-3">
+        <div className="h-5 w-40 rounded bg-muted animate-pulse" />
       </div>
     );
   }
 
   return (
     <>
-      <div className="rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-white dark:bg-azulejo-950">
+      <div className="rounded-xl border border-border bg-card shadow-sm">
         {/* Compact status row */}
         <div className="flex items-center gap-2.5 px-4 py-3">
           <span className={cn("h-2.5 w-2.5 rounded-full shrink-0", dotColor[voting.status])} />
@@ -74,7 +74,7 @@ export function CommunitySection({ repeaterId }: CommunitySectionProps) {
             {t(cfg.labelKey)}
           </span>
           {upPercent !== null && (
-            <span className="text-xs text-azulejo-400 dark:text-azulejo-500 tabular-nums">
+            <span className="text-xs text-muted-foreground tabular-nums">
               {upPercent}% {t("positive")}
             </span>
           )}

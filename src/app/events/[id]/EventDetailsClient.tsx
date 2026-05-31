@@ -134,95 +134,20 @@ const tagIconMap: Record<string, React.ComponentType<{ className?: string }>> = 
   Default: Info,
 };
 
-// Enhanced color system with richer gradients and more visual depth
-const tagColorMap: Record<string, {
-  text: string;
-  textLight: string;
-  bg: string;
-  bgHover: string;
-  border: string;
-  gradient: string;
-  heroGradient: string;
-  solid: string;
-  accent: string;
-  ring: string;
-}> = {
-  Net: {
-    text: 'text-blue-600 dark:text-blue-400',
-    textLight: 'text-blue-100',
-    bg: 'bg-blue-50 dark:bg-blue-950/30',
-    bgHover: 'hover:bg-blue-100 dark:hover:bg-blue-900/40',
-    border: 'border-blue-200 dark:border-blue-800',
-    gradient: 'from-blue-500/20 via-blue-500/5 to-transparent',
-    heroGradient: 'from-blue-600 via-blue-700 to-indigo-800 dark:from-blue-800 dark:via-blue-900 dark:to-indigo-950',
-    solid: 'bg-blue-500',
-    accent: 'bg-blue-400',
-    ring: 'ring-blue-400/30',
-  },
-  Contest: {
-    text: 'text-amber-600 dark:text-amber-400',
-    textLight: 'text-amber-100',
-    bg: 'bg-amber-50 dark:bg-amber-950/30',
-    bgHover: 'hover:bg-amber-100 dark:hover:bg-amber-900/40',
-    border: 'border-amber-200 dark:border-amber-800',
-    gradient: 'from-amber-500/20 via-amber-500/5 to-transparent',
-    heroGradient: 'from-amber-500 via-orange-600 to-red-700 dark:from-amber-700 dark:via-orange-800 dark:to-red-900',
-    solid: 'bg-amber-500',
-    accent: 'bg-amber-400',
-    ring: 'ring-amber-400/30',
-  },
-  Meetup: {
-    text: 'text-purple-600 dark:text-purple-400',
-    textLight: 'text-purple-100',
-    bg: 'bg-purple-50 dark:bg-purple-950/30',
-    bgHover: 'hover:bg-purple-100 dark:hover:bg-purple-900/40',
-    border: 'border-purple-200 dark:border-purple-800',
-    gradient: 'from-purple-500/20 via-purple-500/5 to-transparent',
-    heroGradient: 'from-purple-600 via-violet-700 to-fuchsia-800 dark:from-purple-800 dark:via-violet-900 dark:to-fuchsia-950',
-    solid: 'bg-purple-500',
-    accent: 'bg-purple-400',
-    ring: 'ring-purple-400/30',
-  },
-  Satellite: {
-    text: 'text-cyan-600 dark:text-cyan-400',
-    textLight: 'text-cyan-100',
-    bg: 'bg-cyan-50 dark:bg-cyan-950/30',
-    bgHover: 'hover:bg-cyan-100 dark:hover:bg-cyan-900/40',
-    border: 'border-cyan-200 dark:border-cyan-800',
-    gradient: 'from-cyan-500/20 via-cyan-500/5 to-transparent',
-    heroGradient: 'from-cyan-600 via-teal-700 to-emerald-800 dark:from-cyan-800 dark:via-teal-900 dark:to-emerald-950',
-    solid: 'bg-cyan-500',
-    accent: 'bg-cyan-400',
-    ring: 'ring-cyan-400/30',
-  },
-  DX: {
-    text: 'text-emerald-600 dark:text-emerald-400',
-    textLight: 'text-emerald-100',
-    bg: 'bg-emerald-50 dark:bg-emerald-950/30',
-    bgHover: 'hover:bg-emerald-100 dark:hover:bg-emerald-900/40',
-    border: 'border-emerald-200 dark:border-emerald-800',
-    gradient: 'from-emerald-500/20 via-emerald-500/5 to-transparent',
-    heroGradient: 'from-emerald-600 via-green-700 to-teal-800 dark:from-emerald-800 dark:via-green-900 dark:to-teal-950',
-    solid: 'bg-emerald-500',
-    accent: 'bg-emerald-400',
-    ring: 'ring-emerald-400/30',
-  },
-  Default: {
-    text: 'text-azulejo-600 dark:text-azulejo-400',
-    textLight: 'text-azulejo-100',
-    bg: 'bg-azulejo-50 dark:bg-azulejo-900/30',
-    bgHover: 'hover:bg-azulejo-100 dark:hover:bg-azulejo-800/40',
-    border: 'border-azulejo-200 dark:border-azulejo-700',
-    gradient: 'from-azulejo-500/20 via-azulejo-500/5 to-transparent',
-    heroGradient: 'from-azulejo-600 via-azulejo-700 to-azulejo-800 dark:from-azulejo-800 dark:via-azulejo-900 dark:to-azulejo-950',
-    solid: 'bg-azulejo-500',
-    accent: 'bg-azulejo-400',
-    ring: 'ring-azulejo-400/30',
-  },
+// Single azulejo brand palette for every tag — differentiate by icon, not hue.
+const azulejoTagColors = {
+  text: 'text-azulejo-600 dark:text-azulejo-400',
+  textLight: 'text-azulejo-100',
+  bg: 'bg-azulejo-50 dark:bg-azulejo-900/30',
+  bgHover: 'hover:bg-azulejo-100 dark:hover:bg-azulejo-800/40',
+  border: 'border-azulejo-200 dark:border-azulejo-800',
+  solid: 'bg-azulejo-500',
+  accent: 'bg-azulejo-400',
+  ring: 'ring-azulejo-400/30',
 };
 
-function getTagColors(tag?: string) {
-  return tag && tagColorMap[tag] ? tagColorMap[tag] : tagColorMap.Default;
+function getTagColors(_tag?: string) {
+  return azulejoTagColors;
 }
 
 function TagIcon({ tag, className }: { tag?: string; className?: string }) {
@@ -309,12 +234,12 @@ function useTick(intervalMs = 1000) {
 // Live indicator with pulsing animation - enhanced editorial style
 function LiveIndicator({ label }: { label: string }) {
   return (
-    <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-gradient-to-r from-emerald-500 to-green-600 shadow-lg shadow-green-500/25 animate-in fade-in zoom-in-95 duration-300">
+    <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-green-600 shadow-sm animate-in fade-in zoom-in-95 duration-300">
       <span className="relative flex h-3 w-3">
         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
         <span className="relative inline-flex rounded-full h-3 w-3 bg-white" />
       </span>
-      <span className="text-sm font-bold uppercase tracking-wider text-white">
+      <span className="text-sm font-bold tracking-wider text-white">
         {label}
       </span>
     </div>
@@ -336,11 +261,7 @@ function EventProgressBar({ start, end }: { start: string; end: string }) {
       </div>
       <div className="relative w-full h-3 bg-white/20 rounded-full overflow-hidden">
         <div
-          className="absolute inset-y-0 left-0 bg-gradient-to-r from-emerald-400 to-green-500 rounded-full transition-all duration-700 ease-out"
-          style={{ width: `${progress}%` }}
-        />
-        <div
-          className="absolute inset-y-0 left-0 bg-white/30 rounded-full blur-sm transition-all duration-700 ease-out delay-100"
+          className="absolute inset-y-0 left-0 bg-white rounded-full transition-all duration-700 ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -359,14 +280,14 @@ function CountdownUnit({ value, label, isLight = false }: { value: string; label
       }`}>
         <span
           key={value}
-          className={`block text-3xl sm:text-4xl md:text-5xl font-bold tabular-nums tracking-tight transition-all duration-150 ${
+          className={`block text-3xl sm:text-4xl md:text-5xl font-bold font-mono tabular-nums tracking-tight transition-all duration-150 ${
             isLight ? 'text-white' : 'text-azulejo-900 dark:text-azulejo-100'
           }`}
         >
           {value}
         </span>
       </div>
-      <span className={`text-[10px] sm:text-xs uppercase tracking-wider mt-2 font-medium ${
+      <span className={`text-[10px] sm:text-xs tracking-wider mt-2 font-medium ${
         isLight ? 'text-white/70' : 'text-azulejo-500 dark:text-azulejo-400'
       }`}>
         {label}
@@ -399,7 +320,7 @@ function CountdownDisplay({
 
   return (
     <div className="text-center">
-      <div className={`text-sm font-medium uppercase tracking-wider mb-4 ${
+      <div className={`text-sm font-medium tracking-wider mb-4 ${
         isLight ? 'text-white/70' : 'text-azulejo-500 dark:text-azulejo-400'
       }`}>
         {label}
@@ -436,7 +357,7 @@ function RelatedEventCard({ event, tagColors }: { event: EventItem; tagColors: R
             <span className="text-sm font-semibold line-clamp-2 group-hover:text-foreground transition-colors">
               {event.title}
             </span>
-            <div className={`text-xs mt-1 ${tagColors.text} font-medium`}>
+            <div className={`text-xs mt-1 ${tagColors.text} font-medium font-mono`}>
               {new Date(event.start).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
             </div>
           </div>
@@ -589,29 +510,12 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
     <div className="max-w-5xl mx-auto">
       {/* Full-width Hero Section */}
       <div className="relative animate-in fade-in duration-300">
-        {/* Hero Background with Dynamic Gradient */}
-        <div className={`relative overflow-hidden rounded-b-3xl bg-gradient-to-br ${tagColors.heroGradient} shadow-2xl`}>
-          {/* Grid pattern overlay */}
-          <div className="absolute inset-0 opacity-10">
-            <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <pattern id="event-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="1" />
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#event-grid)" className="text-white" />
-            </svg>
-          </div>
-
-          {/* Decorative elements */}
-          <div className="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-white/10 blur-3xl" />
-          <div className="absolute -left-8 -bottom-8 w-48 h-48 rounded-full bg-white/5 blur-2xl" />
-          <div className="absolute right-1/4 top-1/3 w-32 h-32 rounded-full bg-white/5 blur-xl" />
-
+        {/* Hero Background — single flat azulejo banner for all tags */}
+        <div className="relative overflow-hidden rounded-b-3xl bg-azulejo-700 dark:bg-azulejo-900 shadow-lg">
           {/* Featured ribbon */}
           {event.isFeatured && (
             <div className="absolute top-0 right-0 w-40 h-40 overflow-hidden pointer-events-none z-20">
-              <div className="absolute top-5 right-[-45px] w-[200px] text-center text-xs font-bold uppercase tracking-wider text-amber-900 bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-300 transform rotate-45 py-2 shadow-lg">
+              <div className="absolute top-5 right-[-45px] w-[200px] text-center text-xs font-bold tracking-wider text-azulejo-900 bg-amber-300 transform rotate-45 py-2 shadow-sm">
                 <Sparkles className="inline w-3 h-3 mr-1" />
                 {tDetails('featured')}
               </div>
@@ -692,11 +596,7 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
 
               {/* Category badge */}
               {event.category && (
-                <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold border ${
-                  event.category === 'international'
-                    ? 'bg-sky-500/30 text-white border-sky-400/30'
-                    : 'bg-emerald-500/30 text-white border-emerald-400/30'
-                }`}>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold border bg-white/20 text-white border-white/20">
                   {event.category === 'international' ? <Globe2 className="w-3.5 h-3.5" /> : <MapPin className="w-3.5 h-3.5" />}
                   {event.category === 'international' ? 'Internacional' : 'Nacional'}
                 </span>
@@ -744,10 +644,10 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
             <div className={`inline-flex p-2.5 rounded-xl ${tagColors.solid}/10 mb-3`}>
               <CalendarIcon className={`w-5 h-5 ${tagColors.text}`} />
             </div>
-            <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1">
+            <div className="text-xs tracking-wider text-muted-foreground font-medium mb-1">
               {tDetails('startTime')}
             </div>
-            <div className="font-semibold text-sm sm:text-base leading-snug">
+            <div className="font-semibold text-sm sm:text-base leading-snug font-mono">
               {formatDateTime(event.start)}
             </div>
           </div>
@@ -758,10 +658,10 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
               <div className={`inline-flex p-2.5 rounded-xl ${tagColors.solid}/10 mb-3`}>
                 <Clock className={`w-5 h-5 ${tagColors.text}`} />
               </div>
-              <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1">
+              <div className="text-xs tracking-wider text-muted-foreground font-medium mb-1">
                 {tDetails('endTime')}
               </div>
-              <div className="font-semibold text-sm sm:text-base leading-snug">
+              <div className="font-semibold text-sm sm:text-base leading-snug font-mono">
                 {formatDateTime(event.end)}
               </div>
             </div>
@@ -773,7 +673,7 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
               <div className={`inline-flex p-2.5 rounded-xl ${tagColors.solid}/10 mb-3`}>
                 <Timer className={`w-5 h-5 ${tagColors.text}`} />
               </div>
-              <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1">
+              <div className="text-xs tracking-wider text-muted-foreground font-medium mb-1">
                 {tDetails('duration')}
               </div>
               <div className="font-semibold text-sm sm:text-base">
@@ -790,13 +690,13 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
                   <div className={`inline-flex p-2.5 rounded-xl ${tagColors.solid}/10 mb-3`}>
                     <Globe className={`w-5 h-5 ${tagColors.text}`} />
                   </div>
-                  <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-1">
+                  <div className="text-xs tracking-wider text-muted-foreground font-medium mb-1">
                     {tDetails('timezone')}
                   </div>
-                  <div className="font-semibold text-sm sm:text-base truncate">
+                  <div className="font-semibold text-sm sm:text-base truncate font-mono">
                     {tzInfo.timezone}
                   </div>
-                  <div className="text-xs text-muted-foreground">{tzInfo.offset}</div>
+                  <div className="text-xs text-muted-foreground font-mono">{tzInfo.offset}</div>
                 </div>
               </TooltipTrigger>
               <TooltipContent>
@@ -815,7 +715,7 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
                 <MapPin className="w-6 h-6 text-azulejo-600 dark:text-azulejo-400" />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-0.5">
+                <div className="text-xs tracking-wider text-muted-foreground font-medium mb-0.5">
                   {tDetails('location')}
                 </div>
                 <div className="font-semibold text-base sm:text-lg truncate">
@@ -827,17 +727,17 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
 
           {/* DMR Network */}
           {event.dmr && event.talkgroup && (
-            <div className="flex items-center gap-4 p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950/30 dark:to-orange-950/30 border border-red-200 dark:border-red-800 transition-transform hover:scale-[1.01]">
-              <div className="shrink-0 p-3 rounded-xl bg-red-100 dark:bg-red-900/50">
-                <Radio className="w-6 h-6 text-red-600 dark:text-red-400" />
+            <div className="flex items-center gap-4 p-4 sm:p-5 rounded-2xl bg-muted border border-border transition-transform hover:scale-[1.01]">
+              <div className="shrink-0 p-3 rounded-xl bg-destructive/10">
+                <Radio className="w-6 h-6 text-destructive" />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-xs uppercase tracking-wider text-muted-foreground font-medium mb-0.5">
+                <div className="text-xs tracking-wider text-muted-foreground font-medium mb-0.5">
                   {event.dmrNetwork === 'brandmeister' ? 'Brandmeister' :
                    event.dmrNetwork === 'adn' ? 'ADN Systems' :
                    event.dmrNetwork === 'other' ? (t('dmr.other') || 'Outra') : 'DMR'}
                 </div>
-                <div className="font-bold text-lg sm:text-xl text-red-600 dark:text-red-400 font-mono">
+                <div className="font-bold text-lg sm:text-xl text-destructive font-mono">
                   TG {event.talkgroup}
                 </div>
                 {event.dmrNetwork === 'brandmeister' && (
@@ -845,7 +745,7 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
                     href={`https://hose.brandmeister.network/?tg=${event.talkgroup}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-red-600 dark:text-red-400 hover:underline mt-1 font-medium"
+                    className="inline-flex items-center gap-1 text-xs text-destructive hover:underline mt-1 font-medium"
                   >
                     {t('dmr.listen')}
                     <ExternalLink className="w-3 h-3" />
@@ -863,14 +763,14 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
               <Info className={`w-5 h-5 ${tagColors.text}`} />
               {tDetails('description') || 'Descrição'}
             </h2>
-            <div className="prose prose-azulejo dark:prose-invert max-w-none p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-azulejo-50 to-slate-50 dark:from-azulejo-950/50 dark:to-slate-900/50 border border-azulejo-200/50 dark:border-azulejo-800/50">
+            <div className="prose prose-azulejo dark:prose-invert max-w-none p-5 sm:p-6 rounded-2xl bg-muted border border-border">
               <RichTextContent content={event.description} />
             </div>
           </div>
         )}
 
         {/* Action buttons - Refined magazine style */}
-        <div className="flex flex-wrap gap-3 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-azulejo-50 via-slate-50 to-azulejo-50 dark:from-azulejo-950/50 dark:via-slate-900/50 dark:to-azulejo-950/50 border border-azulejo-200/50 dark:border-azulejo-800/50 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="flex flex-wrap gap-3 p-4 sm:p-5 rounded-2xl bg-muted border border-border animate-in fade-in slide-in-from-bottom-2 duration-300">
           {/* Visit Website */}
           {event.url && (
             <a href={event.url} target="_blank" rel="noreferrer">
@@ -999,9 +899,8 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
           <div className="grid grid-cols-2 gap-4">
             {prevEvent ? (
               <Link href={`/events/${encodeURIComponent(prevEvent.id)}/`} className="group block">
-                <div className="relative p-4 sm:p-5 rounded-2xl border-2 border-azulejo-200 dark:border-azulejo-800 bg-gradient-to-br from-azulejo-50 to-white dark:from-azulejo-950/50 dark:to-slate-900/50 transition-all duration-200 overflow-hidden hover:-translate-x-1">
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-azulejo-400 dark:bg-azulejo-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2">
+                <div className="relative p-4 sm:p-5 rounded-2xl border border-border bg-card transition-all duration-200 overflow-hidden hover:-translate-x-1">
+                  <div className="flex items-center gap-2 text-xs tracking-wider text-muted-foreground font-medium mb-2">
                     <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
                     {tDetails('previousEvent')}
                   </div>
@@ -1013,9 +912,8 @@ export default function EventDetailsClient({ event: initialEvent, eventId, allEv
             ) : <div />}
             {nextEvent ? (
               <Link href={`/events/${encodeURIComponent(nextEvent.id)}/`} className="group block">
-                <div className="relative p-4 sm:p-5 rounded-2xl border-2 border-azulejo-200 dark:border-azulejo-800 bg-gradient-to-bl from-azulejo-50 to-white dark:from-azulejo-950/50 dark:to-slate-900/50 text-right transition-all duration-200 overflow-hidden hover:translate-x-1">
-                  <div className="absolute right-0 top-0 bottom-0 w-1 bg-azulejo-400 dark:bg-azulejo-600 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="flex items-center justify-end gap-2 text-xs uppercase tracking-wider text-muted-foreground font-medium mb-2">
+                <div className="relative p-4 sm:p-5 rounded-2xl border border-border bg-card text-right transition-all duration-200 overflow-hidden hover:translate-x-1">
+                  <div className="flex items-center justify-end gap-2 text-xs tracking-wider text-muted-foreground font-medium mb-2">
                     {tDetails('nextEvent')}
                     <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
                   </div>

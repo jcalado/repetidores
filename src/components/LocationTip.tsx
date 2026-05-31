@@ -28,7 +28,7 @@ export default function LocationTip() {
   }
 
   return (
-    <div className="mb-4 relative overflow-hidden rounded-xl border border-azulejo-200 bg-gradient-to-r from-azulejo-50 to-blue-50 dark:border-azulejo-800/50 dark:from-azulejo-950/40 dark:to-blue-950/30">
+    <div className="mb-4 relative overflow-hidden rounded-xl border border-azulejo-200 bg-azulejo-50 dark:border-azulejo-800/50 dark:bg-azulejo-950/40">
       <div className="p-4 pr-12">
         <div className="flex gap-3">
           <div className="flex-shrink-0">

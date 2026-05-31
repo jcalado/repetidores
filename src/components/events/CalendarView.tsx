@@ -160,7 +160,7 @@ export function CalendarView({ events, t }: CalendarViewProps) {
               onClick={() => setViewMode("month")}
               className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                 viewMode === "month"
-                  ? "bg-white dark:bg-azulejo-900 text-azulejo-900 dark:text-azulejo-100 shadow-sm"
+                  ? "bg-card text-azulejo-900 dark:text-azulejo-100 shadow-sm"
                   : "text-azulejo-600 dark:text-azulejo-400 hover:text-azulejo-900 dark:hover:text-azulejo-200"
               }`}
             >
@@ -170,7 +170,7 @@ export function CalendarView({ events, t }: CalendarViewProps) {
               onClick={() => setViewMode("week")}
               className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                 viewMode === "week"
-                  ? "bg-white dark:bg-azulejo-900 text-azulejo-900 dark:text-azulejo-100 shadow-sm"
+                  ? "bg-card text-azulejo-900 dark:text-azulejo-100 shadow-sm"
                   : "text-azulejo-600 dark:text-azulejo-400 hover:text-azulejo-900 dark:hover:text-azulejo-200"
               }`}
             >
@@ -216,13 +216,13 @@ export function CalendarView({ events, t }: CalendarViewProps) {
 
       {/* Month View */}
       {viewMode === "month" && (
-        <div className="rounded-xl border border-azulejo-200 dark:border-azulejo-800 overflow-hidden bg-white dark:bg-azulejo-950/50">
+        <div className="rounded-xl border border-azulejo-200 dark:border-azulejo-800 overflow-hidden bg-card">
           {/* Week day headers */}
           <div className="grid grid-cols-7 bg-azulejo-50 dark:bg-azulejo-900/50 border-b border-azulejo-200 dark:border-azulejo-800">
             {WEEK_DAYS_PT.map((day) => (
               <div
                 key={day}
-                className="px-2 py-3 text-center text-xs font-semibold text-azulejo-600 dark:text-azulejo-400 uppercase tracking-wider"
+                className="px-2 py-3 text-center text-xs font-semibold text-azulejo-600 dark:text-azulejo-400 tracking-wider"
               >
                 {day}
               </div>
@@ -248,7 +248,7 @@ export function CalendarView({ events, t }: CalendarViewProps) {
                   {/* Day number */}
                   <div className="flex items-center justify-between mb-1">
                     <span
-                      className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-sm font-medium ${
+                      className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-sm font-medium font-mono ${
                         isToday
                           ? "bg-azulejo-600 text-white"
                           : isCurrentMonth
@@ -280,7 +280,7 @@ export function CalendarView({ events, t }: CalendarViewProps) {
 
       {/* Week View */}
       {viewMode === "week" && (
-        <div className="rounded-xl border border-azulejo-200 dark:border-azulejo-800 overflow-hidden bg-white dark:bg-azulejo-950/50">
+        <div className="rounded-xl border border-azulejo-200 dark:border-azulejo-800 overflow-hidden bg-card">
           {/* Week header */}
           <div className="grid grid-cols-7 bg-azulejo-50 dark:bg-azulejo-900/50 border-b border-azulejo-200 dark:border-azulejo-800">
             {weekDays.map((day, idx) => {
@@ -292,11 +292,11 @@ export function CalendarView({ events, t }: CalendarViewProps) {
                     isToday ? "bg-azulejo-100 dark:bg-azulejo-800/50" : ""
                   }`}
                 >
-                  <div className="text-xs font-medium text-azulejo-500 dark:text-azulejo-400 uppercase tracking-wider">
+                  <div className="text-xs font-medium text-azulejo-500 dark:text-azulejo-400 tracking-wider">
                     {WEEK_DAYS_PT[idx]}
                   </div>
                   <div
-                    className={`text-2xl font-bold mt-1 ${
+                    className={`text-2xl font-bold mt-1 font-mono ${
                       isToday
                         ? "text-azulejo-600 dark:text-azulejo-300"
                         : "text-azulejo-900 dark:text-azulejo-100"
@@ -343,7 +343,7 @@ export function CalendarView({ events, t }: CalendarViewProps) {
 
       {/* Selected date events panel */}
       {selectedDate && selectedEvents.length > 0 && viewMode === "month" && (
-        <div className="mt-6 rounded-xl border border-azulejo-200 dark:border-azulejo-800 bg-white dark:bg-azulejo-950/50 p-4">
+        <div className="mt-6 rounded-xl border border-azulejo-200 dark:border-azulejo-800 bg-card p-4">
           <h3 className="text-lg font-bold text-azulejo-900 dark:text-azulejo-100 mb-4">
             {t("eventsOn") || "Eventos em"}{" "}
             {selectedDate.toLocaleDateString("pt-PT", {
@@ -390,7 +390,7 @@ function WeekEventCard({ event }: { event: EventItem }) {
       className="block rounded-lg overflow-hidden hover:shadow-md transition-shadow"
     >
       <div className={`${iconBgClass} px-2 py-1`}>
-        <span className="text-[10px] font-bold text-white/90">{time}</span>
+        <span className="text-[10px] font-bold text-white/90 font-mono">{time}</span>
       </div>
       <div className="bg-azulejo-50 dark:bg-azulejo-900/50 px-2 py-1.5">
         <span className="text-xs font-medium text-azulejo-900 dark:text-azulejo-100 line-clamp-2">
@@ -418,7 +418,7 @@ function SelectedDayEventCard({ event }: { event: EventItem }) {
     >
       {/* Time badge */}
       <div className={`${iconBgClass} px-3 py-2 rounded-lg text-center shrink-0`}>
-        <span className="text-sm font-bold text-white">{time}</span>
+        <span className="text-sm font-bold text-white font-mono">{time}</span>
       </div>
 
       {/* Content */}

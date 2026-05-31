@@ -72,8 +72,8 @@ export function SatelliteSelector({
     return (
       <div className="flex items-center justify-center py-12">
         <div className="flex flex-col items-center gap-3">
-          <Satellite className="h-8 w-8 animate-pulse text-slate-400" />
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <Satellite className="h-8 w-8 animate-pulse text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">
             Carregando satelites...
           </p>
         </div>
@@ -85,7 +85,7 @@ export function SatelliteSelector({
     <div className="space-y-4">
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           placeholder="Pesquisar satelites..."
           value={searchQuery}
@@ -98,7 +98,7 @@ export function SatelliteSelector({
       {isSearching ? (
         // Search results - flat list
         <div className="space-y-2">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-muted-foreground">
             {filteredSatellites.length} satelite(s) encontrado(s)
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[400px] overflow-y-auto">
@@ -120,7 +120,7 @@ export function SatelliteSelector({
               <TabsTrigger
                 key={category}
                 value={category}
-                className="flex items-center gap-1.5 data-[state=active]:bg-blue-100 data-[state=active]:text-blue-700 dark:data-[state=active]:bg-blue-900 dark:data-[state=active]:text-blue-300"
+                className="flex items-center gap-1.5 data-[state=active]:bg-azulejo-100 data-[state=active]:text-azulejo-700 dark:data-[state=active]:bg-azulejo-950 dark:data-[state=active]:text-azulejo-300"
               >
                 {CATEGORY_ICONS[category]}
                 <span className="hidden sm:inline">{CATEGORY_LABELS[category]}</span>
@@ -134,7 +134,7 @@ export function SatelliteSelector({
           {CATEGORY_ORDER.map((category) => (
             <TabsContent key={category} value={category} className="mt-4">
               {groupedSatellites[category].length === 0 ? (
-                <p className="text-sm text-slate-600 dark:text-slate-400 text-center py-8">
+                <p className="text-sm text-muted-foreground text-center py-8">
                   Nenhum satelite nesta categoria
                 </p>
               ) : (

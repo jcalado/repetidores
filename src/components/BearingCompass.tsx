@@ -112,7 +112,7 @@ export default function BearingCompass({
       {/* Compass Rose */}
       <div
         className={cn(
-          'relative rounded-full border-2 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 shadow-inner transition-all duration-300',
+          'relative rounded-full border-2 bg-muted shadow-inner transition-all duration-300',
           sizes.container,
           isCompassActive
             ? 'border-green-500 ring-2 ring-green-500/30'

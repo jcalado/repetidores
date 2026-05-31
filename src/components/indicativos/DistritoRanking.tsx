@@ -42,7 +42,7 @@ export function DistritoRanking({ data, highlightedDistrito, onHover }: Distrito
   const SortHeader = ({ label, field }: { label: string; field: SortKey }) => (
     <button
       onClick={() => toggleSort(field)}
-      className="flex items-center gap-1 font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+      className="flex items-center gap-1 font-semibold text-muted-foreground hover:text-foreground transition-colors"
     >
       {label}
       <ArrowUpDown className="h-3 w-3 opacity-40" />
@@ -51,10 +51,10 @@ export function DistritoRanking({ data, highlightedDistrito, onHover }: Distrito
   )
 
   return (
-    <div className="rounded-lg border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
+    <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
       <div className="overflow-y-auto max-h-[500px]">
         <table className="w-full text-xs">
-          <thead className="sticky top-0 bg-slate-50 dark:bg-slate-800/50">
+          <thead className="sticky top-0 bg-muted">
             <tr>
               <th className="text-left px-3 py-2"><SortHeader label="Distrito" field="distrito" /></th>
               <th className="text-right px-3 py-2"><SortHeader label="Total" field="total" /></th>
@@ -68,13 +68,13 @@ export function DistritoRanking({ data, highlightedDistrito, onHover }: Distrito
                 key={row.distrito}
                 onMouseEnter={() => onHover(row.distrito)}
                 onMouseLeave={() => onHover(null)}
-                className={`border-t border-slate-50 dark:border-slate-800 transition-colors cursor-default ${
+                className={`border-t border-border transition-colors cursor-default ${
                   highlightedDistrito === row.distrito
                     ? "bg-azulejo-50 dark:bg-azulejo-950/30"
-                    : "hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                    : "hover:bg-accent"
                 }`}
               >
-                <td className="px-3 py-1.5 font-medium text-slate-700 dark:text-slate-200">{row.distrito}</td>
+                <td className="px-3 py-1.5 font-medium text-foreground">{row.distrito}</td>
                 <td className="px-3 py-1.5 text-right tabular-nums">{row.total.toLocaleString("pt-PT")}</td>
                 <td className="px-3 py-1.5 text-right tabular-nums">{row.active.toLocaleString("pt-PT")}</td>
                 <td className="px-3 py-1.5 text-right tabular-nums">

@@ -21,7 +21,8 @@ import {
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StandardPageHeader } from "@/components/ui/PageHeader";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { ViewSwitcherTabsList } from "@/components/ui/view-switcher-tabs";
 import { useTranslations } from "next-intl";
 import { fetchEvents } from "@/lib/events";
 
@@ -356,7 +357,6 @@ export default function HamRadioEventsCountdown({
           filters={filters}
           onFilterChange={handleFilterChange}
           tags={tags}
-          filteredCount={filtered.length}
           allEvents={events}
           filteredEvents={filtered}
           isRefreshing={isRefreshing}
@@ -377,20 +377,21 @@ export default function HamRadioEventsCountdown({
           }
           className="w-full"
         >
-          <TabsList className="grid grid-cols-3 w-full max-w-sm mb-6 bg-azulejo-100 dark:bg-azulejo-800/50">
-            <TabsTrigger value="cards" className="inline-flex items-center gap-2">
-              <LayoutGrid className="w-4 h-4" />
-              <span className="hidden sm:inline">{t("tabs.cards")}</span>
-            </TabsTrigger>
-            <TabsTrigger value="table" className="inline-flex items-center gap-2">
-              <TableIcon className="w-4 h-4" />
-              <span className="hidden sm:inline">{t("tabs.table")}</span>
-            </TabsTrigger>
-            <TabsTrigger value="calendar" className="inline-flex items-center gap-2">
-              <CalendarIcon className="w-4 h-4" />
-              <span className="hidden sm:inline">{t("tabs.calendar")}</span>
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex items-center justify-between gap-3 mb-6">
+            <ViewSwitcherTabsList
+              value={filters.view}
+              ariaLabel={t("tabs.cards") + " / " + t("tabs.table") + " / " + t("tabs.calendar")}
+              items={[
+                { value: "cards", label: t("tabs.cards"), icon: <LayoutGrid className="w-4 h-4" />, hideLabelOnMobile: true },
+                { value: "table", label: t("tabs.table"), icon: <TableIcon className="w-4 h-4" />, hideLabelOnMobile: true },
+                { value: "calendar", label: t("tabs.calendar"), icon: <CalendarIcon className="w-4 h-4" />, hideLabelOnMobile: true },
+              ]}
+            />
+            <span className="text-sm text-muted-foreground tabular-nums whitespace-nowrap">
+              {filtered.length}{" "}
+              {filtered.length === 1 ? (t("event") || "evento") : (t("events") || "eventos")}
+            </span>
+          </div>
 
           {/* Cards View */}
           <TabsContent value="cards" className="mt-0">

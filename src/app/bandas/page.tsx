@@ -211,18 +211,19 @@ function modeColor(mode: string) {
     return "bg-sky-500/80";
 }
 
-// Pastel colors for each spectrum band
-const bandColors: Record<string, { bg: string; bgHover: string; icon: string; iconText: string; accent: string; border: string; dot: string }> = {
-    LF: { bg: "bg-violet-300 dark:bg-violet-400/70", bgHover: "bg-violet-400 dark:bg-violet-300", icon: "bg-violet-100 dark:bg-violet-900/50", iconText: "text-violet-600 dark:text-violet-400", accent: "via-violet-400", border: "border-violet-200 dark:border-violet-800", dot: "bg-violet-400 dark:bg-violet-400" },
-    MF: { bg: "bg-fuchsia-300 dark:bg-fuchsia-400/70", bgHover: "bg-fuchsia-400 dark:bg-fuchsia-300", icon: "bg-fuchsia-100 dark:bg-fuchsia-900/50", iconText: "text-fuchsia-600 dark:text-fuchsia-400", accent: "via-fuchsia-400", border: "border-fuchsia-200 dark:border-fuchsia-800", dot: "bg-fuchsia-400 dark:bg-fuchsia-400" },
-    HF: { bg: "bg-sky-300 dark:bg-sky-400/70", bgHover: "bg-sky-400 dark:bg-sky-300", icon: "bg-sky-100 dark:bg-sky-900/50", iconText: "text-sky-600 dark:text-sky-400", accent: "via-sky-400", border: "border-sky-200 dark:border-sky-800", dot: "bg-sky-400 dark:bg-sky-400" },
-    VHF: { bg: "bg-teal-300 dark:bg-teal-400/70", bgHover: "bg-teal-400 dark:bg-teal-300", icon: "bg-teal-100 dark:bg-teal-900/50", iconText: "text-teal-600 dark:text-teal-400", accent: "via-teal-400", border: "border-teal-200 dark:border-teal-800", dot: "bg-teal-400 dark:bg-teal-400" },
-    UHF: { bg: "bg-amber-300 dark:bg-amber-400/70", bgHover: "bg-amber-400 dark:bg-amber-300", icon: "bg-amber-100 dark:bg-amber-900/50", iconText: "text-amber-600 dark:text-amber-400", accent: "via-amber-400", border: "border-amber-200 dark:border-amber-800", dot: "bg-amber-400 dark:bg-amber-400" },
-    SHF: { bg: "bg-rose-300 dark:bg-rose-400/70", bgHover: "bg-rose-400 dark:bg-rose-300", icon: "bg-rose-100 dark:bg-rose-900/50", iconText: "text-rose-600 dark:text-rose-400", accent: "via-rose-400", border: "border-rose-200 dark:border-rose-800", dot: "bg-rose-400 dark:bg-rose-400" },
+// Band cards share the azulejo brand accent; segment distinction lives in the
+// visualization bar (position + label), not in per-band hues.
+const bandColors: { bg: string; bgHover: string; icon: string; iconText: string; border: string; dot: string } = {
+    bg: "bg-azulejo-300 dark:bg-azulejo-400/70",
+    bgHover: "bg-azulejo-500 dark:bg-azulejo-300",
+    icon: "bg-azulejo-100 dark:bg-azulejo-900/50",
+    iconText: "text-azulejo-600 dark:text-azulejo-400",
+    border: "border-azulejo-200 dark:border-azulejo-800",
+    dot: "bg-azulejo-400 dark:bg-azulejo-400",
 };
 
-function getBandColor(bandId: string) {
-    return bandColors[bandId] || bandColors.HF;
+function getBandColor(_bandId: string) {
+    return bandColors;
 }
 
 function powerValue(power: string) {
@@ -398,7 +399,7 @@ export default function QNAFPortugalHamBands() {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-azulejo-400 pointer-events-none" />
                     <Input
                         placeholder="Procurar… (ex.: 144, CW, 1500W)"
-                        className="w-full sm:w-72 pl-10 pr-10 h-10 rounded-lg border-azulejo-200 dark:border-azulejo-800 bg-white dark:bg-azulejo-950/50"
+                        className="w-full sm:w-72 pl-10 pr-10 h-10 rounded-lg border-azulejo-200 dark:border-azulejo-800 bg-background"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         aria-label="Pesquisar"
@@ -421,8 +422,7 @@ export default function QNAFPortugalHamBands() {
                         const max = Math.max(...band.segments.map((s) => s.endMHz));
                         const colors = getBandColor(band.id);
                         return (
-                            <div key={band.id} className={`relative overflow-hidden rounded-xl border ${colors.border} bg-white dark:bg-azulejo-950/50 shadow-sm`}>
-                                <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent ${colors.accent} to-transparent`} />
+                            <div key={band.id} className={`relative overflow-hidden rounded-xl border ${colors.border} bg-card shadow-sm`}>
                                 <div className="p-5">
                                     <div className="flex items-center gap-3 mb-4">
                                         <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${colors.icon}`}>
@@ -431,7 +431,7 @@ export default function QNAFPortugalHamBands() {
                                         <div className="flex-1">
                                             <h3 className="text-lg font-semibold text-azulejo-900 dark:text-azulejo-100">{band.title}</h3>
                                             <div className="flex items-center gap-2">
-                                                <span className={`inline-flex items-center rounded-md ${colors.icon} ${colors.iconText} px-2 py-0.5 text-xs font-medium`}>{band.rangeLabel}</span>
+                                                <span className={`inline-flex items-center rounded-full ${colors.icon} ${colors.iconText} px-2 py-0.5 text-xs font-medium`}>{band.rangeLabel}</span>
                                                 <span className="text-xs text-azulejo-500 dark:text-azulejo-400">{band.segments.length} subfaixa{band.segments.length > 1 ? 's' : ''} QNAF</span>
                                             </div>
                                         </div>
@@ -509,8 +509,7 @@ export default function QNAFPortugalHamBands() {
                 </TabsContent>
 
                 <TabsContent value="named">
-                    <div className="relative overflow-hidden rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-white dark:bg-azulejo-950/50 shadow-sm">
-                        <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-azulejo-500 to-transparent opacity-60" />
+                    <div className="relative overflow-hidden rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-card shadow-sm">
                         <div className="p-5">
                             <div className="flex items-center gap-3 mb-4">
                                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-800">
@@ -555,16 +554,15 @@ export default function QNAFPortugalHamBands() {
                         const min = band.minKHz;
                         const max = band.maxKHz;
                         return (
-                            <div key={band.label + i} className="relative overflow-hidden rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-white dark:bg-azulejo-950/50 shadow-sm">
-                                <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-60" />
+                            <div key={band.label + i} className="relative overflow-hidden rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-card shadow-sm">
                                 <div className="p-5">
                                     <div className="flex items-center gap-3 mb-4">
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/50">
-                                            <Waves className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-900/50">
+                                            <Waves className="h-5 w-5 text-azulejo-600 dark:text-azulejo-400" />
                                         </div>
                                         <div>
                                             <h3 className="text-lg font-semibold text-azulejo-900 dark:text-azulejo-100">{band.label}</h3>
-                                            <p className="text-sm text-azulejo-500 dark:text-azulejo-400">Plano IARU R1 — {toMHz(min).toLocaleString("pt-PT", { maximumFractionDigits: 4 })}–{toMHz(max).toLocaleString("pt-PT", { maximumFractionDigits: 4 })} MHz</p>
+                                            <p className="text-sm text-azulejo-500 dark:text-azulejo-400">Plano IARU R1: {toMHz(min).toLocaleString("pt-PT", { maximumFractionDigits: 4 })}–{toMHz(max).toLocaleString("pt-PT", { maximumFractionDigits: 4 })} MHz</p>
                                         </div>
                                     </div>
                                     <div className="relative h-12 rounded-xl bg-azulejo-100 dark:bg-azulejo-900/50 overflow-hidden">
@@ -627,16 +625,15 @@ export default function QNAFPortugalHamBands() {
                 </TabsContent>
 
                 <TabsContent value="power">
-                    <div className="relative overflow-hidden rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-white dark:bg-azulejo-950/50 shadow-sm">
-                        <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-60" />
+                    <div className="relative overflow-hidden rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-card shadow-sm">
                         <div className="p-5">
                             <div className="flex items-center gap-3 mb-4">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-900/50">
-                                    <Zap className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-900/50">
+                                    <Zap className="h-5 w-5 text-azulejo-600 dark:text-azulejo-400" />
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-semibold text-azulejo-900 dark:text-azulejo-100">Potências máximas permitidas (Portugal)</h3>
-                                    <p className="text-sm text-azulejo-500 dark:text-azulejo-400">Anexo 6 QNAF — Limites de potência por banda e categoria</p>
+                                    <p className="text-sm text-azulejo-500 dark:text-azulejo-400">Anexo 6 QNAF: Limites de potência por banda e categoria</p>
                                 </div>
                             </div>
                             <Tabs defaultValue="cat1" className="w-full">

@@ -24,7 +24,7 @@ import {
 } from '@/lib/qcodes';
 
 const CATEGORY_COLORS: Record<QCodeCategory, string> = {
-  communication: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+  communication: 'bg-azulejo-100 text-azulejo-800 dark:bg-azulejo-900/30 dark:text-azulejo-400',
   signal: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
   station: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
   technical: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
@@ -49,7 +49,7 @@ export function QCodeReference() {
 
     return parts.map((part, i) =>
       regex.test(part) ? (
-        <mark key={i} className="bg-yellow-200 dark:bg-yellow-800 rounded px-0.5">
+        <mark key={i} className="bg-azulejo-100 text-azulejo-900 dark:bg-azulejo-900/50 dark:text-azulejo-100 rounded px-0.5">
           {part}
         </mark>
       ) : (
@@ -63,7 +63,7 @@ export function QCodeReference() {
       <CardContent>
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">
+          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground">
             {t('title')}
           </h1>
           <p className="text-muted-foreground mt-1">{t('subtitle')}</p>

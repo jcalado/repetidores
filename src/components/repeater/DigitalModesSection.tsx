@@ -1,11 +1,11 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { formatRelativeTime } from "@/lib/time";
 import type { RepeaterAutoStatus } from "@/lib/auto-status";
 import { Ban, Clock, Radio, ShieldCheck, Wifi } from "lucide-react";
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 import { SectionCard } from "./SectionCard";
 import type { Repeater } from "./types";
 
@@ -24,6 +24,14 @@ function formatTgTooltip(tg: { tgId: number; name?: string; type?: string; days?
     if (schedule.length) parts.push(`(${schedule.join(' ')})`);
   }
   return parts.join(' ');
+}
+
+function ModeChip({ children }: { children: ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full bg-azulejo-100 px-2 py-0.5 font-mono text-[11px] font-semibold tracking-wide text-azulejo-700 dark:bg-azulejo-950/50 dark:text-azulejo-300">
+      {children}
+    </span>
+  );
 }
 
 interface DigitalModesSectionProps {
@@ -53,14 +61,14 @@ export function DigitalModesSection({ repeater: r, autoStatus }: DigitalModesSec
       title="Modos Digitais & Linking"
       titleExtra={autoStatus && (
         <span className={cn(
-          "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium",
+          "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium border",
           autoStatus.isOnline
-            ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300"
-            : "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300"
+            ? "border-[oklch(0.55_0.13_145/0.3)] bg-[oklch(0.55_0.13_145/0.08)] text-[oklch(0.45_0.13_145)] dark:text-[oklch(0.75_0.13_145)]"
+            : "border-destructive/30 bg-destructive/10 text-destructive"
         )}>
           <span className={cn(
             "h-1.5 w-1.5 rounded-full",
-            autoStatus.isOnline ? "bg-emerald-500 animate-pulse" : "bg-red-500"
+            autoStatus.isOnline ? "bg-[oklch(0.55_0.13_145)]" : "bg-destructive"
           )} />
           {autoStatus.isOnline ? t('autoStatus.online') : t('autoStatus.offline')}
           <ShieldCheck className="h-3 w-3 opacity-60" />
@@ -70,33 +78,27 @@ export function DigitalModesSection({ repeater: r, autoStatus }: DigitalModesSec
       <div className="space-y-2">
         {/* DMR Details */}
         {hasDmrDetails && (
-          <div className="rounded-lg bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800/50 p-3">
+          <div className="rounded-lg bg-muted/30 border border-border p-3">
             <div className="flex items-center gap-2 flex-wrap">
-              <Badge className="bg-purple-600 hover:bg-purple-700 text-white">DMR</Badge>
+              <ModeChip>DMR</ModeChip>
               {r.dmr?.colorCode && (
-                <Badge
-                  variant="outline"
-                  className="text-xs border-purple-300 dark:border-purple-700"
-                >
+                <span className="font-mono text-[12.5px] text-muted-foreground">
                   CC {r.dmr.colorCode}
-                </Badge>
+                </span>
               )}
               {r.dmr?.network && (
-                <Badge
-                  variant="outline"
-                  className="text-xs border-purple-300 dark:border-purple-700"
-                >
+                <span className="text-[12.5px] text-muted-foreground">
                   {r.dmr.network}
-                </Badge>
+                </span>
               )}
               {(() => {
                 const bmSource = autoStatus?.sources.find(s => s.source === 'brandmeister');
                 if (!bmSource) return null;
                 return (
-                  <span className="ml-auto inline-flex items-center gap-1.5 text-xs text-purple-600 dark:text-purple-400">
+                  <span className="ml-auto inline-flex items-center gap-1.5 text-xs text-muted-foreground">
                     <span className={cn(
                       "h-2 w-2 rounded-full",
-                      bmSource.isOnline ? "bg-emerald-500" : "bg-red-500"
+                      bmSource.isOnline ? "bg-[oklch(0.55_0.13_145)]" : "bg-destructive"
                     )} />
                     {bmSource.lastSeen && formatRelativeTime(bmSource.lastSeen)}
                   </span>
@@ -111,25 +113,25 @@ export function DigitalModesSection({ repeater: r, autoStatus }: DigitalModesSec
               if (!hasTs1) return null;
               return (
                 <div className="mt-2.5">
-                  <div className="text-[10px] font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide mb-1">
+                  <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
                     TS1
                   </div>
                   <div className="flex flex-wrap gap-1">
                     {r.dmr?.ts1Talkgroups?.map((tg, idx) => (
                       <span
                         key={idx}
-                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-800/50 text-purple-700 dark:text-purple-300 text-xs"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-azulejo-100 dark:bg-azulejo-950/50 text-azulejo-700 dark:text-azulejo-300 text-xs"
                         title={formatTgTooltip(tg)}
                       >
-                        {tg.type === 'timed' && <Clock className="h-3 w-3 shrink-0 text-purple-400" />}
+                        {tg.type === 'timed' && <Clock className="h-3 w-3 shrink-0 text-azulejo-500 dark:text-azulejo-400" />}
                         <span className="font-mono font-medium">{tg.tgId}</span>
-                        {tg.name && <span className="text-purple-500 dark:text-purple-400 max-w-[60px] truncate">{tg.name}</span>}
+                        {tg.name && <span className="text-azulejo-600 dark:text-azulejo-400 max-w-[60px] truncate">{tg.name}</span>}
                       </span>
                     ))}
                     {ts1Blocked?.map((tg, idx) => (
                       <span
                         key={`blocked-${idx}`}
-                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-xs"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-destructive/10 text-destructive text-xs"
                         title={`TG ${tg.tgId} (bloqueado)`}
                       >
                         <Ban className="h-3 w-3 shrink-0" />
@@ -148,25 +150,25 @@ export function DigitalModesSection({ repeater: r, autoStatus }: DigitalModesSec
               if (!hasTs2) return null;
               return (
                 <div className="mt-2">
-                  <div className="text-[10px] font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide mb-1">
+                  <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
                     TS2
                   </div>
                   <div className="flex flex-wrap gap-1">
                     {r.dmr?.ts2Talkgroups?.map((tg, idx) => (
                       <span
                         key={idx}
-                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-800/50 text-purple-700 dark:text-purple-300 text-xs"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-azulejo-100 dark:bg-azulejo-950/50 text-azulejo-700 dark:text-azulejo-300 text-xs"
                         title={formatTgTooltip(tg)}
                       >
-                        {tg.type === 'timed' && <Clock className="h-3 w-3 shrink-0 text-purple-400" />}
+                        {tg.type === 'timed' && <Clock className="h-3 w-3 shrink-0 text-azulejo-500 dark:text-azulejo-400" />}
                         <span className="font-mono font-medium">{tg.tgId}</span>
-                        {tg.name && <span className="text-purple-500 dark:text-purple-400 max-w-[60px] truncate">{tg.name}</span>}
+                        {tg.name && <span className="text-azulejo-600 dark:text-azulejo-400 max-w-[60px] truncate">{tg.name}</span>}
                       </span>
                     ))}
                     {ts2Blocked?.map((tg, idx) => (
                       <span
                         key={`blocked-${idx}`}
-                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-xs"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-destructive/10 text-destructive text-xs"
                         title={`TG ${tg.tgId} (bloqueado)`}
                       >
                         <Ban className="h-3 w-3 shrink-0" />
@@ -182,16 +184,13 @@ export function DigitalModesSection({ repeater: r, autoStatus }: DigitalModesSec
 
         {/* D-STAR Details */}
         {hasDstarDetails && (
-          <div className="rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/50 p-3">
+          <div className="rounded-lg bg-muted/30 border border-border p-3">
             <div className="flex items-center gap-2">
-              <Badge className="bg-blue-600 hover:bg-blue-700 text-white">D-STAR</Badge>
+              <ModeChip>D-STAR</ModeChip>
               {r.dstar?.module && (
-                <Badge
-                  variant="outline"
-                  className="text-xs border-blue-300 dark:border-blue-700"
-                >
+                <span className="text-[12.5px] text-muted-foreground">
                   Module {r.dstar.module}
-                </Badge>
+                </span>
               )}
             </div>
             {r.dstar?.reflector && (
@@ -209,16 +208,13 @@ export function DigitalModesSection({ repeater: r, autoStatus }: DigitalModesSec
 
         {/* C4FM Details */}
         {hasC4fmDetails && (
-          <div className="rounded-lg bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800/50 p-3">
+          <div className="rounded-lg bg-muted/30 border border-border p-3">
             <div className="flex items-center gap-2">
-              <Badge className="bg-orange-600 hover:bg-orange-700 text-white">C4FM</Badge>
+              <ModeChip>C4FM</ModeChip>
               {r.c4fm?.network && (
-                <Badge
-                  variant="outline"
-                  className="text-xs border-orange-300 dark:border-orange-700 uppercase"
-                >
+                <span className="text-[12.5px] text-muted-foreground uppercase">
                   {r.c4fm.network}
-                </Badge>
+                </span>
               )}
             </div>
             {r.c4fm?.room && (
@@ -236,16 +232,13 @@ export function DigitalModesSection({ repeater: r, autoStatus }: DigitalModesSec
 
         {/* TETRA Details */}
         {hasTetraDetails && (
-          <div className="rounded-lg bg-cyan-50 dark:bg-cyan-950/30 border border-cyan-200 dark:border-cyan-800/50 p-3">
+          <div className="rounded-lg bg-muted/30 border border-border p-3">
             <div className="flex items-center gap-2">
-              <Badge className="bg-cyan-600 hover:bg-cyan-700 text-white">TETRA</Badge>
+              <ModeChip>TETRA</ModeChip>
               {r.tetra?.network && (
-                <Badge
-                  variant="outline"
-                  className="text-xs border-cyan-300 dark:border-cyan-700"
-                >
+                <span className="text-[12.5px] text-muted-foreground">
                   {r.tetra.network}
-                </Badge>
+                </span>
               )}
             </div>
             {r.tetra?.talkgroups && r.tetra.talkgroups.length > 0 && (
@@ -264,12 +257,12 @@ export function DigitalModesSection({ repeater: r, autoStatus }: DigitalModesSec
               return (
                 <a
                   href={`echolink://${r.echolink.nodeNumber}`}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 px-3 py-2 text-sm font-medium text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-muted/30 border border-border px-3 py-2 text-sm font-medium text-foreground hover:bg-accent transition-colors"
                 >
                   {elSource ? (
                     <span className={cn(
                       "h-2 w-2 rounded-full shrink-0",
-                      elSource.isOnline ? "bg-emerald-500" : "bg-red-500"
+                      elSource.isOnline ? "bg-[oklch(0.55_0.13_145)]" : "bg-destructive"
                     )} />
                   ) : (
                     <Wifi className="h-3.5 w-3.5" />
@@ -287,11 +280,11 @@ export function DigitalModesSection({ repeater: r, autoStatus }: DigitalModesSec
             {r.allstarNode && (() => {
               const asSource = autoStatus?.sources.find(s => s.source === 'allstar');
               return (
-                <div className="inline-flex items-center gap-1.5 rounded-lg bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800/50 px-3 py-2 text-sm font-medium text-orange-700 dark:text-orange-300">
+                <div className="inline-flex items-center gap-1.5 rounded-lg bg-muted/30 border border-border px-3 py-2 text-sm font-medium text-foreground">
                   {asSource ? (
                     <span className={cn(
                       "h-2 w-2 rounded-full shrink-0",
-                      asSource.isOnline ? "bg-emerald-500" : "bg-red-500"
+                      asSource.isOnline ? "bg-[oklch(0.55_0.13_145)]" : "bg-destructive"
                     )} />
                   ) : (
                     <Radio className="h-3.5 w-3.5" />

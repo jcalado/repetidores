@@ -56,15 +56,15 @@ export function CallsignTable({
   return (
     <div className="space-y-3">
       {/* Table */}
-      <div className="rounded-lg border bg-white dark:bg-slate-900 overflow-hidden">
+      <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="bg-slate-50 dark:bg-slate-800/50">
+              <TableRow key={headerGroup.id} className="bg-muted">
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    className="font-semibold text-slate-600 dark:text-slate-300 cursor-pointer select-none hover:text-slate-900 dark:hover:text-white transition-colors"
+                    className="font-semibold text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors"
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     <div className="flex items-center gap-1">
@@ -86,7 +86,7 @@ export function CallsignTable({
                   {callsignColumns.map((_, j) => (
                     <TableCell key={j}>
                       <div
-                        className="h-4 bg-slate-100 dark:bg-slate-800 rounded animate-pulse"
+                        className="h-4 bg-muted rounded animate-pulse"
                         style={{ width: `${60 + ((i * 7 + j * 13) % 40)}%`, animationDelay: `${i * 30}ms` }}
                       />
                     </TableCell>
@@ -96,7 +96,7 @@ export function CallsignTable({
             ) : table.getRowModel().rows.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={callsignColumns.length} className="text-center py-12">
-                  <div className="text-slate-400">
+                  <div className="text-muted-foreground">
                     Nenhum indicativo encontrado para os filtros selecionados.
                   </div>
                   {onClearFilters && (
@@ -113,7 +113,7 @@ export function CallsignTable({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                  className="hover:bg-accent transition-colors"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
@@ -128,7 +128,7 @@ export function CallsignTable({
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+      <div className="flex items-center justify-between text-sm text-muted-foreground">
         <span>
           {loading ? (
             <span className="flex items-center gap-1.5">

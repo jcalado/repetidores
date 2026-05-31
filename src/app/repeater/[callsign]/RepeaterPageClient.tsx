@@ -1169,7 +1169,7 @@ function formatScheduleTooltip(entry: {
   if (entry.startTime)
     schedule.push(`${entry.startTime}${entry.endTime ? `-${entry.endTime}` : ""}`);
   if (schedule.length) parts.push(`Horário: ${schedule.join(" ")}`);
-  return parts.join(" — ");
+  return parts.join(" · ");
 }
 
 function TalkgroupEntry({

@@ -13,7 +13,7 @@ export default function ISSPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <p className="text-center text-slate-600 dark:text-slate-400">
+      <p className="text-center text-muted-foreground">
         Redirecionando para /satelites...
       </p>
     </div>

@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { Check, ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
   DropdownMenu,
@@ -39,12 +40,12 @@ export function Combobox({
           type="button"
           aria-label={ariaLabel}
           className={cn(
-            "inline-flex h-9 items-center justify-between gap-2 rounded-md border bg-background px-3 text-sm",
+            "inline-flex h-9 items-center justify-between gap-2 rounded-lg border border-input bg-background px-3 text-sm outline-none transition-[color,box-shadow] focus-visible:border-azulejo-500 focus-visible:ring-azulejo-500/40 focus-visible:ring-[3px]",
             className
           )}
         >
           <span>{selected ? selected.label : placeholder}</span>
-          <span aria-hidden>▾</span>
+          <ChevronDown aria-hidden className="size-4 opacity-50" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -57,8 +58,10 @@ export function Combobox({
             }}
             className="flex items-center gap-2"
           >
-            <span className="inline-block w-4 text-center">
-              {String(opt.value) === String(value) ? "✓" : ""}
+            <span className="inline-flex w-4 items-center justify-center">
+              {String(opt.value) === String(value) ? (
+                <Check className="size-4" />
+              ) : null}
             </span>
             <span>{opt.label}</span>
           </DropdownMenuItem>

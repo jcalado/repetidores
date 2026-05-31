@@ -65,7 +65,7 @@ export function TrendsDateFilter({ value, onChange, resetRef }: TrendsDateFilter
   return (
     <>
       <Select value={preset} onValueChange={handlePresetChange}>
-        <SelectTrigger className="w-full sm:w-48 bg-white dark:bg-input/30">
+        <SelectTrigger className="w-full sm:w-48 bg-background">
           <SelectValue placeholder="Período" />
         </SelectTrigger>
         <SelectContent>
@@ -83,14 +83,14 @@ export function TrendsDateFilter({ value, onChange, resetRef }: TrendsDateFilter
             type="date"
             value={value.startDate || ""}
             onChange={(e) => handleCustomDate("startDate", e.target.value)}
-            className="h-9 rounded-md border border-input bg-white dark:bg-input/30 px-3 text-sm text-foreground"
+            className="h-9 rounded-lg border border-input bg-background px-3 text-sm text-foreground"
           />
-          <span className="text-sm text-slate-400">a</span>
+          <span className="text-sm text-muted-foreground">a</span>
           <input
             type="date"
             value={value.endDate || ""}
             onChange={(e) => handleCustomDate("endDate", e.target.value)}
-            className="h-9 rounded-md border border-input bg-white dark:bg-input/30 px-3 text-sm text-foreground"
+            className="h-9 rounded-lg border border-input bg-background px-3 text-sm text-foreground"
           />
         </>
       )}

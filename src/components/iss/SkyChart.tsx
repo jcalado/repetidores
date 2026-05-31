@@ -115,14 +115,14 @@ export function SkyChart({ passes, currentPosition, width = 600, height = 600 }:
                     stroke="currentColor"
                     strokeWidth={elev === 0 ? 2 : 1}
                     strokeDasharray={elev === 0 ? 'none' : '4 2'}
-                    className="text-slate-300 dark:text-slate-700"
+                    className="text-border"
                   />
                   {elev > 0 && (
                     <text
                       x={centerX + 5}
                       y={centerY - r + 5}
                       fontSize="10"
-                      className="fill-slate-500 dark:fill-slate-500"
+                      className="fill-muted-foreground font-mono"
                     >
                       {elev}°
                     </text>
@@ -146,7 +146,7 @@ export function SkyChart({ passes, currentPosition, width = 600, height = 600 }:
                     stroke="currentColor"
                     strokeWidth={dir.angle % 90 === 0 ? 1.5 : 0.5}
                     strokeDasharray="2 2"
-                    className="text-slate-300 dark:text-slate-700"
+                    className="text-border"
                   />
                   <text
                     x={labelPoint.x}
@@ -155,7 +155,7 @@ export function SkyChart({ passes, currentPosition, width = 600, height = 600 }:
                     fontWeight={dir.angle % 90 === 0 ? 'bold' : 'normal'}
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    className="fill-slate-700 dark:fill-slate-300"
+                    className="fill-foreground"
                   >
                     {dir.label}
                   </text>
@@ -169,14 +169,14 @@ export function SkyChart({ passes, currentPosition, width = 600, height = 600 }:
               cy={centerY}
               r={3}
               fill="currentColor"
-              className="text-slate-400 dark:text-slate-600"
+              className="text-muted-foreground"
             />
             <text
               x={centerX}
               y={centerY - 10}
               fontSize="10"
               textAnchor="middle"
-              className="fill-slate-500 dark:fill-slate-500"
+              className="fill-muted-foreground"
             >
               Zénite
             </text>
@@ -278,7 +278,7 @@ export function SkyChart({ passes, currentPosition, width = 600, height = 600 }:
             </Badge>
           </div>
 
-          <p className="text-xs text-slate-600 dark:text-slate-400 text-center max-w-md">
+          <p className="text-xs text-muted-foreground text-center max-w-md">
             Mostra até 10 próximas passagens. O centro representa o zénite (diretamente acima),
             e o círculo externo representa o horizonte.
           </p>

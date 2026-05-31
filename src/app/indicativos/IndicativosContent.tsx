@@ -186,7 +186,7 @@ export function IndicativosContent() {
         <TabsContent value="mapa">
           <ErrorBoundary FallbackComponent={TabErrorFallback}>
             {mapLoading ? (
-              <div className="flex items-center justify-center py-12 text-slate-400">
+              <div className="flex items-center justify-center py-12 text-muted-foreground">
                 <Loader2 className="h-5 w-5 animate-spin mr-2" />
                 A carregar mapa...
               </div>
@@ -209,7 +209,7 @@ export function IndicativosContent() {
                 </div>
               </div>
             ) : (
-              <div className="text-center py-12 text-slate-400">
+              <div className="text-center py-12 text-muted-foreground">
                 Não foi possível carregar os dados geográficos.
               </div>
             )}

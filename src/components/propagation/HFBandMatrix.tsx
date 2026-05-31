@@ -34,7 +34,7 @@ export function HFBandMatrix({ hamQSL }: HFBandMatrixProps) {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b dark:border-gray-700">
+              <tr className="border-b border-border">
                 <th className="pb-2 text-left text-sm font-medium text-muted-foreground">
                   {t('hf.band')}
                 </th>
@@ -50,10 +50,10 @@ export function HFBandMatrix({ hamQSL }: HFBandMatrixProps) {
               {HF_BANDS.map((band) => {
                 const conditions = getBandConditions(band.id);
                 return (
-                  <tr key={band.id} className="border-b last:border-0 dark:border-gray-700">
+                  <tr key={band.id} className="border-b border-border last:border-0">
                     <td className="py-3">
-                      <div className="font-medium">{band.label}</div>
-                      <div className="text-xs text-muted-foreground">{band.frequencies}</div>
+                      <div className="font-medium font-mono">{band.label}</div>
+                      <div className="text-xs text-muted-foreground font-mono">{band.frequencies}</div>
                     </td>
                     <td className="py-3 text-center">
                       <ConditionBadge condition={conditions.day} type="band" size="sm" />

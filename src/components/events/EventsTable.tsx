@@ -80,13 +80,13 @@ function EventsTableComponent({ events, t }: EventsTableProps) {
                     </span>
                   </div>
                   {/* Mobile: show date below title */}
-                  <div className="sm:hidden text-xs text-muted-foreground mt-1">
+                  <div className="sm:hidden text-xs text-muted-foreground mt-1 font-mono">
                     {formatDateTime(event.start, { hideCurrentYear: true })}
                   </div>
                 </TableCell>
 
                 {/* Start Date */}
-                <TableCell className="hidden sm:table-cell text-muted-foreground">
+                <TableCell className="hidden sm:table-cell text-muted-foreground font-mono">
                   {formatDateTime(event.start, { hideCurrentYear: true })}
                 </TableCell>
 
@@ -140,7 +140,7 @@ function EventsTableComponent({ events, t }: EventsTableProps) {
                 </TableCell>
 
                 {/* Countdown */}
-                <TableCell className="tabular-nums">
+                <TableCell className="tabular-nums font-mono">
                   {isInProgress ? (
                     <span className="inline-flex items-center gap-1 text-green-600 dark:text-green-400 text-sm font-medium">
                       <Clock className="w-3.5 h-3.5 animate-pulse" />

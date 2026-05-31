@@ -24,9 +24,9 @@ const CHANGE_TYPE_CONFIG = {
   modified: {
     label: "alterado",
     icon: Pencil,
-    iconBgClass: "bg-blue-100 dark:bg-blue-900/40",
-    iconTextClass: "text-blue-600 dark:text-blue-400",
-    labelClass: "text-blue-600 dark:text-blue-400",
+    iconBgClass: "bg-azulejo-100 dark:bg-azulejo-900/40",
+    iconTextClass: "text-azulejo-600 dark:text-azulejo-400",
+    labelClass: "text-azulejo-600 dark:text-azulejo-400",
   },
 }
 
@@ -60,7 +60,7 @@ function ChangeEntry({ change }: { change: CallsignChange }) {
   const visibleFields = change.changedFields?.filter((cf) => !HIDDEN_FIELDS.has(cf.field))
 
   return (
-    <div className="flex items-start gap-3 px-3 py-2.5 rounded-md hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+    <div className="flex items-start gap-3 px-3 py-2.5 rounded-md hover:bg-accent transition-colors">
       <div className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded ${config.iconBgClass}`}>
         <Icon className={`h-3.5 w-3.5 ${config.iconTextClass}`} />
       </div>
@@ -76,19 +76,19 @@ function ChangeEntry({ change }: { change: CallsignChange }) {
         {visibleFields && visibleFields.length > 0 && (
           <div className="mt-1 space-y-0.5">
             {visibleFields.map((cf, i) => (
-              <div key={i} className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 flex-wrap">
-                <span className="font-medium text-slate-600 dark:text-slate-300 capitalize">
+              <div key={i} className="text-xs text-muted-foreground flex items-center gap-1.5 flex-wrap">
+                <span className="font-medium text-foreground capitalize">
                   {cf.field}:
                 </span>
                 <span className="line-through text-red-400/70">{cf.from || "—"}</span>
-                <ArrowRight className="h-2.5 w-2.5 text-slate-300 dark:text-slate-600 shrink-0" />
+                <ArrowRight className="h-2.5 w-2.5 text-muted-foreground shrink-0" />
                 <span className="text-emerald-600 dark:text-emerald-400">{cf.to || "—"}</span>
               </div>
             ))}
           </div>
         )}
       </div>
-      <span className="text-xs text-slate-400 shrink-0 tabular-nums">{formatTime(change.detectedAt)}</span>
+      <span className="font-mono text-xs text-muted-foreground shrink-0 tabular-nums">{formatTime(change.detectedAt)}</span>
     </div>
   )
 }
@@ -163,22 +163,22 @@ export function ChangesFeed({ changeType, onChangeTypeChange }: ChangesFeedProps
 
       {/* Timeline */}
       {loading && changes.length === 0 ? (
-        <div className="flex items-center justify-center py-12 text-slate-400">
+        <div className="flex items-center justify-center py-12 text-muted-foreground">
           <Loader2 className="h-5 w-5 animate-spin mr-2" />
           A carregar alterações...
         </div>
       ) : changes.length === 0 ? (
-        <div className="text-center py-12 text-slate-400">
+        <div className="text-center py-12 text-muted-foreground">
           Sem alterações registadas para o período selecionado.
         </div>
       ) : (
         <div className="space-y-6">
           {Object.entries(grouped).map(([date, items]) => (
             <div key={date}>
-              <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-3">
+              <h3 className="text-sm font-semibold text-muted-foreground mb-3">
                 {date}
               </h3>
-              <div className="divide-y divide-slate-100 dark:divide-slate-800 rounded-lg border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden">
+              <div className="divide-y divide-border rounded-xl border border-border bg-card shadow-sm overflow-hidden">
                 {items.map((change) => (
                   <ChangeEntry key={change.id} change={change} />
                 ))}

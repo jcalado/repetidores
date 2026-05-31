@@ -28,12 +28,12 @@ function StatCard({ icon, value, label, trend, trendColor, iconBgClass, iconText
             <span className={iconTextClass}>{icon}</span>
           </div>
           <div className="min-w-0">
-            <p className="text-2xl font-bold text-slate-900 dark:text-white">
+            <p className="text-2xl font-bold text-foreground">
               {value.toLocaleString("pt-PT")}
             </p>
-            <p className="text-sm text-slate-500 dark:text-slate-400 truncate">{label}</p>
+            <p className="text-sm text-muted-foreground truncate">{label}</p>
             {trend && (
-              <p className={`text-xs font-medium ${trendColor || "text-slate-400"}`}>{trend}</p>
+              <p className={`text-xs font-medium ${trendColor || "text-muted-foreground"}`}>{trend}</p>
             )}
           </div>
         </div>
@@ -54,10 +54,10 @@ export function StatsCards({ stats, loading }: StatsCardsProps) {
           <Card key={i} className="py-0">
             <CardContent className="p-4">
               <div className="flex items-center gap-3 animate-pulse">
-                <div className="h-10 w-10 rounded-lg bg-slate-200 dark:bg-slate-700" />
+                <div className="h-10 w-10 rounded-lg bg-muted" />
                 <div className="space-y-2">
-                  <div className="h-6 w-16 rounded bg-slate-200 dark:bg-slate-700" />
-                  <div className="h-4 w-24 rounded bg-slate-100 dark:bg-slate-800" />
+                  <div className="h-6 w-16 rounded bg-muted" />
+                  <div className="h-4 w-24 rounded bg-muted" />
                 </div>
               </div>
             </CardContent>
@@ -88,8 +88,8 @@ export function StatsCards({ stats, loading }: StatsCardsProps) {
         value={stats.newThisMonth}
         label="Novos Este Mês"
         trendColor="text-emerald-500"
-        iconBgClass="bg-blue-100 dark:bg-blue-900/50"
-        iconTextClass="text-blue-600 dark:text-blue-400"
+        iconBgClass="bg-azulejo-100 dark:bg-azulejo-900/50"
+        iconTextClass="text-azulejo-600 dark:text-azulejo-400"
       />
       <StatCard
         icon={<Activity className="h-5 w-5" />}

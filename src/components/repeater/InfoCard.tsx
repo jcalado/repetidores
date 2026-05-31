@@ -42,7 +42,7 @@ export function InfoCard({ label, value, className, copyValue, right }: InfoCard
         className
       )}
     >
-      <div className="text-[10px] sm:text-xs uppercase tracking-wider text-azulejo-500 mb-1">
+      <div className="text-[10px] sm:text-xs tracking-wider text-azulejo-500 mb-1">
         {label}
       </div>
       <div className="flex items-center justify-between gap-1.5 sm:gap-2">

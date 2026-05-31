@@ -61,9 +61,9 @@ export default function QTHMapClick({ onLocationSelect, selectedLocation }: QTHM
                 <div className="text-sm">
                   <strong>Localização Selecionada</strong>
                   <br />
-                  Lat: {selectedLocation.lat.toFixed(4)}
+                  Lat: <span className="font-mono">{selectedLocation.lat.toFixed(4)}</span>
                   <br />
-                  Lon: {selectedLocation.lon.toFixed(4)}
+                  Lon: <span className="font-mono">{selectedLocation.lon.toFixed(4)}</span>
                 </div>
               </Popup>
             </Marker>

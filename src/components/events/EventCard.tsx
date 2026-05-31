@@ -55,8 +55,8 @@ function DMRBadge({
   return (
     <span
       onClick={handleClick}
-      className={`inline-flex items-center gap-1 text-[11px] text-red-600 dark:text-red-400 font-medium
-        ${isBrandmeister ? "hover:text-red-700 dark:hover:text-red-300 cursor-pointer" : ""}`}
+      className={`inline-flex items-center gap-1 text-[11px] text-azulejo-600 dark:text-azulejo-400 font-medium font-mono
+        ${isBrandmeister ? "hover:text-azulejo-700 dark:hover:text-azulejo-300 cursor-pointer" : ""}`}
       title={isBrandmeister ? t("dmr.listen") : `TG ${talkgroup}`}
     >
       <Radio className="w-3 h-3" />
@@ -79,27 +79,27 @@ function EventCardComponent({ event, t }: EventCardProps) {
 
   return (
     <Link href={`/events/${encodeURIComponent(event.id)}/`} className="block group">
-      <article className="relative flex gap-4 p-4 rounded-xl bg-white dark:bg-azulejo-950/50 border border-azulejo-200/80 dark:border-azulejo-800/80 hover:border-azulejo-300 dark:hover:border-azulejo-700 hover:shadow-lg hover:shadow-azulejo-200/50 dark:hover:shadow-azulejo-950/50 transition-all duration-200 h-full">
+      <article className="relative flex gap-4 p-4 rounded-xl bg-card dark:bg-azulejo-950/50 border border-azulejo-200/80 dark:border-azulejo-800/80 hover:border-azulejo-300 dark:hover:border-azulejo-700 hover:shadow-lg hover:shadow-azulejo-200/50 dark:hover:shadow-azulejo-950/50 transition-all duration-200 h-full">
 
         {/* Left: Date badge */}
         <div className="flex flex-col items-center shrink-0">
           <div className={`w-14 rounded-lg overflow-hidden shadow-sm ${countdown.isInProgress ? 'ring-2 ring-emerald-500 ring-offset-2 dark:ring-offset-azulejo-950' : ''}`}>
             {/* Month header */}
             <div className={`${iconBgClass} px-2 py-1 text-center`}>
-              <span className="text-[10px] font-bold text-white uppercase tracking-wider">
+              <span className="text-[10px] font-bold text-white tracking-wider font-mono">
                 {month}
               </span>
             </div>
             {/* Day */}
             <div className="bg-azulejo-50 dark:bg-azulejo-900 px-2 py-2 text-center">
-              <span className="text-2xl font-bold text-azulejo-900 dark:text-azulejo-100 leading-none">
+              <span className="text-2xl font-bold text-azulejo-900 dark:text-azulejo-100 leading-none font-mono">
                 {day}
               </span>
             </div>
           </div>
 
           {/* Time below date */}
-          <span className="mt-2 text-xs font-medium text-azulejo-500 dark:text-azulejo-400 tabular-nums">
+          <span className="mt-2 text-xs font-medium text-azulejo-500 dark:text-azulejo-400 tabular-nums font-mono">
             {time}
           </span>
         </div>

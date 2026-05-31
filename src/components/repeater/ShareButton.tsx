@@ -46,11 +46,11 @@ export function ShareButton({ callsign, variant = "default" }: ShareButtonProps)
         <TooltipTrigger asChild>
           <button
             onClick={handleShare}
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground hover:bg-accent transition-colors"
             aria-label={t("share")}
           >
             {copied ? (
-              <Check className="h-4 w-4 text-emerald-300" />
+              <Check className="h-4 w-4 text-emerald-500" />
             ) : (
               <Share2 className="h-4 w-4" />
             )}

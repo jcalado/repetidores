@@ -1,7 +1,6 @@
 "use client"
 
 import { useSimplexColumns } from "@/app/simplex/columns"
-import { Card, CardContent } from "@/components/ui/card"
 import { DataTable } from "@/components/ui/data-table"
 import { Drawer, DrawerContent, DrawerFooter, DrawerOverlay, DrawerTitle } from "@/components/ui/drawer"
 import { VisuallyHidden } from "@/components/ui/visually-hidden"
@@ -37,58 +36,56 @@ export default function SimplexBrowser({ data }: Props) {
 
   return (
     <>
-      <Card className="w-full">
-        <CardContent>
-          {/* Tab buttons */}
-          <div className="flex items-center gap-2 mb-4">
-            <button
-              type="button"
-              onClick={() => setActiveTab("table")}
-              className={`inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                activeTab === "table"
-                  ? "bg-azulejo-600 text-white dark:bg-azulejo-500"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
-              }`}
-            >
-              {t("tableView")}
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("map")}
-              className={`inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                activeTab === "map"
-                  ? "bg-azulejo-600 text-white dark:bg-azulejo-500"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
-              }`}
-            >
-              {t("mapView")}
-            </button>
-            <span className="ml-auto text-sm text-muted-foreground">
-              {data.length} {data.length === 1 ? t("frequencySingular") : t("frequencyPlural")}
-            </span>
-          </div>
+      <div className="w-full">
+        {/* Tab buttons */}
+        <div className="flex items-center gap-2 mb-4">
+          <button
+            type="button"
+            onClick={() => setActiveTab("table")}
+            className={`inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+              activeTab === "table"
+                ? "bg-azulejo-600 text-white dark:bg-azulejo-500"
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
+            }`}
+          >
+            {t("tableView")}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("map")}
+            className={`inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+              activeTab === "map"
+                ? "bg-azulejo-600 text-white dark:bg-azulejo-500"
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
+            }`}
+          >
+            {t("mapView")}
+          </button>
+          <span className="ml-auto text-sm text-muted-foreground">
+            {data.length} {data.length === 1 ? t("frequencySingular") : t("frequencyPlural")}
+          </span>
+        </div>
 
-          {/* Table view */}
-          {activeTab === "table" && (
-            <DataTable
-              columns={columns}
-              data={data}
-              onRowClick={(row) => handleSelect(row as SimplexFrequency)}
-              initialSorting={[{ id: "frequency", desc: false }]}
+        {/* Table view */}
+        {activeTab === "table" && (
+          <DataTable
+            columns={columns}
+            data={data}
+            onRowClick={(row) => handleSelect(row as SimplexFrequency)}
+            initialSorting={[{ id: "frequency", desc: false }]}
+          />
+        )}
+
+        {/* Map view */}
+        {activeTab === "map" && (
+          <div className="h-[500px]">
+            <SimplexMapView
+              frequencies={data}
+              onFrequencyClick={handleSelect}
             />
-          )}
-
-          {/* Map view */}
-          {activeTab === "map" && (
-            <div className="h-[500px]">
-              <SimplexMapView
-                frequencies={data}
-                onFrequencyClick={handleSelect}
-              />
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          </div>
+        )}
+      </div>
 
       {/* Detail drawer */}
       <Drawer open={open} onOpenChange={setOpen} direction="right">
@@ -142,7 +139,7 @@ export default function SimplexBrowser({ data }: Props) {
               <DrawerFooter>
                 <button
                   type="button"
-                  className="inline-flex h-9 items-center justify-center rounded-md border bg-background px-3 text-sm shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
+                  className="inline-flex h-9 items-center justify-center rounded-lg border bg-background px-3 text-sm shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
                   onClick={() => setOpen(false)}
                 >
                   {t("close")}

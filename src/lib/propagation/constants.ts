@@ -50,15 +50,15 @@ export const BAND_CONDITION_COLORS = {
   good: { bg: 'bg-green-500', text: 'text-green-700 dark:text-green-400' },
   fair: { bg: 'bg-yellow-500', text: 'text-yellow-700 dark:text-yellow-400' },
   poor: { bg: 'bg-red-500', text: 'text-red-700 dark:text-red-400' },
-  unknown: { bg: 'bg-gray-400', text: 'text-gray-600 dark:text-gray-400' },
+  unknown: { bg: 'bg-muted-foreground', text: 'text-muted-foreground' },
 } as const;
 
 // VHF condition colors
 export const VHF_CONDITION_COLORS = {
   open: { bg: 'bg-green-500', text: 'text-green-700 dark:text-green-400' },
   possible: { bg: 'bg-yellow-500', text: 'text-yellow-700 dark:text-yellow-400' },
-  closed: { bg: 'bg-gray-400', text: 'text-gray-600 dark:text-gray-400' },
-  unknown: { bg: 'bg-gray-400', text: 'text-gray-600 dark:text-gray-400' },
+  closed: { bg: 'bg-muted-foreground', text: 'text-muted-foreground' },
+  unknown: { bg: 'bg-muted-foreground', text: 'text-muted-foreground' },
 } as const;
 
 // HF band names for display

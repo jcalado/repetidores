@@ -18,7 +18,7 @@ interface VHFModeCardProps {
 
 function VHFModeCard({ title, status, description }: VHFModeCardProps) {
   return (
-    <div className="rounded-lg border bg-card p-4 text-center dark:border-gray-700">
+    <div className="rounded-lg border border-border bg-muted p-4 text-center">
       <div className="text-sm font-medium text-muted-foreground mb-2">{title}</div>
       <ConditionBadge condition={status} type="vhf" />
       {description && (
@@ -42,7 +42,7 @@ export function VHFConditionsPanel({ hamQSL }: VHFConditionsPanelProps) {
     <Card>
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-lg">
-          <RadioIcon className="h-5 w-5 text-indigo-500" />
+          <RadioIcon className="h-5 w-5 text-azulejo-500" />
           {t('vhf.title')}
         </CardTitle>
       </CardHeader>

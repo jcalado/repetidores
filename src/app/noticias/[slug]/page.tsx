@@ -149,7 +149,7 @@ export default async function NewsDetailPage({ params }: PageProps) {
   const breadcrumbs = generateBreadcrumbs(news)
 
   return (
-    <div className="min-h-screen bg-white dark:bg-azulejo-950">
+    <div className="min-h-screen bg-background">
       {jsonLd && (
         <script
           type="application/ld+json"
@@ -174,12 +174,12 @@ export default async function NewsDetailPage({ params }: PageProps) {
             {/* Meta line */}
             <div className="flex items-center gap-3 text-sm mb-4">
               {categoryLabel && (
-                <span className="font-semibold text-azulejo-600 dark:text-azulejo-400 uppercase tracking-wide text-xs">
+                <span className="font-semibold text-azulejo-600 dark:text-azulejo-400 tracking-wide text-xs">
                   {categoryLabel}
                 </span>
               )}
               {categoryLabel && <span className="text-azulejo-300 dark:text-azulejo-600">•</span>}
-              <time className="text-azulejo-500 dark:text-azulejo-400">
+              <time className="font-mono text-azulejo-500 dark:text-azulejo-400">
                 {formattedDate}
               </time>
               {news.featured && (

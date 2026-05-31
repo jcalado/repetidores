@@ -39,7 +39,7 @@ export function StatusDisplay({ status, stats, t }: StatusDisplayProps) {
             <div className="text-lg font-bold tabular-nums">
               {Math.round((stats.up / stats.total) * 100)}%
             </div>
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            <div className="text-[10px] tracking-wider text-muted-foreground">
               {t("positive")}
             </div>
           </div>

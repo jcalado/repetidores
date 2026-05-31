@@ -370,7 +370,7 @@ export default function LOSCalculator() {
                     maxLength={6}
                   />
                   {targetQth.length >= 4 && !isValidQth(targetQth) && (
-                    <p className="text-xs text-red-500">{t("invalidQth")}</p>
+                    <p className="text-xs text-destructive">{t("invalidQth")}</p>
                   )}
                 </div>
               </TabsContent>
@@ -543,11 +543,11 @@ export default function LOSCalculator() {
                 </div>
 
                 {/* Distance */}
-                <div className="p-4 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
-                  <div className="text-sm text-blue-100 mb-1">
+                <div className="p-4 rounded-lg bg-muted">
+                  <div className="text-sm text-muted-foreground mb-1">
                     {t("distance")}
                   </div>
-                  <div className="text-2xl font-bold font-mono">
+                  <div className="text-2xl font-bold font-mono text-foreground">
                     {formatNumber(result.totalDistance, 1)} km
                   </div>
                 </div>
@@ -596,7 +596,7 @@ export default function LOSCalculator() {
               <ElevationProfile points={result.points} status={result.status} />
               <div className="mt-4 flex flex-wrap gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-0.5 bg-slate-500" />
+                  <div className="w-4 h-0.5 bg-muted-foreground" />
                   <span>{t("terrain")}</span>
                 </div>
                 <div className="flex items-center gap-2">

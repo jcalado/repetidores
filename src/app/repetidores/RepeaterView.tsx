@@ -25,6 +25,7 @@ import { Slider } from "@/components/ui/slider";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { useUserLocation } from "@/contexts/UserLocationContext";
 import { calculateDistance } from "@/lib/geolocation";
+import { MODE_TILE_COLORS } from "@/lib/mode-colors";
 import type { ColumnFiltersState } from "@tanstack/react-table";
 import {
   ChevronDown,
@@ -60,31 +61,6 @@ function getBandFromFrequency(mhz: number): string {
   if (mhz >= 1240 && mhz <= 1300) return "23cm";
   if (mhz >= 2300 && mhz <= 2450) return "13cm";
   return "Other";
-}
-
-// Mode colors - matches quick filter cards and ModesCell in columns.tsx
-function getModeColors(mode: string): string {
-  switch (mode.toUpperCase()) {
-    case "FM":
-      return "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border-blue-300 dark:border-blue-700";
-    case "DMR":
-      return "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 border-purple-300 dark:border-purple-700";
-    case "DSTAR":
-    case "D-STAR":
-      return "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300 border-cyan-300 dark:border-cyan-700";
-    case "C4FM":
-      return "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300 border-rose-300 dark:border-rose-700";
-    case "TETRA":
-      return "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border-amber-300 dark:border-amber-700";
-    case "ECHOLINK":
-      return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700";
-    case "ALLSTAR":
-      return "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 border-orange-300 dark:border-orange-700";
-    case "DIGIPEATER":
-      return "bg-gray-100 text-gray-700 dark:bg-gray-900/40 dark:text-gray-300 border-gray-300 dark:border-gray-700";
-    default:
-      return "bg-gray-100 text-gray-700 dark:bg-gray-900/40 dark:text-gray-300 border-gray-300 dark:border-gray-700";
-  }
 }
 
 // Helper to get primary frequency from repeater
@@ -262,12 +238,16 @@ export default function RepeaterView({ view }: Props) {
                 }
                 return (
                   <>
-                    {/* Mobile chip strip — single horizontal scroll row, unified azulejo voice */}
+                    {/* Mobile chip strip — single horizontal scroll row, colour-coded by mode */}
                     <div className="mb-4 lg:hidden">
                       <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                         {modes.map(({ mode, label }) => {
                           const displayMode = mode === 'DSTAR' ? 'D-STAR' : mode
                           const isActive = mode === 'ALL' ? !hasActiveFilter : activeModes.includes(displayMode)
+                          // Per-mode colour (sanctioned Mode-Taxonomy exception, see DESIGN.md). "ALL" stays azulejo.
+                          const style = mode === 'ALL' ? null : MODE_TILE_COLORS[mode]
+                          const activeClass = style ? style.active : 'bg-azulejo-500 border-azulejo-600 text-white'
+                          const hoverClass = style ? style.hover : 'hover:bg-azulejo-50 hover:border-azulejo-300 dark:hover:bg-azulejo-950/30'
                           return (
                             <button
                               key={mode}
@@ -275,11 +255,13 @@ export default function RepeaterView({ view }: Props) {
                               onClick={() => toggleMode(mode)}
                               className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-4 min-h-10 text-sm font-medium transition-colors duration-150 ${
                                 isActive
-                                  ? 'bg-azulejo-500 border-azulejo-600 text-white shadow-[0_1px_3px_oklch(0.50_0.137_252/0.35)]'
-                                  : 'bg-card border-border text-foreground hover:bg-azulejo-50 hover:border-azulejo-300 dark:hover:bg-azulejo-950/30'
+                                  ? `${activeClass} shadow-[0_1px_3px_oklch(0.50_0.137_252/0.35)]`
+                                  : `bg-card border-border text-foreground ${hoverClass}`
                               }`}
                             >
-                              {isActive && mode !== 'ALL' && <span className="size-1.5 rounded-full bg-white" />}
+                              {mode !== 'ALL' && (
+                                <span className={`size-1.5 rounded-full ${isActive ? 'bg-white' : style?.dot ?? ''}`} />
+                              )}
                               {label}
                             </button>
                           )
@@ -288,7 +270,7 @@ export default function RepeaterView({ view }: Props) {
                     </div>
 
                     {/* Desktop tile card — preserved as-is at lg+ */}
-                    <div className="hidden lg:block mb-6 rounded-xl border bg-gradient-to-br from-muted/30 via-background to-muted/20 p-4">
+                    <div className="hidden lg:block mb-6 rounded-xl border bg-muted/30 p-4">
                       <div className="flex items-center justify-between mb-3">
                         <h3 className="text-sm font-semibold text-foreground tracking-tight">{t('filters.quickFilters')}</h3>
                         {hasActiveFilter ? (
@@ -309,19 +291,25 @@ export default function RepeaterView({ view }: Props) {
                     const currentModes = (columnFilters.find((f) => f.id === "modes")?.value as string[] | undefined) || []
                     const hasActiveFilter = currentModes.length > 0
                     return [
-                      { mode: 'ALL', label: 'Todos', Icon: LayoutGrid, desc: 'Sem filtro', bg: 'bg-slate-50 dark:bg-slate-950/40', hoverBg: 'hover:bg-slate-100 dark:hover:bg-slate-900/50', border: 'border-slate-200 dark:border-slate-800', activeBorder: 'border-slate-500', text: 'text-slate-700 dark:text-slate-300', iconColor: 'text-slate-500', activeRing: 'ring-slate-500/30', dot: 'bg-slate-500' },
-                      { mode: 'FM', label: 'FM', Icon: Radio, desc: 'Analógico', bg: 'bg-blue-50 dark:bg-blue-950/40', hoverBg: 'hover:bg-blue-100 dark:hover:bg-blue-900/50', border: 'border-blue-200 dark:border-blue-800', activeBorder: 'border-blue-500', text: 'text-blue-700 dark:text-blue-300', iconColor: 'text-blue-500', activeRing: 'ring-blue-500/30', dot: 'bg-blue-500' },
-                      { mode: 'DMR', label: 'DMR', Icon: Signal, desc: 'Digital', bg: 'bg-purple-50 dark:bg-purple-950/40', hoverBg: 'hover:bg-purple-100 dark:hover:bg-purple-900/50', border: 'border-purple-200 dark:border-purple-800', activeBorder: 'border-purple-500', text: 'text-purple-700 dark:text-purple-300', iconColor: 'text-purple-500', activeRing: 'ring-purple-500/30', dot: 'bg-purple-500' },
-                      { mode: 'DSTAR', label: 'D-STAR', Icon: Star, desc: 'Digital', bg: 'bg-cyan-50 dark:bg-cyan-950/40', hoverBg: 'hover:bg-cyan-100 dark:hover:bg-cyan-900/50', border: 'border-cyan-200 dark:border-cyan-800', activeBorder: 'border-cyan-500', text: 'text-cyan-700 dark:text-cyan-300', iconColor: 'text-cyan-500', activeRing: 'ring-cyan-500/30', dot: 'bg-cyan-500' },
-                      { mode: 'C4FM', label: 'C4FM', Icon: Hexagon, desc: 'Fusion', bg: 'bg-rose-50 dark:bg-rose-950/40', hoverBg: 'hover:bg-rose-100 dark:hover:bg-rose-900/50', border: 'border-rose-200 dark:border-rose-800', activeBorder: 'border-rose-500', text: 'text-rose-700 dark:text-rose-300', iconColor: 'text-rose-500', activeRing: 'ring-rose-500/30', dot: 'bg-rose-500' },
-                      { mode: 'TETRA', label: 'TETRA', Icon: Shield, desc: 'Digital', bg: 'bg-amber-50 dark:bg-amber-950/40', hoverBg: 'hover:bg-amber-100 dark:hover:bg-amber-900/50', border: 'border-amber-200 dark:border-amber-800', activeBorder: 'border-amber-500', text: 'text-amber-700 dark:text-amber-300', iconColor: 'text-amber-500', activeRing: 'ring-amber-500/30', dot: 'bg-amber-500' },
-                      { mode: 'EchoLink', label: 'EchoLink', Icon: Globe, desc: 'VoIP', bg: 'bg-emerald-50 dark:bg-emerald-950/40', hoverBg: 'hover:bg-emerald-100 dark:hover:bg-emerald-900/50', border: 'border-emerald-200 dark:border-emerald-800', activeBorder: 'border-emerald-500', text: 'text-emerald-700 dark:text-emerald-300', iconColor: 'text-emerald-500', activeRing: 'ring-emerald-500/30', dot: 'bg-emerald-500' },
-                      { mode: 'AllStar', label: 'AllStar', Icon: Link2, desc: 'Link', bg: 'bg-orange-50 dark:bg-orange-950/40', hoverBg: 'hover:bg-orange-100 dark:hover:bg-orange-900/50', border: 'border-orange-200 dark:border-orange-800', activeBorder: 'border-orange-500', text: 'text-orange-700 dark:text-orange-300', iconColor: 'text-orange-500', activeRing: 'ring-orange-500/30', dot: 'bg-orange-500' },
-                    ].map(({ mode, label, Icon, desc, bg, hoverBg, border, activeBorder, text, iconColor, activeRing, dot }) => {
+                      { mode: 'ALL', label: 'Todos', Icon: LayoutGrid, desc: 'Sem filtro' },
+                      { mode: 'FM', label: 'FM', Icon: Radio, desc: 'Analógico' },
+                      { mode: 'DMR', label: 'DMR', Icon: Signal, desc: 'Digital' },
+                      { mode: 'DSTAR', label: 'D-STAR', Icon: Star, desc: 'Digital' },
+                      { mode: 'C4FM', label: 'C4FM', Icon: Hexagon, desc: 'Fusion' },
+                      { mode: 'TETRA', label: 'TETRA', Icon: Shield, desc: 'Digital' },
+                      { mode: 'EchoLink', label: 'EchoLink', Icon: Globe, desc: 'VoIP' },
+                      { mode: 'AllStar', label: 'AllStar', Icon: Link2, desc: 'Link' },
+                    ].map(({ mode, label, Icon, desc }) => {
                       const displayMode = mode === 'DSTAR' ? 'D-STAR' : mode
                       // "ALL" is active when no mode filters are set
                       const isActive = mode === 'ALL' ? !hasActiveFilter : currentModes.includes(displayMode)
                       const isInactive = mode === 'ALL' ? false : (hasActiveFilter && !isActive)
+                      // Per-mode colour so a tile is recognisable by its mode at a glance
+                      // (sanctioned Mode-Taxonomy exception, see DESIGN.md). "ALL" stays azulejo.
+                      const style = mode === 'ALL' ? null : MODE_TILE_COLORS[mode]
+                      const activeClass = style ? style.active : 'bg-azulejo-500 border-azulejo-600 text-white'
+                      const hoverClass = style ? style.hover : 'hover:bg-azulejo-50 hover:border-azulejo-300 dark:hover:bg-azulejo-950/30'
+                      const restIconClass = style ? style.icon : 'text-muted-foreground'
                       return (
                         <button
                           key={mode}
@@ -346,31 +334,30 @@ export default function RepeaterView({ view }: Props) {
                             })
                           }}
                           className={`
-                            group relative flex flex-col items-center justify-center p-3 rounded-lg border-2
+                            group relative flex flex-col items-center justify-center p-3 rounded-lg border
                             transition-all duration-200 ease-out
-                            ${bg} ${hoverBg}
                             ${isActive
-                              ? `${activeBorder} shadow-md ring-2 ${activeRing} scale-[1.02]`
-                              : `${border} hover:scale-[1.01]`
+                              ? `${activeClass} shadow-md scale-[1.02]`
+                              : `bg-card border-border text-foreground ${hoverClass} hover:scale-[1.01]`
                             }
-                            ${isInactive ? 'opacity-50 saturate-50 hover:opacity-75 hover:saturate-75' : ''}
+                            ${isInactive ? 'opacity-50 hover:opacity-75' : ''}
                           `}
                         >
                         {/* Active indicator dot */}
                         {isActive && (
-                          <span className={`absolute top-1.5 right-1.5 w-2 h-2 rounded-full ${dot} animate-pulse shadow-sm`} />
+                          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-white animate-pulse shadow-sm" />
                         )}
 
-                        {/* Icon */}
-                        <Icon className={`h-6 w-6 mb-1 transition-transform duration-200 ${iconColor} ${isActive ? 'scale-110' : 'group-hover:scale-105'}`} />
+                        {/* Icon — mode colour at rest, white when active */}
+                        <Icon className={`h-6 w-6 mb-1 transition-transform duration-200 ${isActive ? 'text-white scale-110' : `${restIconClass} group-hover:scale-105`}`} />
 
                         {/* Label */}
-                        <span className={`text-sm font-semibold tracking-tight ${text}`}>
+                        <span className="text-sm font-semibold tracking-tight">
                           {label}
                         </span>
 
                         {/* Description */}
-                        <span className={`text-[10px] uppercase tracking-wider ${text} opacity-60`}>
+                        <span className="text-[10px] tracking-wider opacity-60">
                           {desc}
                         </span>
                         </button>
@@ -525,7 +512,6 @@ export default function RepeaterView({ view }: Props) {
                               });
                             }}
                             label={t("filters.2m")}
-                            activeClass="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700"
                           />
                           <FilterChip
                             isActive={columnFilters.find((f) => f.id === "band")?.value === "70cm"}
@@ -537,7 +523,6 @@ export default function RepeaterView({ view }: Props) {
                               });
                             }}
                             label={t("filters.70cm")}
-                            activeClass="bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300 border-violet-300 dark:border-violet-700"
                           />
                         </div>
                       </div>
@@ -552,7 +537,6 @@ export default function RepeaterView({ view }: Props) {
                           {modeOptions.map((m) => {
                             const selectedMods = (columnFilters.find((f) => f.id === "modes")?.value as string[] | undefined) || [];
                             const isActive = selectedMods.includes(m);
-                            const colors = getModeColors(m);
                             return (
                               <FilterChip
                                 key={m}
@@ -571,7 +555,6 @@ export default function RepeaterView({ view }: Props) {
                                   });
                                 }}
                                 label={m}
-                                activeClass={colors}
                               />
                             );
                           })}

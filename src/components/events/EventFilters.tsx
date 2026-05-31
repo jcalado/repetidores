@@ -1,8 +1,8 @@
 "use client";
 
 /**
- * EventFilters component - Clean, inline filter bar
- * Shows search, filters, and actions in a streamlined layout
+ * EventFilters component - search + a single "Filtros" dropdown (Âmbito + Tipo) + actions.
+ * All facet filters live in one dropdown so the page shows a single view switch, not stacked controls.
  */
 
 import { useCallback, useRef } from "react";
@@ -10,12 +10,11 @@ import {
   ArrowDownAZ,
   ArrowUpDown,
   Calendar,
+  Check,
   Download,
-  Globe2,
-  MapPin,
-  Plus,
   RefreshCw,
   Search,
+  SlidersHorizontal,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,19 +22,19 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import EventSubmitDialog from "@/components/EventSubmitDialog";
 import { downloadMultipleICS } from "@/lib/calendar";
-import { getTagColors, getTagIcon, getTagIconBg } from "./utils/tagColors";
-import type { EventItem, FilterState, SortOption, TranslationFunction } from "./types";
+import { getTagIcon } from "./utils/tagColors";
+import type { EventItem, FilterState, TranslationFunction } from "./types";
 
 interface EventFiltersProps {
   filters: FilterState;
   onFilterChange: (filters: Partial<FilterState>) => void;
   tags: string[];
-  filteredCount: number;
   allEvents: EventItem[];
   filteredEvents: EventItem[];
   isRefreshing: boolean;
@@ -43,11 +42,12 @@ interface EventFiltersProps {
   t: TranslationFunction;
 }
 
+const SCOPE_OPTIONS = ["all", "international", "national"] as const;
+
 export function EventFilters({
   filters,
   onFilterChange,
   tags,
-  filteredCount,
   allEvents,
   filteredEvents,
   isRefreshing,
@@ -61,12 +61,12 @@ export function EventFilters({
     filters.tag !== "all" ||
     filters.category !== "all";
 
+  // Active facet filters shown as a badge on the "Filtros" button (search has its own input).
+  const facetCount =
+    (filters.category !== "all" ? 1 : 0) + (filters.tag !== "all" ? 1 : 0);
+
   const clearFilters = useCallback(() => {
-    onFilterChange({
-      search: "",
-      tag: "all",
-      category: "all",
-    });
+    onFilterChange({ search: "", tag: "all", category: "all" });
   }, [onFilterChange]);
 
   const handleExportFiltered = () => {
@@ -82,8 +82,15 @@ export function EventFilters({
     downloadMultipleICS(allEvents, "repetidores-todos-eventos");
   };
 
+  const scopeLabel = (value: (typeof SCOPE_OPTIONS)[number]) =>
+    value === "all"
+      ? t("allCategories") || "Todos"
+      : value === "international"
+        ? t("international") || "Internacional"
+        : t("national") || "Nacional";
+
   return (
-    <div className="space-y-4 mb-8">
+    <div className="space-y-4 mb-6">
       {/* Search and actions row */}
       <div className="flex flex-col sm:flex-row gap-3">
         {/* Search input */}
@@ -95,7 +102,7 @@ export function EventFilters({
             placeholder={t("searchPlaceholder") || "Pesquisar eventos..."}
             value={filters.search}
             onChange={(e) => onFilterChange({ search: e.target.value })}
-            className="w-full h-12 pl-12 pr-12 rounded-xl border border-azulejo-200 dark:border-azulejo-800 bg-white dark:bg-azulejo-950/50 text-azulejo-900 dark:text-azulejo-100 placeholder:text-azulejo-400 dark:placeholder:text-azulejo-500 focus:outline-none focus:ring-2 focus:ring-azulejo-500/20 focus:border-azulejo-400 dark:focus:border-azulejo-600 transition-all"
+            className="w-full h-12 pl-12 pr-12 rounded-xl border border-azulejo-200 dark:border-azulejo-800 bg-background dark:bg-azulejo-950/50 text-azulejo-900 dark:text-azulejo-100 placeholder:text-azulejo-400 dark:placeholder:text-azulejo-500 focus:outline-none focus:ring-2 focus:ring-azulejo-500/20 focus:border-azulejo-400 dark:focus:border-azulejo-600 transition-all"
           />
           {filters.search && (
             <button
@@ -109,12 +116,79 @@ export function EventFilters({
 
         {/* Action buttons */}
         <div className="flex items-center gap-2">
+          {/* Filters dropdown (Âmbito + Tipo, collapsed into one control) */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="h-12 px-4 gap-2 border-azulejo-200 dark:border-azulejo-800 bg-background dark:bg-azulejo-950/50"
+              >
+                <SlidersHorizontal className="h-4 w-4" />
+                <span className="hidden sm:inline">{t("filters") || "Filtros"}</span>
+                {facetCount > 0 && (
+                  <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-azulejo-500 px-1 text-[11px] font-semibold text-white tabular-nums">
+                    {facetCount}
+                  </span>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>{t("scope") || "Âmbito"}</DropdownMenuLabel>
+              {SCOPE_OPTIONS.map((value) => (
+                <DropdownMenuItem
+                  key={value}
+                  onClick={() => onFilterChange({ category: value })}
+                >
+                  <span>{scopeLabel(value)}</span>
+                  {filters.category === value && (
+                    <Check className="ml-auto h-4 w-4 text-azulejo-500" />
+                  )}
+                </DropdownMenuItem>
+              ))}
+
+              {tags.length > 0 && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel>{t("type") || "Tipo"}</DropdownMenuLabel>
+                  <DropdownMenuItem onClick={() => onFilterChange({ tag: "all" })}>
+                    <span>{t("allTags") || "Todos"}</span>
+                    {filters.tag === "all" && (
+                      <Check className="ml-auto h-4 w-4 text-azulejo-500" />
+                    )}
+                  </DropdownMenuItem>
+                  {tags.map((tag) => {
+                    const TagIcon = getTagIcon(tag);
+                    return (
+                      <DropdownMenuItem key={tag} onClick={() => onFilterChange({ tag })}>
+                        <TagIcon className="h-4 w-4 text-muted-foreground" />
+                        <span>{tag}</span>
+                        {filters.tag === tag && (
+                          <Check className="ml-auto h-4 w-4 text-azulejo-500" />
+                        )}
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </>
+              )}
+
+              {hasActiveFilters && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={clearFilters}>
+                    <X className="h-4 w-4" />
+                    <span>{t("clearFilters") || "Limpar"}</span>
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           {/* Sort dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className="h-12 px-4 gap-2 border-azulejo-200 dark:border-azulejo-800 bg-white dark:bg-azulejo-950/50"
+                className="h-12 px-4 gap-2 border-azulejo-200 dark:border-azulejo-800 bg-background dark:bg-azulejo-950/50"
               >
                 <ArrowUpDown className="h-4 w-4" />
                 <span className="hidden sm:inline">{t("sortBy") || "Ordenar"}</span>
@@ -151,7 +225,7 @@ export function EventFilters({
               <Button
                 variant="outline"
                 size="icon"
-                className="h-12 w-12 border-azulejo-200 dark:border-azulejo-800 bg-white dark:bg-azulejo-950/50"
+                className="h-12 w-12 border-azulejo-200 dark:border-azulejo-800 bg-background dark:bg-azulejo-950/50"
               >
                 <Download className="h-4 w-4" />
               </Button>
@@ -172,7 +246,7 @@ export function EventFilters({
             size="icon"
             onClick={onRefresh}
             disabled={isRefreshing}
-            className="h-12 w-12 border-azulejo-200 dark:border-azulejo-800 bg-white dark:bg-azulejo-950/50"
+            className="h-12 w-12 border-azulejo-200 dark:border-azulejo-800 bg-background dark:bg-azulejo-950/50"
           >
             <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
           </Button>
@@ -184,120 +258,11 @@ export function EventFilters({
         </div>
       </div>
 
-      {/* Filter chips row */}
-      <div className="flex flex-wrap items-center gap-2">
-        {/* Category filters */}
-        <div className="flex items-center gap-1.5 mr-2">
-          <span className="text-xs font-medium text-azulejo-500 dark:text-azulejo-400 uppercase tracking-wider mr-1">
-            {t("scope") || "Âmbito"}:
-          </span>
-          <FilterChip
-            isActive={filters.category === "all"}
-            onClick={() => onFilterChange({ category: "all" })}
-            label={t("allCategories") || "Todos"}
-          />
-          <FilterChip
-            isActive={filters.category === "international"}
-            onClick={() => onFilterChange({ category: "international" })}
-            label={t("international") || "Internacional"}
-            icon={<Globe2 className="w-3.5 h-3.5" />}
-            activeClass="bg-sky-500 text-white border-sky-500"
-          />
-          <FilterChip
-            isActive={filters.category === "national"}
-            onClick={() => onFilterChange({ category: "national" })}
-            label={t("national") || "Nacional"}
-            icon={<MapPin className="w-3.5 h-3.5" />}
-            activeClass="bg-emerald-500 text-white border-emerald-500"
-          />
-        </div>
-
-        {/* Divider */}
-        <div className="hidden sm:block w-px h-6 bg-azulejo-200 dark:bg-azulejo-800" />
-
-        {/* Tag filters */}
-        {tags.length > 0 && (
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs font-medium text-azulejo-500 dark:text-azulejo-400 uppercase tracking-wider mr-1">
-              {t("type") || "Tipo"}:
-            </span>
-            <FilterChip
-              isActive={filters.tag === "all"}
-              onClick={() => onFilterChange({ tag: "all" })}
-              label={t("allTags") || "Todos"}
-            />
-            {tags.map((tag) => {
-              const colors = getTagColors(tag);
-              const TagIcon = getTagIcon(tag);
-              const iconBgClass = getTagIconBg(tag);
-              return (
-                <button
-                  key={tag}
-                  onClick={() => onFilterChange({ tag })}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-                    filters.tag === tag
-                      ? `${iconBgClass} text-white shadow-sm`
-                      : "bg-azulejo-100 dark:bg-azulejo-800/50 text-azulejo-600 dark:text-azulejo-400 hover:bg-azulejo-200 dark:hover:bg-azulejo-800"
-                  }`}
-                >
-                  <TagIcon className="w-3.5 h-3.5" />
-                  {tag}
-                </button>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Clear filters & results count */}
-        <div className="flex items-center gap-3 ml-auto">
-          {hasActiveFilters && (
-            <button
-              onClick={clearFilters}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-azulejo-600 dark:text-azulejo-400 hover:bg-azulejo-100 dark:hover:bg-azulejo-800/50 transition-colors"
-            >
-              <X className="h-3.5 w-3.5" />
-              {t("clearFilters") || "Limpar"}
-            </button>
-          )}
-          <span className="text-sm text-azulejo-500 dark:text-azulejo-400 tabular-nums">
-            {filteredCount} {filteredCount === 1 ? (t("event") || "evento") : (t("events") || "eventos")}
-          </span>
-        </div>
-      </div>
-
       {/* Mobile: Submit event */}
       <div className="sm:hidden">
         <EventSubmitDialog />
       </div>
     </div>
-  );
-}
-
-function FilterChip({
-  isActive,
-  onClick,
-  label,
-  icon,
-  activeClass = "bg-azulejo-600 text-white border-azulejo-600",
-}: {
-  isActive: boolean;
-  onClick: () => void;
-  label: string;
-  icon?: React.ReactNode;
-  activeClass?: string;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-        isActive
-          ? activeClass
-          : "bg-azulejo-100 dark:bg-azulejo-800/50 text-azulejo-600 dark:text-azulejo-400 hover:bg-azulejo-200 dark:hover:bg-azulejo-800"
-      }`}
-    >
-      {icon}
-      {label}
-    </button>
   );
 }
 

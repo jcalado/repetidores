@@ -12,7 +12,7 @@ interface SectionCardProps {
  */
 export function SectionCard({ icon: Icon, title, titleExtra, children }: SectionCardProps) {
   return (
-    <div className="rounded-xl border border-azulejo-200 dark:border-azulejo-800/50 bg-white dark:bg-azulejo-950">
+    <div className="rounded-xl border border-border bg-card shadow-sm">
       {/* Header */}
       <div className="flex items-center gap-2.5 px-3 sm:px-4 pt-3 pb-2">
         <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-azulejo-100 dark:bg-azulejo-800">

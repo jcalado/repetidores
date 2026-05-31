@@ -77,7 +77,7 @@ export default function NewsList({ news, isLoading = false, showFeaturedBadge = 
       {/* Remaining Articles Grid */}
       {remainingArticles.length > 0 && (
         <section>
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-azulejo-500 dark:text-azulejo-400 mb-6">
+          <h2 className="text-sm font-semibold tracking-wider text-azulejo-500 dark:text-azulejo-400 mb-6">
             Mais Notícias
           </h2>
           <div className="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
@@ -122,10 +122,9 @@ function HeroArticle({ item, showFeaturedBadge }: { item: NewsItem; showFeatured
               className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
           </div>
         ) : (
-          <div className="aspect-[16/9] lg:aspect-[21/12] rounded-2xl bg-gradient-to-br from-azulejo-100 to-azulejo-200 dark:from-azulejo-800 dark:to-azulejo-900 mb-5" />
+          <div className="aspect-[16/9] lg:aspect-[21/12] rounded-2xl bg-azulejo-50 dark:bg-azulejo-900 mb-5" />
         )}
 
         {/* Content */}
@@ -133,12 +132,12 @@ function HeroArticle({ item, showFeaturedBadge }: { item: NewsItem; showFeatured
           {/* Meta line */}
           <div className="flex items-center gap-3 text-sm">
             {categoryLabel && (
-              <span className="font-semibold text-azulejo-600 dark:text-azulejo-400 uppercase tracking-wide text-xs">
+              <span className="font-semibold text-azulejo-600 dark:text-azulejo-400 tracking-wide text-xs">
                 {categoryLabel}
               </span>
             )}
             {categoryLabel && <span className="text-azulejo-300 dark:text-azulejo-600">•</span>}
-            <time className="text-azulejo-500 dark:text-azulejo-400">
+            <time className="font-mono text-azulejo-500 dark:text-azulejo-400">
               {formattedDate}
             </time>
             {showFeaturedBadge && item.featured && (
@@ -205,7 +204,7 @@ function SecondaryArticle({ item, showFeaturedBadge }: { item: NewsItem; showFea
             />
           </div>
         ) : (
-          <div className="w-full aspect-[16/9] rounded-xl bg-gradient-to-br from-azulejo-100 to-azulejo-200 dark:from-azulejo-800 dark:to-azulejo-900" />
+          <div className="w-full aspect-[16/9] rounded-xl bg-azulejo-50 dark:bg-azulejo-900" />
         )}
 
         {/* Content */}
@@ -213,12 +212,12 @@ function SecondaryArticle({ item, showFeaturedBadge }: { item: NewsItem; showFea
           {/* Meta */}
           <div className="flex items-center gap-2 text-xs text-azulejo-500 dark:text-azulejo-400 mb-1.5">
             {categoryLabel && (
-              <span className="font-semibold uppercase tracking-wide text-azulejo-600 dark:text-azulejo-400">
+              <span className="font-semibold tracking-wide text-azulejo-600 dark:text-azulejo-400">
                 {categoryLabel}
               </span>
             )}
             {categoryLabel && <span className="text-azulejo-300 dark:text-azulejo-600">·</span>}
-            <time>{formattedDate}</time>
+            <time className="font-mono">{formattedDate}</time>
             {showFeaturedBadge && item.featured && (
               <Star className="h-3 w-3 text-amber-500 ml-auto" />
             )}
@@ -265,18 +264,18 @@ function ArticleCard({ item, showFeaturedBadge }: { item: NewsItem; showFeatured
             />
           </div>
         ) : (
-          <div className="aspect-[16/10] rounded-xl bg-gradient-to-br from-azulejo-100 to-azulejo-200 dark:from-azulejo-800 dark:to-azulejo-900 mb-4" />
+          <div className="aspect-[16/10] rounded-xl bg-azulejo-50 dark:bg-azulejo-900 mb-4" />
         )}
 
         {/* Meta */}
         <div className="flex items-center gap-2 text-xs text-azulejo-500 dark:text-azulejo-400 mb-2">
           {categoryLabel && (
-            <span className="font-semibold uppercase tracking-wide text-azulejo-600 dark:text-azulejo-400">
+            <span className="font-semibold tracking-wide text-azulejo-600 dark:text-azulejo-400">
               {categoryLabel}
             </span>
           )}
           {categoryLabel && <span className="text-azulejo-300 dark:text-azulejo-600">•</span>}
-          <time>{formattedDate}</time>
+          <time className="font-mono">{formattedDate}</time>
           {showFeaturedBadge && item.featured && (
             <Star className="h-3 w-3 text-amber-500 ml-auto" />
           )}
@@ -345,7 +344,7 @@ export function NewsListCompact({ news }: { news: NewsItem[] }) {
             <h4 className="font-semibold text-sm text-azulejo-900 dark:text-azulejo-100 line-clamp-2 group-hover:text-azulejo-600 dark:group-hover:text-azulejo-300 transition-colors leading-snug">
               {item.title}
             </h4>
-            <p className="text-xs text-azulejo-500 mt-1.5">
+            <p className="font-mono text-xs text-azulejo-500 mt-1.5">
               {new Date(item.publishedDate).toLocaleDateString("pt-PT", {
                 day: "numeric",
                 month: "short",

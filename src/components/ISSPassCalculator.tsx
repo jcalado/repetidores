@@ -207,7 +207,7 @@ export function ISSPassCalculator() {
             <Satellite className="h-8 w-8" />
             Passagens de Satélites
           </h1>
-          <p className="text-slate-600 dark:text-slate-400 mt-1">
+          <p className="text-muted-foreground mt-1">
             Previsões de passagens de satélites de radioamador
           </p>
         </div>
@@ -241,19 +241,19 @@ export function ISSPassCalculator() {
         {selectedSatellite && (
           <div className="flex flex-wrap gap-2 text-sm">
             {selectedSatellite.mode && (
-              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-azulejo-100 text-azulejo-700 dark:bg-azulejo-950/50 dark:text-azulejo-300">
                 <Radio className="h-3 w-3" />
                 {selectedSatellite.mode}
               </span>
             )}
             {selectedSatellite.downlink && (
-              <span className="px-2 py-1 rounded-md bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300">
-                ↓ {selectedSatellite.downlink}
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground">
+                ↓ <span className="ml-1 font-mono">{selectedSatellite.downlink}</span>
               </span>
             )}
             {selectedSatellite.uplink && (
-              <span className="px-2 py-1 rounded-md bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300">
-                ↑ {selectedSatellite.uplink}
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground">
+                ↑ <span className="ml-1 font-mono">{selectedSatellite.uplink}</span>
               </span>
             )}
           </div>
@@ -268,7 +268,7 @@ export function ISSPassCalculator() {
           <AlertDescription>
             Última atualização: {formatCacheAge(tleAge)}
             {tleAge > 48 * 60 * 60 * 1000 && (
-              <span className="text-orange-600 dark:text-orange-400 ml-2">
+              <span className="text-[oklch(0.55_0.15_55)] dark:text-[oklch(0.78_0.13_75)] ml-2">
                 (recomendamos atualizar)
               </span>
             )}
