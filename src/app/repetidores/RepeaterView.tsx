@@ -22,7 +22,6 @@ import {
 } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { useUserLocation } from "@/contexts/UserLocationContext";
 import { calculateDistance } from "@/lib/geolocation";
@@ -36,17 +35,14 @@ import {
   Hexagon,
   LayoutGrid,
   Link2,
-  MapIcon,
   MapPin,
   Radio,
   Shield,
   Signal,
   Star,
-  TableIcon,
   X,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
 import * as React from "react";
 import { useRepeaters } from "./RepeatersProvider";
 import ImportantNotice from "../notice";
@@ -230,26 +226,6 @@ export default function RepeaterView({ view }: Props) {
       <LocationTip />
       <Card className="w-full max-w-7xl">
         <CardContent>
-          {/* View toggle — Tabs primitive driven by the URL (no local state).
-              Each TabsTrigger renders a Next Link via asChild so navigation
-              happens through routing, not Radix state. */}
-          <Tabs value={view} className="mb-4">
-            <TabsList>
-              <TabsTrigger value="table" asChild>
-                <Link href="/repetidores">
-                  <TableIcon />
-                  {t("nav.table")}
-                </Link>
-              </TabsTrigger>
-              <TabsTrigger value="map" asChild>
-                <Link href="/repetidores/mapa">
-                  <MapIcon />
-                  {t("nav.map")}
-                </Link>
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-
           {view === "table" && (
             <>
 

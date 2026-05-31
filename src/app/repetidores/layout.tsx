@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import RepetidoresProvider from "./RepeatersProvider";
+import ViewSwitcher from "./ViewSwitcher";
 import { fetchRepeaters } from "@/lib/repeaters";
 
 function LoadingSkeleton() {
@@ -32,6 +33,9 @@ export default function RepetidoresLayout({
 }) {
   return (
     <main>
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 pt-6">
+        <ViewSwitcher />
+      </div>
       <Suspense fallback={<LoadingSkeleton />}>
         <RepetidoresContent>{children}</RepetidoresContent>
       </Suspense>
