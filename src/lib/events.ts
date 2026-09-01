@@ -24,10 +24,15 @@ export async function fetchEvents(options: FetchEventsOptions = {}): Promise<Eve
     params.set('upcoming', 'true');
   }
 
+  // `no-store` on the server forces dynamic rendering, which `output: 'export'`
+  // rejects — the build then throws and callers silently render nothing. Cache
+  // at build time; keep `no-store` on the client, where refreshes must be live.
+  const isServer = typeof window === 'undefined';
+
   const response = await fetch(`${API_BASE_URL}/api/events/list?${params}`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
-    cache: 'no-store',
+    cache: isServer ? 'force-cache' : 'no-store',
   });
 
   if (!response.ok) {
