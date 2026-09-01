@@ -183,6 +183,19 @@ const powerCat1: PowerEntry[] = [
     { fromMHz: 248000, toMHz: 250000, power: "50W" },
 ];
 
+// Categoria 3 (regime transitório): até à revisão do QNAF, os amadores da
+// categoria 3 têm acesso apenas às faixas abaixo (Anexo 6 QNAF, nota 2).
+const powerCat3: PowerEntry[] = [
+    { fromMHz: 3.7, toMHz: 3.8, power: "10W" },
+    { fromMHz: 7.1, toMHz: 7.2, power: "10W" },
+    { fromMHz: 14.25, toMHz: 14.35, power: "10W" },
+    { fromMHz: 28, toMHz: 29.7, power: "100W" },
+    { fromMHz: 51, toMHz: 52, power: "50W" },
+    { fromMHz: 144, toMHz: 145.806, power: "50W" },
+    { fromMHz: 430, toMHz: 435, power: "50W" },
+    { fromMHz: 438, toMHz: 440, power: "50W" },
+];
+
 const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
 
 function percentPos(value: number, min: number, max: number) {
@@ -280,6 +293,11 @@ export default function QNAFPortugalHamBands() {
     const filteredPower2 = useMemo(() => {
         if (!query) return powerCat2;
         return powerCat2.filter((p) => matchesQuery(`${p.power} ${p.fromMHz} ${p.toMHz}`, query));
+    }, [query]);
+
+    const filteredPower3 = useMemo(() => {
+        if (!query) return powerCat3;
+        return powerCat3.filter((p) => matchesQuery(`${p.power} ${p.fromMHz} ${p.toMHz}`, query));
     }, [query]);
 
     const renderPowerBars = (powerList: PowerEntry[]) => (
@@ -640,6 +658,7 @@ export default function QNAFPortugalHamBands() {
                                 <TabsList className="bg-azulejo-100 dark:bg-azulejo-800/50 mb-4">
                                     <TabsTrigger value="cat1">Categoria 1</TabsTrigger>
                                     <TabsTrigger value="cat2">Categoria 2</TabsTrigger>
+                                    <TabsTrigger value="cat3">Categoria 3</TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="cat1">
                                     {renderPowerBars(filteredPower1)}
@@ -685,6 +704,35 @@ export default function QNAFPortugalHamBands() {
                                                     </TableRow>
                                                 ))}
                                                 {filteredPower2.length === 0 && (
+                                                    <TableRow>
+                                                        <TableCell colSpan={2} className="text-sm text-azulejo-500 dark:text-azulejo-400">Sem resultados para &quot;{query}&quot;.</TableCell>
+                                                    </TableRow>
+                                                )}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+                                </TabsContent>
+                                <TabsContent value="cat3">
+                                    <div className="mb-4 rounded-lg border border-azulejo-200 dark:border-azulejo-800 bg-azulejo-50 dark:bg-azulejo-900/30 p-3 text-sm text-azulejo-700 dark:text-azulejo-300">
+                                        Regime transitório: até à revisão do QNAF, os amadores da categoria 3 têm acesso apenas às faixas indicadas abaixo.
+                                    </div>
+                                    {renderPowerBars(filteredPower3)}
+                                    <div className="w-full overflow-x-auto rounded-xl border border-azulejo-200 dark:border-azulejo-800 mt-6">
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow className="bg-azulejo-50 dark:bg-azulejo-900/50">
+                                                    <TableHead className="font-semibold text-azulejo-700 dark:text-azulejo-300">Intervalo (MHz)</TableHead>
+                                                    <TableHead className="font-semibold text-azulejo-700 dark:text-azulejo-300">Potência máx.</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {filteredPower3.slice().sort((a, b) => a.fromMHz - b.fromMHz).map((p, idx) => (
+                                                    <TableRow key={idx} className="hover:bg-azulejo-50 dark:hover:bg-azulejo-900/30">
+                                                        <TableCell className="font-mono text-sm text-azulejo-700 dark:text-azulejo-300">{fmtRangeMHz(p.fromMHz, p.toMHz)}</TableCell>
+                                                        <TableCell className="font-semibold text-azulejo-900 dark:text-azulejo-100">{p.power}</TableCell>
+                                                    </TableRow>
+                                                ))}
+                                                {filteredPower3.length === 0 && (
                                                     <TableRow>
                                                         <TableCell colSpan={2} className="text-sm text-azulejo-500 dark:text-azulejo-400">Sem resultados para &quot;{query}&quot;.</TableCell>
                                                     </TableRow>
