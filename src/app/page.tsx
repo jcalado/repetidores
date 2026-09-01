@@ -38,11 +38,10 @@ async function fetchLatestNews(): Promise<NewsItem[]> {
 
 async function fetchUpcomingEvents(): Promise<EventItem[]> {
     try {
-        const res = await fetchEvents({ sort: 'startAsc', limit: 200 })
-        const now = Date.now()
-        return res.docs
-            .filter((e) => new Date(e.start).getTime() > now - 60 * 60 * 1000)
-            .slice(0, 6)
+        // `upcoming` is required: the API returns past events too, and asking
+        // for the first N of an ascending sort would only ever return old ones.
+        const res = await fetchEvents({ sort: 'startAsc', upcoming: true, limit: 20 })
+        return res.docs.slice(0, 6)
     } catch (error) {
         console.error('[Landing] Events fetch failed', error)
         return []

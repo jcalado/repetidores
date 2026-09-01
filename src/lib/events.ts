@@ -10,6 +10,8 @@ const API_BASE_URL = (() => {
 export interface FetchEventsOptions {
   limit?: number;
   sort?: 'startAsc' | 'startDesc' | 'title';
+  /** Only return events that have not ended yet. */
+  upcoming?: boolean;
 }
 
 export async function fetchEvents(options: FetchEventsOptions = {}): Promise<EventsAPIResponse> {
@@ -17,6 +19,10 @@ export async function fetchEvents(options: FetchEventsOptions = {}): Promise<Eve
     limit: String(options.limit ?? 500),
     sort: options.sort ?? 'startAsc',
   });
+
+  if (options.upcoming) {
+    params.set('upcoming', 'true');
+  }
 
   const response = await fetch(`${API_BASE_URL}/api/events/list?${params}`, {
     method: 'GET',
