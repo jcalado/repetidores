@@ -223,6 +223,7 @@ export function TrendsCharts({ stats, startDate, endDate, onDateRangeChange }: T
               <Bar dataKey="added" name="Novos" fill="#10b981" radius={[2, 2, 0, 0]} />
               <Bar dataKey="removed" name="Removidos" fill="#ef4444" radius={[2, 2, 0, 0]} />
               <Bar dataKey="modified" name="Alterados" fill="#6366f1" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="upgraded" name="Subidas de categoria" fill="#f59e0b" radius={[2, 2, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

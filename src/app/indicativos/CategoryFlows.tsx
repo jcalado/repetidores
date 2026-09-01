@@ -8,14 +8,16 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 const CATEGORY_ORDER = ["3", "2", "1", "A", "B", "C"]
 
+// Any upward jump is legitimate: 3→2, 2→1 and the direct 3→1 (both exams on the same day).
+const UPGRADE_TARGETS: Record<string, string[]> = { "3": ["2", "1"], "2": ["1"] }
+
 function getFlagReason(category: string, reason: string): string {
   if (reason === "removed") return "Indicativo removido da categoria"
   if (reason.startsWith("to_")) {
     const targetCat = reason.slice(3)
-    const expectedNext: Record<string, string> = { "3": "2", "2": "1" }
-    const expected = expectedNext[category]
-    if (expected && targetCat !== expected) {
-      return `Esperado: Cat ${category} → Cat ${expected}, mas foi Cat ${category} → Cat ${targetCat}`
+    const validTargets = UPGRADE_TARGETS[category]
+    if (validTargets && !validTargets.includes(targetCat)) {
+      return `Transição inesperada: Cat ${category} → Cat ${targetCat} (esperada uma subida para ${validTargets.map((c) => `Cat ${c}`).join(" ou ")})`
     }
     return `Transição inesperada de Cat ${category} para Cat ${targetCat}`
   }
@@ -107,7 +109,7 @@ export function CategoryFlows() {
       <div className="flex items-start gap-2 rounded-md border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/20 px-3 py-2 text-xs text-amber-800 dark:text-amber-300">
         <AlertTriangle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
         <p>
-          <span className="font-semibold">Movimentos sinalizados:</span> Entradas e saídas destacadas a vermelho indicam transições de categoria inesperadas (ex: saltar de Categoria 3 para Categoria 1 sem passar pela 2).
+          <span className="font-semibold">Movimentos sinalizados:</span> Saídas destacadas a vermelho indicam indicativos que deixaram o registo sem subida de categoria correspondente. Qualquer subida é legítima — incluindo o salto direto de Categoria 3 para Categoria 1, possível fazendo os dois exames no mesmo dia.
         </p>
       </div>
 

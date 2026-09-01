@@ -17,8 +17,8 @@ export interface Callsign {
 export interface CallsignChange {
   id: string
   indicativo: string
-  changeType: 'added' | 'removed' | 'modified'
-  changedFields: Array<{ field: string; from: string; to: string }> | null
+  changeType: 'added' | 'removed' | 'modified' | 'upgraded'
+  changedFields: Array<{ field: string; from: string | null; to: string | null }> | null
   detectedAt: string
   snapshotDate: string | null
 }
@@ -34,7 +34,7 @@ export interface CallsignStats {
 }
 
 export interface CallsignTrends {
-  monthly: Array<{ month: string; added: number; removed: number; modified: number }>
+  monthly: Array<{ month: string; added: number; removed: number; modified: number; upgraded: number }>
   cumulative: Array<{ month: string; total: number; main: number; additional: number }>
   byCategoria: Record<string, number>
   currentTotal: number

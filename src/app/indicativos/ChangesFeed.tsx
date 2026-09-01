@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { fetchCallsignChanges } from "@/lib/callsigns"
 import type { CallsignChange } from "@/types/callsign"
-import { ArrowRight, Loader2, Plus, Minus, Pencil } from "lucide-react"
+import { ArrowRight, ArrowUp, Loader2, Plus, Minus, Pencil } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 
 const CHANGE_TYPE_CONFIG = {
@@ -28,6 +28,13 @@ const CHANGE_TYPE_CONFIG = {
     iconTextClass: "text-azulejo-600 dark:text-azulejo-400",
     labelClass: "text-azulejo-600 dark:text-azulejo-400",
   },
+  upgraded: {
+    label: "subida de categoria",
+    icon: ArrowUp,
+    iconBgClass: "bg-amber-100 dark:bg-amber-900/40",
+    iconTextClass: "text-amber-600 dark:text-amber-400",
+    labelClass: "text-amber-600 dark:text-amber-400",
+  },
 }
 
 const FILTER_OPTIONS = [
@@ -35,6 +42,7 @@ const FILTER_OPTIONS = [
   { value: "added", label: "Novos" },
   { value: "removed", label: "Removidos" },
   { value: "modified", label: "Alterados" },
+  { value: "upgraded", label: "Subidas de categoria" },
 ]
 
 function formatDate(dateStr: string): string {
