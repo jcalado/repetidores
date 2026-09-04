@@ -1113,7 +1113,7 @@ function DMRBlock({
           <span className="size-1.5 shrink-0 rounded-full bg-azulejo-500" />
           <span>Dados ao vivo do Brandmeister</span>
           <a
-            href={`https://brandmeister.network/?page=repeater&id=${r.dmr.dmrId}`}
+            href={`https://brandmeister.network/#/device/${r.dmr.dmrId}`}
             target="_blank"
             rel="noopener noreferrer"
             className="ml-auto inline-flex items-center gap-1 text-azulejo-600 transition-colors hover:text-azulejo-700 dark:text-azulejo-400 dark:hover:text-azulejo-300"
