@@ -3,7 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { getTranslations } from 'next-intl/server'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
-import { BookOpen, Calculator, IdCard, Radio, Volume2, type LucideIcon } from 'lucide-react'
+import { Calculator, IdCard, MapPinned, Radio, RadioTower, type LucideIcon } from 'lucide-react'
 
 import { fetchNews, type NewsItem } from '@/lib/news'
 import { fetchEvents } from '@/lib/events'
@@ -124,8 +124,8 @@ function Hero({ liveCount, upcomingCount, t }: { liveCount: number; upcomingCoun
 type Tool = {
     href: string
     icon: LucideIcon
-    labelKey: 'toolMorse' | 'toolIndicativos' | 'toolBandas' | 'toolCalculadoras' | 'toolCodigoQ'
-    subKey: 'toolMorseSub' | 'toolIndicativosSub' | 'toolBandasSub' | 'toolCalculadorasSub' | 'toolCodigoQSub'
+    labelKey: 'toolRepetidores' | 'toolMapa' | 'toolIndicativos' | 'toolBandas' | 'toolCalculadoras'
+    subKey: 'toolRepetidoresSub' | 'toolMapaSub' | 'toolIndicativosSub' | 'toolBandasSub' | 'toolCalculadorasSub'
     iconClass: string
 }
 
@@ -134,9 +134,14 @@ type Tool = {
 // Hue rotation for category identity only; each tile remains an instance of the same surface.
 const TOOLS: Tool[] = [
     {
-        href: '/morse', icon: Volume2,
-        labelKey: 'toolMorse', subKey: 'toolMorseSub',
+        href: '/repetidores', icon: RadioTower,
+        labelKey: 'toolRepetidores', subKey: 'toolRepetidoresSub',
         iconClass: 'bg-[oklch(0.92_0.045_252)] text-[oklch(0.45_0.13_252)] dark:bg-[oklch(0.26_0.045_252/0.6)] dark:text-[oklch(0.78_0.13_252)]',
+    },
+    {
+        href: '/repetidores/mapa', icon: MapPinned,
+        labelKey: 'toolMapa', subKey: 'toolMapaSub',
+        iconClass: 'bg-[oklch(0.92_0.045_226)] text-[oklch(0.45_0.13_226)] dark:bg-[oklch(0.26_0.045_226/0.6)] dark:text-[oklch(0.78_0.13_226)]',
     },
     {
         href: '/indicativos', icon: IdCard,
@@ -152,11 +157,6 @@ const TOOLS: Tool[] = [
         href: '/calculadoras', icon: Calculator,
         labelKey: 'toolCalculadoras', subKey: 'toolCalculadorasSub',
         iconClass: 'bg-[oklch(0.92_0.050_75)] text-[oklch(0.48_0.13_75)] dark:bg-[oklch(0.26_0.050_75/0.6)] dark:text-[oklch(0.80_0.13_75)]',
-    },
-    {
-        href: '/codigoq', icon: BookOpen,
-        labelKey: 'toolCodigoQ', subKey: 'toolCodigoQSub',
-        iconClass: 'bg-[oklch(0.92_0.045_320)] text-[oklch(0.48_0.13_320)] dark:bg-[oklch(0.26_0.045_320/0.6)] dark:text-[oklch(0.80_0.13_320)]',
     },
 ]
 
