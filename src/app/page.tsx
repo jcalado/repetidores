@@ -8,6 +8,7 @@ import { Calculator, IdCard, MapPinned, Radio, RadioTower, type LucideIcon } fro
 import { fetchNews, type NewsItem } from '@/lib/news'
 import { fetchEvents } from '@/lib/events'
 import { fetchRepeaters } from '@/lib/repeaters'
+import { fetchCallsignChanges } from '@/lib/callsigns'
 import type { EventItem } from '@/components/events/types'
 import type { Repeater } from '@/app/columns'
 
@@ -61,11 +62,28 @@ async function fetchRecentRepeaters(): Promise<Repeater[]> {
     }
 }
 
+// The Rádio Escola block shows who actually joined the register recently, so a
+// portable designator (CT7ABC/1) is noise here: it is an existing operator
+// signing from elsewhere, not a new one.
+async function fetchNewCallsigns(): Promise<string[]> {
+    try {
+        const res = await fetchCallsignChanges({ changeType: 'added', limit: 24 })
+        return res.docs
+            .map((c) => c.indicativo)
+            .filter((call) => !call.includes('/'))
+            .slice(0, 6)
+    } catch (error) {
+        console.error('[Landing] New callsigns fetch failed', error)
+        return []
+    }
+}
+
 export default async function LandingPage() {
-    const [news, events, repeaters, t] = await Promise.all([
+    const [news, events, repeaters, newCallsigns, t] = await Promise.all([
         fetchLatestNews(),
         fetchUpcomingEvents(),
         fetchRecentRepeaters(),
+        fetchNewCallsigns(),
         getTranslations(),
     ])
 
@@ -88,6 +106,8 @@ export default async function LandingPage() {
             </div>
 
             <RepeatersCard repeaters={repeaters} t={t} />
+
+            <RadioSchoolCTA newCallsigns={newCallsigns} t={t} />
         </main>
     )
 }
@@ -363,6 +383,60 @@ function NewsList({ news }: { news: NewsItem[] }) {
                 </ol>
             )}
         </div>
+    )
+}
+
+// Outbound CTA to Rádio Escola, the Portuguese licence course. The proof is the
+// register itself: these callsigns entered it in the last weeks, so the block
+// points at people who just did the thing rather than describing the thing.
+function RadioSchoolCTA({ newCallsigns, t }: { newCallsigns: string[]; t: T }) {
+    return (
+        <section className="rounded-xl border border-azulejo-200 bg-azulejo-50 p-6 shadow-[0_1px_2px_oklch(0.20_0.012_250/0.06),0_4px_12px_oklch(0.20_0.012_250/0.04)] dark:border-[oklch(0.34_0.045_252)] dark:bg-[oklch(0.235_0.030_252)] sm:p-8">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
+                <div className="min-w-0">
+                    <h2 className="text-balance text-2xl font-semibold leading-[1.2] tracking-[-0.015em] text-foreground">
+                        {t('landing.radioSchoolTitle')}
+                    </h2>
+                    <p className="mt-2.5 max-w-[58ch] text-pretty text-sm leading-relaxed text-[oklch(0.475_0.030_252)] dark:text-muted-foreground">
+                        {t.rich('landing.radioSchoolBody', {
+                            strong: (chunks) => (
+                                <strong className="font-semibold text-foreground">{chunks}</strong>
+                            ),
+                        })}
+                    </p>
+                </div>
+                <Link
+                    href="https://radioescola.pt"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-azulejo-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors duration-150 hover:bg-azulejo-700 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-azulejo-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-azulejo-50 dark:focus-visible:ring-offset-[oklch(0.235_0.030_252)] sm:-mt-1"
+                >
+                    {t('landing.radioSchoolCta')}
+                    <ArrowRightIcon
+                        className="size-4 transition-transform duration-150 group-hover:translate-x-0.5"
+                        aria-hidden="true"
+                    />
+                </Link>
+            </div>
+
+            {newCallsigns.length > 0 && (
+                <div className="mt-6 border-t border-azulejo-200 pt-5 dark:border-[oklch(0.34_0.045_252)]">
+                    <p className="text-xs text-[oklch(0.475_0.030_252)] dark:text-muted-foreground">{t('landing.radioSchoolRecent')}</p>
+                    <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-2">
+                        {newCallsigns.map((call) => (
+                            <li key={call}>
+                                <Link
+                                    href={`/indicativos?search=${encodeURIComponent(call)}`}
+                                    className="-mx-1 -my-0.5 rounded px-1 py-0.5 font-mono text-sm font-medium tabular-nums text-foreground transition-colors duration-150 hover:text-azulejo-700 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-azulejo-500/40 dark:hover:text-azulejo-300"
+                                >
+                                    {call}
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+        </section>
     )
 }
 
