@@ -394,16 +394,16 @@
         "eventsEmpty": "Sem eventos programados.",
         "eventsAll": "Ver calendário completo",
         "toolsTitle": "Ferramentas",
-        "toolMorse": "Morse",
-        "toolMorseSub": "Treino de código",
+        "toolRepetidores": "Repetidores",
+        "toolRepetidoresSub": "Diretório nacional",
+        "toolMapa": "Mapa",
+        "toolMapaSub": "Cobertura interativa",
         "toolIndicativos": "Indicativos",
         "toolIndicativosSub": "Diretório ANACOM",
         "toolBandas": "Bandas",
         "toolBandasSub": "Plano de frequências",
         "toolCalculadoras": "Calculadoras",
-        "toolCalculadorasSub": "Antena, locator, QTH",
-        "toolCodigoQ": "Código Q",
-        "toolCodigoQSub": "Referência completa"
+        "toolCalculadorasSub": "Antena, locator, QTH"
     },
     "news": {
         "title": "Notícias",
