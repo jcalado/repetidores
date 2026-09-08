@@ -403,7 +403,11 @@
         "toolBandas": "Bandas",
         "toolBandasSub": "Plano de frequências",
         "toolCalculadoras": "Calculadoras",
-        "toolCalculadorasSub": "Antena, locator, QTH"
+        "toolCalculadorasSub": "Antena, locator, QTH",
+        "radioSchoolTitle": "O próximo indicativo pode ser o seu",
+        "radioSchoolBody": "A Rádio Escola é <strong>gratuita</strong>, mantida por donativos. Disponibiliza as perguntas oficiais das três categorias, um método para as estudar e um grupo no Telegram onde as dúvidas têm resposta.",
+        "radioSchoolCta": "Abrir a Rádio Escola",
+        "radioSchoolRecent": "Últimos indicativos no registo"
     },
     "news": {
         "title": "Notícias",
