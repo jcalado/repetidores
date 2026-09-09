@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# design canvases: the seeded page is ~2.5MB of generated editor payload.
+# Regenerate it from the .dc.html sources beside it.
+design/**/*.html
+!design/**/*.dc.html
+
+# local tool scratch
+.impeccable/
+.playwright-mcp/

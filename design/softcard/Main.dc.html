@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap">
+  <style>
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:"Geist",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#0a467f;text-decoration:none}
+a:hover{color:#0e5594}
+/* Tokens resolved from src/app/globals.css - not rounded, not approximated. */
+.t-light{--page:oklch(0.985 0.006 250);--card:oklch(0.99 0.005 250);--fg:oklch(0.16 0.012 250);--muted:oklch(0.56 0.012 250);--rule:oklch(0.92 0.008 250);--soft:oklch(0.97 0.006 250);--accent:#1d65a8;--accent-ink:#0a467f;--accent-tint:#dde6f0;--accent-faint:#f1f4f8;--accent-edge:#b8cce0;--live:#0e5594}
+.t-dark{--page:oklch(0.16 0.012 250);--card:oklch(0.21 0.014 250);--fg:oklch(0.985 0.005 250);--muted:oklch(0.71 0.012 250);--rule:oklch(1 0 0 / 10%);--soft:oklch(0.27 0.016 250);--accent:#4d7eb0;--accent-ink:#84a4c7;--accent-tint:rgba(6,24,38,0.5);--accent-faint:rgba(5,39,65,0.35);--accent-edge:rgba(77,126,176,0.45);--live:#4d7eb0}
+/* One literal in code, identical in both themes - see the Themes artboard. */
+.t-light,.t-dark{--rest:0 1px 2px oklch(0.20 0.012 250 / 0.06), 0 4px 12px oklch(0.20 0.012 250 / 0.04);--lift:0 1px 2px oklch(0.20 0.012 250 / 0.08), 0 8px 24px oklch(0.20 0.012 250 / 0.08)}
+.cv{min-height:100vh;background:var(--page);color:var(--fg)}
+.mono{font-family:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+.eyebrow{font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted)}
+.spec{display:grid;grid-template-columns:104px minmax(0,1fr);gap:12px 20px;font-size:13px;line-height:1.5}
+.spec dt{color:var(--muted);margin:0}
+.spec dd{margin:0;font-family:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;font-variant-numeric:tabular-nums;word-break:break-word}
+.spec .sep{grid-column:1 / -1;height:1px;background:var(--rule)}
+  </style>
+</helmet>
+<div class="cv t-{{theme}}" style="padding: 40px 44px">
+  <header style="display: flex; align-items: baseline; justify-content: space-between; gap: 24px">
+    <h1 style="font-size: 26px; font-weight: 600; letter-spacing: -0.02em; margin: 0">SoftCard</h1>
+    <span class="mono" style="font-size: 12px; color: var(--muted)">src/components/landing/SoftCard.tsx</span>
+  </header>
+  <p style="margin: 10px 0 34px; font-size: 14px; line-height: 1.55; color: var(--muted); max-width: 68ch; text-wrap: pretty">
+    The elevated surface every landing section sits on. One state, no interaction of its own: hierarchy comes from the 1px Rule border, the rest shadow, and the header band working together. A flat SoftCard reads as broken.
+  </p>
+
+  <div style="display: grid; grid-template-columns: minmax(0, 424px) minmax(0, 1fr); gap: 48px; align-items: start">
+    <div style="display: flex; flex-direction: column; gap: 12px">
+      <div class="eyebrow">Specimen</div>
+      <section style="background: var(--card); border: 1px solid var(--rule); border-radius: 0.875rem; box-shadow: var(--rest); overflow: hidden">
+        <header style="background: var(--accent-faint); border-bottom: 1px solid var(--rule); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px">
+          <div style="display: flex; align-items: center; gap: 10px">
+            <h2 style="font-size: 18px; font-weight: 600; letter-spacing: -0.015em; margin: 0">Próximos eventos</h2>
+            <span style="display: inline-flex; align-items: center; gap: 6px; border-radius: 9999px; background: var(--accent-tint); padding: 2px 8px; font-size: 11px; font-weight: 500; color: var(--accent-ink)">
+              <span style="width: 6px; height: 6px; border-radius: 9999px; background: var(--accent)"></span>
+              1 ao vivo
+            </span>
+          </div>
+          <span style="display: inline-flex; align-items: center; gap: 4px; border-radius: 0.5rem; padding: 4px 8px; font-size: 14px; color: var(--muted)">
+            Ver calendário
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"></path></svg>
+          </span>
+        </header>
+        <ol style="list-style: none; margin: 0; padding: 16px; display: flex; flex-direction: column; gap: 4px">
+          <li style="display: grid; grid-template-columns: 5rem 1fr auto; align-items: center; gap: 12px; border-radius: 0.5rem; padding: 10px 8px">
+            <div style="display: flex; flex-direction: column">
+              <span class="mono" style="font-size: 14px; font-weight: 600; color: var(--live)">22:00</span>
+              <span style="font-size: 10px; color: var(--muted)">agora</span>
+            </div>
+            <div style="min-width: 0">
+              <div style="font-size: 14px; font-weight: 500; letter-spacing: -0.005em">netCT</div>
+              <div style="margin-top: 2px; font-size: 12px; color: var(--muted)">national</div>
+            </div>
+            <span style="border-radius: 9999px; background: var(--accent-tint); padding: 2px 8px; font-size: 10px; font-weight: 500; color: var(--accent-ink)">AGORA</span>
+          </li>
+          <li style="display: grid; grid-template-columns: 5rem 1fr auto; align-items: center; gap: 12px; border-radius: 0.5rem; padding: 10px 8px">
+            <div style="display: flex; flex-direction: column">
+              <span class="mono" style="font-size: 14px; font-weight: 600">00:00</span>
+              <span style="font-size: 10px; color: var(--muted)">3 set</span>
+            </div>
+            <div style="min-width: 0">
+              <div style="font-size: 14px; font-weight: 500; letter-spacing: -0.005em">Walk for the Bacon QRP Contest</div>
+              <div style="margin-top: 2px; font-size: 12px; color: var(--muted)">international</div>
+            </div>
+          </li>
+        </ol>
+      </section>
+      <p style="margin: 4px 0 0; font-size: 12px; line-height: 1.5; color: var(--muted)">
+        SoftCard supplies the surface, the band and the padding. The rows are the caller's.
+      </p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px">
+      <div class="eyebrow">Resolved values</div>
+      <dl class="spec">
+        <dt>Element</dt><dd>&lt;section&gt;</dd>
+        <div class="sep"></div>
+        <dt>Radius</dt><dd>0.875rem<span style="font-family: Geist, sans-serif; color: var(--muted)"> · rounded-xl</span></dd>
+        <div class="sep"></div>
+        <dt>Border</dt><dd>1px solid oklch(0.92 0.008 250)<br><span style="font-family: Geist, sans-serif; color: var(--muted)">dark: oklch(1 0 0 / 10%)</span></dd>
+        <div class="sep"></div>
+        <dt>Background</dt><dd>oklch(0.99 0.005 250)<br><span style="font-family: Geist, sans-serif; color: var(--muted)">dark: oklch(0.21 0.014 250)</span></dd>
+        <div class="sep"></div>
+        <dt>Header band</dt><dd>#f1f4f8<span style="font-family: Geist, sans-serif; color: var(--muted)"> · Azulejo 50</span><br><span style="font-family: Geist, sans-serif; color: var(--muted)">dark: Azulejo 900 @ 35%</span></dd>
+        <div class="sep"></div>
+        <dt>Padding</dt><dd>16px 24px<span style="font-family: Geist, sans-serif; color: var(--muted)"> band</span>, 16px<span style="font-family: Geist, sans-serif; color: var(--muted)"> body — 24px text inset either way</span></dd>
+        <div class="sep"></div>
+        <dt>Shadow</dt><dd>0 1px 2px oklch(0.20 0.012 250 / 0.06),<br>0 4px 12px oklch(0.20 0.012 250 / 0.04)</dd>
+        <div class="sep"></div>
+        <dt>Gap</dt><dd><span style="font-family: Geist, sans-serif; color: var(--muted)">caller's — landing passes </span>space-y-4</dd>
+      </dl>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":900,"height":620},"theme":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? "light" };
+  }
+}
+</script>
+</body>
+</html>

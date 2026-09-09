@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap">
+  <style>
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:"Geist",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#0a467f;text-decoration:none}
+a:hover{color:#0e5594}
+/* Tokens resolved from src/app/globals.css - not rounded, not approximated. */
+.t-light{--page:oklch(0.985 0.006 250);--card:oklch(0.99 0.005 250);--fg:oklch(0.16 0.012 250);--muted:oklch(0.56 0.012 250);--rule:oklch(0.92 0.008 250);--soft:oklch(0.97 0.006 250);--accent:#1d65a8;--accent-ink:#0a467f;--accent-tint:#dde6f0;--accent-faint:#f1f4f8;--accent-edge:#b8cce0;--live:#0e5594}
+.t-dark{--page:oklch(0.16 0.012 250);--card:oklch(0.21 0.014 250);--fg:oklch(0.985 0.005 250);--muted:oklch(0.71 0.012 250);--rule:oklch(1 0 0 / 10%);--soft:oklch(0.27 0.016 250);--accent:#4d7eb0;--accent-ink:#84a4c7;--accent-tint:rgba(6,24,38,0.5);--accent-faint:rgba(5,39,65,0.35);--accent-edge:rgba(77,126,176,0.45);--live:#4d7eb0}
+/* One literal in code, identical in both themes - see the Themes artboard. */
+.t-light,.t-dark{--rest:0 1px 2px oklch(0.20 0.012 250 / 0.06), 0 4px 12px oklch(0.20 0.012 250 / 0.04);--lift:0 1px 2px oklch(0.20 0.012 250 / 0.08), 0 8px 24px oklch(0.20 0.012 250 / 0.08)}
+.cv{min-height:100vh;background:var(--page);color:var(--fg)}
+.mono{font-family:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+.eyebrow{font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:0.875rem;box-shadow:var(--rest);overflow:hidden}
+.hd{background:var(--accent-faint);border-bottom:1px solid var(--rule);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.hd h2{font-size:18px;font-weight:600;letter-spacing:-0.015em;margin:0}
+.more{display:inline-flex;align-items:center;gap:4px;border-radius:0.5rem;padding:4px 8px;font-size:14px;color:var(--muted);white-space:nowrap}
+.ev{display:grid;grid-template-columns:5rem 1fr auto;align-items:center;gap:12px;border-radius:0.5rem;padding:10px 8px}
+.rp{display:grid;grid-template-columns:8rem 1fr auto;align-items:center;gap:16px;border-radius:0.5rem;padding:12px 8px}
+.tt{font-size:14px;font-weight:500;letter-spacing:-0.005em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sub{margin-top:2px;font-size:12px;color:var(--muted)}
+.day{font-size:10px;color:var(--muted)}
+.pill{border-radius:9999px;background:var(--accent-tint);padding:2px 8px;font-size:10px;font-weight:500;color:var(--accent-ink)}
+  </style>
+</helmet>
+<div class="cv t-{{theme}}" style="padding: 40px 44px">
+  <header style="display: flex; align-items: baseline; justify-content: space-between; gap: 24px">
+    <h1 style="font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin: 0">Where it ships</h1>
+    <span class="mono" style="font-size: 12px; color: var(--muted)">src/app/page.tsx</span>
+  </header>
+  <p style="margin: 10px 0 26px; font-size: 13.5px; line-height: 1.55; color: var(--muted); max-width: 84ch; text-wrap: pretty">
+    Three sections wrap themselves in SoftCard and pass <span class="mono" style="font-size: 12.5px">space-y-4</span>. Two are shown; NewsCard is the third and differs only in its body.
+  </p>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; align-items: start">
+
+    <section class="card">
+      <header class="hd">
+        <div style="display: flex; align-items: center; gap: 10px">
+          <h2>Próximos eventos</h2>
+          <span style="display: inline-flex; align-items: center; gap: 6px; border-radius: 9999px; background: var(--accent-tint); padding: 2px 8px; font-size: 11px; font-weight: 500; color: var(--accent-ink)">
+            <span style="width: 6px; height: 6px; border-radius: 9999px; background: var(--accent)"></span>
+            1 ao vivo
+          </span>
+        </div>
+        <span class="more">Ver calendário completo
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"></path></svg>
+        </span>
+      </header>
+      <ol style="list-style: none; margin: 0; padding: 16px; display: flex; flex-direction: column; gap: 4px">
+        <li class="ev"><div><div class="mono" style="font-size: 14px; font-weight: 600">17:00</div><div class="day">2 set</div></div><div style="min-width: 0"><div class="tt">VHF-UHF FT8 Activity Contest</div><div class="sub">international</div></div></li>
+        <li class="ev"><div><div class="mono" style="font-size: 14px; font-weight: 600">20:00</div><div class="day">2 set</div></div><div style="min-width: 0"><div class="tt">UKEICC 80m Contest</div><div class="sub">international</div></div></li>
+        <li class="ev"><div><div class="mono" style="font-size: 14px; font-weight: 600; color: var(--live)">22:00</div><div class="day">agora</div></div><div style="min-width: 0"><div class="tt">netCT</div><div class="sub">national</div></div><span class="pill">AGORA</span></li>
+        <li class="ev"><div><div class="mono" style="font-size: 14px; font-weight: 600">00:00</div><div class="day">3 set</div></div><div style="min-width: 0"><div class="tt">Walk for the Bacon QRP Contest</div><div class="sub">international</div></div></li>
+        <li class="ev"><div><div class="mono" style="font-size: 14px; font-weight: 600">00:00</div><div class="day">3 set</div></div><div style="min-width: 0"><div class="tt">VHF-UHF FT8 Activity Contest-NA</div><div class="sub">international</div></div></li>
+        <li class="ev"><div><div class="mono" style="font-size: 14px; font-weight: 600">17:00</div><div class="day">3 set</div></div><div style="min-width: 0"><div class="tt">NRAU 10m Activity Contest</div><div class="sub">international</div></div></li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <header class="hd">
+        <h2>Repetidores actualizados</h2>
+        <span class="more">Ver todos
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"></path></svg>
+        </span>
+      </header>
+      <ol style="list-style: none; margin: 0; padding: 16px; display: flex; flex-direction: column">
+        <li class="rp"><span class="mono" style="font-size: 14px; font-weight: 600">CQ0UEC</span><span style="font-size: 14px; color: var(--muted)">FM</span><div style="display: flex; align-items: baseline; gap: 12px"><span class="mono" style="font-size: 14px">438.875</span><span class="mono" style="font-size: 11px; color: var(--muted)">19 jul 2026</span></div></li>
+        <li class="rp" style="border-top: 1px solid var(--rule)"><span class="mono" style="font-size: 14px; font-weight: 600">CQ0USC</span><span style="font-size: 14px; color: var(--muted)">FM</span><div style="display: flex; align-items: baseline; gap: 12px"><span class="mono" style="font-size: 14px">439.050</span><span class="mono" style="font-size: 11px; color: var(--muted)">19 jul 2026</span></div></li>
+        <li class="rp" style="border-top: 1px solid var(--rule)"><span class="mono" style="font-size: 14px; font-weight: 600">CQ0UBLA</span><span style="font-size: 14px; color: var(--muted)">FM</span><div style="display: flex; align-items: baseline; gap: 12px"><span class="mono" style="font-size: 14px">439.125</span><span class="mono" style="font-size: 11px; color: var(--muted)">16 mai 2026</span></div></li>
+        <li class="rp" style="border-top: 1px solid var(--rule)"><span class="mono" style="font-size: 14px; font-weight: 600">CQ0UMAR</span><span style="font-size: 14px; color: var(--muted)">FM</span><div style="display: flex; align-items: baseline; gap: 12px"><span class="mono" style="font-size: 14px">438.825</span><span class="mono" style="font-size: 11px; color: var(--muted)">24 mar 2026</span></div></li>
+        <li class="rp" style="border-top: 1px solid var(--rule)"><span class="mono" style="font-size: 14px; font-weight: 600">CQ0DCD</span><span style="font-size: 14px; color: var(--muted)">DMR</span><div style="display: flex; align-items: baseline; gap: 12px"><span class="mono" style="font-size: 14px">438.387</span><span class="mono" style="font-size: 11px; color: var(--muted)">1 mar 2026</span></div></li>
+        <li class="rp" style="border-top: 1px solid var(--rule)"><span class="mono" style="font-size: 14px; font-weight: 600">CQ0UTR</span><span style="font-size: 14px; color: var(--muted)">FM</span><div style="display: flex; align-items: baseline; gap: 12px"><span class="mono" style="font-size: 14px">439.175</span><span class="mono" style="font-size: 11px; color: var(--muted)">1 mar 2026</span></div></li>
+      </ol>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script data-props='{"$preview":{"width":1020,"height":700},"theme":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? "light" };
+  }
+}
+</script>
+</body>
+</html>
