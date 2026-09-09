@@ -73,9 +73,9 @@ function EventCardComponent({ event, t }: EventCardProps) {
 
   // Parse date for the date badge
   const eventDate = new Date(event.start);
-  const day = eventDate.getDate();
-  const month = eventDate.toLocaleDateString("pt-PT", { month: "short" }).replace(".", "");
-  const time = eventDate.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" });
+  const day = eventDate.getUTCDate();
+  const month = eventDate.toLocaleDateString("pt-PT", { timeZone: "UTC", month: "short" }).replace(".", "");
+  const time = eventDate.toLocaleTimeString("pt-PT", { timeZone: "UTC", hour: "2-digit", minute: "2-digit" });
 
   return (
     <Link href={`/events/${encodeURIComponent(event.id)}/`} className="block group">

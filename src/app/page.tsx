@@ -27,6 +27,11 @@ function formatUTCHHMM(iso: string) {
     return [d.getUTCHours(), d.getUTCMinutes()].map((n) => String(n).padStart(2, '0')).join(':')
 }
 
+// Event rows show UTC times, so their date labels must key off the UTC date too.
+function utcDateKey(d: Date) {
+    return `${d.getUTCFullYear()}-${d.getUTCMonth()}-${d.getUTCDate()}`
+}
+
 async function fetchLatestNews(): Promise<NewsItem[]> {
     try {
         const res = await fetchNews({ sort: 'dateDesc', limit: 5 })
@@ -273,10 +278,10 @@ function EventsCard({ events, liveCount, t }: { events: EventItem[]; liveCount: 
                         const start = new Date(event.start)
                         const startMs = start.getTime()
                         const live = startMs <= now && (!event.end || new Date(event.end).getTime() > now)
-                        const sameDay = start.toDateString() === today.toDateString()
+                        const sameDay = utcDateKey(start) === utcDateKey(today)
                         const tomorrow =
                             !sameDay &&
-                            start.toDateString() === new Date(today.getTime() + 24 * 60 * 60 * 1000).toDateString()
+                            utcDateKey(start) === utcDateKey(new Date(today.getTime() + 24 * 60 * 60 * 1000))
                         return (
                             <li key={event.id}>
                                 <Link
@@ -288,7 +293,7 @@ function EventsCard({ events, liveCount, t }: { events: EventItem[]; liveCount: 
                                             {formatUTCHHMM(event.start)}
                                         </span>
                                         <span className="text-[10px] text-muted-foreground">
-                                            {live ? 'agora' : sameDay ? 'hoje' : tomorrow ? 'amanhã' : `${start.getDate()} ${PT_MONTHS[start.getMonth()]}`}
+                                            {live ? 'agora' : sameDay ? 'hoje' : tomorrow ? 'amanhã' : `${start.getUTCDate()} ${PT_MONTHS[start.getUTCMonth()]}`}
                                         </span>
                                     </div>
                                     <div className="min-w-0">

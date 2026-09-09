@@ -173,6 +173,7 @@ function breakdown(ms: number) {
 function formatDateTime(iso: string) {
   const d = new Date(iso);
   return d.toLocaleString('pt-PT', {
+    timeZone: "UTC",
     weekday: "long",
     year: "numeric",
     month: "long",
@@ -198,9 +199,9 @@ function formatDuration(start: string, end?: string): string | null {
 }
 
 function getTimezoneInfo() {
-  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const offset = new Date().toLocaleString('pt-PT', { timeZoneName: 'shortOffset' }).split(' ').pop() || '';
-  return { timezone: tz, offset };
+  // Event times are shown in UTC, the convention for contests and nets, so the
+  // label must say UTC rather than the viewer's own zone.
+  return { timezone: 'UTC', offset: 'UTC' };
 }
 
 // Drift-resistant ticker
