@@ -22,10 +22,11 @@ export function breakdown(ms: number) {
  */
 export function formatDateTime(iso: string, options?: { hideCurrentYear?: boolean }): string {
   const d = new Date(iso);
-  const isCurrentYear = d.getFullYear() === new Date().getFullYear();
+  const isCurrentYear = d.getUTCFullYear() === new Date().getUTCFullYear();
   const shouldHideYear = options?.hideCurrentYear && isCurrentYear;
 
   return d.toLocaleString('pt-PT', {
+    timeZone: "UTC",
     weekday: "short",
     year: shouldHideYear ? undefined : "numeric",
     month: "short",
@@ -41,6 +42,7 @@ export function formatDateTime(iso: string, options?: { hideCurrentYear?: boolea
 export function formatTime(iso: string): string {
   const d = new Date(iso);
   return d.toLocaleString('pt-PT', {
+    timeZone: "UTC",
     hour: "2-digit",
     minute: "2-digit",
   });
@@ -51,10 +53,11 @@ export function formatTime(iso: string): string {
  */
 export function formatDate(iso: string, options?: { hideCurrentYear?: boolean }): string {
   const d = new Date(iso);
-  const isCurrentYear = d.getFullYear() === new Date().getFullYear();
+  const isCurrentYear = d.getUTCFullYear() === new Date().getUTCFullYear();
   const shouldHideYear = options?.hideCurrentYear && isCurrentYear;
 
   return d.toLocaleDateString('pt-PT', {
+    timeZone: "UTC",
     weekday: "short",
     year: shouldHideYear ? undefined : "numeric",
     month: "short",
@@ -63,7 +66,21 @@ export function formatDate(iso: string, options?: { hideCurrentYear?: boolean })
 }
 
 /**
- * Get local date key for calendar operations
+ * Get the UTC date key for an event instant. Event times are displayed in UTC,
+ * so they must be bucketed into calendar days by their UTC date — otherwise a
+ * 23:30Z event renders as "23:30" under the following day for any viewer east
+ * of Greenwich.
+ */
+export function dateKeyUTC(d: Date): string {
+  const y = d.getUTCFullYear();
+  const m = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(d.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+/**
+ * Get local date key for calendar operations (calendar grid cells, which are
+ * constructed as local midnight Dates standing for a calendar day).
  */
 export function dateKeyLocal(d: Date): string {
   const y = d.getFullYear();

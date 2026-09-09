@@ -11,7 +11,7 @@ import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-reac
 import { Button } from "@/components/ui/button";
 import {
   dateKeyLocal,
-  eventOccursOnDay,
+  dateKeyUTC,
   getWeekStart,
   getWeekDays,
   formatTime,
@@ -79,11 +79,12 @@ export function CalendarView({ events, t }: CalendarViewProps) {
       const startDate = new Date(event.start);
       const endDate = event.end ? new Date(event.end) : startDate;
 
-      const currentDay = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-      const lastDay = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+      // Bucket by UTC date to match the UTC times shown on the event rows.
+      const currentDay = new Date(Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), startDate.getUTCDate()));
+      const lastDay = new Date(Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), endDate.getUTCDate()));
 
       while (currentDay <= lastDay) {
-        const k = dateKeyLocal(currentDay);
+        const k = dateKeyUTC(currentDay);
         const existing = map.get(k) || [];
         if (!existing.find(e => e.id === event.id)) {
           existing.push(event);
@@ -94,7 +95,7 @@ export function CalendarView({ events, t }: CalendarViewProps) {
           });
           map.set(k, existing);
         }
-        currentDay.setDate(currentDay.getDate() + 1);
+        currentDay.setUTCDate(currentDay.getUTCDate() + 1);
       }
     }
     return map;
