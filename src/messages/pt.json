@@ -652,7 +652,7 @@
         },
         "contact": {
             "title": "Contacto",
-            "description": "Este projeto é mantido por CS7BLE, Joel Calado. Sugestões e correções são bem-vindas.",
+            "description": "Este projeto é mantido por CT7BLE, Joel Calado. Sugestões e correções são bem-vindas.",
             "githubTitle": "Contribuir no GitHub",
             "githubDescription": "Partilhe sugestões, correções ou melhorias diretamente no repositório.",
             "githubAction": "Abrir repositório",
@@ -667,7 +667,7 @@
         }
     },
     "footer": {
-        "copyright": "Radioamador.info - Um projeto de CS7BLE",
+        "copyright": "Radioamador.info - Um projeto de CT7BLE",
         "about": "Sobre",
         "github": "GitHub",
         "rss": "RSS",
