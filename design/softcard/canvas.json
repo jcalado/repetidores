@@ -1,0 +1,43 @@
+{
+  "pages": [
+    { "id": "page-1", "name": "Adopted" },
+    { "id": "page-2", "name": "Not taken" }
+  ],
+  "artboards": [
+    { "file": "Main.dc.html",      "title": "Anatomy",      "page": "page-1", "x": 0,    "y": 0,   "w": 900,  "h": 620 },
+    { "file": "Themes.dc.html",    "title": "Light / Dark", "page": "page-1", "x": 1000, "y": 0,   "w": 940,  "h": 600 },
+    { "file": "States.dc.html",    "title": "States",       "page": "page-1", "x": 0,    "y": 760, "w": 900,  "h": 640 },
+    { "file": "InContext.dc.html", "title": "In context",   "page": "page-1", "x": 1000, "y": 760, "w": 1020, "h": 700 },
+
+    { "file": "VariantB.dc.html", "title": "B · Flush rows",  "page": "page-2", "x": 0,    "y": 0,   "w": 560, "h": 440 },
+    { "file": "VariantC.dc.html", "title": "C · Framed body", "page": "page-2", "x": 1000, "y": 0,   "w": 560, "h": 440 },
+    { "file": "VariantD.dc.html", "title": "D · Edge-lit",    "page": "page-2", "x": 0,    "y": 580, "w": 560, "h": 440 }
+  ],
+  "annotations": [
+    {
+      "id": "page1-intro",
+      "page": "page-1",
+      "x": 0, "y": -230, "w": 660,
+      "text": "A · Tinted header, adopted. The band is Azulejo 50 (light) / Azulejo 950 at 35% (dark), closed by a 1px Rule, carrying the title, status pill and the section's one link.\n\nDESIGN.md took three edits for it: Azulejo 50 gained a role in §2, the accent is now permitted as a structural surface and not only on interactive elements, and §5 Cards specs the band. The \"background tint\" it already named as the alternative to coloured stripes needed no change.\n\nKnown cost, carried forward: a second surface tone on every card. Three of these run down the landing page — worth a look at full page length before it ships."
+    },
+    {
+      "id": "variant-b",
+      "page": "page-2",
+      "x": 600, "y": 40, "w": 300,
+      "text": "Axis: density and bleed.\n\nRows run edge to edge, so the card fits roughly two more in the same height and the hairlines do the separating.\n\nTradeoff: it stops feeling like a surface and starts feeling like a table. The inset is what makes SoftCard calm."
+    },
+    {
+      "id": "variant-c",
+      "page": "page-2",
+      "x": 1600, "y": 40, "w": 300,
+      "text": "Axis: internal grouping.\n\nAn inset ring separates the list from the header without a nested card, which DESIGN.md forbids outright.\n\nTradeoff: two borders, 6px apart. Legal by the letter of the rule, still reads as a card in a card from across the room."
+    },
+    {
+      "id": "variant-d",
+      "page": "page-2",
+      "x": 600, "y": 620, "w": 300,
+      "text": "Axis: accent as identity.\n\nA 2px Azulejo top edge lets a section identify itself without a coloured header.\n\nTradeoff: DESIGN.md caps the accent near 15% of screen and bans coloured stripes over 1px on cards. Repeated per section this spends the budget on decoration, not interaction."
+    }
+  ],
+  "launch": { "view": "canvas", "page": "page-1" }
+}

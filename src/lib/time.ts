@@ -22,3 +22,15 @@ export function formatRelativeTime(isoTimestamp: string): string {
 
   return date.toLocaleDateString("pt-PT", { day: "numeric", month: "short" });
 }
+
+/**
+ * Portuguese short month names, indexed by month number (0-11).
+ */
+export const PT_MONTHS = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+
+/**
+ * Format a Date as a Portuguese short date in local time, e.g. "9 set 2026".
+ */
+export function formatDatePT(d: Date): string {
+  return `${d.getDate()} ${PT_MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+}

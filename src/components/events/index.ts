@@ -23,3 +23,4 @@ export { NextUpCard } from "./NextUpCard";
 export { EventsTable } from "./EventsTable";
 export { EventFilters } from "./EventFilters";
 export { CalendarView } from "./CalendarView";
+export { UpcomingEventsCard } from "./UpcomingEventsCard";

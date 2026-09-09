@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap">
+  <style>
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:"Geist",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#0a467f;text-decoration:none}
+a:hover{color:#0e5594}
+/* Tokens resolved from src/app/globals.css - not rounded, not approximated. */
+.t-light{--page:oklch(0.985 0.006 250);--card:oklch(0.99 0.005 250);--fg:oklch(0.16 0.012 250);--muted:oklch(0.56 0.012 250);--rule:oklch(0.92 0.008 250);--soft:oklch(0.97 0.006 250);--accent:#1d65a8;--accent-ink:#0a467f;--accent-tint:#dde6f0;--accent-faint:#f1f4f8;--accent-edge:#b8cce0;--live:#0e5594}
+.t-dark{--page:oklch(0.16 0.012 250);--card:oklch(0.21 0.014 250);--fg:oklch(0.985 0.005 250);--muted:oklch(0.71 0.012 250);--rule:oklch(1 0 0 / 10%);--soft:oklch(0.27 0.016 250);--accent:#4d7eb0;--accent-ink:#84a4c7;--accent-tint:rgba(6,24,38,0.5);--accent-faint:rgba(5,39,65,0.35);--accent-edge:rgba(77,126,176,0.45);--live:#4d7eb0}
+/* One literal in code, identical in both themes - see the Themes artboard. */
+.t-light,.t-dark{--rest:0 1px 2px oklch(0.20 0.012 250 / 0.06), 0 4px 12px oklch(0.20 0.012 250 / 0.04);--lift:0 1px 2px oklch(0.20 0.012 250 / 0.08), 0 8px 24px oklch(0.20 0.012 250 / 0.08)}
+.cv{min-height:100vh;background:var(--page);color:var(--fg)}
+.mono{font-family:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+.eyebrow{font-size:11px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted)}
+.panel{border-radius:0.875rem;padding:28px;background:var(--page);display:flex;flex-direction:column;gap:18px}
+.tok{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;font-size:11.5px;line-height:1.5;color:var(--muted)}
+.tok b{font-weight:500;color:var(--muted)}
+.tok span{font-family:"Geist Mono",ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--fg);opacity:0.75}
+  </style>
+</helmet>
+<div class="cv t-light" style="padding: 40px 44px; background: oklch(0.97 0.006 250)">
+  <header style="display: flex; align-items: baseline; justify-content: space-between; gap: 24px; margin-bottom: 6px">
+    <h1 style="font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin: 0">Light and dark at parity</h1>
+    <span class="mono" style="font-size: 12px; color: var(--muted)">neither is the default</span>
+  </header>
+  <p style="margin: 0 0 26px; font-size: 13.5px; line-height: 1.55; color: var(--muted); max-width: 76ch; text-wrap: pretty">
+    Same markup, same shadow literal. Only the surface tokens change, band included.
+  </p>
+
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; align-items: start">
+
+    <div class="panel t-light" style="border: 1px solid oklch(0.92 0.008 250)">
+      <div class="eyebrow">Light</div>
+      <section style="background: var(--card); border: 1px solid var(--rule); border-radius: 0.875rem; box-shadow: var(--rest); overflow: hidden">
+        <header style="background: var(--accent-faint); border-bottom: 1px solid var(--rule); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px">
+          <h2 style="font-size: 18px; font-weight: 600; letter-spacing: -0.015em; margin: 0">Repetidores actualizados</h2>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--muted); flex: none"><path d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"></path></svg>
+        </header>
+        <ol style="list-style: none; margin: 0; padding: 16px; display: flex; flex-direction: column">
+          <li style="display: grid; grid-template-columns: 7rem 1fr auto; align-items: center; gap: 16px; border-radius: 0.5rem; padding: 12px 8px">
+            <span class="mono" style="font-size: 14px; font-weight: 600">CQ0UEC</span>
+            <span style="font-size: 14px; color: var(--muted); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">FM</span>
+            <div style="display: flex; align-items: baseline; gap: 12px"><span class="mono" style="font-size: 14px">438.875</span><span class="mono" style="font-size: 11px; color: var(--muted)">19 jul 2026</span></div>
+          </li>
+          <li style="display: grid; grid-template-columns: 7rem 1fr auto; align-items: center; gap: 16px; border-radius: 0.5rem; padding: 12px 8px; border-top: 1px solid var(--rule)">
+            <span class="mono" style="font-size: 14px; font-weight: 600">CQ0DCD</span>
+            <span style="font-size: 14px; color: var(--muted); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">DMR</span>
+            <div style="display: flex; align-items: baseline; gap: 12px"><span class="mono" style="font-size: 14px">438.387</span><span class="mono" style="font-size: 11px; color: var(--muted)">1 mar 2026</span></div>
+          </li>
+        </ol>
+      </section>
+      <div class="tok">
+        <b>bg</b><span>oklch(0.99 0.005 250)</span>
+        <b>border</b><span>oklch(0.92 0.008 250)</span>
+        <b>band</b><span>#f1f4f8</span>
+        <b>shadow</b><span>reads clearly</span>
+      </div>
+    </div>
+
+    <div class="panel t-dark">
+      <div class="eyebrow">Dark</div>
+      <section style="background: var(--card); border: 1px solid var(--rule); border-radius: 0.875rem; box-shadow: var(--rest); overflow: hidden">
+        <header style="background: var(--accent-faint); border-bottom: 1px solid var(--rule); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px">
+          <h2 style="font-size: 18px; font-weight: 600; letter-spacing: -0.015em; margin: 0">Repetidores actualizados</h2>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--muted); flex: none"><path d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"></path></svg>
+        </header>
+        <ol style="list-style: none; margin: 0; padding: 16px; display: flex; flex-direction: column">
+          <li style="display: grid; grid-template-columns: 7rem 1fr auto; align-items: center; gap: 16px; border-radius: 0.5rem; padding: 12px 8px">
+            <span class="mono" style="font-size: 14px; font-weight: 600">CQ0UEC</span>
+            <span style="font-size: 14px; color: var(--muted); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">FM</span>
+            <div style="display: flex; align-items: baseline; gap: 12px"><span class="mono" style="font-size: 14px">438.875</span><span class="mono" style="font-size: 11px; color: var(--muted)">19 jul 2026</span></div>
+          </li>
+          <li style="display: grid; grid-template-columns: 7rem 1fr auto; align-items: center; gap: 16px; border-radius: 0.5rem; padding: 12px 8px; border-top: 1px solid var(--rule)">
+            <span class="mono" style="font-size: 14px; font-weight: 600">CQ0DCD</span>
+            <span style="font-size: 14px; color: var(--muted); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">DMR</span>
+            <div style="display: flex; align-items: baseline; gap: 12px"><span class="mono" style="font-size: 14px">438.387</span><span class="mono" style="font-size: 11px; color: var(--muted)">1 mar 2026</span></div>
+          </li>
+        </ol>
+      </section>
+      <div class="tok">
+        <b>bg</b><span>oklch(0.21 0.014 250)</span>
+        <b>border</b><span>oklch(1 0 0 / 10%)</span>
+        <b>band</b><span>Azulejo 900 @ 35%</span>
+        <b>shadow</b><span>near-invisible</span>
+      </div>
+    </div>
+  </div>
+
+  <p style="margin: 26px 0 0; font-size: 13px; line-height: 1.55; color: oklch(0.56 0.012 250); max-width: 86ch; text-wrap: pretty">
+    Worth a decision: the rest shadow is one literal applied in both themes, so on dark the card is carried almost entirely by the 10%-white border. The lift the system calls its signature is a light-mode effect today.
+  </p>
+</div>
+</x-dc>
+</body>
+</html>

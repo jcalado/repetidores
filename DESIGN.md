@@ -131,7 +131,7 @@ Azulejo blue (#1d65a8) is the single voice of state, named for the cobalt-tin gl
 - Monospace for every callsign, frequency, locator, and timestamp. Always. (The Callsign Rule survives every redesign.)
 - Soft elevation (1px border + low-spread shadow) defines surfaces. Cards are first-class.
 - Rounded corners are the dominant geometry: `rounded-xl` cards, `rounded-lg` inputs, `rounded-full` badges and nav pills.
-- Azulejo as the single accent (≤15% of screen), used freely on interactive elements but never as decoration.
+- Azulejo as the single accent (≤15% of screen), used freely on interactive elements, permitted at its faintest tint as a structural surface (the card header band), and never as free decoration.
 - Neutrals carry chroma 0.005–0.016 at hue 250. No pure achromatic OKLCH anywhere.
 - Light and dark ship at parity; neither is the default.
 - Controlled glass on the sticky Header and floating overlays only. Never on body content.
@@ -146,6 +146,7 @@ A disciplined palette: faintly cool neutrals share the brand hue family; Azulejo
 - **Azulejo 600** (#0e5594): Hover and pressed state for primary CTAs in light mode; link hover.
 - **Azulejo 400** (#4d7eb0): Link and accent colour in dark mode (lifted L for AA contrast on dark Paper).
 - **Azulejo 100** (#dde6f0): Muted accent surface in light mode. Tints badges, selected list rows, hover backgrounds, the icon backplate on tool cards.
+- **Azulejo 50** (#f1f4f8): The faintest accent surface. Reserved for structural tinting that spans a whole region, currently the card header band. Never used for text, borders, or emphasis.
 
 ### Neutral (Light)
 - **Paper** (oklch(0.99 0.005 250)): Card, popover, app background. Faintly cool; never pure white.
@@ -239,6 +240,7 @@ Body content (cards, sections, hero) is solid Paper or solid Surface. Glass on b
 ### Cards
 - **Shape:** `0.875rem` radius (`rounded-xl`). Standard for most content surfaces.
 - **Background:** Card token (Paper-light / Surface-dark).
+- **Header band (optional):** A card whose header carries a section title may seat that header in a full-bleed band of Azulejo 50 (light) / Azulejo 900 at 35% (dark), closed by a 1px Rule against the body. The band is structural, not decorative: it carries the title, an optional status pill, and the section's one link, nothing else. The band takes 16px vertical padding and the card's own horizontal padding (20px, 24px at ≥640px); the body below keeps the standard card padding unchanged, so every inset in the card stays where it was.
 - **Border:** 1px Rule.
 - **Shadow:** **rest** vocabulary mandatory at all times. The shadow is part of the card; cards without elevation read as broken under this system.
 - **Internal Padding:** 22px–24px (`p-5` to `p-6`).
