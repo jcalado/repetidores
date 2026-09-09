@@ -10,26 +10,14 @@ import { fetchEvents } from '@/lib/events'
 import { fetchRepeaters } from '@/lib/repeaters'
 import { fetchCallsignChanges } from '@/lib/callsigns'
 import type { EventItem } from '@/components/events/types'
+import { UpcomingEventsCard } from '@/components/events/UpcomingEventsCard'
+import { SectionHeader } from '@/components/landing/SectionHeader'
+import { SoftCard } from '@/components/landing/SoftCard'
+import { formatDatePT } from '@/lib/time'
 import type { Repeater } from '@/app/columns'
 
 export const metadata: Metadata = {
     alternates: { canonical: '/' },
-}
-
-const PT_MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
-
-function formatDatePT(d: Date) {
-    return `${d.getDate()} ${PT_MONTHS[d.getMonth()]} ${d.getFullYear()}`
-}
-
-function formatUTCHHMM(iso: string) {
-    const d = new Date(iso)
-    return [d.getUTCHours(), d.getUTCMinutes()].map((n) => String(n).padStart(2, '0')).join(':')
-}
-
-// Event rows show UTC times, so their date labels must key off the UTC date too.
-function utcDateKey(d: Date) {
-    return `${d.getUTCFullYear()}-${d.getUTCMonth()}-${d.getUTCDate()}`
 }
 
 async function fetchLatestNews(): Promise<NewsItem[]> {
@@ -106,7 +94,7 @@ export default async function LandingPage() {
             <ToolsRow t={t} />
 
             <div className="grid gap-5 lg:grid-cols-[1.15fr_1fr] lg:gap-6">
-                <EventsCard events={events} liveCount={liveCount} t={t} />
+                <UpcomingEventsCard events={events} liveCount={liveCount} t={t} />
                 <NewsCard news={news} t={t} />
             </div>
 
@@ -223,116 +211,17 @@ function ToolsRow({ t }: { t: T }) {
     )
 }
 
-function SectionHeader({ title, href, label, livePill }: { title: string; href: string; label: string; livePill?: number }) {
-    return (
-        <header className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2.5">
-                <h2 className="text-lg font-semibold tracking-[-0.015em] text-foreground">{title}</h2>
-                {livePill && livePill > 0 ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-azulejo-100 dark:bg-azulejo-950/50 px-2 py-0.5 text-[11px] font-medium text-azulejo-700 dark:text-azulejo-300">
-                        <span className="relative flex size-1.5">
-                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-azulejo-500 opacity-60 motion-reduce:hidden" />
-                            <span className="relative inline-flex size-1.5 rounded-full bg-azulejo-500" />
-                        </span>
-                        {livePill} ao vivo
-                    </span>
-                ) : null}
-            </div>
-            <Link
-                href={href}
-                className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm text-muted-foreground transition-colors duration-150 hover:bg-azulejo-50 hover:text-azulejo-700 dark:hover:bg-azulejo-950/30 dark:hover:text-azulejo-300"
-            >
-                {label}
-                <ArrowRightIcon className="size-3.5" aria-hidden="true" />
-            </Link>
-        </header>
-    )
-}
-
-function SoftCard({ children, className }: { children: React.ReactNode; className?: string }) {
-    return (
-        <section
-            className={`rounded-xl border border-border bg-card p-5 sm:p-6 shadow-[0_1px_2px_oklch(0.20_0.012_250/0.06),0_4px_12px_oklch(0.20_0.012_250/0.04)] ${className ?? ''}`}
-        >
-            {children}
-        </section>
-    )
-}
-
-function EventsCard({ events, liveCount, t }: { events: EventItem[]; liveCount: number; t: T }) {
-    const now = Date.now()
-    const today = new Date()
-    return (
-        <SoftCard className="space-y-4">
-            <SectionHeader
-                title={t('landing.eventsTitle')}
-                href="/events"
-                label={t('landing.eventsAll')}
-                livePill={liveCount}
-            />
-            {events.length === 0 ? (
-                <p className="py-6 text-center text-sm text-muted-foreground">{t('landing.eventsEmpty')}</p>
-            ) : (
-                <ol className="-mx-2 space-y-1">
-                    {events.map((event) => {
-                        const start = new Date(event.start)
-                        const startMs = start.getTime()
-                        const live = startMs <= now && (!event.end || new Date(event.end).getTime() > now)
-                        const sameDay = utcDateKey(start) === utcDateKey(today)
-                        const tomorrow =
-                            !sameDay &&
-                            utcDateKey(start) === utcDateKey(new Date(today.getTime() + 24 * 60 * 60 * 1000))
-                        return (
-                            <li key={event.id}>
-                                <Link
-                                    href={event.url ?? `/events/${event.id}`}
-                                    className="grid grid-cols-[5rem_1fr_auto] items-center gap-3 rounded-lg px-2 py-2.5 transition-colors duration-150 hover:bg-azulejo-50/50 dark:hover:bg-azulejo-950/20"
-                                >
-                                    <div className="flex flex-col">
-                                        <span className={`font-mono text-sm font-semibold tabular-nums ${live ? 'text-azulejo-600 dark:text-azulejo-400' : 'text-foreground'}`}>
-                                            {formatUTCHHMM(event.start)}
-                                        </span>
-                                        <span className="text-[10px] text-muted-foreground">
-                                            {live ? 'agora' : sameDay ? 'hoje' : tomorrow ? 'amanhã' : `${start.getUTCDate()} ${PT_MONTHS[start.getUTCMonth()]}`}
-                                        </span>
-                                    </div>
-                                    <div className="min-w-0">
-                                        <div className="truncate text-sm font-medium tracking-[-0.005em] text-foreground">
-                                            {event.title}
-                                        </div>
-                                        {(event.location || event.category) && (
-                                            <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
-                                                {event.category && <span className="capitalize">{event.category}</span>}
-                                                {event.category && event.location && (
-                                                    <span aria-hidden="true">·</span>
-                                                )}
-                                                {event.location && <span className="truncate">{event.location}</span>}
-                                            </div>
-                                        )}
-                                    </div>
-                                    {live && (
-                                        <span className="inline-flex items-center rounded-full bg-azulejo-100 px-2 py-0.5 text-[10px] font-medium text-azulejo-700 dark:bg-azulejo-950/50 dark:text-azulejo-300">
-                                            {t('landing.now')}
-                                        </span>
-                                    )}
-                                </Link>
-                            </li>
-                        )
-                    })}
-                </ol>
-            )}
-        </SoftCard>
-    )
-}
-
 function NewsCard({ news, t }: { news: NewsItem[]; t: T }) {
     return (
-        <SoftCard className="space-y-4">
-            <SectionHeader
-                title={t('landing.newsTitle')}
-                href="/noticias"
-                label={t('landing.viewAllNews')}
-            />
+        <SoftCard
+            header={
+                <SectionHeader
+                    title={t('landing.newsTitle')}
+                    href="/noticias"
+                    label={t('landing.viewAllNews')}
+                />
+            }
+        >
             {news.length === 0 ? (
                 <p className="py-6 text-center text-sm text-muted-foreground">Sem notícias recentes.</p>
             ) : (
@@ -447,12 +336,15 @@ function RadioSchoolCTA({ newCallsigns, t }: { newCallsigns: string[]; t: T }) {
 
 function RepeatersCard({ repeaters, t }: { repeaters: Repeater[]; t: T }) {
     return (
-        <SoftCard className="space-y-4">
-            <SectionHeader
-                title={t('landing.activityTitle')}
-                href="/repetidores"
-                label={t('landing.activityAllRepeaters')}
-            />
+        <SoftCard
+            header={
+                <SectionHeader
+                    title={t('landing.activityTitle')}
+                    href="/repetidores"
+                    label={t('landing.activityAllRepeaters')}
+                />
+            }
+        >
             {repeaters.length === 0 ? (
                 <p className="py-6 text-center text-sm text-muted-foreground">{t('landing.activityEmpty')}</p>
             ) : (
