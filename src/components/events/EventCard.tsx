@@ -22,6 +22,7 @@ import {
   getTagIconBg,
   getDMRNetworkLabel,
 } from "./utils/tagColors";
+import { getEventDmrSummary } from "./utils/dmr";
 import type { EventItem, TranslationFunction } from "./types";
 
 interface EventCardProps {
@@ -30,19 +31,17 @@ interface EventCardProps {
 }
 
 function DMRBadge({
-  dmr,
-  dmrNetwork,
-  talkgroup,
+  event,
   t,
 }: {
-  dmr?: boolean;
-  dmrNetwork?: EventItem["dmrNetwork"];
-  talkgroup?: number;
+  event: EventItem;
   t: (key: string) => string;
 }) {
-  if (!dmr || !talkgroup) return null;
+  const dmr = getEventDmrSummary(event);
+  if (!dmr) return null;
 
-  const isBrandmeister = dmrNetwork === "brandmeister";
+  const { network, talkgroup } = dmr;
+  const isBrandmeister = network === "brandmeister";
 
   const handleClick = (e: React.MouseEvent) => {
     if (isBrandmeister) {
@@ -142,12 +141,7 @@ function EventCardComponent({ event, t }: EventCardProps) {
                   <span className="truncate">{event.location}</span>
                 </span>
               )}
-              <DMRBadge
-                dmr={event.dmr}
-                dmrNetwork={event.dmrNetwork}
-                talkgroup={event.talkgroup}
-                t={t}
-              />
+              <DMRBadge event={event} t={t} />
             </div>
 
             {/* Countdown or Arrow */}

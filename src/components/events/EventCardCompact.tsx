@@ -11,6 +11,7 @@ import { Clock, MapPin, Radio, Star } from "lucide-react";
 import { useEventCountdown } from "./hooks/useEventCountdown";
 import { formatTime } from "./utils/formatters";
 import { getTagColors, getTagIcon, getDMRNetworkLabel } from "./utils/tagColors";
+import { getEventDmrSummary } from "./utils/dmr";
 import type { EventItem, TranslationFunction } from "./types";
 
 interface EventCardCompactProps {
@@ -27,6 +28,7 @@ function EventCardCompactComponent({
   const countdown = useEventCountdown(event.start, event.end, t);
   const tagColors = getTagColors(event.tag);
   const TagIcon = getTagIcon(event.tag);
+  const dmr = getEventDmrSummary(event);
 
   return (
     <Link
@@ -90,30 +92,30 @@ function EventCardCompactComponent({
             )}
 
             {/* DMR Badge */}
-            {event.dmr && event.talkgroup && (
+            {dmr && (
               <div className="mt-1.5">
                 <span
                   onClick={(e) => {
-                    if (event.dmrNetwork === "brandmeister") {
+                    if (dmr.network === "brandmeister") {
                       e.preventDefault();
                       e.stopPropagation();
                       window.open(
-                        `https://hose.brandmeister.network/?tg=${event.talkgroup}`,
+                        `https://hose.brandmeister.network/?tg=${dmr.talkgroup}`,
                         "_blank"
                       );
                     }
                   }}
                   className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px]
                     bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400
-                    ${event.dmrNetwork === "brandmeister" ? "hover:bg-red-100 dark:hover:bg-red-900/30 cursor-pointer" : ""}
+                    ${dmr.network === "brandmeister" ? "hover:bg-red-100 dark:hover:bg-red-900/30 cursor-pointer" : ""}
                     transition-colors`}
                   title={
-                    event.dmrNetwork === "brandmeister"
+                    dmr.network === "brandmeister"
                       ? t("dmr.listen")
-                      : `${getDMRNetworkLabel(event.dmrNetwork, t)} TG ${event.talkgroup}`
+                      : `${getDMRNetworkLabel(dmr.network, t)} TG ${dmr.talkgroup}`
                   }
                 >
-                  <Radio className="w-2.5 h-2.5" /> TG {event.talkgroup}
+                  <Radio className="w-2.5 h-2.5" /> TG {dmr.talkgroup}
                 </span>
               </div>
             )}

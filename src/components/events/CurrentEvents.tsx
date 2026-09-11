@@ -20,6 +20,7 @@ import {
 import { useTick } from "./hooks/useOptimizedTick";
 import { formatDateTime, formatSmartCountdown, msUntil } from "./utils/formatters";
 import { getTagIcon, getTagIconBg, getDMRNetworkLabel } from "./utils/tagColors";
+import { getEventDmrSummary } from "./utils/dmr";
 import type { EventItem, TranslationFunction } from "./types";
 
 interface CurrentEventsProps {
@@ -49,6 +50,7 @@ export function CurrentEvents({ events, t }: CurrentEventsProps) {
   const heroTimeUntilEnd = heroEvent.end ? msUntil(heroEvent.end) : 0;
   const HeroTagIcon = getTagIcon(heroEvent.tag);
   const heroIconBgClass = getTagIconBg(heroEvent.tag);
+  const heroDmr = getEventDmrSummary(heroEvent);
 
   return (
     <div className="mb-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -100,25 +102,25 @@ export function CurrentEvents({ events, t }: CurrentEventsProps) {
                     {heroEvent.location}
                   </span>
                 )}
-                {heroEvent.dmr && heroEvent.talkgroup && (
+                {heroDmr && (
                   <span
                     onClick={(e) => {
-                      if (heroEvent.dmrNetwork === "brandmeister") {
+                      if (heroDmr.network === "brandmeister") {
                         e.preventDefault();
                         e.stopPropagation();
                         window.open(
-                          `https://hose.brandmeister.network/?tg=${heroEvent.talkgroup}`,
+                          `https://hose.brandmeister.network/?tg=${heroDmr.talkgroup}`,
                           "_blank"
                         );
                       }
                     }}
                     className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-white/15 text-white border border-white/20 ${
-                      heroEvent.dmrNetwork === "brandmeister" ? "hover:bg-white/25 cursor-pointer" : ""
+                      heroDmr.network === "brandmeister" ? "hover:bg-white/25 cursor-pointer" : ""
                     } transition-colors`}
-                    title={heroEvent.dmrNetwork === "brandmeister" ? t("dmr.listen") : undefined}
+                    title={heroDmr.network === "brandmeister" ? t("dmr.listen") : undefined}
                   >
                     <Radio className="w-3 h-3" />
-                    {getDMRNetworkLabel(heroEvent.dmrNetwork, t)} TG {heroEvent.talkgroup}
+                    {getDMRNetworkLabel(heroDmr.network, t)} TG {heroDmr.talkgroup}
                   </span>
                 )}
               </div>

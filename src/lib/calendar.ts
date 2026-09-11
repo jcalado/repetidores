@@ -1,4 +1,5 @@
-import type { EventItem } from '@/components/events/types';
+import { getEventDmrSummary } from '@/components/events/utils/dmr';
+import type { EventItem, EventOperatingWindow } from '@/components/events/types';
 
 /**
  * Format a date for ICS files (YYYYMMDDTHHMMSSZ)
@@ -12,6 +13,77 @@ function formatICSDate(iso: string): string {
  */
 function formatGoogleDate(iso: string): string {
   return new Date(iso).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+}
+
+const DMR_NETWORK_NAMES: Record<string, string> = {
+  brandmeister: 'Brandmeister',
+  adn: 'ADN Systems',
+};
+
+/**
+ * Format one operating window's time range in the event's display timezone.
+ * Dates are included because a window may not fall on the event's first day.
+ */
+function formatWindowRange(window: EventOperatingWindow, timeZone: string): string {
+  const opts: Intl.DateTimeFormatOptions = {
+    timeZone,
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  };
+  const start = new Date(window.start).toLocaleString('pt-PT', opts);
+  const end = new Date(window.end).toLocaleString('pt-PT', opts);
+  return `${start} - ${end}`;
+}
+
+/**
+ * The description body shared by every calendar target (.ics, Google, Outlook).
+ *
+ * Returns plain lines; each target joins them with whatever newline it needs.
+ * When the event carries an operating plan, every window is listed — a saved
+ * calendar entry is often the only thing an operator has in the field, so it
+ * must carry the callsign, bands, talkgroups and time windows, not just a tag.
+ */
+function buildDescriptionLines(event: EventItem): string[] {
+  const lines: string[] = [];
+
+  if (event.tag) lines.push(`Categoria: ${event.tag}`);
+  if (event.callsign) lines.push(`Indicativo: ${event.callsign}`);
+
+  const plan = event.operatingPlan ?? [];
+  if (plan.length > 0) {
+    const timeZone = event.displayTimezone || 'UTC';
+    lines.push(`Plano de operação (horas de ${timeZone}):`);
+    for (const window of plan) {
+      const what = [window.mode, window.label].filter(Boolean).join(' ');
+      const extra = [
+        window.network,
+        window.talkgroup ? `TG ${window.talkgroup}` : '',
+        window.frequency,
+      ]
+        .filter(Boolean)
+        .join(' - ');
+      lines.push(`- ${formatWindowRange(window, timeZone)} ${what}${extra ? ` (${extra})` : ''}`);
+    }
+  } else {
+    // No plan: fall back to the legacy dmr/talkgroup pair.
+    const dmr = getEventDmrSummary(event);
+    if (dmr) {
+      const network = DMR_NETWORK_NAMES[dmr.network ?? ''] || 'DMR';
+      lines.push(`${network} TG: ${dmr.talkgroup}`);
+    }
+  }
+
+  if (event.organizer?.name || event.organizerName) {
+    lines.push(`Organização: ${event.organizer?.name || event.organizerName}`);
+  }
+  if (event.qsl?.available && event.qsl.url) {
+    lines.push(`QSL: ${event.qsl.url}`);
+  }
+  if (event.url) lines.push(`Mais info: ${event.url}`);
+
+  return lines;
 }
 
 /**
@@ -54,17 +126,12 @@ export function generateICS(event: EventItem): string {
     lines.push(`URL:${event.url}`);
   }
 
-  // Add description with tag and DMR info
-  const descParts: string[] = [];
-  if (event.tag) descParts.push(`Categoria: ${event.tag}`);
-  if (event.dmr && event.talkgroup) {
-    const network = event.dmrNetwork === 'brandmeister' ? 'Brandmeister' : event.dmrNetwork === 'adn' ? 'ADN Systems' : 'DMR';
-    descParts.push(`${network} TG: ${event.talkgroup}`);
-  }
-  if (event.url) descParts.push(`Mais info: ${event.url}`);
+  // escapeICS turns each real newline into the ICS "\n" escape, so the parts
+  // are joined with a real newline rather than a pre-escaped one.
+  const descParts = buildDescriptionLines(event);
 
   if (descParts.length > 0) {
-    lines.push(`DESCRIPTION:${escapeICS(descParts.join('\\n'))}`);
+    lines.push(`DESCRIPTION:${escapeICS(descParts.join('\n'))}`);
   }
 
   lines.push('END:VEVENT', 'END:VCALENDAR');
@@ -104,13 +171,7 @@ export function getGoogleCalendarUrl(event: EventItem): string {
     params.set('location', event.location);
   }
 
-  const details: string[] = [];
-  if (event.tag) details.push(`Categoria: ${event.tag}`);
-  if (event.dmr && event.talkgroup) {
-    const network = event.dmrNetwork === 'brandmeister' ? 'Brandmeister' : event.dmrNetwork === 'adn' ? 'ADN Systems' : 'DMR';
-    details.push(`${network} TG: ${event.talkgroup}`);
-  }
-  if (event.url) details.push(`Mais info: ${event.url}`);
+  const details = buildDescriptionLines(event);
 
   if (details.length > 0) {
     params.set('details', details.join('\n'));
@@ -137,13 +198,7 @@ export function getOutlookCalendarUrl(event: EventItem): string {
     params.set('location', event.location);
   }
 
-  const details: string[] = [];
-  if (event.tag) details.push(`Categoria: ${event.tag}`);
-  if (event.dmr && event.talkgroup) {
-    const network = event.dmrNetwork === 'brandmeister' ? 'Brandmeister' : event.dmrNetwork === 'adn' ? 'ADN Systems' : 'DMR';
-    details.push(`${network} TG: ${event.talkgroup}`);
-  }
-  if (event.url) details.push(`Mais info: ${event.url}`);
+  const details = buildDescriptionLines(event);
 
   if (details.length > 0) {
     params.set('body', details.join('\n'));
@@ -249,17 +304,10 @@ export function generateMultipleICS(events: EventItem[]): string {
       lines.push(`URL:${event.url}`);
     }
 
-    // Add description with tag and DMR info
-    const descParts: string[] = [];
-    if (event.tag) descParts.push(`Categoria: ${event.tag}`);
-    if (event.dmr && event.talkgroup) {
-      const network = event.dmrNetwork === 'brandmeister' ? 'Brandmeister' : event.dmrNetwork === 'adn' ? 'ADN Systems' : 'DMR';
-      descParts.push(`${network} TG: ${event.talkgroup}`);
-    }
-    if (event.url) descParts.push(`Mais info: ${event.url}`);
+    const descParts = buildDescriptionLines(event);
 
     if (descParts.length > 0) {
-      lines.push(`DESCRIPTION:${escapeICS(descParts.join('\\n'))}`);
+      lines.push(`DESCRIPTION:${escapeICS(descParts.join('\n'))}`);
     }
 
     lines.push('END:VEVENT');
