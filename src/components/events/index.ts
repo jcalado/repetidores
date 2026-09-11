@@ -9,6 +9,7 @@ export type { TranslationFunction } from "./types";
 // Utils
 export * from "./utils/formatters";
 export * from "./utils/tagColors";
+export * from "./utils/dmr";
 
 // Hooks
 export { TickProvider, useTick, useNow, MultiTickProvider, useSmartTick } from "./hooks/useOptimizedTick";

@@ -67,7 +67,8 @@ export async function generateMetadata({ params }: PageProps) {
     });
 
     const title = event.title;
-    const description = `${event.title} - ${formattedDate}${event.location ? ` em ${event.location}` : ""}. Evento de radioamadorismo.`;
+    const callsignPhrase = event.callsign ? ` com o indicativo ${event.callsign}` : "";
+    const description = `${event.title} - ${formattedDate}${event.location ? ` em ${event.location}` : ""}. Evento de radioamadorismo${callsignPhrase}.`;
 
     // Handle event featured image
     const imageUrl = event.featuredImage?.url
@@ -119,6 +120,32 @@ export async function generateMetadata({ params }: PageProps) {
   }
 }
 
+function generateJsonLdOrganizer(event: EventItem) {
+  if (event.organizer) {
+    const name = event.organizer.displayName || event.organizer.name;
+    if (name) {
+      return {
+        "@type": "Organization",
+        name,
+        ...(event.organizer.website && { url: event.organizer.website }),
+      };
+    }
+  }
+
+  if (event.organizerName) {
+    return {
+      "@type": "Organization",
+      name: event.organizerName,
+    };
+  }
+
+  return {
+    "@type": "Organization",
+    name: "Radioamador.info",
+    url: "https://www.radioamador.info",
+  };
+}
+
 function generateEventJsonLd(event: EventItem) {
   const startDate = new Date(event.start);
   const isOnline = event.location?.toLowerCase().includes('online') ||
@@ -144,14 +171,12 @@ function generateEventJsonLd(event: EventItem) {
     eventAttendanceMode: isOnline
       ? "https://schema.org/OnlineEventAttendanceMode"
       : "https://schema.org/OfflineEventAttendanceMode",
-    eventStatus: startDate > new Date()
-      ? "https://schema.org/EventScheduled"
-      : "https://schema.org/EventPostponed",
-    organizer: {
-      "@type": "Organization",
-      name: "Radioamador.info",
-      url: "https://www.radioamador.info",
-    },
+    // schema.org has no "completed" status - EventScheduled only asserts that an
+    // upcoming event is going ahead as planned, so past events simply omit it.
+    ...(startDate > new Date() && {
+      eventStatus: "https://schema.org/EventScheduled",
+    }),
+    organizer: generateJsonLdOrganizer(event),
   };
 }
 

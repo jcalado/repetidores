@@ -25,6 +25,7 @@ import {
   getTagIconBg,
   getDMRNetworkLabel,
 } from "./utils/tagColors";
+import { getEventDmrSummary } from "./utils/dmr";
 import type { EventItem, TranslationFunction } from "./types";
 
 interface NextUpCardProps {
@@ -56,6 +57,7 @@ export function NextUpCard({ events, t }: NextUpCardProps) {
   const remaining = msUntil(next.start);
   const tagColors = getTagColors(next.tag);
   const iconBgClass = getTagIconBg(next.tag);
+  const dmr = getEventDmrSummary(next);
   const TagIcon = getTagIcon(next.tag);
 
   return (
@@ -111,25 +113,25 @@ export function NextUpCard({ events, t }: NextUpCardProps) {
                     {next.location}
                   </span>
                 )}
-                {next.dmr && next.talkgroup && (
+                {dmr && (
                   <span
                     onClick={(e) => {
-                      if (next.dmrNetwork === "brandmeister") {
+                      if (dmr.network === "brandmeister") {
                         e.preventDefault();
                         e.stopPropagation();
                         window.open(
-                          `https://hose.brandmeister.network/?tg=${next.talkgroup}`,
+                          `https://hose.brandmeister.network/?tg=${dmr.talkgroup}`,
                           "_blank"
                         );
                       }
                     }}
                     className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-red-500/20 text-red-200 border border-red-400/30 ${
-                      next.dmrNetwork === "brandmeister" ? "hover:bg-red-500/30 cursor-pointer" : ""
+                      dmr.network === "brandmeister" ? "hover:bg-red-500/30 cursor-pointer" : ""
                     } transition-colors`}
-                    title={next.dmrNetwork === "brandmeister" ? t("dmr.listen") : undefined}
+                    title={dmr.network === "brandmeister" ? t("dmr.listen") : undefined}
                   >
                     <Radio className="w-3 h-3" />
-                    {getDMRNetworkLabel(next.dmrNetwork, t)} TG {next.talkgroup}
+                    {getDMRNetworkLabel(dmr.network, t)} TG {dmr.talkgroup}
                   </span>
                 )}
               </div>
