@@ -28,14 +28,17 @@ export function FacetedFilter({ icon, title, options, selected, onChange, disabl
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (open) {
-      // Small delay to let popover render before focusing
-      const t = setTimeout(() => inputRef.current?.focus(), 50)
-      return () => clearTimeout(t)
-    } else {
-      setSearch("")
-    }
+    if (!open) return
+    // Small delay to let popover render before focusing
+    const t = setTimeout(() => inputRef.current?.focus(), 50)
+    return () => clearTimeout(t)
   }, [open])
+
+  const handleOpenChange = (next: boolean) => {
+    setOpen(next)
+    // Reset the search when the popover closes, in the event rather than an effect
+    if (!next) setSearch("")
+  }
 
   const filtered = search
     ? options.filter((o) =>
@@ -55,7 +58,7 @@ export function FacetedFilter({ icon, title, options, selected, onChange, disabl
   const isActive = selected.length > 0
 
   return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
+    <Popover.Root open={open} onOpenChange={handleOpenChange}>
       <Popover.Trigger asChild>
         <button
           disabled={disabled}

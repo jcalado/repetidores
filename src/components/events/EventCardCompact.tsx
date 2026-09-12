@@ -5,7 +5,7 @@
  * Shows minimal information in a condensed layout
  */
 
-import { memo } from "react";
+import { createElement, memo } from "react";
 import Link from "next/link";
 import { Clock, MapPin, Radio, Star } from "lucide-react";
 import { useEventCountdown } from "./hooks/useEventCountdown";
@@ -27,7 +27,7 @@ function EventCardCompactComponent({
 }: EventCardCompactProps) {
   const countdown = useEventCountdown(event.start, event.end, t);
   const tagColors = getTagColors(event.tag);
-  const TagIcon = getTagIcon(event.tag);
+  const tagIcon = getTagIcon(event.tag);
   const dmr = getEventDmrSummary(event);
 
   return (
@@ -45,7 +45,7 @@ function EventCardCompactComponent({
           <div
             className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center ${tagColors.bg} ${tagColors.icon}`}
           >
-            <TagIcon className="w-3.5 h-3.5" />
+            {createElement(tagIcon, { className: "w-3.5 h-3.5" })}
           </div>
 
           {/* Content */}

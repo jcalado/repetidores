@@ -149,23 +149,10 @@ export function CommandPaletteProvider({ children }: { children: React.ReactNode
     const [repeatersLoading, setRepeatersLoading] = useState(false)
     const loadStartedRef = useRef(false)
 
-    const open = useCallback(() => setIsOpen(true), [])
-    const close = useCallback(() => setIsOpen(false), [])
-    const toggle = useCallback(() => setIsOpen((v) => !v), [])
-
-    useEffect(() => {
-        function handleKey(e: KeyboardEvent) {
-            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-                e.preventDefault()
-                setIsOpen((v) => !v)
-            }
-        }
-        window.addEventListener('keydown', handleKey)
-        return () => window.removeEventListener('keydown', handleKey)
-    }, [])
-
-    useEffect(() => {
-        if (!isOpen || loadStartedRef.current) return
+    // Kicked off by the gesture that opens the palette, not by an effect reacting to
+    // isOpen, so opening does not cascade an extra render. Guarded to run once.
+    const loadRepeaters = useCallback(() => {
+        if (loadStartedRef.current) return
         loadStartedRef.current = true
         setRepeatersLoading(true)
         fetchRepeaters()
@@ -175,7 +162,28 @@ export function CommandPaletteProvider({ children }: { children: React.ReactNode
                 setRepeaters([])
             })
             .finally(() => setRepeatersLoading(false))
-    }, [isOpen])
+    }, [])
+
+    const open = useCallback(() => {
+        loadRepeaters()
+        setIsOpen(true)
+    }, [loadRepeaters])
+    const close = useCallback(() => setIsOpen(false), [])
+    const toggle = useCallback(() => {
+        loadRepeaters()
+        setIsOpen((v) => !v)
+    }, [loadRepeaters])
+
+    useEffect(() => {
+        function handleKey(e: KeyboardEvent) {
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault()
+                toggle()
+            }
+        }
+        window.addEventListener('keydown', handleKey)
+        return () => window.removeEventListener('keydown', handleKey)
+    }, [toggle])
 
     const value = useMemo(
         () => ({ open, close, toggle, isOpen, repeaters, repeatersLoading }),
@@ -185,18 +193,18 @@ export function CommandPaletteProvider({ children }: { children: React.ReactNode
     return (
         <CommandPaletteContext.Provider value={value}>
             {children}
-            <CommandPalette isOpen={isOpen} onClose={close} repeaters={repeaters} repeatersLoading={repeatersLoading} />
+            {isOpen && (
+                <CommandPalette onClose={close} repeaters={repeaters} repeatersLoading={repeatersLoading} />
+            )}
         </CommandPaletteContext.Provider>
     )
 }
 
 function CommandPalette({
-    isOpen,
     onClose,
     repeaters,
     repeatersLoading,
 }: {
-    isOpen: boolean
     onClose: () => void
     repeaters: Repeater[] | null
     repeatersLoading: boolean
@@ -231,18 +239,12 @@ function CommandPalette({
 
     const groupedCommands = useMemo(() => (q ? null : groupCommands(commands)), [commands, q])
 
+    // The provider unmounts this component on close, so `query` and `selectedIndex`
+    // start fresh on every open and focus only has to run once, on mount.
     useEffect(() => {
-        setSelectedIndex(0)
-    }, [q, isOpen])
-
-    useEffect(() => {
-        if (isOpen) {
-            const id = window.setTimeout(() => inputRef.current?.focus(), 0)
-            return () => window.clearTimeout(id)
-        } else {
-            setQuery('')
-        }
-    }, [isOpen])
+        const id = window.setTimeout(() => inputRef.current?.focus(), 0)
+        return () => window.clearTimeout(id)
+    }, [])
 
     const selectItem = useCallback(
         (item: PaletteItem) => {
@@ -282,8 +284,6 @@ function CommandPalette({
         }
     }, [selectedIndex])
 
-    if (!isOpen) return null
-
     const indexMap = new Map(items.map((it, i) => [it.id, i]))
     const isEmpty = items.length === 0 && !(q && repeatersLoading)
 
@@ -307,7 +307,10 @@ function CommandPalette({
                         ref={inputRef}
                         type="text"
                         value={query}
-                        onChange={(e) => setQuery(e.target.value)}
+                        onChange={(e) => {
+                            setQuery(e.target.value)
+                            setSelectedIndex(0)
+                        }}
                         placeholder={t('nav.commandPlaceholder')}
                         className="flex-auto bg-transparent py-4 font-mono text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
                         aria-label={t('nav.search')}

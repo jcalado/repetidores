@@ -1,10 +1,3 @@
-// Mock fs and path modules
-jest.mock('fs');
-jest.mock('path');
-
-const fs = require('fs');
-const path = require('path');
-
 describe('CSV Conversion End-to-End Tests', () => {
     beforeEach(() => {
         jest.clearAllMocks();

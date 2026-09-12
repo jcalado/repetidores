@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import { useTranslations } from 'next-intl';
 import { Volume2, VolumeX, Keyboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,34 +15,73 @@ import {
   type NATOLetter,
 } from '@/lib/nato-alphabet';
 
+const EMPTY_VOICES: SpeechSynthesisVoice[] = [];
+
+// speechSynthesis.getVoices() hands back a fresh array on every call, so the
+// snapshot has to be cached or useSyncExternalStore would re-render forever.
+let voicesSnapshot: SpeechSynthesisVoice[] = EMPTY_VOICES;
+
+function hasSpeechSynthesis() {
+  return typeof window !== 'undefined' && !!window.speechSynthesis;
+}
+
+function subscribeToVoices(onStoreChange: () => void) {
+  if (!hasSpeechSynthesis()) {
+    return () => {};
+  }
+
+  const handleVoicesChanged = () => {
+    voicesSnapshot = window.speechSynthesis.getVoices();
+    onStoreChange();
+  };
+
+  // Voices are often available already; React re-reads the snapshot right
+  // after subscribing, so priming the cache here needs no notification.
+  voicesSnapshot = window.speechSynthesis.getVoices();
+  window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
+
+  return () => {
+    window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
+  };
+}
+
+function getVoicesSnapshot() {
+  return voicesSnapshot;
+}
+
+function getServerVoicesSnapshot() {
+  return EMPTY_VOICES;
+}
+
+// Speech support cannot change for the lifetime of the document.
+function subscribeToSpeechSupport() {
+  return () => {};
+}
+
+function getSpeechSupportSnapshot() {
+  return hasSpeechSynthesis();
+}
+
+function getServerSpeechSupportSnapshot() {
+  return true;
+}
+
 export function NATOAlphabetTrainer() {
   const t = useTranslations('nato');
 
   const [currentLetter, setCurrentLetter] = useState<NATOLetter | null>(null);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   const [showNumbers, setShowNumbers] = useState(false);
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-  const [speechSupported, setSpeechSupported] = useState(true);
-
-  // Load available voices
-  useEffect(() => {
-    if (typeof window === 'undefined' || !window.speechSynthesis) {
-      setSpeechSupported(false);
-      return;
-    }
-
-    const loadVoices = () => {
-      const availableVoices = window.speechSynthesis.getVoices();
-      setVoices(availableVoices);
-    };
-
-    loadVoices();
-    window.speechSynthesis.onvoiceschanged = loadVoices;
-
-    return () => {
-      window.speechSynthesis.onvoiceschanged = null;
-    };
-  }, []);
+  const voices = useSyncExternalStore(
+    subscribeToVoices,
+    getVoicesSnapshot,
+    getServerVoicesSnapshot
+  );
+  const speechSupported = useSyncExternalStore(
+    subscribeToSpeechSupport,
+    getSpeechSupportSnapshot,
+    getServerSpeechSupportSnapshot
+  );
 
   const speak = useCallback(
     (text: string) => {

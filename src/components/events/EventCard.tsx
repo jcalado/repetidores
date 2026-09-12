@@ -5,7 +5,7 @@
  * Features prominent date badge, clear title hierarchy, and color-coded event types
  */
 
-import { memo } from "react";
+import { createElement, memo } from "react";
 import Link from "next/link";
 import {
   Activity,
@@ -67,7 +67,7 @@ function DMRBadge({
 function EventCardComponent({ event, t }: EventCardProps) {
   const countdown = useEventCountdown(event.start, event.end, t);
   const tagColors = getTagColors(event.tag);
-  const TagIcon = getTagIcon(event.tag);
+  const tagIcon = getTagIcon(event.tag);
   const iconBgClass = getTagIconBg(event.tag);
 
   // Parse date for the date badge
@@ -108,7 +108,7 @@ function EventCardComponent({ event, t }: EventCardProps) {
           {/* Top row: Tag + Status */}
           <div className="flex items-center gap-2 mb-2">
             <span className={`inline-flex items-center gap-1 text-xs font-semibold ${tagColors.text}`}>
-              <TagIcon className="w-3.5 h-3.5" />
+              {createElement(tagIcon, { className: "w-3.5 h-3.5" })}
               {event.tag}
             </span>
 

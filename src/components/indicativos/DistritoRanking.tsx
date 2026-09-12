@@ -13,6 +13,27 @@ interface DistritoRankingProps {
   onHover: (distrito: string | null) => void
 }
 
+interface SortHeaderProps {
+  label: string
+  field: SortKey
+  sortKey: SortKey
+  sortDir: SortDir
+  onSort: (key: SortKey) => void
+}
+
+function SortHeader({ label, field, sortKey, sortDir, onSort }: SortHeaderProps) {
+  return (
+    <button
+      onClick={() => onSort(field)}
+      className="flex items-center gap-1 font-semibold text-muted-foreground hover:text-foreground transition-colors"
+    >
+      {label}
+      <ArrowUpDown className="h-3 w-3 opacity-40" />
+      {sortKey === field && <span className="text-[10px]">{sortDir === "asc" ? "↑" : "↓"}</span>}
+    </button>
+  )
+}
+
 export function DistritoRanking({ data, highlightedDistrito, onHover }: DistritoRankingProps) {
   const [sortKey, setSortKey] = useState<SortKey>("total")
   const [sortDir, setSortDir] = useState<SortDir>("desc")
@@ -39,27 +60,24 @@ export function DistritoRanking({ data, highlightedDistrito, onHover }: Distrito
     return sortDir === "asc" ? cmp : -cmp
   })
 
-  const SortHeader = ({ label, field }: { label: string; field: SortKey }) => (
-    <button
-      onClick={() => toggleSort(field)}
-      className="flex items-center gap-1 font-semibold text-muted-foreground hover:text-foreground transition-colors"
-    >
-      {label}
-      <ArrowUpDown className="h-3 w-3 opacity-40" />
-      {sortKey === field && <span className="text-[10px]">{sortDir === "asc" ? "↑" : "↓"}</span>}
-    </button>
-  )
-
   return (
     <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
       <div className="overflow-y-auto max-h-[500px]">
         <table className="w-full text-xs">
           <thead className="sticky top-0 bg-muted">
             <tr>
-              <th className="text-left px-3 py-2"><SortHeader label="Distrito" field="distrito" /></th>
-              <th className="text-right px-3 py-2"><SortHeader label="Total" field="total" /></th>
-              <th className="text-right px-3 py-2"><SortHeader label="Activos" field="active" /></th>
-              <th className="text-right px-3 py-2"><SortHeader label="%" field="pct" /></th>
+              <th className="text-left px-3 py-2">
+                <SortHeader label="Distrito" field="distrito" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+              </th>
+              <th className="text-right px-3 py-2">
+                <SortHeader label="Total" field="total" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+              </th>
+              <th className="text-right px-3 py-2">
+                <SortHeader label="Activos" field="active" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+              </th>
+              <th className="text-right px-3 py-2">
+                <SortHeader label="%" field="pct" sortKey={sortKey} sortDir={sortDir} onSort={toggleSort} />
+              </th>
             </tr>
           </thead>
           <tbody>

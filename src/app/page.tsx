@@ -30,15 +30,30 @@ async function fetchLatestNews(): Promise<NewsItem[]> {
     }
 }
 
-async function fetchUpcomingEvents(): Promise<EventItem[]> {
+type UpcomingEvents = { events: EventItem[]; liveCount: number }
+
+// Reading the clock belongs to the data step, not to render: the landing page is
+// statically exported, so "ao vivo" is resolved once alongside the fetch that
+// produced the events, and render stays a pure function of its props.
+function countLiveEvents(events: EventItem[]): number {
+    const now = Date.now()
+    return events.filter((e) => {
+        const start = new Date(e.start).getTime()
+        const end = e.end ? new Date(e.end).getTime() : start + 60 * 60 * 1000
+        return start <= now && end > now
+    }).length
+}
+
+async function fetchUpcomingEvents(): Promise<UpcomingEvents> {
     try {
         // `upcoming` is required: the API returns past events too, and asking
         // for the first N of an ascending sort would only ever return old ones.
         const res = await fetchEvents({ sort: 'startAsc', upcoming: true, limit: 20 })
-        return res.docs.slice(0, 6)
+        const events = res.docs.slice(0, 6)
+        return { events, liveCount: countLiveEvents(events) }
     } catch (error) {
         console.error('[Landing] Events fetch failed', error)
-        return []
+        return { events: [], liveCount: 0 }
     }
 }
 
@@ -72,20 +87,13 @@ async function fetchNewCallsigns(): Promise<string[]> {
 }
 
 export default async function LandingPage() {
-    const [news, events, repeaters, newCallsigns, t] = await Promise.all([
+    const [news, { events, liveCount }, repeaters, newCallsigns, t] = await Promise.all([
         fetchLatestNews(),
         fetchUpcomingEvents(),
         fetchRecentRepeaters(),
         fetchNewCallsigns(),
         getTranslations(),
     ])
-
-    const now = Date.now()
-    const liveCount = events.filter((e) => {
-        const start = new Date(e.start).getTime()
-        const end = e.end ? new Date(e.end).getTime() : start + 60 * 60 * 1000
-        return start <= now && end > now
-    }).length
 
     return (
         <main className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8 pt-8 pb-20 space-y-12">

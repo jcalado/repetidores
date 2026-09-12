@@ -1,25 +1,23 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useSyncExternalStore } from 'react';
+
+function subscribe(onStoreChange: () => void) {
+  window.addEventListener('online', onStoreChange);
+  window.addEventListener('offline', onStoreChange);
+
+  return () => {
+    window.removeEventListener('online', onStoreChange);
+    window.removeEventListener('offline', onStoreChange);
+  };
+}
+
+const getSnapshot = () => !navigator.onLine;
+
+// The server (and the static export) has no navigator; assume online so the
+// first client render matches the pre-rendered HTML.
+const getServerSnapshot = () => false;
 
 export function useOffline() {
-  const [isOffline, setIsOffline] = useState(false);
-
-  useEffect(() => {
-    // Set initial state
-    setIsOffline(!navigator.onLine);
-
-    const handleOnline = () => setIsOffline(false);
-    const handleOffline = () => setIsOffline(true);
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
-
-  return isOffline;
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }

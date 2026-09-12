@@ -39,7 +39,7 @@ const API_BASE_URL = (() => {
 })()
 
 // Client-side cache
-let cachedProfile: Map<number, { data: BMProfileBySlot; fetchedAt: number }> = new Map()
+const cachedProfile: Map<number, { data: BMProfileBySlot; fetchedAt: number }> = new Map()
 const CACHE_TTL_MS = 5 * 60 * 1000 // 5 minutes
 
 export function organizeBySlot(profile: BMProfileResponse): BMProfileBySlot {

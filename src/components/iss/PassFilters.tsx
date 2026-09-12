@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
@@ -13,21 +13,19 @@ interface PassFiltersProps {
 }
 
 export function PassFilters({ filters, onFiltersChange }: PassFiltersProps) {
-  // Local state for immediate visual feedback
-  const [localMinElevation, setLocalMinElevation] = useState(filters.minElevation);
-
-  // Sync local state when filters prop changes externally
-  useEffect(() => {
-    setLocalMinElevation(filters.minElevation);
-  }, [filters.minElevation]);
+  // Draft value held only while the slider is being dragged. null means "follow the
+  // prop", so an external change to filters.minElevation needs no syncing effect.
+  const [draftMinElevation, setDraftMinElevation] = useState<number | null>(null);
+  const localMinElevation = draftMinElevation ?? filters.minElevation;
 
   // Update local state immediately for smooth slider interaction
   const handleMinElevationChange = (values: number[]) => {
-    setLocalMinElevation(values[0]);
+    setDraftMinElevation(values[0]);
   };
 
   // Only trigger parent update when user releases the slider (commit)
   const handleMinElevationCommit = (values: number[]) => {
+    setDraftMinElevation(null);
     onFiltersChange({
       ...filters,
       minElevation: values[0],

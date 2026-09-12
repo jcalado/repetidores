@@ -56,7 +56,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { QRCodeSVG } from "qrcode.react";
 import {
@@ -393,6 +393,33 @@ function useTick(intervalMs = 1000) {
   }, [intervalMs]);
 }
 
+// Shared clock. The current time is external mutable state, so components read
+// it through a subscription instead of calling Date.now() while rendering.
+const clockListeners = new Set<() => void>();
+let clockSnapshot = Date.now();
+let clockTimer: ReturnType<typeof setInterval> | undefined;
+
+function subscribeClock(listener: () => void) {
+  clockListeners.add(listener);
+  if (clockTimer === undefined) {
+    clockTimer = setInterval(() => {
+      clockSnapshot = Date.now();
+      clockListeners.forEach((l) => l());
+    }, 1000);
+  }
+  return () => {
+    clockListeners.delete(listener);
+    if (clockListeners.size === 0 && clockTimer !== undefined) {
+      clearInterval(clockTimer);
+      clockTimer = undefined;
+    }
+  };
+}
+
+function getClockSnapshot() {
+  return clockSnapshot;
+}
+
 // Live indicator with pulsing animation - enhanced editorial style
 function LiveIndicator({ label }: { label: string }) {
   return (
@@ -410,7 +437,7 @@ function LiveIndicator({ label }: { label: string }) {
 
 // Progress bar for multi-day events - refined with glow effect
 function EventProgressBar({ start, end, label }: { start: string; end: string; label: string }) {
-  const now = Date.now();
+  const now = useSyncExternalStore(subscribeClock, getClockSnapshot, getClockSnapshot);
   const startMs = new Date(start).getTime();
   const endMs = new Date(end).getTime();
   const progress = Math.min(100, Math.max(0, ((now - startMs) / (endMs - startMs)) * 100));

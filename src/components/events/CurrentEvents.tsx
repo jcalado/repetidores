@@ -17,9 +17,9 @@ import {
   Radio,
   Star,
 } from "lucide-react";
-import { useTick } from "./hooks/useOptimizedTick";
+import { useNow, useTick } from "./hooks/useOptimizedTick";
 import { formatDateTime, formatSmartCountdown, msUntil } from "./utils/formatters";
-import { getTagIcon, getTagIconBg, getDMRNetworkLabel } from "./utils/tagColors";
+import { tagIconMap, getTagIconBg, getDMRNetworkLabel } from "./utils/tagColors";
 import { getEventDmrSummary } from "./utils/dmr";
 import type { EventItem, TranslationFunction } from "./types";
 
@@ -32,8 +32,11 @@ export function CurrentEvents({ events, t }: CurrentEventsProps) {
   // Subscribe to global tick for live updates
   useTick();
 
+  // The clock comes from the tick provider instead of being read during render,
+  // so the render stays pure while the in-progress window keeps refreshing.
+  const now = useNow();
+
   const currentEvents = useMemo(() => {
-    const now = Date.now();
     return events
       .filter((e) => {
         const start = new Date(e.start).getTime();
@@ -41,14 +44,14 @@ export function CurrentEvents({ events, t }: CurrentEventsProps) {
         return now >= start && now <= end;
       })
       .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
-  }, [events]);
+  }, [events, now]);
 
   if (currentEvents.length === 0) return null;
 
   const heroEvent = currentEvents[0];
   const additionalEvents = currentEvents.slice(1);
   const heroTimeUntilEnd = heroEvent.end ? msUntil(heroEvent.end) : 0;
-  const HeroTagIcon = getTagIcon(heroEvent.tag);
+  const HeroTagIcon = (heroEvent.tag && tagIconMap[heroEvent.tag]) || tagIconMap.Default;
   const heroIconBgClass = getTagIconBg(heroEvent.tag);
   const heroDmr = getEventDmrSummary(heroEvent);
 
@@ -174,7 +177,7 @@ export function CurrentEvents({ events, t }: CurrentEventsProps) {
         <div className="mt-3 space-y-2">
           {additionalEvents.map((event) => {
             const timeUntilEnd = event.end ? msUntil(event.end) : 0;
-            const TagIcon = getTagIcon(event.tag);
+            const TagIcon = (event.tag && tagIconMap[event.tag]) || tagIconMap.Default;
 
             return (
               <Link

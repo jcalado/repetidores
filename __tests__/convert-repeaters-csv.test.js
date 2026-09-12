@@ -2,9 +2,6 @@
 jest.mock('fs');
 jest.mock('path');
 
-const fs = require('fs');
-const path = require('path');
-
 // Import the functions we want to test
 // Since the script uses ES modules and top-level await, we'll need to mock the main function
 // and test the individual functions by importing them

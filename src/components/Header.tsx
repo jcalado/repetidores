@@ -21,25 +21,41 @@ import { BookOpen, Calculator, IdCard, Newspaper, Volume2, Radio, RadioTowerIcon
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useState, useSyncExternalStore } from 'react'
 import ThemeToggle from './ThemeToggle'
 import LocationPickerPopover from './LocationPickerPopover'
 import NotificationSettings from './NotificationSettings'
 import { useCommandPalette } from './CommandPalette'
 
-function isMacLike() {
-    if (typeof navigator === 'undefined') return false
+// Values read straight from the platform are exposed through useSyncExternalStore
+// so they resolve during render instead of via a state update in an effect.
+const subscribeToNothing = () => () => {}
+
+function getIsMacSnapshot() {
     return /Mac|iPhone|iPad|iPod/.test(navigator.platform)
+}
+
+function getIsMacServerSnapshot() {
+    return false
+}
+
+function subscribeToHash(onStoreChange: () => void) {
+    window.addEventListener('hashchange', onStoreChange)
+    return () => window.removeEventListener('hashchange', onStoreChange)
+}
+
+function getHashSnapshot() {
+    return window.location.hash
+}
+
+function getHashServerSnapshot() {
+    return ''
 }
 
 function SearchTrigger({ variant }: { variant: 'desktop' | 'mobile' }) {
     const t = useTranslations()
     const { open } = useCommandPalette()
-    const [isMac, setIsMac] = useState(false)
-
-    useEffect(() => {
-        setIsMac(isMacLike())
-    }, [])
+    const isMac = useSyncExternalStore(subscribeToNothing, getIsMacSnapshot, getIsMacServerSnapshot)
 
     const shortcut = isMac ? '⌘K' : 'Ctrl+K'
     const label = variant === 'desktop' ? `${t('nav.search')} (${shortcut})` : t('nav.search')
@@ -163,14 +179,7 @@ export default function Header() {
     const t = useTranslations()
     const pathname = usePathname()
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-    const [activeHash, setActiveHash] = useState('')
-
-    useEffect(() => {
-        setActiveHash(window.location.hash)
-        const handleHashChange = () => setActiveHash(window.location.hash)
-        window.addEventListener('hashchange', handleHashChange)
-        return () => window.removeEventListener('hashchange', handleHashChange)
-    }, [])
+    const activeHash = useSyncExternalStore(subscribeToHash, getHashSnapshot, getHashServerSnapshot)
 
     const isCurrent = (href: string) => {
         if (href.includes('#')) {

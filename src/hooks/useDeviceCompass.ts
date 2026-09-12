@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useSyncExternalStore } from 'react';
 
 export interface DeviceCompassState {
   heading: number | null;
@@ -20,23 +20,30 @@ interface DeviceOrientationEventStatic {
   requestPermission?: () => Promise<'granted' | 'denied'>;
 }
 
+// Compass support never changes for the lifetime of the page, so there is
+// nothing to subscribe to. useSyncExternalStore is used purely to read a
+// browser-only value without a hydration mismatch (the server snapshot is
+// false) and without calling setState inside an effect.
+const subscribeToCompassSupport = () => () => {};
+const getCompassSupported = () =>
+  'DeviceOrientationEvent' in window || 'ondeviceorientation' in window;
+const getCompassSupportedOnServer = () => false;
+
 export function useDeviceCompass() {
-  const [state, setState] = useState<DeviceCompassState>({
+  const [state, setState] = useState<Omit<DeviceCompassState, 'isSupported'>>({
     heading: null,
     accuracy: null,
-    isSupported: false,
     isEnabled: false,
     permissionState: 'unknown',
     error: null,
   });
 
   // Check if device orientation is supported
-  useEffect(() => {
-    const isSupported = typeof window !== 'undefined' &&
-      ('DeviceOrientationEvent' in window || 'ondeviceorientation' in window);
-
-    setState(prev => ({ ...prev, isSupported }));
-  }, []);
+  const isSupported = useSyncExternalStore(
+    subscribeToCompassSupport,
+    getCompassSupported,
+    getCompassSupportedOnServer,
+  );
 
   // Handle orientation event
   const handleOrientation = useCallback((event: DeviceOrientationEventWithPermission) => {
@@ -103,7 +110,7 @@ export function useDeviceCompass() {
 
   // Enable compass
   const enable = useCallback(async () => {
-    if (!state.isSupported) {
+    if (!isSupported) {
       setState(prev => ({
         ...prev,
         error: 'Bússola não suportada neste dispositivo',
@@ -117,7 +124,7 @@ export function useDeviceCompass() {
     window.addEventListener('deviceorientation', handleOrientation as EventListener, true);
     setState(prev => ({ ...prev, isEnabled: true, error: null }));
     return true;
-  }, [state.isSupported, requestPermission, handleOrientation]);
+  }, [isSupported, requestPermission, handleOrientation]);
 
   // Disable compass
   const disable = useCallback(() => {
@@ -151,6 +158,7 @@ export function useDeviceCompass() {
 
   return {
     ...state,
+    isSupported,
     enable,
     disable,
     toggle,

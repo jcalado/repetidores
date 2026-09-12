@@ -210,7 +210,7 @@ export function calculateBearing(start: LatLon, end: LatLon): number {
     Math.cos(lat1) * Math.sin(lat2) -
     Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
 
-  let bearing = (Math.atan2(y, x) * 180) / Math.PI;
+  const bearing = (Math.atan2(y, x) * 180) / Math.PI;
   return (bearing + 360) % 360;
 }
 
