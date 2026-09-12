@@ -8,6 +8,7 @@ import {
   type VoteStats,
   type FeedbackEntry,
 } from "@/lib/votes";
+import { refreshRepeaterStatus } from "@/components/repeater/RepeaterCells";
 import { useLocalVote } from "./useLocalVote";
 import type { LocalVote, CommunityStatus } from "../types";
 
@@ -85,6 +86,10 @@ export function useCommunityVoting(repeaterId: string) {
           reporterCallsign: callsign,
         });
         setStats(s);
+        // The bulk vote-stats cache was just dropped by postVote; tell the
+        // mounted status loader to refetch so the table and card status cells
+        // reflect this vote instead of waiting out the 5 minute TTL.
+        refreshRepeaterStatus();
 
         // Add to local feedback list if there is feedback text
         if (v.feedback) {

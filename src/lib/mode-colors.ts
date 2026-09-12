@@ -6,7 +6,9 @@
 // recognises a mode by its colour at a glance. The palette is capped at the seven real modes;
 // the hue assignment is fixed and must stay identical across every surface that shows a mode.
 //
-// FM blue · DMR purple · D-STAR cyan · C4FM rose · TETRA amber · EchoLink emerald · AllStar orange.
+// FM blue · DMR purple · D-STAR cyan · C4FM rose · TETRA amber.
+// Modulations only: EchoLink and AllStar are linking systems, not modes, and
+// render as neutral outline chips (see lib/links.ts).
 
 /** Soft tinted badge style (table "Modos" column, popups, legends). */
 export const MODE_BADGE_COLORS: Record<string, string> = {
@@ -15,8 +17,6 @@ export const MODE_BADGE_COLORS: Record<string, string> = {
   DSTAR: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400",
   C4FM: "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400",
   TETRA: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-  EchoLink: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-  AllStar: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
   Digipeater: "bg-muted text-muted-foreground",
 }
 
@@ -62,17 +62,5 @@ export const MODE_TILE_COLORS: Record<string, ModeTileStyle> = {
     dot: "bg-amber-500",
     active: "bg-amber-500 border-amber-600 text-white",
     hover: "hover:bg-amber-50 hover:border-amber-300 dark:hover:bg-amber-950/30",
-  },
-  EchoLink: {
-    icon: "text-emerald-500 dark:text-emerald-400",
-    dot: "bg-emerald-500",
-    active: "bg-emerald-500 border-emerald-600 text-white",
-    hover: "hover:bg-emerald-50 hover:border-emerald-300 dark:hover:bg-emerald-950/30",
-  },
-  AllStar: {
-    icon: "text-orange-500 dark:text-orange-400",
-    dot: "bg-orange-500",
-    active: "bg-orange-500 border-orange-600 text-white",
-    hover: "hover:bg-orange-50 hover:border-orange-300 dark:hover:bg-orange-950/30",
   },
 }

@@ -16,6 +16,10 @@ export default function ViewSwitcher() {
       <ViewSwitcherTabsList
         value={view}
         ariaLabel={t("nav.table") + " / " + t("nav.map")}
+        // Filters live in the query string, so switching table <-> map has to take
+        // them along: otherwise the view you are looking at and the URL you would
+        // copy disagree about what is filtered.
+        preserveQuery
         items={[
           { value: "table", label: t("nav.table"), icon: <TableIcon />, href: "/repetidores" },
           { value: "map", label: t("nav.map"), icon: <MapIcon />, href: "/repetidores/mapa" },

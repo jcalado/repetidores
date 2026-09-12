@@ -45,6 +45,14 @@ const faqItems = [
   },
 ];
 
+/**
+ * next.config.js sets output: 'export'. Nothing under this page reads request-time
+ * data any more (useRepeaterFilters reads the query string from window.location and
+ * holds it back until hydration is over, instead of calling useSearchParams), so the
+ * whole view prerenders and there is no Suspense boundary whose fallback could take the
+ * table's place in out/repetidores/index.html. Adding a bail-out hook below this point
+ * would silently cost the page its rows, and its indexable content with them.
+ */
 export default function RepetidoresTablePage() {
   return (
     <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 pt-2 pb-6">

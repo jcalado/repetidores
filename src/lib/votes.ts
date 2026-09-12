@@ -18,6 +18,8 @@ export type VoteStats = {
   lastPositiveVote: string | null; // ISO timestamp of most recent positive vote
 };
 
+export type VoteStatsMap = Record<string, VoteStats>;
+
 export type FeedbackEntry = {
   id: string;
   vote: VoteKind;
@@ -128,6 +130,58 @@ export async function getVoteStats(repeaterId: string): Promise<VoteStats> {
   }
 }
 
+// Cache for bulk vote stats (shared across components)
+let cachedVoteStats: VoteStatsMap | null = null;
+let voteStatsCacheTimestamp = 0;
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+/**
+ * Bulk vote stats for every repeater that has feedback, keyed by callsign.
+ * Repeaters with no feedback are ABSENT from the map: callers should treat a
+ * missing entry as "unknown" rather than expecting a zero-filled record.
+ */
+export async function getAllVoteStats(): Promise<VoteStatsMap> {
+  const now = Date.now();
+  if (cachedVoteStats && now - voteStatsCacheTimestamp < CACHE_TTL_MS) {
+    return cachedVoteStats;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/vote-stats`, {
+      method: "GET",
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = (await res.json()) as Record<string, unknown>;
+    const map: VoteStatsMap = {};
+    for (const [callsign, stats] of Object.entries(data ?? {})) {
+      map[callsign] = normalizeVoteStats(stats);
+    }
+    cachedVoteStats = map;
+    voteStatsCacheTimestamp = now;
+    return map;
+  } catch {
+    return cachedVoteStats ?? {};
+  }
+}
+
+/** Non-async peek at the bulk cache; null when it has never been fetched. */
+export function peekAllVoteStats(): VoteStatsMap | null {
+  return cachedVoteStats;
+}
+
+/**
+ * Drops the bulk cache so the next getAllVoteStats() goes back to the network.
+ * A vote the server accepted changes the aggregate that /api/vote-stats returns,
+ * and the merged status cell reads nothing but that map: without this the cell
+ * would keep showing the pre-vote category for up to CACHE_TTL_MS.
+ */
+export function invalidateVoteStats(): void {
+  cachedVoteStats = null;
+  voteStatsCacheTimestamp = 0;
+}
+
 export async function postVote(input: VoteInput): Promise<VoteStats> {
   try {
     const res = await fetch(
@@ -145,9 +199,15 @@ export async function postVote(input: VoteInput): Promise<VoteStats> {
     );
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
+    // The vote landed, so every cached aggregate that counts it is now stale.
+    invalidateVoteStats();
     return normalizeVoteStats(data);
   } catch {
-    // Don't lose the user's action: save locally as a fallback
+    // Don't lose the user's action: save locally as a fallback.
+    // No invalidation here on purpose: the vote never reached the server, so a
+    // refetch would return the very same map, and while the request is failing
+    // getAllVoteStats() falls back to the cache it still holds - dropping it
+    // would blank every repeater's status instead of leaving it as it was.
     writeLocalVote(input);
     return statsFromLocal(input.repeaterId);
   }

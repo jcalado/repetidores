@@ -232,6 +232,9 @@
         "distanceAll": "Sem limite",
         "resultsCount": "{count} repetidores",
         "resultsCountSingular": "1 repetidor",
+        "links": "Ligação",
+        "linkNone": "Nenhum repetidor com {label} registado",
+        "linkRidesOn": "Sobre {mode}",
         "quickFilters": "Filtros rápidos",
         "clearModes": "Limpar"
     },
@@ -272,8 +275,10 @@
     },
     "locationTip": {
         "title": "Encontre repetidores perto de si",
-        "description": "Use o botão de localização no cabeçalho para definir a sua posição. Depois pode filtrar por distância e ver os repetidores mais próximos.",
-        "dismiss": "Entendi"
+        "description": "Defina a sua posição para filtrar por distância e ordenar pelos repetidores mais próximos.",
+        "action": "Usar a minha localização",
+        "errorGeneric": "Não foi possível obter a localização.",
+        "dismiss": "Dispensar"
     },
     "favorites": {
         "add": "Adicionar aos favoritos",
@@ -288,17 +293,20 @@
         "pageOf": "Página {current} de {total}",
         "loading": "A carregar repetidores...",
         "noResults": "Nenhum resultado encontrado.",
+        "tableLabel": "Tabela de repetidores",
+        "resultsCount": "{count} de {total} repetidores",
+        "resultsCountSingular": "1 de {total} repetidores",
+        "resultsCountAll": "{total} repetidores",
+        "resultsCountNone": "Nenhum repetidor",
         "columns": {
             "status": "Estado",
             "distance": "Distância",
             "callsign": "Indicativo",
             "band": "Banda",
-            "outputFrequency": "Freq. Saída",
-            "inputFrequency": "Freq. Entrada",
+            "outputFrequency": "Freq. saída",
+            "inputFrequency": "Freq. entrada",
             "tone": "Tom",
             "modulation": "Modos",
-            "dmr": "DMR",
-            "dstar": "D-STAR",
             "latitude": "Latitude",
             "longitude": "Longitude",
             "qthLocator": "QTH",
@@ -309,9 +317,9 @@
         },
         "status": {
             "ok": "A funcionar",
-            "prob-bad": "Provavelmente com problemas",
+            "prob-bad": "Com problemas",
             "bad": "Não funciona",
-            "unknown": "Desconhecido",
+            "unknown": "Sem dados",
             "verified-online": "Online (verificado automaticamente)",
             "verified-offline": "Offline (verificado automaticamente)"
         },
@@ -321,6 +329,94 @@
             "maintenance": "Em manutenção",
             "offline": "Desligado",
             "unknown": "Desconhecido"
+        },
+        "toolbar": {
+            "label": "Filtros e acções da tabela",
+            "search": "Indicativo, frequência ou QTH",
+            "searchLabel": "Pesquisar por indicativo, frequência ou QTH",
+            "searchClear": "Limpar pesquisa",
+            "advancedShow": "Filtros por coluna",
+            "statusLabel": "Estado",
+        "statusGroupObserved": "Observado",
+        "statusGroupDeclared": "Declarado pelo responsável",
+        "advancedHide": "Ocultar filtros por coluna",
+            "columnFilterLabel": "Filtrar por {column}"
+        },
+        "modes": {
+            "all": "Todos",
+            "groupLabel": "Filtrar por modo"
+        },
+        "chips": {
+            "groupLabel": "Filtros activos",
+            "value": "{label}: {value}",
+            "remove": "Remover filtro: {label}",
+            "clearAll": "Limpar todos",
+            "search": "Pesquisa",
+            "callsign": "Indicativo",
+            "band": "Banda",
+            "modes": "Modos",
+            "links": "Ligação",
+            "owner": "Proprietário",
+            "qthLocator": "QTH",
+            "status": "Estado",
+            "opStatus": "Estado operacional",
+            "favorites": "Apenas favoritos",
+            "distance": "Raio",
+            "distanceValue": "{km} km",
+            "outputFrequency": "Freq. saída",
+            "inputFrequency": "Freq. entrada",
+            "tone": "Tom"
+        },
+        "statusCell": {
+            "online": "Online",
+            "offline": "Offline",
+            "active": "Activo",
+            "maintenance": "Em manutenção",
+            "adminOffline": "Desligado",
+            "ok": "A funcionar",
+            "probBad": "Com problemas",
+            "bad": "Não funciona",
+            "unknown": "Sem dados",
+            "sourceAuto": "Verificação automática",
+            "sourceAdmin": "Indicado pelo responsável",
+            "sourceVotes": "Votos da comunidade",
+            "sourceNone": "Sem verificações nem votos",
+            "lastSeen": "Visto {time}",
+            "lastVote": "Último voto positivo {time}",
+            "voteCounts": "{up} a favor, {down} contra",
+            "ariaLabel": "Estado: {label} ({source})"
+        },
+        "frequencies": {
+            "more": "+{count}",
+            "moreLabel": "Mais {count, plural, =1 {1 par} other {# pares}} de frequências",
+            "allLabel": "Todos os pares de frequências",
+            "pair": "{output} / {input} MHz"
+        },
+        "empty": {
+            "title": "Nenhum repetidor corresponde aos filtros",
+            "description": "Alargue a pesquisa ou limpe os filtros para ver todos os repetidores.",
+            "action": "Limpar filtros",
+            "noDataTitle": "Sem repetidores",
+            "noDataDescription": "Não foi possível carregar a lista de repetidores."
+        },
+        "card": {
+            "listLabel": "Lista de repetidores",
+            "open": "Abrir detalhes de {callsign}",
+            "rx": "RX",
+            "tx": "TX",
+            "rxLabel": "Frequência de saída",
+            "txLabel": "Frequência de entrada",
+            "tone": "Tom",
+            "noTone": "Sem tom"
+        },
+        "row": {
+            "open": "Abrir detalhes de {callsign}"
+        },
+        "sort": {
+            "label": "Ordenar por {column}",
+            "ascending": "ascendente",
+            "descending": "descendente",
+            "none": "sem ordenação"
         }
     },
     "repeater": {
@@ -328,8 +424,8 @@
         "close": "Fechar",
         "maps": "Abrir no Maps",
         "share": "Partilhar",
-        "output": "Freq. Saída",
-        "input": "Freq. Entrada",
+        "output": "Freq. saída",
+        "input": "Freq. entrada",
         "offset": "Offset",
         "tone": "Tom",
         "owner": "Proprietário",
@@ -743,7 +839,9 @@
         "formatChirp": "CHIRP",
         "formatAnytone": "Anytone",
         "confirmButton": "Descarregar",
-        "cancelButton": "Cancelar"
+        "cancelButton": "Cancelar",
+        "buttonCount": "Exportar {count}",
+        "buttonCountLabel": "Exportar {count} repetidores em CSV"
     },
     "propagation": {
         "title": "Propagação",
@@ -1188,10 +1286,9 @@
         },
         "options": {
             "narrow": "Estreita (12.5 kHz)",
-            "wide": "Larga (25 kHz)",
+            "wide": "Ampla",
             "local": "Local",
             "regional": "Regional",
-            "wide": "Ampla",
             "other": "Outro"
         },
         "types": {
@@ -1262,5 +1359,29 @@
         "viewDetails": "Ver detalhes",
         "noFrequencies": "Nenhuma frequência simplex registada.",
         "close": "Fechar"
+    },
+    "map": {
+        "regionLabel": "Mapa de repetidores",
+        "count": "{count, plural, =0 {Nenhum repetidor} =1 {1 repetidor} other {# repetidores}}",
+        "layers": {
+            "label": "Camada do mapa",
+            "osm": "Mapa",
+            "satellite": "Satélite",
+            "terrain": "Terreno",
+            "dark": "Escuro"
+        },
+        "fitBounds": "Enquadrar resultados",
+        "fitBoundsEmpty": "Nenhum repetidor para enquadrar",
+        "fullscreenEnter": "Ecrã inteiro",
+        "fullscreenExit": "Sair do ecrã inteiro",
+        "userMarker": "A sua localização",
+        "userMarkerApproximate": "Posição aproximada",
+        "markerLabel": "{callsign}, {mode}, {status}",
+        "markerLabelNoMode": "{callsign}, {status}",
+        "popupDetails": "Ver detalhes",
+        "radiusLabel": "Raio de {km} km",
+        "emptyTitle": "Nenhum repetidor no mapa",
+        "emptyBody": "Os filtros activos não deixaram nenhum repetidor para mostrar.",
+        "emptyAction": "Limpar filtros"
     }
 }
