@@ -2,6 +2,7 @@
 
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import * as React from "react";
 
 export type ViewSwitcherItem = {
@@ -30,12 +31,19 @@ export function ViewSwitcherTabsList({
   items,
   className,
   ariaLabel,
+  preserveQuery = false,
 }: {
   value: string;
   items: ViewSwitcherItem[];
   className?: string;
   ariaLabel?: string;
+  /** Carry the current query string across a route-mode switch, so filters held in
+   *  the URL survive moving between views. Read at click time from
+   *  window.location rather than via useSearchParams, which would opt the whole
+   *  page out of static prerendering under output: "export". */
+  preserveQuery?: boolean;
 }) {
+  const router = useRouter();
   const listRef = React.useRef<HTMLDivElement>(null);
   const triggerRefs = React.useRef<Record<string, HTMLElement | null>>({});
   const [pill, setPill] = React.useState<{ left: number; width: number; ready: boolean }>({
@@ -91,6 +99,15 @@ export function ViewSwitcherTabsList({
                   triggerRefs.current[item.value] = el;
                 }}
                 href={item.href}
+                onClick={(event) => {
+                  if (!preserveQuery || typeof window === "undefined") return;
+                  const search = window.location.search;
+                  if (!search) return;
+                  // The static href is what SSR, prerendering and a no-JS reader
+                  // get; the query is grafted on only when we can actually read it.
+                  event.preventDefault();
+                  router.push(`${item.href}${search}`);
+                }}
               >
                 {item.icon}
                 {label}

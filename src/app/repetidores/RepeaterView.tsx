@@ -1,9 +1,24 @@
 "use client";
 
-import { getOwnerShort, useColumns, type Repeater } from "@/app/columns";
+import {
+  getOwnerShort,
+  repeaterGlobalFilter,
+  useColumns,
+  type Repeater,
+} from "@/app/columns";
+import LocationTip from "@/components/LocationTip";
 import MapClient from "@/components/MapClient";
+import RepeaterCardList from "@/components/repeater/RepeaterCardList";
+import RepeaterFilterBar, {
+  type RepeaterFilterChip,
+} from "@/components/repeater/RepeaterFilterBar";
+import {
+  RepeaterStatusProvider,
+  resolveMergedStatus,
+  useRepeaterStatusData,
+} from "@/components/repeater/RepeaterCells";
 import RepeaterDetails from "@/components/RepeaterDetails";
-import SearchAutocomplete from "@/components/SearchAutocomplete";
+import RepeaterSubmitDialog from "@/components/RepeaterSubmitDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
@@ -14,723 +29,747 @@ import {
   DrawerOverlay,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { Badge } from "@/components/ui/badge";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { Input } from "@/components/ui/input";
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+} from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { useUserLocation } from "@/contexts/UserLocationContext";
-import { calculateDistance } from "@/lib/geolocation";
+import { applyRepeaterFilters } from "@/lib/repeater-filters";
 import { MODE_TILE_COLORS } from "@/lib/mode-colors";
-import type { ColumnFiltersState } from "@tanstack/react-table";
+import { MODE_FILTER_VALUES, MODE_OPTIONS } from "@/lib/modes";
+import { LINK_OPTIONS, linkOptionCounts } from "@/lib/links";
 import {
-  ChevronDown,
-  ChevronUp,
-  Filter,
   Globe,
   Heart,
   Hexagon,
   LayoutGrid,
   Link2,
   MapPin,
+  MapPinOff,
   Radio,
   Shield,
   Signal,
   Star,
-  X,
+  type LucideIcon,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import * as React from "react";
-import { useRepeaters } from "./RepeatersProvider";
 import ImportantNotice from "../notice";
-import LocationTip from "@/components/LocationTip";
-import RepeaterSubmitDialog from "@/components/RepeaterSubmitDialog";
+import { useRepeaters } from "./RepeatersProvider";
+import {
+  useRepeaterFilters,
+  type Band,
+  type OpStatus,
+  type StatusFilter,
+} from "./hooks/useRepeaterFilters";
 
 type Props = {
   view: "table" | "map";
 };
 
-function getBandFromFrequency(mhz: number): string {
-  if (mhz >= 430 && mhz <= 450) return "70cm";
-  if (mhz >= 144 && mhz <= 148) return "2m";
-  if (mhz >= 50 && mhz <= 54) return "6m";
-  if (mhz >= 1240 && mhz <= 1300) return "23cm";
-  if (mhz >= 2300 && mhz <= 2450) return "13cm";
-  return "Other";
-}
+/**
+ * Selected-chip styling for the mode strip.
+ *
+ * MODE_TILE_COLORS[x].active is a solid <hue>-500 fill with a white label, which sits
+ * between 2.1:1 and 4.0:1 against white and fails WCAG 2.1 AA (1.4.3) at this 14px size.
+ * mode-colors.ts is shared with the badges and the map legend and is not this change's to
+ * alter, so the strip uses the soft-tint selected treatment from DESIGN.md instead:
+ * <hue>-100 fill, <hue>-900 ink, a 1px inset ring and the solid mode dot for the pressed
+ * state. The hue assignment is unchanged, so a mode still reads by its colour.
+ */
+const MODE_CHIP_SELECTED: Record<string, string> = {
+  FM: "bg-blue-100 text-blue-900 border-blue-300 ring-1 ring-inset ring-blue-500 dark:bg-blue-900/40 dark:text-blue-100 dark:border-blue-700 dark:ring-blue-400",
+  DMR: "bg-purple-100 text-purple-900 border-purple-300 ring-1 ring-inset ring-purple-500 dark:bg-purple-900/40 dark:text-purple-100 dark:border-purple-700 dark:ring-purple-400",
+  DSTAR: "bg-cyan-100 text-cyan-900 border-cyan-300 ring-1 ring-inset ring-cyan-500 dark:bg-cyan-900/40 dark:text-cyan-100 dark:border-cyan-700 dark:ring-cyan-400",
+  C4FM: "bg-rose-100 text-rose-900 border-rose-300 ring-1 ring-inset ring-rose-500 dark:bg-rose-900/40 dark:text-rose-100 dark:border-rose-700 dark:ring-rose-400",
+  TETRA: "bg-amber-100 text-amber-900 border-amber-300 ring-1 ring-inset ring-amber-500 dark:bg-amber-900/40 dark:text-amber-100 dark:border-amber-700 dark:ring-amber-400",
+  EchoLink: "bg-emerald-100 text-emerald-900 border-emerald-300 ring-1 ring-inset ring-emerald-500 dark:bg-emerald-900/40 dark:text-emerald-100 dark:border-emerald-700 dark:ring-emerald-400",
+  AllStar: "bg-orange-100 text-orange-900 border-orange-300 ring-1 ring-inset ring-orange-500 dark:bg-orange-900/40 dark:text-orange-100 dark:border-orange-700 dark:ring-orange-400",
+};
 
-// Helper to get primary frequency from repeater
-function getPrimaryFrequency(r: Repeater) {
-  if (!r.frequencies || r.frequencies.length === 0) return null;
-  return r.frequencies.find(f => f.isPrimary) || r.frequencies[0];
-}
+/** Same treatment for the "Todos" chip, which carries no mode hue. */
+const MODE_CHIP_SELECTED_ALL =
+  "bg-azulejo-100 text-azulejo-800 border-azulejo-300 ring-1 ring-inset ring-azulejo-500 dark:bg-azulejo-900/40 dark:text-azulejo-100 dark:border-azulejo-700 dark:ring-azulejo-400";
 
-function FilterChip({
-  isActive,
-  onClick,
+/** The one mode surface: display label, the value the filters speak, tile colour key.
+ *  Built from the canonical vocabulary in lib/modes.ts, which the per-column "Modos"
+ *  dropdown is fed as well, plus the leading "Todos" chip this strip alone carries. */
+/** The merged status filter values speak table.statusCell.* keys, which are
+ *  camelCase where the filter value is kebab. */
+const STATUS_LABEL_KEY: Record<string, string> = {
+  ok: "ok",
+  "prob-bad": "probBad",
+  bad: "bad",
+  unknown: "unknown",
+};
+
+const MODE_CHIPS: { value: string | null; label: string; tileKey?: string }[] = [
+  { value: null, label: "" },
+  ...MODE_OPTIONS,
+];
+
+/** One glyph per mode, keyed by tile colour key ("all" for the leading chip).
+ *  A mode is recognisable by its icon before its label is read, which is what the
+ *  retired tile grid bought and the bare dot did not. */
+const MODE_CHIP_ICONS: Record<string, LucideIcon> = {
+  all: LayoutGrid,
+  FM: Radio,
+  DMR: Signal,
+  DSTAR: Star,
+  C4FM: Hexagon,
+  TETRA: Shield,
+  EchoLink: Globe,
+  AllStar: Link2,
+};
+
+
+/**
+ * Radius slider with a real accessible name.
+ *
+ * components/ui/slider.tsx spreads its props onto Radix's Root, and Radix builds the
+ * thumb's accessible name from the Thumb's OWN props (`props["aria-label"] || getLabel()`,
+ * and getLabel() is undefined for a single-thumb slider). So `<Slider aria-label>` names a
+ * span with no role while the focusable `role="slider"` stays anonymous. That primitive is
+ * outside this change's scope, so the name is applied to the thumb node here, together with
+ * an aria-valuetext so the no-radius state announces "sem limite" instead of a bare "0".
+ */
+function DistanceSlider({
   label,
-  activeClass = "bg-primary text-primary-foreground shadow-sm border-primary"
+  valueText,
+  value,
+  onValueChange,
+  className,
 }: {
-  isActive: boolean;
-  onClick: () => void;
   label: string;
-  activeClass?: string;
+  valueText: string;
+  value: number;
+  onValueChange: (value: number) => void;
+  className?: string;
 }) {
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const thumb = containerRef.current?.querySelector('[role="slider"]');
+    if (!thumb) return;
+    thumb.setAttribute("aria-label", label);
+    thumb.setAttribute("aria-valuetext", valueText);
+  }, [label, valueText]);
+
   return (
-    <button
-      onClick={onClick}
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm font-medium transition-all border whitespace-nowrap ${
-        isActive
-          ? activeClass
-          : "bg-background hover:bg-muted text-muted-foreground border-border hover:border-muted-foreground/30"
-      }`}
-    >
-      {label}
-    </button>
+    <div ref={containerRef} className={className}>
+      <Slider
+        value={[value]}
+        min={0}
+        max={100}
+        step={5}
+        onValueChange={(values) => onValueChange(values[0] ?? 0)}
+      />
+    </div>
   );
 }
 
 export default function RepeaterView({ view }: Props) {
   const t = useTranslations();
-  const { repeaters: data, fetchError } = useRepeaters();
-  const { userLocation } = useUserLocation();
-  const columns = useColumns({ userLocation });
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [open, setOpen] = React.useState(false);
-  const [selected, setSelected] = React.useState<Repeater | null>(null);
-  const [distanceRadius, setDistanceRadius] = React.useState<number | null>(null);
-  const [filtersExpanded, setFiltersExpanded] = React.useState(false);
+  const { repeaters, fetchError } = useRepeaters();
+  const {
+    userLocation,
+    isLocating,
+    error: locationError,
+    requestLocation,
+    clearLocation,
+  } = useUserLocation();
 
-  // Count active filters for badge display
-  const activeFilterCount = React.useMemo(() => {
-    let count = 0;
-    if (columnFilters.find((f) => f.id === "callsign")?.value) count++;
-    if (columnFilters.find((f) => f.id === "band")?.value) count++;
-    if (columnFilters.find((f) => f.id === "owner")?.value) count++;
-    if (
-      (columnFilters.find((f) => f.id === "modes")?.value as string[] | undefined)
-        ?.length
-    )
-      count++;
-    if (columnFilters.find((f) => f.id === "qthLocator")?.value) count++;
-    if (columnFilters.find((f) => f.id === "opStatus")?.value) count++;
-    if (distanceRadius !== null) count++;
-    return count;
-  }, [columnFilters, distanceRadius]);
+  const {
+    search,
+    band,
+    modes,
+    links,
+    owner,
+    qthLocator,
+    callsign,
+    status,
+    opStatus,
+    favouritesOnly,
+    outputFrequency,
+    inputFrequency,
+    tone,
+    distanceRadius,
+    advancedOpen,
+    selectedCallsign,
+    columnFilters,
+    setColumnFilters,
+    sorting,
+    setSorting,
+    paginationState,
+    setPagination,
+    setSearch,
+    setCallsign,
+    setBand,
+    toggleMode,
+    clearModes,
+    toggleLink,
+    setOwner,
+    setQthLocator,
+    setStatus,
+    setOpStatus,
+    setFavouritesOnly,
+    setOutputFrequency,
+    setInputFrequency,
+    setTone,
+    setDistanceRadius,
+    setSelectedCallsign,
+    setAdvancedOpen,
+    resetFilters,
+  } = useRepeaterFilters();
 
-  // Collect unique modes from all repeaters
-  const modeOptions = React.useMemo(() => {
-    const set = new Set<string>();
-    data.forEach((d) => d.modes?.forEach((m) => set.add(m === 'DSTAR' ? 'D-STAR' : m)));
-    return Array.from(set).sort();
-  }, [data]);
+  // Vote stats + auto-check results, fetched once per mount behind their own TTL
+  // caches. `epoch` bumps when they land, so the filtered row model recomputes.
+  const { voteStats, autoStatus, loaded: statusLoaded } = useRepeaterStatusData();
 
-  const filtered = React.useMemo(() => {
-    let result = data;
-    const callsign = columnFilters.find((f) => f.id === "callsign")?.value as
-      | string
-      | undefined;
-    const band = columnFilters.find((f) => f.id === "band")?.value as string | undefined;
-    const owner = columnFilters.find((f) => f.id === "owner")?.value as
-      | string
-      | undefined;
-    const modes = columnFilters.find((f) => f.id === "modes")?.value as
-      | string[]
-      | undefined;
-    const qth = columnFilters.find((f) => f.id === "qthLocator")?.value as
-      | string
-      | undefined;
-    const opStatus = columnFilters.find((f) => f.id === "opStatus")?.value as
-      | string
-      | undefined;
+  // Toggling a heart changes what the favourites filter matches (localStorage),
+  // which TanStack cannot observe on its own.
+  const [favoritesEpoch, setFavoritesEpoch] = React.useState(0);
+  const handleFavoriteToggle = React.useCallback(() => {
+    setFavoritesEpoch((n) => n + 1);
+  }, []);
 
-    if (callsign && callsign.trim()) {
-      const q = callsign.trim().toLowerCase();
-      result = result.filter((r) => r.callsign.toLowerCase().includes(q));
+  const columns = useColumns({ userLocation, onFavoriteToggle: handleFavoriteToggle });
+
+
+
+
+  const openRepeater = React.useCallback(
+    (repeater: Repeater) => {
+      setSelectedCallsign(repeater.callsign);
+    },
+    [setSelectedCallsign],
+  );
+
+  // The drawer is driven by the URL: the Repeater is resolved on every render and
+  // never stored, so Back closes it and a shared link opens it.
+  const selected = React.useMemo(() => {
+    if (!selectedCallsign) return null;
+    return (
+      repeaters.find(
+        (r) => r.callsign.toUpperCase() === selectedCallsign.toUpperCase(),
+      ) ?? null
+    );
+  }, [repeaters, selectedCallsign]);
+
+  // A shared link naming a callsign that is not in the dataset must not leave an
+  // empty drawer open.
+  React.useEffect(() => {
+    if (selectedCallsign && !selected && repeaters.length > 0) {
+      setSelectedCallsign(null);
     }
-    if (band) {
-      result = result.filter((r) => {
-        const primary = getPrimaryFrequency(r);
-        return primary ? getBandFromFrequency(primary.outputFrequency) === band : false;
-      });
-    }
-    if (owner && owner.trim()) {
-      const q = owner.trim().toLowerCase();
-      result = result.filter((r) => {
-        const ownerStr = r.owner ?? '';
-        return ownerStr.toLowerCase().includes(q) || getOwnerShort(ownerStr).toLowerCase().includes(q);
-      });
-    }
-    if (modes && modes.length > 0) {
-      result = result.filter((r) =>
-        modes.some((m) => {
-          const normalizedFilter = m === "D-STAR" ? "DSTAR" : m;
-          // EchoLink and AllStar are stored as separate fields, not in modes array
-          if (m === "EchoLink") return r.echolink?.enabled === true;
-          if (m === "AllStar") return r.allstarNode != null;
-          return r.modes?.includes(normalizedFilter as typeof r.modes[number]);
-        })
+  }, [selectedCallsign, selected, repeaters.length, setSelectedCallsign]);
+
+
+  // ONE filtering implementation for both surfaces. `applyRepeaterFilters` and the
+  // table's column filterFns call the same predicates, so the map and the table
+  // cannot show different result sets for the same filter state. The table is then
+  // handed this already-filtered array and re-applies its column filters to it,
+  // which is safe because every predicate is idempotent.
+  const statusOf = React.useCallback(
+    (repeater: Repeater) =>
+      resolveMergedStatus({
+        repeater,
+        auto: autoStatus[repeater.callsign],
+        votes: voteStats[repeater.callsign],
+      }).filterValue,
+    [autoStatus, voteStats],
+  );
+
+  const filtered = React.useMemo(
+    () =>
+      applyRepeaterFilters(
+        repeaters,
+        {
+          search,
+          callsign,
+          band,
+          modes,
+          links,
+          owner,
+          qthLocator,
+          status,
+          opStatus,
+          favouritesOnly,
+          outputFrequency,
+          inputFrequency,
+          tone,
+          distanceRadius,
+        },
+        getOwnerShort,
+        { userLocation, statusOf },
+      ),
+    // favoritesEpoch: toggling a heart changes what the favourites filter matches
+    // in localStorage, which nothing else here can observe.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      repeaters,
+      search,
+      callsign,
+      band,
+      modes,
+      links,
+      owner,
+      qthLocator,
+      status,
+      opStatus,
+      favouritesOnly,
+      outputFrequency,
+      inputFrequency,
+      tone,
+      distanceRadius,
+      userLocation,
+      statusOf,
+      favoritesEpoch,
+    ],
+  );
+
+  /* ------------------------------------------------------------ toolbar bits */
+
+  // Announced by the radius slider and printed next to it, so the visible text and the
+  // accessible value text never disagree.
+  const distanceValueText =
+    distanceRadius !== null
+      ? t("table.chips.distanceValue", { km: distanceRadius })
+      : t("filters.distanceAll");
+
+  const locationControl = userLocation ? (
+    <Button
+      variant="outline"
+      size="icon-sm"
+      onClick={clearLocation}
+      aria-label={t("location.clearLocation")}
+      title={t("location.clearLocation")}
+    >
+      <MapPinOff className="h-4 w-4" aria-hidden />
+    </Button>
+  ) : (
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => requestLocation()}
+      disabled={isLocating}
+    >
+      <MapPin className="h-4 w-4" aria-hidden />
+      {isLocating ? t("location.locating") : t("location.locateMe")}
+    </Button>
+  );
+
+  const tableToolbar = (
+    <>
+      <Select
+        value={band ?? "all"}
+        onValueChange={(value) => setBand(value === "all" ? null : (value as Band))}
+      >
+        <SelectTrigger size="sm" className="w-[7rem]" aria-label={t("filters.band")}>
+          {/* The label is rendered here rather than by SelectValue: Radix resolves
+              a Value from its registered items, which only mount once the content
+              has opened, so the trigger renders blank on first paint and through
+              SSR. Band codes are ITU (2m, 70cm) and stay as they are. */}
+          <span className="truncate">{band ?? t("filters.all")}</span>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">{t("filters.all")}</SelectItem>
+          <SelectItem value="2m">{t("filters.2m")}</SelectItem>
+          <SelectItem value="70cm">{t("filters.70cm")}</SelectItem>
+        </SelectContent>
+      </Select>
+
+      {/* ONE state control. The merged status already CONTAINS the declared one:
+          resolveMergedStatus falls through to repeater.status when there is no
+          auto-check, and FILTER_VALUE_BY_KEY buckets admin active/maintenance/
+          offline into ok/prob-bad/bad. Two dropdowns both reading "Todas" were
+          therefore ~the same filter twice. They stay distinguishable here because
+          the group headings name the claim each one makes: what was observed
+          versus what the responsável declared. Picking from one group clears the
+          other, so the control is never ambiguous about which question it asked. */}
+      <Select
+        value={status ? `obs:${status}` : opStatus ? `adm:${opStatus}` : "all"}
+        onValueChange={(value) => {
+          if (value === "all") {
+            setStatus(null);
+            setOpStatus(null);
+            return;
+          }
+          const [group, key] = value.split(":");
+          if (group === "obs") {
+            setOpStatus(null);
+            setStatus(key as StatusFilter);
+          } else {
+            setStatus(null);
+            setOpStatus(key as OpStatus);
+          }
+        }}
+      >
+        <SelectTrigger
+          size="sm"
+          className="w-[12rem]"
+          aria-label={t("table.toolbar.statusLabel")}
+        >
+          {/* The field name stands in while nothing is picked: three adjacent
+              selects all reading "Todas" would not say which is which. */}
+          <span className="truncate">
+            {status
+              ? t(`table.statusCell.${STATUS_LABEL_KEY[status]}` as Parameters<typeof t>[0])
+              : opStatus
+                ? t(`table.opStatus.${opStatus}` as Parameters<typeof t>[0])
+                : t("table.toolbar.statusLabel")}
+          </span>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">{t("filters.all")}</SelectItem>
+
+          <SelectSeparator />
+          <SelectGroup>
+            <SelectLabel>{t("table.toolbar.statusGroupObserved")}</SelectLabel>
+            {/* The merged status cell is the vocabulary of record: the filter reads
+                the same table.statusCell.* keys, so an operator can never pick one
+                word and get rows labelled another. */}
+            <SelectItem value="obs:ok">{t("table.statusCell.ok")}</SelectItem>
+            <SelectItem value="obs:prob-bad">{t("table.statusCell.probBad")}</SelectItem>
+            <SelectItem value="obs:bad">{t("table.statusCell.bad")}</SelectItem>
+            <SelectItem value="obs:unknown">{t("table.statusCell.unknown")}</SelectItem>
+          </SelectGroup>
+
+          <SelectSeparator />
+          <SelectGroup>
+            <SelectLabel>{t("table.toolbar.statusGroupDeclared")}</SelectLabel>
+            <SelectItem value="adm:active">{t("table.opStatus.active")}</SelectItem>
+            <SelectItem value="adm:maintenance">{t("table.opStatus.maintenance")}</SelectItem>
+            <SelectItem value="adm:offline">{t("table.opStatus.offline")}</SelectItem>
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+
+      {locationControl}
+
+      {/* Distance radius: harvested from the deleted RepeaterBrowser, reachable
+          from the table now that a location control lives in the toolbar. */}
+      {userLocation && (
+        <div className="flex min-w-[13rem] items-center gap-2">
+          <span className="whitespace-nowrap text-xs text-muted-foreground">
+            {t("filters.distance")}:{" "}
+            <span className="font-mono tabular-nums">{distanceValueText}</span>
+          </span>
+          <DistanceSlider
+            className="w-24"
+            label={t("filters.distance")}
+            valueText={distanceValueText}
+            value={distanceRadius ?? 0}
+            onValueChange={(val) => setDistanceRadius(val === 0 ? null : val)}
+          />
+        </div>
+      )}
+    </>
+  );
+
+  // Chips are derived ONCE, here, from the hook state, and handed to the shared
+  // filter bar. DataTable used to derive its own from the TanStack column filters,
+  // which the map had no way to reach: that is why the map never showed a chip for
+  // a filter it also never applied.
+  const filterChips = React.useMemo<RepeaterFilterChip[]>(() => {
+    const list: RepeaterFilterChip[] = [];
+    const push = (id: string, label: string, value: string | undefined, onRemove: () => void) =>
+      list.push({ id, label, value, onRemove });
+
+    if (search.trim()) push("search", t("table.chips.search"), search, () => setSearch(""));
+    if (callsign.trim()) push("callsign", t("table.chips.callsign"), callsign, () => setCallsign(""));
+    if (band) push("band", t("table.chips.band"), band, () => setBand(null));
+
+    // One chip per selected mode, so a single mode can be dropped from the set.
+    modes.forEach((mode) =>
+      push(`modes:${mode}`, t("table.chips.modes"), mode, () => toggleMode(mode)),
+    );
+    links.forEach((link) =>
+      push(
+        `links:${link}`,
+        t("table.chips.links"),
+        LINK_OPTIONS.find((l) => l.value === link)?.label ?? link,
+        () => toggleLink(link),
+      ),
+    );
+
+    if (owner.trim()) push("owner", t("table.chips.owner"), owner, () => setOwner(""));
+    if (qthLocator.trim())
+      push("qthLocator", t("table.chips.qthLocator"), qthLocator, () => setQthLocator(""));
+    if (status)
+      push(
+        "status",
+        t("table.chips.status"),
+        t(`table.status.${status}` as Parameters<typeof t>[0]),
+        () => setStatus(null),
       );
-    }
-    if (qth && qth.trim()) {
-      const q = qth.trim().toLowerCase();
-      result = result.filter((r) => r.qthLocator?.toLowerCase().includes(q));
-    }
-    if (opStatus) {
-      result = result.filter((r) => r.status === opStatus);
-    }
-    if (userLocation && distanceRadius !== null) {
-      result = result.filter((r) => {
-        const dist = calculateDistance(
-          userLocation.latitude,
-          userLocation.longitude,
-          r.latitude,
-          r.longitude
+    if (opStatus)
+      push(
+        "opStatus",
+        t("table.chips.opStatus"),
+        t(`table.opStatus.${opStatus}` as Parameters<typeof t>[0]),
+        () => setOpStatus(null),
+      );
+    if (outputFrequency.trim())
+      push("outputFrequency", t("table.chips.outputFrequency"), outputFrequency, () =>
+        setOutputFrequency(""),
+      );
+    if (inputFrequency.trim())
+      push("inputFrequency", t("table.chips.inputFrequency"), inputFrequency, () =>
+        setInputFrequency(""),
+      );
+    if (tone.trim()) push("tone", t("table.chips.tone"), tone, () => setTone(""));
+    // Label-only: "Favoritos" carries no value segment.
+    if (favouritesOnly)
+      push("favorite", t("table.chips.favorites"), undefined, () => setFavouritesOnly(false));
+    if (distanceRadius !== null)
+      push(
+        "distance",
+        t("table.chips.distance"),
+        t("table.chips.distanceValue", { km: distanceRadius }),
+        () => setDistanceRadius(null),
+      );
+
+    return list;
+  }, [
+    t,
+    search, setSearch,
+    callsign, setCallsign,
+    band, setBand,
+    modes, toggleMode,
+    links, toggleLink,
+    owner, setOwner,
+    qthLocator, setQthLocator,
+    status, setStatus,
+    opStatus, setOpStatus,
+    outputFrequency, setOutputFrequency,
+    inputFrequency, setInputFrequency,
+    tone, setTone,
+    favouritesOnly, setFavouritesOnly,
+    distanceRadius, setDistanceRadius,
+  ]);
+
+  // One count for both views, from the one filtered array.
+  const resultCountLabel =
+    filtered.length === 0
+      ? t("table.resultsCountNone")
+      : filterChips.length === 0
+        ? t("table.resultsCountAll", { total: repeaters.length })
+        : filtered.length === 1
+          ? t("table.resultsCountSingular", { total: repeaters.length })
+          : t("table.resultsCount", { count: filtered.length, total: repeaters.length });
+
+  const favouritesLabel = favouritesOnly
+    ? t("favorites.showAll")
+    : t("favorites.showOnly");
+
+  const tableLeftActions = (
+    <>
+      <Button
+        variant={favouritesOnly ? "default" : "outline"}
+        size="icon-sm"
+        onClick={() => setFavouritesOnly(!favouritesOnly)}
+        aria-label={favouritesLabel}
+        title={favouritesLabel}
+        aria-pressed={favouritesOnly}
+      >
+        <Heart className={`h-4 w-4 ${favouritesOnly ? "fill-current" : ""}`} aria-hidden />
+      </Button>
+      <RepeaterSubmitDialog repeaters={repeaters} />
+    </>
+  );
+
+  // One mode surface at every breakpoint, multi-select everywhere.
+  // The whole link axis, each chip carrying how many repeaters actually have it.
+  const linkOptions = React.useMemo(() => linkOptionCounts(repeaters), [repeaters]);
+
+  const modeChipStrip = (
+    <div
+      role="group"
+      aria-label={t("table.modes.groupLabel")}
+      className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+    >
+      {MODE_CHIPS.map(({ value, label, tileKey }) => {
+        const isActive = value === null ? modes.length === 0 : modes.includes(value);
+        // Per-mode colour (sanctioned Mode-Taxonomy exception, see DESIGN.md).
+        // "Todos" carries the azulejo tint.
+        const style = tileKey ? MODE_TILE_COLORS[tileKey] : null;
+        const activeClass =
+          (tileKey ? MODE_CHIP_SELECTED[tileKey] : undefined) ?? MODE_CHIP_SELECTED_ALL;
+        const hoverClass = style
+          ? style.hover
+          : "hover:bg-azulejo-50 hover:border-azulejo-300 dark:hover:bg-azulejo-950/30";
+        const Icon = MODE_CHIP_ICONS[tileKey ?? "all"];
+        return (
+          <button
+            key={value ?? "all"}
+            type="button"
+            aria-pressed={isActive}
+            onClick={() => (value === null ? clearModes() : toggleMode(value))}
+            className={`inline-flex shrink-0 items-center gap-2 rounded-full border pl-3 pr-4 min-h-10 text-sm font-medium transition-colors duration-150 ease-out motion-reduce:transition-none ${
+              isActive
+                ? activeClass
+                : `bg-card border-border text-foreground ${hoverClass}`
+            }`}
+          >
+            {Icon && (
+              // The icon keeps the solid mode hue in both states: on the tinted
+              // selected fill it stays the second, non-textual cue for which mode
+              // this is. The label carries the meaning, so it is decorative.
+              <Icon
+                aria-hidden
+                className={`size-4 shrink-0 ${
+                  tileKey
+                    ? style?.icon ?? ""
+                    : "text-azulejo-600 dark:text-azulejo-400"
+                }`}
+              />
+            )}
+            {value === null ? t("table.modes.all") : label}
+          </button>
         );
-        return dist <= distanceRadius;
-      });
-    }
-    return result;
-  }, [data, columnFilters, userLocation, distanceRadius]);
+      })}
+    </div>
+  );
+
+  // A second, quieter axis. Linking is a PROPERTY of a repeater, not a modulation:
+  // any FM repeater can be EchoLink or AllStar enabled, and every digital mode
+  // carries its own network. It reads as secondary chrome to match.
+  const linkChipStrip = (
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-xs font-medium text-muted-foreground">
+          {t("filters.links")}
+        </span>
+        <div role="group" aria-label={t("filters.links")} className="flex flex-wrap gap-1.5">
+          {linkOptions.map(({ value, label, ridesOn, count }) => {
+            const isActive = links.includes(value);
+            // A zero is shown, not hidden: it says the directory can record this
+            // link but nobody has yet, which is a fact worth telling an operator.
+            const empty = count === 0;
+            return (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={isActive}
+                disabled={empty}
+                onClick={() => toggleLink(value)}
+                title={
+                  empty
+                    ? t("filters.linkNone", { label })
+                    : t("filters.linkRidesOn", { mode: ridesOn })
+                }
+                className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 min-h-8 text-xs font-medium transition-colors duration-150 ease-out motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-45 ${
+                  isActive
+                    ? "border-azulejo-300 bg-azulejo-100 text-azulejo-800 ring-1 ring-inset ring-azulejo-500 dark:border-azulejo-700 dark:bg-azulejo-900/40 dark:text-azulejo-100 dark:ring-azulejo-400"
+                    : "border-border bg-card text-muted-foreground hover:border-azulejo-300 hover:text-foreground"
+                }`}
+              >
+                <Link2 className="size-3" aria-hidden />
+                {label}
+                <span className="font-mono tabular-nums opacity-70">{count}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
 
   return (
     <>
       <LocationTip />
       <Card className="w-full max-w-7xl">
         <CardContent>
-          {view === "table" && (
-            <>
+          <RepeaterStatusProvider
+            voteStats={voteStats}
+            autoStatus={autoStatus}
+            ready={statusLoaded}
+          >
+            {/* ONE filter bar for both views. Rendered here rather than inside
+                DataTable so the map can show the identical controls. */}
+            <RepeaterFilterBar
+              search={{ value: search, onChange: setSearch }}
+              modeStrip={
+                <div className="flex flex-col gap-2">
+                  {modeChipStrip}
+                  {linkChipStrip}
+                </div>
+              }
+              domainControls={tableToolbar}
+              leadingActions={tableLeftActions}
+              chips={filterChips}
+              onClearFilters={resetFilters}
+              resultCountLabel={resultCountLabel}
+            />
 
-              {/* Mode Filter Presets — chip strip on mobile, tile card on lg+ */}
-              {(() => {
-                const activeModes = (columnFilters.find((f) => f.id === "modes")?.value as string[] | undefined) ?? []
-                const hasActiveFilter = activeModes.length > 0
-                const modes: { mode: string; label: string }[] = [
-                  { mode: 'ALL', label: 'Todos' },
-                  { mode: 'FM', label: 'FM' },
-                  { mode: 'DMR', label: 'DMR' },
-                  { mode: 'DSTAR', label: 'D-STAR' },
-                  { mode: 'C4FM', label: 'C4FM' },
-                  { mode: 'TETRA', label: 'TETRA' },
-                  { mode: 'EchoLink', label: 'EchoLink' },
-                  { mode: 'AllStar', label: 'AllStar' },
-                ]
-                const toggleMode = (mode: string) => {
-                  if (mode === 'ALL') {
-                    setColumnFilters((prev) => prev.filter((f) => f.id !== "modes"))
-                    return
-                  }
-                  const displayMode = mode === 'DSTAR' ? 'D-STAR' : mode
-                  setColumnFilters((prev) => {
-                    const next = prev.filter((f) => f.id !== "modes")
-                    if (activeModes.includes(displayMode)) {
-                      const updated = activeModes.filter((m) => m !== displayMode)
-                      if (updated.length > 0) next.push({ id: "modes", value: updated })
-                    } else {
-                      next.push({ id: "modes", value: [displayMode] })
-                    }
-                    return next
-                  })
-                }
-                return (
-                  <>
-                    {/* Mobile chip strip — single horizontal scroll row, colour-coded by mode */}
-                    <div className="mb-4 lg:hidden">
-                      <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                        {modes.map(({ mode, label }) => {
-                          const displayMode = mode === 'DSTAR' ? 'D-STAR' : mode
-                          const isActive = mode === 'ALL' ? !hasActiveFilter : activeModes.includes(displayMode)
-                          // Per-mode colour (sanctioned Mode-Taxonomy exception, see DESIGN.md). "ALL" stays azulejo.
-                          const style = mode === 'ALL' ? null : MODE_TILE_COLORS[mode]
-                          const activeClass = style ? style.active : 'bg-azulejo-500 border-azulejo-600 text-white'
-                          const hoverClass = style ? style.hover : 'hover:bg-azulejo-50 hover:border-azulejo-300 dark:hover:bg-azulejo-950/30'
-                          return (
-                            <button
-                              key={mode}
-                              type="button"
-                              onClick={() => toggleMode(mode)}
-                              className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-4 min-h-10 text-sm font-medium transition-colors duration-150 ${
-                                isActive
-                                  ? `${activeClass} shadow-[0_1px_3px_oklch(0.50_0.137_252/0.35)]`
-                                  : `bg-card border-border text-foreground ${hoverClass}`
-                              }`}
-                            >
-                              {mode !== 'ALL' && (
-                                <span className={`size-1.5 rounded-full ${isActive ? 'bg-white' : style?.dot ?? ''}`} />
-                              )}
-                              {label}
-                            </button>
-                          )
-                        })}
-                      </div>
-                    </div>
-
-                    {/* Desktop tile card — preserved as-is at lg+ */}
-                    <div className="hidden lg:block mb-6 rounded-xl border bg-muted/30 p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-sm font-semibold text-foreground tracking-tight">{t('filters.quickFilters')}</h3>
-                        {hasActiveFilter ? (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setColumnFilters((prev) => prev.filter((f) => f.id !== "modes"))
-                            }}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-all"
-                          >
-                            <X className="h-3 w-3" />
-                            {t('filters.clearModes')}
-                          </button>
-                        ) : null}
-                      </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-8 gap-2">
-                  {(() => {
-                    const currentModes = (columnFilters.find((f) => f.id === "modes")?.value as string[] | undefined) || []
-                    const hasActiveFilter = currentModes.length > 0
-                    return [
-                      { mode: 'ALL', label: 'Todos', Icon: LayoutGrid, desc: 'Sem filtro' },
-                      { mode: 'FM', label: 'FM', Icon: Radio, desc: 'Analógico' },
-                      { mode: 'DMR', label: 'DMR', Icon: Signal, desc: 'Digital' },
-                      { mode: 'DSTAR', label: 'D-STAR', Icon: Star, desc: 'Digital' },
-                      { mode: 'C4FM', label: 'C4FM', Icon: Hexagon, desc: 'Fusion' },
-                      { mode: 'TETRA', label: 'TETRA', Icon: Shield, desc: 'Digital' },
-                      { mode: 'EchoLink', label: 'EchoLink', Icon: Globe, desc: 'VoIP' },
-                      { mode: 'AllStar', label: 'AllStar', Icon: Link2, desc: 'Link' },
-                    ].map(({ mode, label, Icon, desc }) => {
-                      const displayMode = mode === 'DSTAR' ? 'D-STAR' : mode
-                      // "ALL" is active when no mode filters are set
-                      const isActive = mode === 'ALL' ? !hasActiveFilter : currentModes.includes(displayMode)
-                      const isInactive = mode === 'ALL' ? false : (hasActiveFilter && !isActive)
-                      // Per-mode colour so a tile is recognisable by its mode at a glance
-                      // (sanctioned Mode-Taxonomy exception, see DESIGN.md). "ALL" stays azulejo.
-                      const style = mode === 'ALL' ? null : MODE_TILE_COLORS[mode]
-                      const activeClass = style ? style.active : 'bg-azulejo-500 border-azulejo-600 text-white'
-                      const hoverClass = style ? style.hover : 'hover:bg-azulejo-50 hover:border-azulejo-300 dark:hover:bg-azulejo-950/30'
-                      const restIconClass = style ? style.icon : 'text-muted-foreground'
-                      return (
-                        <button
-                          key={mode}
-                          type="button"
-                          onClick={() => {
-                            // "ALL" clears all mode filters
-                            if (mode === 'ALL') {
-                              setColumnFilters((prev) => prev.filter((f) => f.id !== "modes"))
-                              return
-                            }
-                            setColumnFilters((prev) => {
-                              const next = prev.filter((f) => f.id !== "modes")
-                              if (isActive) {
-                                const updated = currentModes.filter((m) => m !== displayMode)
-                                if (updated.length > 0) {
-                                  next.push({ id: "modes", value: updated })
-                                }
-                              } else {
-                                next.push({ id: "modes", value: [displayMode] })
-                              }
-                              return next
-                            })
-                          }}
-                          className={`
-                            group relative flex flex-col items-center justify-center p-3 rounded-lg border
-                            transition-all duration-200 ease-out
-                            ${isActive
-                              ? `${activeClass} shadow-md scale-[1.02]`
-                              : `bg-card border-border text-foreground ${hoverClass} hover:scale-[1.01]`
-                            }
-                            ${isInactive ? 'opacity-50 hover:opacity-75' : ''}
-                          `}
-                        >
-                        {/* Active indicator dot */}
-                        {isActive && (
-                          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-white animate-pulse shadow-sm" />
-                        )}
-
-                        {/* Icon — mode colour at rest, white when active */}
-                        <Icon className={`h-6 w-6 mb-1 transition-transform duration-200 ${isActive ? 'text-white scale-110' : `${restIconClass} group-hover:scale-105`}`} />
-
-                        {/* Label */}
-                        <span className="text-sm font-semibold tracking-tight">
-                          {label}
-                        </span>
-
-                        {/* Description */}
-                        <span className="text-[10px] tracking-wider opacity-60">
-                          {desc}
-                        </span>
-                        </button>
-                      )
-                    })
-                  })()}
-                      </div>
-                    </div>
-                  </>
-                )
-              })()}
-
+            {view === "table" && (
               <DataTable
                 columns={columns}
-                data={data}
+                // Already filtered by applyRepeaterFilters. The table re-applies its
+                // column filters to it, which is a no-op: the predicates are the same
+                // functions and every one of them is idempotent.
+                data={filtered}
+                totalCount={repeaters.length}
+                hideToolbar
                 columnFilters={columnFilters}
                 onColumnFiltersChange={setColumnFilters}
-                onRowClick={(row) => {
-                  setSelected(row as Repeater);
-                  setOpen(true);
-                }}
-                isLoading={false}
-                // Mobile-default visible columns: callsign + outputFrequency only.
-                // Everything else hidden under md:, user can re-enable via the Colunas dropdown.
-                responsiveHiddenColumns={[
-                  "favorite",
-                  "status",
-                  "opStatus",
-                  "distance",
-                  "band",
-                  "inputFrequency",
-                  "tone",
-                  "modes",
-                  "qthLocator",
-                  "owner",
-                ]}
-                leftActions={
-                  <>
-                    {(() => {
-                      const favOn = !!columnFilters.find((f) => f.id === "favorite")?.value
-                      const label = favOn ? t("favorites.showAll") : t("favorites.showOnly")
-                      return (
-                        <Button
-                          variant={favOn ? "default" : "outline"}
-                          size="icon-sm"
-                          onClick={() => {
-                            setColumnFilters((prev) => {
-                              const hasFavoriteFilter = prev.find((f) => f.id === "favorite");
-                              if (hasFavoriteFilter) {
-                                return prev.filter((f) => f.id !== "favorite");
-                              }
-                              return [...prev, { id: "favorite", value: true }];
-                            });
-                          }}
-                          aria-label={label}
-                          title={label}
-                          aria-pressed={favOn}
-                        >
-                          <Heart className={`h-4 w-4 ${favOn ? "fill-current" : ""}`} />
-                        </Button>
-                      )
-                    })()}
-                    <RepeaterSubmitDialog repeaters={data} />
-                  </>
+                globalFilter={search}
+                onGlobalFilterChange={(value) =>
+                  setSearch(typeof value === "function" ? value(search) : value)
                 }
+                globalFilterFn={repeaterGlobalFilter}
+                sorting={sorting}
+                onSortingChange={setSorting}
+                pagination={paginationState}
+                onPaginationChange={setPagination}
+                initialSorting={
+                  userLocation ? [{ id: "distance", desc: false }] : undefined
+                }
+                onRowClick={(row) => openRepeater(row)}
+                getRowId={(row) => row.callsign}
+                getRowLabel={(row) => t("table.row.open", { callsign: row.callsign })}
+                renderCardList={(rows) => (
+                  <RepeaterCardList
+                    repeaters={rows}
+                    userLocation={userLocation}
+                    onSelect={openRepeater}
+                    onFavoriteToggle={handleFavoriteToggle}
+                  />
+                )}
+                modeFilterOptions={MODE_FILTER_VALUES}
+                advancedFiltersOpen={advancedOpen}
+                onAdvancedFiltersOpenChange={setAdvancedOpen}
+                onClearFilters={resetFilters}
+                isLoading={false}
               />
-            </>
-          )}
+            )}
 
-          {view === "map" && (
+            {view === "map" && (
             <>
-              <Collapsible open={filtersExpanded} onOpenChange={setFiltersExpanded} className="mb-4">
-                {/* Header row - always visible */}
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                  {/* Search input */}
-                  <div className="flex-1 min-w-0">
-                    <SearchAutocomplete
-                      repeaters={data}
-                      value={
-                        (columnFilters.find((f) => f.id === "callsign")?.value as string) ??
-                        ""
-                      }
-                      onChange={(v) => {
-                        setColumnFilters((prev) => {
-                          const next = prev.filter((f) => f.id !== "callsign");
-                          if (v) next.push({ id: "callsign", value: v });
-                          return next;
-                        });
-                      }}
-                      onSelect={(repeater) => {
-                        setSelected(repeater);
-                        setOpen(true);
-                      }}
-                      className="w-full"
-                      placeholder={t("filters.callsign")}
-                    />
-                  </div>
-
-                  {/* Action buttons */}
-                  <div className="flex items-center gap-2">
-                    <CollapsibleTrigger asChild>
-                      <Button
-                        variant={activeFilterCount > 0 ? "default" : "outline"}
-                        className="h-10 gap-2"
-                      >
-                        <Filter className="h-4 w-4" />
-                        <span className="hidden sm:inline">{t("filters.filter")}</span>
-                        {activeFilterCount > 0 && (
-                          <Badge
-                            variant="secondary"
-                            className="h-5 min-w-5 px-1.5 text-xs bg-background/20"
-                          >
-                            {activeFilterCount}
-                          </Badge>
-                        )}
-                        {filtersExpanded ? (
-                          <ChevronUp className="h-4 w-4" />
-                        ) : (
-                          <ChevronDown className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </CollapsibleTrigger>
-                  </div>
-                </div>
-
-                {/* Expanded filters panel */}
-                <CollapsibleContent>
-                  <div className="pt-4 space-y-4">
-                    {/* Filter sections */}
-                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                      {/* Band filter */}
-                      <div className="rounded-lg border bg-muted/30 p-3">
-                        <div className="flex items-center gap-2 text-sm mb-2.5">
-                          <Radio className="w-4 h-4 text-muted-foreground" />
-                          <span className="font-medium">{t("filters.band")}</span>
-                        </div>
-                        <div className="flex flex-wrap gap-1.5">
-                          <FilterChip
-                            isActive={!columnFilters.find((f) => f.id === "band")?.value}
-                            onClick={() => {
-                              setColumnFilters((prev) => prev.filter((f) => f.id !== "band"));
-                            }}
-                            label={t("filters.all")}
-                          />
-                          <FilterChip
-                            isActive={columnFilters.find((f) => f.id === "band")?.value === "2m"}
-                            onClick={() => {
-                              setColumnFilters((prev) => {
-                                const next = prev.filter((f) => f.id !== "band");
-                                next.push({ id: "band", value: "2m" });
-                                return next;
-                              });
-                            }}
-                            label={t("filters.2m")}
-                          />
-                          <FilterChip
-                            isActive={columnFilters.find((f) => f.id === "band")?.value === "70cm"}
-                            onClick={() => {
-                              setColumnFilters((prev) => {
-                                const next = prev.filter((f) => f.id !== "band");
-                                next.push({ id: "band", value: "70cm" });
-                                return next;
-                              });
-                            }}
-                            label={t("filters.70cm")}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Modes filter */}
-                      <div className="rounded-lg border bg-muted/30 p-3">
-                        <div className="flex items-center gap-2 text-sm mb-2.5">
-                          <Signal className="w-4 h-4 text-muted-foreground" />
-                          <span className="font-medium">{t("filters.modulation")}</span>
-                        </div>
-                        <div className="flex flex-wrap gap-1.5">
-                          {modeOptions.map((m) => {
-                            const selectedMods = (columnFilters.find((f) => f.id === "modes")?.value as string[] | undefined) || [];
-                            const isActive = selectedMods.includes(m);
-                            return (
-                              <FilterChip
-                                key={m}
-                                isActive={isActive}
-                                onClick={() => {
-                                  setColumnFilters((prev) => {
-                                    const next = prev.filter((f) => f.id !== "modes");
-                                    const current = (prev.find((f) => f.id === "modes")?.value as string[] | undefined) || [];
-                                    const updated = isActive
-                                      ? current.filter((v) => v !== m)
-                                      : [...current, m];
-                                    if (updated.length > 0) {
-                                      next.push({ id: "modes", value: updated });
-                                    }
-                                    return next;
-                                  });
-                                }}
-                                label={m}
-                              />
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Status filter */}
-                      <div className="rounded-lg border bg-muted/30 p-3">
-                        <div className="flex items-center gap-2 text-sm mb-2.5">
-                          <Signal className="w-4 h-4 text-muted-foreground" />
-                          <span className="font-medium">{t("filters.opStatus")}</span>
-                        </div>
-                        <div className="flex flex-wrap gap-1.5">
-                          <FilterChip
-                            isActive={!columnFilters.find((f) => f.id === "opStatus")?.value}
-                            onClick={() => {
-                              setColumnFilters((prev) => prev.filter((f) => f.id !== "opStatus"));
-                            }}
-                            label={t("filters.all")}
-                          />
-                          <FilterChip
-                            isActive={columnFilters.find((f) => f.id === "opStatus")?.value === "active"}
-                            onClick={() => {
-                              setColumnFilters((prev) => {
-                                const next = prev.filter((f) => f.id !== "opStatus");
-                                next.push({ id: "opStatus", value: "active" });
-                                return next;
-                              });
-                            }}
-                            label={t("filters.opStatusActive")}
-                            activeClass="bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 border-green-300 dark:border-green-700"
-                          />
-                          <FilterChip
-                            isActive={columnFilters.find((f) => f.id === "opStatus")?.value === "maintenance"}
-                            onClick={() => {
-                              setColumnFilters((prev) => {
-                                const next = prev.filter((f) => f.id !== "opStatus");
-                                next.push({ id: "opStatus", value: "maintenance" });
-                                return next;
-                              });
-                            }}
-                            label={t("filters.opStatusMaintenance")}
-                            activeClass="bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border-amber-300 dark:border-amber-700"
-                          />
-                          <FilterChip
-                            isActive={columnFilters.find((f) => f.id === "opStatus")?.value === "offline"}
-                            onClick={() => {
-                              setColumnFilters((prev) => {
-                                const next = prev.filter((f) => f.id !== "opStatus");
-                                next.push({ id: "opStatus", value: "offline" });
-                                return next;
-                              });
-                            }}
-                            label={t("filters.opStatusOffline")}
-                            activeClass="bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 border-red-300 dark:border-red-700"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Advanced filters row */}
-                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                      {/* Owner input */}
-                      <div className="rounded-lg border bg-muted/30 p-3">
-                        <div className="flex items-center gap-2 text-sm mb-2.5">
-                          <Filter className="w-4 h-4 text-muted-foreground" />
-                          <span className="font-medium">{t("filters.owner")}</span>
-                        </div>
-                        <Input
-                          placeholder={t("filters.owner")}
-                          value={(columnFilters.find((f) => f.id === "owner")?.value as string) ?? ""}
-                          onChange={(event) => {
-                            const v = event.target.value;
-                            setColumnFilters((prev) => {
-                              const next = prev.filter((f) => f.id !== "owner");
-                              if (v) next.push({ id: "owner", value: v });
-                              return next;
-                            });
-                          }}
-                          className="h-9 bg-background"
-                        />
-                      </div>
-
-                      {/* QTH input */}
-                      <div className="rounded-lg border bg-muted/30 p-3">
-                        <div className="flex items-center gap-2 text-sm mb-2.5">
-                          <MapPin className="w-4 h-4 text-muted-foreground" />
-                          <span className="font-medium">{t("filters.qth")}</span>
-                        </div>
-                        <Input
-                          placeholder={t("filters.qth")}
-                          value={(columnFilters.find((f) => f.id === "qthLocator")?.value as string) ?? ""}
-                          onChange={(event) => {
-                            const v = event.target.value;
-                            setColumnFilters((prev) => {
-                              const next = prev.filter((f) => f.id !== "qthLocator");
-                              if (v) next.push({ id: "qthLocator", value: v });
-                              return next;
-                            });
-                          }}
-                          className="h-9 bg-background"
-                        />
-                      </div>
-
-                      {/* Distance slider */}
-                      <div className="rounded-lg border bg-muted/30 p-3">
-                        <div className="flex items-center gap-2 text-sm mb-2.5">
-                          <MapPin className="w-4 h-4 text-muted-foreground" />
-                          <span className="font-medium">
-                            {t("filters.distance")}: {distanceRadius ? `${distanceRadius} km` : t("filters.distanceAll")}
-                          </span>
-                        </div>
-                        {userLocation ? (
-                          <>
-                            <Slider
-                              value={[distanceRadius ?? 0]}
-                              min={0}
-                              max={100}
-                              step={5}
-                              onValueChange={([val]) => {
-                                setDistanceRadius(val === 0 ? null : val);
-                              }}
-                            />
-                            <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                              <span>{t("filters.distanceAll")}</span>
-                              <span>100 km</span>
-                            </div>
-                          </>
-                        ) : (
-                          <p className="text-xs text-muted-foreground">
-                            {t("locationTip.title")}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Footer: results count and clear */}
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pt-2 border-t border-border/50">
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm text-muted-foreground">
-                          {filtered.length === 1
-                            ? t("filters.resultsCountSingular")
-                            : t("filters.resultsCount", { count: filtered.length })}
-                        </span>
-
-                        {activeFilterCount > 0 && (
-                          <button
-                            onClick={() => {
-                              setColumnFilters([]);
-                              setDistanceRadius(null);
-                            }}
-                            className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive transition-colors"
-                          >
-                            <X className="h-3 w-3" />
-                            {t("filters.clear")}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-
-              <div className="h-[500px]">
+              {/* The map is the content here, so it takes the viewport rather than a
+                  fixed 500px letterbox: short enough to leave the shared filter bar
+                  and the page chrome visible, tall enough to be worth panning. */}
+              <div className="h-[clamp(24rem,calc(100vh-18rem),48rem)]">
                 <MapClient
                   repeaters={filtered}
-                  onRepeaterClick={(repeater) => {
-                    setSelected(repeater);
-                    setOpen(true);
-                  }}
+                  onRepeaterClick={openRepeater}
                   userLocation={userLocation}
                   radiusKm={distanceRadius}
+                  onLocate={requestLocation}
+                  isLocating={isLocating}
+                  locationError={locationError}
+                  onClearFilters={resetFilters}
                 />
               </div>
             </>
-          )}
+            )}
+          </RepeaterStatusProvider>
         </CardContent>
       </Card>
 
@@ -742,10 +781,16 @@ export default function RepeaterView({ view }: Props) {
 
       <ImportantNotice />
 
-      <Drawer open={open} onOpenChange={setOpen} direction="right">
-        {open && (
+      <Drawer
+        open={selectedCallsign !== null}
+        onOpenChange={(next) => {
+          if (!next) setSelectedCallsign(null);
+        }}
+        direction="right"
+      >
+        {selectedCallsign !== null && (
           <>
-            <DrawerOverlay onClick={() => setOpen(false)} />
+            <DrawerOverlay onClick={() => setSelectedCallsign(null)} />
             <DrawerContent>
               <VisuallyHidden>
                 <DrawerTitle>
@@ -760,8 +805,8 @@ export default function RepeaterView({ view }: Props) {
               <DrawerFooter>
                 <button
                   type="button"
-                  className="inline-flex h-9 items-center justify-center rounded-md border bg-background px-3 text-sm shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground"
-                  onClick={() => setOpen(false)}
+                  className="inline-flex h-9 items-center justify-center rounded-md border bg-background px-3 text-sm shadow-sm transition-colors duration-150 ease-out hover:bg-accent hover:text-accent-foreground motion-reduce:transition-none"
+                  onClick={() => setSelectedCallsign(null)}
                 >
                   {t("repeater.close")}
                 </button>

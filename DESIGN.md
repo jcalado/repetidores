@@ -201,7 +201,7 @@ A disciplined palette: faintly cool neutrals share the brand hue family; Azulejo
 ### Named Rules
 **The Callsign Rule.** Every callsign, frequency, locator, tone, and absolute timestamp renders in Geist Mono. There are no exceptions. A callsign in proportional type is a bug.
 
-**The No-All-Caps Rule.** Labels use sentence case. Portuguese reads poorly in uppercase; ham operators read worse. Uppercase is reserved for two-letter ITU band codes (VHF, UHF) and statutory acronyms (ANACOM, CTCSS).
+**The No-All-Caps Rule.** Labels use sentence case. Portuguese reads poorly in uppercase; ham operators read worse. Uppercase is reserved for statutory acronyms (ANACOM, CTCSS), ITU band codes (VHF, UHF), and conventional radio abbreviations (RX, TX, QTH and the Q-codes). The last group is how operators read the thing itself, so the Portuguese expansion is the less native label, not the politer one.
 
 ## 4. Elevation
 
@@ -286,7 +286,7 @@ Body content (cards, sections, hero) is solid Paper or solid Surface. Glass on b
 - **Do** show timestamps on data that decays. PRODUCT.md's "earn trust through accuracy" requires visible staleness signals.
 - **Do** keep Azulejo as the only saturated chroma. If a second saturated colour appears, it's signalling state (Success / Warning / Destructive / data viz). Decoration never qualifies.
 - **Do** tint every neutral toward hue 250 at chroma 0.005 to 0.016. Pure achromatic OKLCH is forbidden.
-- **Do** use sentence-case Portuguese in every label. No SCREAMING UPPERCASE except statutory acronyms (ANACOM, CTCSS) and ITU band codes (VHF, UHF).
+- **Do** use sentence-case Portuguese in every label. No SCREAMING UPPERCASE except statutory acronyms (ANACOM, CTCSS), ITU band codes (VHF, UHF), and conventional radio abbreviations (RX, TX, QTH and the Q-codes).
 - **Do** support `prefers-reduced-motion` on every transition. Disable the live-event pulse, hover lifts, and any reveal animations under that media query.
 - **Do** pair colour with text or icon for any status signal. Colour is never the sole cue.
 - **Do** allow gradient text on exactly one permitted placement: the hero headline accent noun. Use Azulejo 400 → Azulejo 700 only; no rainbow ramps.
@@ -301,6 +301,6 @@ Body content (cards, sections, hero) is solid Paper or solid Surface. Glass on b
 - **Don't** use em dashes in UI copy. Use commas, colons, semicolons, periods, or parentheses.
 - **Don't** copy QRZ.com, ANACOM-portal greys, crypto neon, or shadcn-default landing-page templates. Those are the four-quadrant trap.
 - **Don't** copy QRZ.com's dense gradients-and-ads layout, ANACOM-portal greys, or crypto neon-on-black palettes.
-- **Don't** uppercase Portuguese labels. Sentence case only, except for ITU band codes and statutory acronyms.
+- **Don't** uppercase Portuguese labels. Sentence case only, except for statutory acronyms, ITU band codes, and conventional radio abbreviations (RX, TX, QTH and the Q-codes).
 - **Don't** stack one card inside another. Nested cards are always wrong; use a sub-section with a Rule hairline instead.
 - **Don't** use em dashes in any UI copy. Use commas, colons, or periods. The voice is terse.

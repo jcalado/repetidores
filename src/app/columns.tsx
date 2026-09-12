@@ -1,21 +1,35 @@
 
 "use client"
 
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { cn } from "@/lib/utils"
-import { MODE_BADGE_COLORS } from "@/lib/mode-colors"
+import {
+  CallsignText,
+  DistanceText,
+  FavoriteButton,
+  FrequencyPairCell,
+  ModeBadges,
+  OwnerCell,
+  StatusCell,
+  ToneCell,
+  getOwnerShortName,
+  getPrimaryPair,
+  resolveMergedStatusFromSnapshot,
+} from "@/components/repeater/RepeaterCells"
 import { type UserLocation } from "@/contexts/UserLocationContext"
-import { calculateDistance, formatDistance } from "@/lib/geolocation"
-import { toggleFavorite, isFavorite } from "@/lib/favorites"
-import { getVoteStats, type VoteStats } from "@/lib/votes"
-import { getAllAutoStatus, type AutoStatusMap } from '@/lib/auto-status'
-import { formatRelativeTime } from "@/lib/time"
-import { ColumnDef } from "@tanstack/react-table"
+import { calculateDistance } from "@/lib/geolocation"
+import { isFavorite } from "@/lib/favorites"
+import {
+  matchesCallsign,
+  matchesInputFrequency,
+  matchesModes,
+  matchesOutputFrequency,
+  matchesOwner,
+  matchesQthLocator,
+  matchesSearch,
+  matchesTone,
+} from "@/lib/repeater-filters"
+import { ColumnDef, FilterFn } from "@tanstack/react-table"
 import { Heart } from "lucide-react"
 import { useTranslations } from "next-intl"
-import Link from "next/link"
-import * as React from "react"
 
 // Re-export RepeaterV2 as Repeater for backward compatibility
 import type { RepeaterV2 } from "@/types/repeater"
@@ -23,8 +37,7 @@ export type Repeater = RepeaterV2
 
 // Helper to get primary frequency from repeater
 function getPrimaryFrequency(r: Repeater) {
-  if (!r.frequencies || r.frequencies.length === 0) return null
-  return r.frequencies.find(f => f.isPrimary) || r.frequencies[0]
+  return getPrimaryPair(r)
 }
 
 function getBandFromFrequency(mhz: number): string {
@@ -36,15 +49,25 @@ function getBandFromFrequency(mhz: number): string {
   return "Other"
 }
 
+/**
+ * Toolbar search: case-insensitive match on callsign, ANY frequency pair
+ * (output or input, formatted or raw), or QTH locator. Empty query matches all.
+ */
+export const repeaterGlobalFilter: FilterFn<Repeater> = (row, _columnId, filterValue) =>
+  matchesSearch(row.original as Repeater, String(filterValue ?? ""))
+
 type UseColumnsOptions = {
   userLocation?: UserLocation | null
-  onFavoriteToggle?: () => void
+  /** Called after a favourite is toggled from a row. */
+  onFavoriteToggle?: (callsign: string, next: boolean) => void
 }
 
 export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>[] {
   const { userLocation, onFavoriteToggle } = options
   const t = useTranslations('table.columns')
   const tFav = useTranslations('favorites')
+  const tOp = useTranslations('table.opStatus')
+  const tTable = useTranslations('table')
 
   return [
     // Favorites column
@@ -58,7 +81,7 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
       ),
       cell: ({ row }) => {
         const r = row.original as Repeater
-        return <FavoriteCell callsign={r.callsign} onToggle={onFavoriteToggle} />
+        return <FavoriteButton callsign={r.callsign} onToggle={onFavoriteToggle} />
       },
       enableSorting: false,
       enableColumnFilter: true,
@@ -71,14 +94,16 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
       minSize: 32,
       maxSize: 48,
     },
-    // Operational status (admin-set)
+    // Operational status (admin-set). Default-hidden: the merged "status" column
+    // shows it. The filter stays live for the map view and shared URLs.
     {
       id: "opStatus",
       header: t("opStatus.header"),
       accessorKey: "status",
       cell: ({ row }) => {
         const r = row.original as Repeater
-        return <OperationalStatusCell status={r.status} />
+        if (!r.status || r.status === "unknown") return null
+        return <span className="text-xs text-muted-foreground">{tOp(r.status)}</span>
       },
       enableSorting: false,
       enableColumnFilter: true,
@@ -95,28 +120,28 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
       minSize: 32,
       maxSize: 48,
     },
+    // Merged status: auto-check > admin-set > community votes (spec item 7)
     {
       id: "status",
       header: t("status"),
       cell: ({ row }) => {
         const r = row.original as Repeater
-        return <StatusCell repeaterId={r.callsign} />
+        // Label only. The source, auto-check list, timestamp and vote counts are
+        // all still there, in the tooltip and in the cell's sr-only text, so
+        // staleness stays available without two lines of prose on every row.
+        return <StatusCell repeater={r} />
       },
       enableSorting: false,
       enableColumnFilter: true,
-      // Filter by community status category
+      // The four legacy filter values still apply; each now covers its merged
+      // bucket, which preserves the old "bad also matches admin offline" case.
       filterFn: (row, _id, value) => {
         if (!value) return true
         const r = row.original as Repeater
-        const s = voteCache.get(r.callsign)
-        const cat = s?.category ?? "unknown"
-        // If filtering for "bad" (Não funciona), also include repeaters with offline operational status
-        if (value === "bad" && r.status === "offline") return true
-        return cat === value
+        return resolveMergedStatusFromSnapshot(r).filterValue === value
       },
-      size: 36,
-      minSize: 32,
-      maxSize: 48,
+      size: 120,
+      minSize: 84,
     },
     // Distance column - only shown when user location is available
     ...(userLocation
@@ -135,8 +160,7 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
             },
             cell: ({ getValue }: { getValue: () => number }) => {
               const distance = getValue()
-              if (distance === Infinity) return "-"
-              return <span className="font-mono tabular-nums">{formatDistance(distance)}</span>
+              return <DistanceText km={Number.isFinite(distance) ? distance : null} />
             },
             sortingFn: "basic",
             enableColumnFilter: false,
@@ -146,9 +170,9 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
     {
       accessorKey: "callsign",
       header: t("callsign"),
-      cell: ({ getValue }) => (
-        <span className="font-mono">{String(getValue() ?? "")}</span>
-      ),
+      cell: ({ getValue }) => <CallsignText callsign={String(getValue() ?? "")} />,
+      filterFn: (row, _id, value) =>
+        matchesCallsign(row.original as Repeater, String(value ?? "")),
     },
     {
       id: "band",
@@ -156,6 +180,16 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
       accessorFn: (row) => {
         const primary = getPrimaryFrequency(row)
         return primary ? getBandFromFrequency(primary.outputFrequency) : "Other"
+      },
+      // ITU band codes (2m, 70cm, ...) render as-is; only the catch-all bucket
+      // needs translating. The accessor value stays untouched so the band filter,
+      // which compares against this exact casing, cannot break.
+      cell: ({ getValue }) => {
+        const band = String(getValue() ?? "")
+        if (band !== "Other") return band
+        // TODO(i18n): `table.bands.other` is not in pt.json yet (owner "i18n").
+        // Until it lands, fall back to the raw value rather than a raw key path.
+        return tTable.has("bands.other") ? tTable("bands.other") : band
       },
       // Simple equality filter for exact band match
       filterFn: (row, id, value) => {
@@ -171,18 +205,14 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
         const primary = getPrimaryFrequency(row)
         return primary?.outputFrequency ?? 0
       },
-      cell: ({ getValue }) => {
-        const value = getValue() as number
-        return value ? <span className="font-mono tabular-nums">{value.toFixed(3)}</span> : ""
+      // The "+N" affordance rides on the output column only: one per row.
+      cell: ({ row }) => {
+        const r = row.original as Repeater
+        return <FrequencyPairCell repeater={r} variant="output" />
       },
-      filterFn: (row, id, value) => {
-        if (!value) return true
-        const numValue = row.getValue<number>(id)
-        if (numValue == null) return false
-        const formattedValue = numValue.toFixed(3)
-        const rawValue = numValue.toString()
-        return formattedValue.includes(value) || rawValue.includes(value)
-      },
+      // Matches ANY pair, not just the primary one.
+      filterFn: (row, _id, value) =>
+        matchesOutputFrequency(row.original as Repeater, String(value ?? "")),
     },
     {
       id: "inputFrequency",
@@ -191,18 +221,12 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
         const primary = getPrimaryFrequency(row)
         return primary?.inputFrequency ?? 0
       },
-      cell: ({ getValue }) => {
-        const value = getValue() as number
-        return value ? <span className="font-mono tabular-nums">{value.toFixed(3)}</span> : ""
+      cell: ({ row }) => {
+        const r = row.original as Repeater
+        return <FrequencyPairCell repeater={r} variant="input" showExtraCount={false} />
       },
-      filterFn: (row, id, value) => {
-        if (!value) return true
-        const numValue = row.getValue<number>(id)
-        if (numValue == null) return false
-        const formattedValue = numValue.toFixed(3)
-        const rawValue = numValue.toString()
-        return formattedValue.includes(value) || rawValue.includes(value)
-      },
+      filterFn: (row, _id, value) =>
+        matchesInputFrequency(row.original as Repeater, String(value ?? "")),
     },
     {
       id: "tone",
@@ -211,18 +235,9 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
         const primary = getPrimaryFrequency(row)
         return primary?.tone ?? 0
       },
-      cell: ({ getValue }) => {
-        const value = getValue() as number
-        return value ? <span className="font-mono tabular-nums">{value.toFixed(1)}</span> : ""
-      },
-      filterFn: (row, id, value) => {
-        if (!value) return true
-        const numValue = row.getValue<number>(id)
-        if (numValue == null || numValue === 0) return false
-        const formattedValue = numValue.toFixed(1)
-        const rawValue = numValue.toString()
-        return formattedValue.includes(value) || rawValue.includes(value)
-      },
+      cell: ({ getValue }) => <ToneCell tone={getValue() as number} />,
+      filterFn: (row, _id, value) =>
+        matchesTone(row.original as Repeater, String(value ?? "")),
     },
     {
       id: "modes",
@@ -230,34 +245,14 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
       accessorFn: (row) => row.modes.join(', '),
       cell: ({ row }) => {
         const r = row.original as Repeater
-        return <ModesCell modes={r.modes} />
+        return <ModeBadges repeater={r} />
       },
       // Filter by modes array - supports multi-select
       // Also handles EchoLink and AllStar which are stored as separate fields
       filterFn: (row, _id, value) => {
         if (!value) return true
-        const r = row.original as Repeater
-        const modes = r.modes || []
-
-        // Handle array of values (multi-select)
-        if (Array.isArray(value)) {
-          return value.some(v => {
-            const filterVal = String(v).toUpperCase()
-            // Normalize filter values to match modes array
-            if (filterVal === 'D-STAR') return modes.includes('DSTAR')
-            // EchoLink and AllStar are stored as separate fields, not in modes array
-            if (filterVal === 'ECHOLINK') return r.echolink?.enabled === true
-            if (filterVal === 'ALLSTAR') return r.allstarNode != null
-            return modes.includes(filterVal as typeof modes[number])
-          })
-        }
-
-        // Handle single value
-        const v = String(value).toUpperCase()
-        if (v === 'D-STAR') return modes.includes('DSTAR')
-        if (v === 'ECHOLINK') return r.echolink?.enabled === true
-        if (v === 'ALLSTAR') return r.allstarNode != null
-        return modes.includes(v as typeof modes[number])
+        const selected = Array.isArray(value) ? value.map(String) : [String(value)]
+        return matchesModes(row.original as Repeater, selected)
       },
     },
     {
@@ -281,69 +276,18 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
       cell: ({ getValue }) => (
         <span className="font-mono">{String(getValue() ?? "")}</span>
       ),
-      // Substring match, case-insensitive
-      filterFn: (row, id, value) => {
-        if (!value) return true
-        const q = String(value).toLowerCase()
-        return String(row.getValue<string>(id) ?? "").toLowerCase().includes(q)
-      },
+      filterFn: (row, _id, value) =>
+        matchesQthLocator(row.original as Repeater, String(value ?? "")),
     },
     {
       accessorKey: "owner",
       header: t("owner"),
       cell: ({ row }) => {
         const r = row.original as Repeater
-
-        // If association is populated, link to association page
-        if (r.association) {
-          return (
-            <Link
-              href={`/association/${r.association.slug}/`}
-              className="text-primary hover:underline"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {r.association.abbreviation}
-            </Link>
-          )
-        }
-
-        // Fallback to owner string with abbreviation
-        const full = String(r.owner ?? "")
-        const short = getOwnerShort(full)
-        if (!full) return null
-        if (short === full) return <span>{full}</span>
-        return (
-          <HoverCard>
-            <HoverCardTrigger asChild>
-              <span className="cursor-help underline decoration-dotted">
-                {short}
-              </span>
-            </HoverCardTrigger>
-            <HoverCardContent>
-              <div className="text-sm">{full}</div>
-            </HoverCardContent>
-          </HoverCard>
-        )
+        return <OwnerCell repeater={r} />
       },
-      // Match on full name, short name, or association abbreviation/name
-      filterFn: (row, id, value) => {
-        if (!value) return true
-        const q = String(value).toLowerCase()
-        const r = row.original as Repeater
-
-        // Check association fields
-        if (r.association) {
-          if (r.association.abbreviation.toLowerCase().includes(q)) return true
-          if (r.association.name.toLowerCase().includes(q)) return true
-        }
-
-        // Fall back to owner string
-        const full = String(row.getValue<string>(id) ?? "")
-        const short = getOwnerShort(full)
-        return (
-          full.toLowerCase().includes(q) || short.toLowerCase().includes(q)
-        )
-      },
+      filterFn: (row, _id, value) =>
+        matchesOwner(row.original as Repeater, String(value ?? ""), getOwnerShort),
     },
   ]
 }
@@ -351,250 +295,11 @@ export function useColumns(options: UseColumnsOptions = {}): ColumnDef<Repeater>
 // Keep the old export for backward compatibility, but it will be replaced
 export const columns: ColumnDef<Repeater>[] = []
 
-// Known owner name shorteners
-const OWNER_SHORTNAMES: Record<string, string> = {
-  "associação de radioamadores marienses": "ARM",
-  "associação de radioamadores da beira alta": "ARBA",
-  "associação de radioamadores da beira baixa": "ARBB",
-  "associação de radioamadores da beira litoral": "ARBL",
-  "associação de radioamadores da costa de prata": "ARCP",
-  "associação de radioamadores da linha de cascais": "ARLC",
-  "associação de radioamadores da região de lisboa": "ARRLX",
-  "liga amadores rádio sintra": "LARS",
-  "liga de amadores de rádio transmissões": "LART",
-  "rede dos emissores portugueses": "REP",
-  "tertúlia radioamadorística guglielmo marconi": "TRGM",
-  "união de radioamadores dos açores": "URAA",
-  "associação de radioamadores entre tâmega e douro": "ARTD",
-  "associação de radioamadores dos açores": "ARAA",
-  "associação dos radioamadores da praia da vitória": "ARPV",
-  "associação amigos da rádio do norte": "AARN",
-  "arsul - associação de radioamadores do sul": "ARSUL",
-  "associação de radioamadores da vila de moscavide": "ARVM",
-  "associação de radioamadores do distrito de leiria": "ARDL",
-  "associação de radioamadores do litoral alentejano": "ARLA",
-  "associação de radioamadores do oeste": "ARADO"
-}
-
-function normalizeOwner(name: string) {
-  return name.trim().toLowerCase()
-}
-
+/**
+ * Owner name shortener. The table (columns.tsx), the map view and the search
+ * surfaces all import it from here; the lookup itself lives in RepeaterCells
+ * so the shared owner cell and these filters can never disagree.
+ */
 export function getOwnerShort(name: string): string {
-  const key = normalizeOwner(name)
-  return OWNER_SHORTNAMES[key] ?? name
-}
-
-// ---- Modes Cell ----
-// Mode colors - shared single source of truth with the quick-filter tiles (see lib/mode-colors).
-const MODE_COLORS = MODE_BADGE_COLORS
-
-function ModesCell({ modes }: { modes: Repeater['modes'] }) {
-  if (!modes || modes.length === 0) return null
-
-  // Display mode badges
-  return (
-    <div className="flex flex-wrap gap-1">
-      {modes.map(mode => (
-        <span
-          key={mode}
-          className={cn(
-            "inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium",
-            MODE_COLORS[mode] ?? "bg-muted text-muted-foreground"
-          )}
-        >
-          {mode === 'DSTAR' ? 'D-STAR' : mode}
-        </span>
-      ))}
-    </div>
-  )
-}
-
-// ---- Status Icon (community votes) ----
-const voteCache = new Map<string, VoteStats>()
-const inFlight = new Map<string, Promise<VoteStats>>()
-
-// Auto status cache (loaded once on mount)
-let autoStatusCache: AutoStatusMap = {}
-let autoStatusLoaded = false
-
-export function preloadAutoStatus() {
-  if (autoStatusLoaded) return
-  autoStatusLoaded = true
-  getAllAutoStatus().then((data) => {
-    autoStatusCache = data
-  })
-}
-
-function useVoteStats(repeaterId: string) {
-  const [stats, setStats] = React.useState<VoteStats | undefined>(() => voteCache.get(repeaterId))
-
-  React.useEffect(() => {
-    let alive = true
-    if (!repeaterId) return
-    const cached = voteCache.get(repeaterId)
-    if (cached) {
-      setStats(cached)
-      return
-    }
-    let p = inFlight.get(repeaterId)
-    if (!p) {
-      p = getVoteStats(repeaterId)
-      inFlight.set(repeaterId, p)
-    }
-    p
-      .then((s) => {
-        voteCache.set(repeaterId, s)
-        if (alive) setStats(s)
-      })
-      .finally(() => {
-        inFlight.delete(repeaterId)
-      })
-    return () => {
-      alive = false
-    }
-  }, [repeaterId])
-
-  return stats
-}
-
-function StatusCell({ repeaterId }: { repeaterId: string }) {
-  const stats = useVoteStats(repeaterId)
-  const t = useTranslations('table')
-  const category = stats?.category ?? 'unknown'
-  const auto = autoStatusCache[repeaterId]
-
-  // If we have auto-check data, prefer it for the dot color
-  const effectiveCategory = auto
-    ? auto.isOnline ? 'ok' : 'bad'
-    : category
-
-  const cfg = statusStyle(effectiveCategory)
-  const label = auto
-    ? (auto.isOnline ? t('status.verified-online') : t('status.verified-offline'))
-    : t(`status.${category}` as any)
-
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <span className="relative inline-flex items-center">
-          <span
-            aria-label={label}
-            title={label}
-            className={cn(
-              "inline-block h-2.5 w-2.5 rounded-full",
-              cfg.dotClass,
-              auto?.isOnline && "ring-2 ring-emerald-300 dark:ring-emerald-700"
-            )}
-          />
-        </span>
-      </TooltipTrigger>
-      <TooltipContent>
-        <div className="flex items-center gap-2">
-          <span className={cn("inline-block h-2.5 w-2.5 rounded-full", cfg.dotClass)} />
-          <span>{label}</span>
-        </div>
-        {auto && (
-          <div className="mt-1 text-xs opacity-80">
-            {auto.sources.map(s => s.source).join(', ')}
-            {auto.lastSeen && ` · ${formatRelativeTime(auto.lastSeen)}`}
-          </div>
-        )}
-        {!auto && stats && (
-          <div className="mt-1 text-xs opacity-80">Up {stats.up} · Down {stats.down}</div>
-        )}
-      </TooltipContent>
-    </Tooltip>
-  )
-}
-
-
-function statusStyle(category: VoteStats["category"]) {
-  switch (category) {
-    case "ok":
-      return { dotClass: "bg-emerald-500" }
-    case "prob-bad":
-      return { dotClass: "bg-amber-500" }
-    case "bad":
-      return { dotClass: "bg-red-500" }
-    default:
-      return { dotClass: "bg-muted-foreground/40" }
-  }
-}
-
-// ---- Operational Status Cell ----
-function OperationalStatusCell({ status }: { status?: Repeater['status'] }) {
-  const t = useTranslations('table')
-
-  if (!status || status === 'unknown') {
-    return null
-  }
-
-  const config = {
-    active: { dotClass: "bg-emerald-500", icon: "●" },
-    maintenance: { dotClass: "bg-amber-500", icon: "◐" },
-    offline: { dotClass: "bg-red-500", icon: "○" },
-  } as const
-
-  const cfg = config[status as keyof typeof config]
-  if (!cfg) return null
-
-  const label = t(`opStatus.${status}` as const)
-
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <span
-          aria-label={label}
-          className={cn(
-            "inline-flex items-center justify-center h-5 w-5 rounded text-[10px] font-bold",
-            status === 'active' && "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-            status === 'maintenance' && "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-            status === 'offline' && "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-          )}
-        >
-          {status === 'active' ? '✓' : status === 'maintenance' ? '!' : '✕'}
-        </span>
-      </TooltipTrigger>
-      <TooltipContent>{label}</TooltipContent>
-    </Tooltip>
-  )
-}
-
-// ---- Favorites Icon ----
-function FavoriteCell({ callsign, onToggle }: { callsign: string; onToggle?: () => void }) {
-  const [favorite, setFavorite] = React.useState(() => isFavorite(callsign))
-  const t = useTranslations('favorites')
-
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation() // Prevent row click
-    const newState = toggleFavorite(callsign)
-    setFavorite(newState)
-    onToggle?.()
-  }
-
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <button
-          type="button"
-          onClick={handleClick}
-          className="rounded p-0.5 hover:bg-accent"
-          aria-label={favorite ? t('remove') : t('add')}
-        >
-          <Heart
-            className={cn(
-              "h-4 w-4 transition-colors",
-              favorite
-                ? "fill-red-500 text-red-500"
-                : "text-muted-foreground hover:text-red-400"
-            )}
-          />
-        </button>
-      </TooltipTrigger>
-      <TooltipContent>
-        {favorite ? t('remove') : t('add')}
-      </TooltipContent>
-    </Tooltip>
-  )
+  return getOwnerShortName(name)
 }

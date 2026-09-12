@@ -25,6 +25,12 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * No Suspense boundary: useRepeaterFilters no longer calls useSearchParams, so nothing
+ * here bails out of prerendering under next.config.js's output: 'export' and the
+ * toolbar ships in the static HTML instead of a spinner. (The Leaflet map itself is a
+ * client-only dynamic import and still mounts after hydration.)
+ */
 export default function RepetidoresMapaPage() {
   return (
     <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 pt-2 pb-6">
