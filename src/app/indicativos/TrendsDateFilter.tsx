@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { format, subMonths } from "date-fns"
-import { useCallback, useState } from "react"
+import { useCallback, useImperativeHandle, useState } from "react"
 
 export interface DateRange {
   startDate?: string
@@ -38,11 +38,7 @@ export function TrendsDateFilter({ value, onChange, resetRef }: TrendsDateFilter
   const [preset, setPreset] = useState<Preset>("all")
 
   // Allow parent to reset preset state
-  if (resetRef) {
-    resetRef.current = {
-      reset: () => setPreset("all"),
-    }
-  }
+  useImperativeHandle(resetRef, () => ({ reset: () => setPreset("all") }), [])
 
   const handlePresetChange = useCallback(
     (v: string) => {

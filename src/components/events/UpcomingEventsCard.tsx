@@ -11,6 +11,14 @@ interface UpcomingEventsCardProps {
     /** Number of events currently running, shown as a pill beside the title. */
     liveCount: number
     t: TranslationFunction
+    /**
+     * Clock reading behind the "ao vivo" / today / tomorrow labels. Reading the
+     * clock belongs to the data step, not to render, so callers that already
+     * read it (see `countLiveEvents` on the landing page) should pass it in.
+     * When omitted it is read once here, which on a statically exported page
+     * means build time.
+     */
+    now?: Date
     /** Overrides for the copy, which defaults to the `landing.*` messages. */
     title?: string
     href?: string
@@ -27,13 +35,16 @@ export function UpcomingEventsCard({
     events,
     liveCount,
     t,
+    now,
     title,
     href = '/events',
     label,
     emptyLabel,
 }: UpcomingEventsCardProps) {
-    const now = Date.now()
-    const today = new Date()
+    // One reading for every comparison below: two separate reads could straddle a
+    // millisecond or a midnight and disagree about what "hoje" means.
+    const today = now ?? new Date()
+    const todayMs = today.getTime()
     return (
         <SoftCard
             header={
@@ -54,11 +65,13 @@ export function UpcomingEventsCard({
                     {events.map((event) => {
                         const start = new Date(event.start)
                         const startMs = start.getTime()
-                        const live = startMs <= now && (!event.end || new Date(event.end).getTime() > now)
+                        const live =
+                            startMs <= todayMs &&
+                            (!event.end || new Date(event.end).getTime() > todayMs)
                         const sameDay = dateKeyUTC(start) === dateKeyUTC(today)
                         const tomorrow =
                             !sameDay &&
-                            dateKeyUTC(start) === dateKeyUTC(new Date(today.getTime() + 24 * 60 * 60 * 1000))
+                            dateKeyUTC(start) === dateKeyUTC(new Date(todayMs + 24 * 60 * 60 * 1000))
                         return (
                             <li key={event.id}>
                                 <Link

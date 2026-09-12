@@ -1,28 +1,56 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 
-function getInitialTheme(): "light" | "dark" {
-  if (typeof window === "undefined") return "light";
-  const stored = window.localStorage.getItem("theme");
-  if (stored === "light" || stored === "dark") return stored;
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  return prefersDark ? "dark" : "light";
+type Theme = "light" | "dark";
+
+/**
+ * The theme lives outside React: it is owned by localStorage plus the OS
+ * preference, and several ThemeToggle instances are mounted at once (desktop,
+ * compact and mobile headers). Exposing it as an external store keeps them in
+ * sync and lets the client-only value arrive through getSnapshot instead of a
+ * setState inside an effect.
+ */
+const listeners = new Set<() => void>();
+let currentTheme: Theme | null = null;
+
+function readTheme(): Theme {
+  try {
+    const stored = window.localStorage.getItem("theme");
+    if (stored === "light" || stored === "dark") return stored;
+  } catch {}
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function subscribe(onStoreChange: () => void) {
+  listeners.add(onStoreChange);
+  return () => {
+    listeners.delete(onStoreChange);
+  };
+}
+
+function getSnapshot(): Theme {
+  if (currentTheme === null) currentTheme = readTheme();
+  return currentTheme;
+}
+
+function getServerSnapshot(): Theme {
+  return "light";
+}
+
+function setTheme(next: Theme) {
+  if (currentTheme === next) return;
+  currentTheme = next;
+  listeners.forEach((listener) => listener());
 }
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const isDark = theme === "dark";
 
   useEffect(() => {
-    const initial = getInitialTheme();
-    setTheme(initial);
-  }, []);
-
-  useEffect(() => {
-    if (typeof document === "undefined") return;
     const root = document.documentElement;
-    if (theme === "dark") {
+    if (isDark) {
       root.classList.add("dark");
     } else {
       root.classList.remove("dark");
@@ -30,7 +58,7 @@ export default function ThemeToggle() {
     try {
       window.localStorage.setItem("theme", theme);
     } catch {}
-  }, [theme]);
+  }, [isDark, theme]);
 
   return (
     <button
@@ -69,4 +97,3 @@ export default function ThemeToggle() {
     </button>
   );
 }
-

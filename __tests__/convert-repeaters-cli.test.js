@@ -2,11 +2,10 @@
 jest.mock('fs');
 jest.mock('path');
 
-const fs = require('fs');
-const path = require('path');
-
-const mockFs = fs;
-const mockPath = path;
+// This suite runs as CommonJS (no ESM transform is configured for Jest), so the
+// mocked modules are pulled in with jest.requireMock() instead of require().
+const mockFs = jest.requireMock('fs');
+const mockPath = jest.requireMock('path');
 
 describe('CSV Conversion CLI Tests', () => {
     let originalArgv;

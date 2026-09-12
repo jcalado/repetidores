@@ -1,10 +1,23 @@
 'use client';
 
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, useSyncExternalStore } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Play, Square, Volume2, VolumeX, Music } from 'lucide-react';
+
+// Web Audio API support is read through useSyncExternalStore so the server render
+// (always supported) and the client render stay in sync without a setState effect.
+const subscribeToAudioSupport = () => () => {};
+
+const getAudioSupportSnapshot = () =>
+  typeof window !== 'undefined' &&
+  Boolean(
+    window.AudioContext ||
+      (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+  );
+
+const getAudioSupportServerSnapshot = () => true;
 
 interface AudioTuningAidProps {
   /** Initial tone frequency in Hz */
@@ -16,17 +29,34 @@ export function AudioTuningAid({ defaultFrequency = 1000 }: AudioTuningAidProps)
   const [frequency, setFrequency] = useState(defaultFrequency);
   const [volume, setVolume] = useState(0.3);
   const [isMuted, setIsMuted] = useState(false);
-  const [isSupported, setIsSupported] = useState(true);
+  const [audioFailed, setAudioFailed] = useState(false);
+
+  const hasAudioSupport = useSyncExternalStore(
+    subscribeToAudioSupport,
+    getAudioSupportSnapshot,
+    getAudioSupportServerSnapshot
+  );
+  const isSupported = hasAudioSupport && !audioFailed;
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const oscillatorRef = useRef<OscillatorNode | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
 
-  // Check for Web Audio API support
-  useEffect(() => {
-    if (typeof window !== 'undefined' && !window.AudioContext && !(window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext) {
-      setIsSupported(false);
+  const stopTone = useCallback(() => {
+    if (oscillatorRef.current) {
+      try {
+        oscillatorRef.current.stop();
+        oscillatorRef.current.disconnect();
+      } catch {
+        // Ignore errors if already stopped
+      }
+      oscillatorRef.current = null;
     }
+    if (gainNodeRef.current) {
+      gainNodeRef.current.disconnect();
+      gainNodeRef.current = null;
+    }
+    setIsPlaying(false);
   }, []);
 
   // Cleanup on unmount
@@ -37,7 +67,7 @@ export function AudioTuningAid({ defaultFrequency = 1000 }: AudioTuningAidProps)
         audioContextRef.current.close();
       }
     };
-  }, []);
+  }, [stopTone]);
 
   // Update volume in real-time
   useEffect(() => {
@@ -69,7 +99,7 @@ export function AudioTuningAid({ defaultFrequency = 1000 }: AudioTuningAidProps)
           window.AudioContext ||
           (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
         if (!AudioContextClass) {
-          setIsSupported(false);
+          setAudioFailed(true);
           return;
         }
         audioContextRef.current = new AudioContextClass();
@@ -109,26 +139,9 @@ export function AudioTuningAid({ defaultFrequency = 1000 }: AudioTuningAidProps)
       setIsPlaying(true);
     } catch (error) {
       console.error('Error starting audio:', error);
-      setIsSupported(false);
+      setAudioFailed(true);
     }
   }, [frequency, volume, isMuted, isSupported]);
-
-  const stopTone = useCallback(() => {
-    if (oscillatorRef.current) {
-      try {
-        oscillatorRef.current.stop();
-        oscillatorRef.current.disconnect();
-      } catch {
-        // Ignore errors if already stopped
-      }
-      oscillatorRef.current = null;
-    }
-    if (gainNodeRef.current) {
-      gainNodeRef.current.disconnect();
-      gainNodeRef.current = null;
-    }
-    setIsPlaying(false);
-  }, []);
 
   const togglePlayback = useCallback(() => {
     if (isPlaying) {

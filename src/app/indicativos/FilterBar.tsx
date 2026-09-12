@@ -46,11 +46,15 @@ interface FilterBarProps {
 
 export function FilterBar({ stats, filters, onFiltersChange, children, onClear, hasExtraFilters }: FilterBarProps) {
   const [searchInput, setSearchInput] = useState(filters.search)
+  const [syncedSearch, setSyncedSearch] = useState(filters.search)
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
-  useEffect(() => {
+  // The committed filter can change from the outside (URL state, clear all).
+  // Adjust the local input during render rather than syncing from an effect.
+  if (filters.search !== syncedSearch) {
+    setSyncedSearch(filters.search)
     setSearchInput(filters.search)
-  }, [filters.search])
+  }
 
   const distritos = Object.keys(stats.byDistrito).sort()
   const categorias = Object.keys(stats.byCategoria).sort()
@@ -73,30 +77,39 @@ export function FilterBar({ stats, filters, onFiltersChange, children, onClear, 
     }
   }, [])
 
-  const [concelhoOptions, setConcelhoOptions] = useState<{ value: string; label: string; count?: number }[]>([])
-  const [concelhoLoading, setConcelhoLoading] = useState(false)
+  const distritoKey = filters.distrito.join(",")
+  // Keyed by the distrito selection the options were fetched for, so options for a
+  // stale (or empty) selection are derived away instead of cleared from an effect.
+  const [concelhoCache, setConcelhoCache] = useState<{
+    key: string
+    options: { value: string; label: string; count?: number }[]
+  }>({ key: "", options: [] })
 
   useEffect(() => {
-    if (filters.distrito.length === 0) {
-      setConcelhoOptions([])
-      if (filters.concelho.length > 0) {
-        onFiltersChange({ ...filters, concelho: [] })
-      }
-      return
-    }
-    setConcelhoLoading(true)
-    fetchConcelhos(filters.distrito.join(","))
+    if (!distritoKey) return
+    let cancelled = false
+    fetchConcelhos(distritoKey)
       .then((docs) => {
+        if (cancelled) return
+        setConcelhoCache({
+          key: distritoKey,
+          options: docs.map((d) => ({ value: d.concelho, label: d.concelho, count: d.count })),
+        })
         const validConcelhos = new Set(docs.map((d) => d.concelho))
         const filtered = filters.concelho.filter((c) => validConcelhos.has(c))
-        setConcelhoOptions(docs.map((d) => ({ value: d.concelho, label: d.concelho, count: d.count })))
         if (filtered.length !== filters.concelho.length) {
           onFiltersChange({ ...filters, concelho: filtered })
         }
       })
-      .catch(() => setConcelhoOptions([]))
-      .finally(() => setConcelhoLoading(false))
-  }, [filters.distrito])
+      .catch(() => {
+        if (!cancelled) setConcelhoCache({ key: distritoKey, options: [] })
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [distritoKey])
+
+  const concelhoOptions = concelhoCache.key === distritoKey ? concelhoCache.options : []
 
   const hasActiveFilters =
     filters.search || filters.distrito.length > 0 || filters.categoria.length > 0 || filters.estado.length > 0 || filters.concelho.length > 0 || hasExtraFilters
@@ -181,7 +194,9 @@ export function FilterBar({ stats, filters, onFiltersChange, children, onClear, 
           title="Distrito"
           options={distritos.map((d) => ({ value: d, label: d, count: stats.byDistrito[d] }))}
           selected={filters.distrito}
-          onChange={(v) => onFiltersChange({ ...filters, distrito: v })}
+          onChange={(v) =>
+            onFiltersChange({ ...filters, distrito: v, concelho: v.length === 0 ? [] : filters.concelho })
+          }
         />
 
         <FacetedFilter

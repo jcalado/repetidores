@@ -304,21 +304,21 @@ function normalizeDSTARConfig(doc: Record<string, unknown>): DSTARConfig | undef
   if (doc.dstarConfig && typeof doc.dstarConfig === 'object') {
     const cfg = doc.dstarConfig as Record<string, unknown>;
     const reflector = toOptionalString(cfg.reflector);
-    const module = toOptionalString(cfg.module) as DSTARConfig['module'];
+    const dstarModule = toOptionalString(cfg.module) as DSTARConfig['module'];
     const gateway = toOptionalString(cfg.gateway);
 
-    if (!reflector && !module && !gateway) return undefined;
+    if (!reflector && !dstarModule && !gateway) return undefined;
 
-    return { reflector, module, gateway };
+    return { reflector, module: dstarModule, gateway };
   }
 
   // Fallback to legacy flat fields
   const reflector = toOptionalString(doc.dstarReflector);
-  const module = toOptionalString(doc.dstarModule) as DSTARConfig['module'];
+  const dstarModule = toOptionalString(doc.dstarModule) as DSTARConfig['module'];
 
-  if (!reflector && !module) return undefined;
+  if (!reflector && !dstarModule) return undefined;
 
-  return { reflector, module };
+  return { reflector, module: dstarModule };
 }
 
 function normalizeC4FMConfig(doc: Record<string, unknown>): C4FMConfig | undefined {

@@ -19,6 +19,10 @@ import {
 // Context for the global tick counter
 const TickContext = createContext<number>(0);
 
+// Context for the timestamp of the latest tick. `null` means no provider is
+// mounted, so `useNow` falls back to the value captured on mount.
+const NowContext = createContext<number | null>(null);
+
 interface TickProviderProps {
   children: ReactNode;
   /** Tick interval in milliseconds (default: 1000) */
@@ -31,16 +35,22 @@ interface TickProviderProps {
  */
 export function TickProvider({ children, interval = 1000 }: TickProviderProps) {
   const [tick, setTick] = useState(0);
+  const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
     // Use requestAnimationFrame for drift-resistant timing
     let raf: number | undefined;
     let lastTime = typeof performance !== "undefined" ? performance.now() : Date.now();
 
-    const loop = (now: number) => {
-      if (now - lastTime >= interval) {
-        lastTime = now;
-        setTick((t) => t + 1);
+    const advance = () => {
+      setTick((t) => t + 1);
+      setNow(Date.now());
+    };
+
+    const loop = (time: number) => {
+      if (time - lastTime >= interval) {
+        lastTime = time;
+        advance();
       }
       raf = requestAnimationFrame(loop);
     };
@@ -52,12 +62,16 @@ export function TickProvider({ children, interval = 1000 }: TickProviderProps) {
       };
     } else {
       // Fallback for SSR or environments without rAF
-      const id = setInterval(() => setTick((t) => t + 1), interval);
+      const id = setInterval(advance, interval);
       return () => clearInterval(id);
     }
   }, [interval]);
 
-  return <TickContext.Provider value={tick}>{children}</TickContext.Provider>;
+  return (
+    <TickContext.Provider value={tick}>
+      <NowContext.Provider value={now}>{children}</NowContext.Provider>
+    </TickContext.Provider>
+  );
 }
 
 /**
@@ -71,10 +85,15 @@ export function useTick(): number {
 /**
  * Hook that returns the current timestamp, updated on each tick.
  * Useful for countdown calculations.
+ *
+ * The timestamp is read from the provider so that render stays pure. Without a
+ * provider it stays at the value captured when the component mounted.
  */
 export function useNow(): number {
-  useTick(); // Subscribe to ticks
-  return Date.now();
+  const providedNow = useContext(NowContext);
+  const [mountedNow] = useState(() => Date.now());
+
+  return providedNow ?? mountedNow;
 }
 
 // Contexts for different tick intervals
@@ -106,16 +125,18 @@ export function MultiTickProvider({
   const [fastTick, setFastTick] = useState(0);
   const [mediumTick, setMediumTick] = useState(0);
   const [slowTick, setSlowTick] = useState(0);
+  const [now, setNow] = useState(() => Date.now());
 
   // Fast tick (every second)
   useEffect(() => {
     let raf: number | undefined;
     let lastTime = performance.now();
 
-    const loop = (now: number) => {
-      if (now - lastTime >= fastInterval) {
-        lastTime = now;
+    const loop = (time: number) => {
+      if (time - lastTime >= fastInterval) {
+        lastTime = time;
         setFastTick((t) => t + 1);
+        setNow(Date.now());
       }
       raf = requestAnimationFrame(loop);
     };
@@ -140,11 +161,13 @@ export function MultiTickProvider({
 
   return (
     <TickContext.Provider value={fastTick}>
-      <MediumTickContext.Provider value={mediumTick}>
-        <SlowTickContext.Provider value={slowTick}>
-          {children}
-        </SlowTickContext.Provider>
-      </MediumTickContext.Provider>
+      <NowContext.Provider value={now}>
+        <MediumTickContext.Provider value={mediumTick}>
+          <SlowTickContext.Provider value={slowTick}>
+            {children}
+          </SlowTickContext.Provider>
+        </MediumTickContext.Provider>
+      </NowContext.Provider>
     </TickContext.Provider>
   );
 }

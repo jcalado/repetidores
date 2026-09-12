@@ -18,6 +18,7 @@ import {
   PieChart,
   ResponsiveContainer,
   Tooltip,
+  type TooltipContentProps,
   XAxis,
   YAxis,
 } from "recharts"
@@ -48,13 +49,20 @@ function ChartCard({ title, children }: { title: string; children: React.ReactNo
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function ChartTooltip({ active, payload, label }: any) {
+interface ChartTooltipEntry {
+  color?: string
+  name?: React.ReactNode
+  value?: number
+}
+
+type ChartTooltipProps = Partial<TooltipContentProps<number | string, string>>
+
+function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
   if (!active || !payload?.length) return null
   return (
     <div className="rounded-lg border border-border bg-popover px-3 py-2 shadow-md text-xs">
       <p className="font-medium text-foreground mb-1">{label}</p>
-      {payload.map((entry: any, i: number) => (
+      {payload.map((entry: ChartTooltipEntry, i: number) => (
         <p key={i} style={{ color: entry.color }} className="flex items-center gap-1.5">
           <span className="inline-block h-2 w-2 rounded-full" style={{ background: entry.color }} />
           {entry.name}: <span className="font-semibold">{entry.value?.toLocaleString("pt-PT")}</span>

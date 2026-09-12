@@ -15,8 +15,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useTick } from "./hooks/useOptimizedTick";
-import { formatDateTime, formatSmartCountdown, msUntil } from "./utils/formatters";
+import { useNow } from "./hooks/useOptimizedTick";
+import { formatDateTime, formatSmartCountdown } from "./utils/formatters";
 import { getTagColors, getTagIcon, getDMRNetworkLabel } from "./utils/tagColors";
 import { getEventDmrSummary } from "./utils/dmr";
 import type { EventItem, TranslationFunction } from "./types";
@@ -28,8 +28,8 @@ interface EventsTableProps {
 
 function EventsTableComponent({ events, t }: EventsTableProps) {
   const router = useRouter();
-  // Subscribe to global tick for live countdown
-  useTick();
+  // Single clock read per render, refreshed by the global tick
+  const now = useNow();
 
   return (
     <div className="rounded-2xl border overflow-hidden">
@@ -46,7 +46,6 @@ function EventsTableComponent({ events, t }: EventsTableProps) {
         </TableHeader>
         <TableBody>
           {events.map((event) => {
-            const now = Date.now();
             const startTime = new Date(event.start).getTime();
             const endTime = event.end
               ? new Date(event.end).getTime()
@@ -54,8 +53,8 @@ function EventsTableComponent({ events, t }: EventsTableProps) {
             const hasStarted = now >= startTime;
             const hasEnded = now >= endTime;
             const isInProgress = hasStarted && !hasEnded;
-            const remainingToStart = msUntil(event.start);
-            const remainingToEnd = event.end ? msUntil(event.end) : 0;
+            const remainingToStart = Math.max(0, startTime - now);
+            const remainingToEnd = event.end ? Math.max(0, endTime - now) : 0;
             const tagColors = getTagColors(event.tag);
             const TagIcon = getTagIcon(event.tag);
             const dmr = getEventDmrSummary(event);

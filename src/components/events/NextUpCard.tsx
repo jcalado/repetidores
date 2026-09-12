@@ -5,7 +5,7 @@
  * Styled with Radio Station Dashboard aesthetic
  */
 
-import { useMemo } from "react";
+import { createElement, useMemo } from "react";
 import Link from "next/link";
 import {
   CalendarClock,
@@ -17,10 +17,9 @@ import {
   Radio,
   Star,
 } from "lucide-react";
-import { useTick } from "./hooks/useOptimizedTick";
-import { formatDateTime, formatSmartCountdown, msUntil } from "./utils/formatters";
+import { useNow } from "./hooks/useOptimizedTick";
+import { formatDateTime, formatSmartCountdown } from "./utils/formatters";
 import {
-  getTagColors,
   getTagIcon,
   getTagIconBg,
   getDMRNetworkLabel,
@@ -34,11 +33,10 @@ interface NextUpCardProps {
 }
 
 export function NextUpCard({ events, t }: NextUpCardProps) {
-  // Subscribe to global tick for live countdown
-  useTick();
+  // Current instant from the global tick, so render never reads the clock itself
+  const now = useNow();
 
   const next = useMemo(() => {
-    const now = Date.now();
     const future = events.filter((e) => {
       const start = new Date(e.start).getTime();
       const end = e.end ? new Date(e.end).getTime() : start;
@@ -50,15 +48,14 @@ export function NextUpCard({ events, t }: NextUpCardProps) {
     );
     // Find the first event that hasn't started yet
     return future.find((e) => new Date(e.start).getTime() > now);
-  }, [events]);
+  }, [events, now]);
 
   if (!next) return null;
 
-  const remaining = msUntil(next.start);
-  const tagColors = getTagColors(next.tag);
+  const remaining = Math.max(0, new Date(next.start).getTime() - now);
   const iconBgClass = getTagIconBg(next.tag);
   const dmr = getEventDmrSummary(next);
-  const TagIcon = getTagIcon(next.tag);
+  const tagIcon = getTagIcon(next.tag);
 
   return (
     <div className="mb-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -87,7 +84,7 @@ export function NextUpCard({ events, t }: NextUpCardProps) {
             <div
               className={`flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-xl ${iconBgClass} text-white shadow-lg shrink-0`}
             >
-              <TagIcon className="w-6 h-6 sm:w-7 sm:h-7" />
+              {createElement(tagIcon, { className: "w-6 h-6 sm:w-7 sm:h-7" })}
             </div>
 
             {/* Content */}

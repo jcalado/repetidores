@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import { Download, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -9,34 +9,69 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
+const STANDALONE_QUERY = '(display-mode: standalone)';
+
+function subscribeToStandalone(onChange: () => void) {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    return () => {};
+  }
+  const mediaQuery = window.matchMedia(STANDALONE_QUERY);
+  mediaQuery.addEventListener('change', onChange);
+  return () => mediaQuery.removeEventListener('change', onChange);
+}
+
+function getStandaloneSnapshot() {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    return false;
+  }
+  return window.matchMedia(STANDALONE_QUERY).matches;
+}
+
+function getStandaloneServerSnapshot() {
+  return false;
+}
+
 export default function PWAInstall() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showBanner, setShowBanner] = useState(false);
-  const [isInstalled, setIsInstalled] = useState(false);
+  const [installedDuringSession, setInstalledDuringSession] = useState(false);
 
+  // Read the display mode from the platform instead of copying it into state in an effect
+  const isStandalone = useSyncExternalStore(
+    subscribeToStandalone,
+    getStandaloneSnapshot,
+    getStandaloneServerSnapshot,
+  );
+  const isInstalled = isStandalone || installedDuringSession;
+
+  // Register service worker
   useEffect(() => {
-    // Register service worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/sw.js')
-        .then((registration) => {
-          console.log('[PWA] SW registered:', registration.scope);
+    if (!('serviceWorker' in navigator)) return;
 
-          // Check for updates periodically
-          setInterval(() => {
-            registration.update();
-          }, 60 * 60 * 1000); // Check every hour
-        })
-        .catch((error) => {
-          console.log('[PWA] SW registration failed:', error);
-        });
-    }
+    let updateInterval: ReturnType<typeof setInterval> | undefined;
 
-    // Check if already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      setIsInstalled(true);
-      return;
-    }
+    navigator.serviceWorker
+      .register('/sw.js')
+      .then((registration) => {
+        console.log('[PWA] SW registered:', registration.scope);
+
+        // Check for updates periodically
+        updateInterval = setInterval(() => {
+          registration.update();
+        }, 60 * 60 * 1000); // Check every hour
+      })
+      .catch((error) => {
+        console.log('[PWA] SW registration failed:', error);
+      });
+
+    return () => {
+      if (updateInterval) clearInterval(updateInterval);
+    };
+  }, []);
+
+  // Subscribe to the install prompt while the app is not installed
+  useEffect(() => {
+    if (isInstalled) return;
 
     // Check if user dismissed the banner before
     const dismissed = localStorage.getItem('pwa-banner-dismissed');
@@ -48,19 +83,21 @@ export default function PWAInstall() {
       }
     }
 
+    let bannerTimeout: ReturnType<typeof setTimeout> | undefined;
+
     // Listen for the install prompt
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       // Delay showing the banner for better UX
-      setTimeout(() => setShowBanner(true), 3000);
+      bannerTimeout = setTimeout(() => setShowBanner(true), 3000);
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     // Listen for successful install
     const handleAppInstalled = () => {
-      setIsInstalled(true);
+      setInstalledDuringSession(true);
       setShowBanner(false);
       setDeferredPrompt(null);
     };
@@ -68,12 +105,13 @@ export default function PWAInstall() {
     window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
+      if (bannerTimeout) clearTimeout(bannerTimeout);
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
-  }, []);
+  }, [isInstalled]);
 
-  const handleInstall = async () => {
+  const handleInstall = useCallback(async () => {
     if (!deferredPrompt) return;
 
     try {
@@ -91,12 +129,12 @@ export default function PWAInstall() {
 
     setDeferredPrompt(null);
     setShowBanner(false);
-  };
+  }, [deferredPrompt]);
 
-  const handleDismiss = () => {
+  const handleDismiss = useCallback(() => {
     setShowBanner(false);
     localStorage.setItem('pwa-banner-dismissed', Date.now().toString());
-  };
+  }, []);
 
   if (isInstalled || !showBanner || !deferredPrompt) return null;
 

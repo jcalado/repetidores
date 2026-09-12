@@ -24,6 +24,7 @@ interface RealTimeTrackerProps {
 
 export function RealTimeTracker({
   tle,
+  currentTime,
   currentPosition,
   currentLookAngles,
   nextPassTime,
@@ -237,7 +238,7 @@ export function RealTimeTracker({
       {tle && (
         <div className="text-xs text-muted-foreground text-center">
           Dados orbitais de <span className="font-mono">{new Date(tle.fetchedAt).toLocaleString('pt-PT')}</span>
-          {Date.now() - tle.fetchedAt > 48 * 60 * 60 * 1000 && (
+          {currentTime.getTime() - tle.fetchedAt > 48 * 60 * 60 * 1000 && (
             <span className="text-[oklch(0.55_0.15_55)] dark:text-[oklch(0.78_0.13_75)] ml-2">
               (atualize os dados para maior precisão)
             </span>
