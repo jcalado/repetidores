@@ -605,8 +605,10 @@ export function DataTable<TData, TValue>({
     const fmtFreq = (n: number | undefined) =>
       typeof n === "number" && Number.isFinite(n) ? n.toFixed(6) : ""
 
+    // CHIRP parses Offset, rToneFreq, cToneFreq and TStep as floats, so they
+    // must never be empty — fall back to CHIRP's own defaults.
     const fmtOffset = (rx: number | undefined, tx: number | undefined) => {
-      if (typeof rx !== "number" || typeof tx !== "number") return ""
+      if (typeof rx !== "number" || typeof tx !== "number") return "0.000000"
       return Math.abs(tx - rx).toFixed(6)
     }
 
@@ -618,12 +620,16 @@ export function DataTable<TData, TValue>({
     }
 
     const fmtToneFreq = (n: number | undefined) =>
-      typeof n === "number" && n > 0 ? Number(n.toFixed(1)).toString() : ""
+      typeof n === "number" && n > 0 ? n.toFixed(1) : "88.5"
 
-    const fmtMode = (m: string | undefined) => {
-      if (!m) return "FM"
-      const up = m.toUpperCase()
-      if (["FM", "NFM", "AM"].includes(up)) return up
+    // CHIRP mode for a repeater. FM wins when the repeater also carries it (any
+    // radio can use the channel); otherwise DMR, then D-STAR ("DV" in CHIRP).
+    // Other modes (C4FM, TETRA, …) fall back to FM.
+    const chirpMode = (modes: string[] | undefined) => {
+      const up = (modes ?? []).map((m) => m.toUpperCase())
+      if (up.includes("FM")) return "FM"
+      if (up.includes("DMR")) return "DMR"
+      if (up.includes("DSTAR")) return "DV"
       return "FM"
     }
 
@@ -638,19 +644,20 @@ export function DataTable<TData, TValue>({
         const rx = pair.outputFrequency
         const tx = pair.inputFrequency
         const tone = pair.tone
+        const mode = chirpMode(modes)
         const fields = [
           String(++location),
           channelName(name, pairIdx),
           fmtFreq(rx),
           getDuplex(rx, tx),
           fmtOffset(rx, tx),
-          tone && tone > 0 ? "Tone" : "",
-          "", // rToneFreq (only for TSQL)
-          fmtToneFreq(tone), // cToneFreq
+          mode === "FM" && tone && tone > 0 ? "Tone" : "", // CTCSS is analog-only
+          fmtToneFreq(tone), // rToneFreq (encode tone used by "Tone" mode)
+          fmtToneFreq(tone), // cToneFreq (decode tone, only used by "TSQL")
           "023",
           "NN",
-          fmtMode(modes?.[0]),
-          "", // TStep
+          mode,
+          "5.00", // TStep
           "", // Skip
           comment,
           "", // URCALL
